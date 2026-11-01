@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "context.demo",
+  "project_id": "project.synthetic",
+  "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "objective": "Explain a synthetic computation function",
+  "non_goals": [
+    "Do not edit source"
+  ],
+  "permissions_summary": [
+    "read_only"
+  ],
+  "entity_ids": [
+    "symbol.compute"
+  ],
+  "evidence_ids": [
+    "evidence.syntax"
+  ],
+  "claim_ids": [
+    "claim.example"
+  ],
+  "source_excerpts": [
+    {
+      "anchor": {
+        "path": "src/example.py",
+        "blob_digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413",
+        "precision": "bytes",
+        "byte_start": 43,
+        "byte_end": 76,
+        "encoding": "utf-8"
+      },
+      "text": "def compute(x):\r\n    return x + 1"
+    }
+  ],
+  "runtime_run_ids": [],
+  "unresolved_questions": [
+    "No actual runtime evidence"
+  ],
+  "budget_tokens": 1024,
+  "truncated": false,
+  "omitted_sections": [],
+  "next_cursor": null
+}

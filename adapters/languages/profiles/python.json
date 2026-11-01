@@ -1,0 +1,37 @@
+{
+  "id": "python",
+  "languages": [
+    "python"
+  ],
+  "fixture": "fixtures/python",
+  "tools": {
+    "lsp": {
+      "name": "pyright",
+      "version": "1.1.408"
+    },
+    "scip": {
+      "name": "scip-python",
+      "version": "0.6.8",
+      "status": "works_on_wsl_linux; windows_native_blocked"
+    }
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified_by_test",
+    "bounded_refactor": "verified_by_test",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/python.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "dynamic getattr targets remain unknown",
+    "rename is preview-only; apply/recover pending B020/B021"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

@@ -1,0 +1,1484 @@
+{
+  "version": "1.0",
+  "execution_model": "single_primary_agent_single_writer",
+  "all_initial_statuses": "not_started",
+  "task_count": 33,
+  "tasks": [
+    {
+      "id": "B000",
+      "title": "上游可重复基线",
+      "status": "not_started",
+      "depends_on": [],
+      "spec_ids": [
+        "S04",
+        "S15"
+      ],
+      "implementation_brief": "克隆指定CodeGraph提交；审阅AGENTS和构建链；保留其测试；记录实际失败并定位。",
+      "expected_outputs": [
+        "上游固定checkout",
+        "baseline/upstream-build.json",
+        "原有许可和NOTICE"
+      ],
+      "acceptance_test_ids": [
+        "AT001",
+        "AT002"
+      ],
+      "requirement_ids": [
+        "R001",
+        "R002"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B001",
+      "title": "工具链获取、许可证与锁定",
+      "status": "not_started",
+      "depends_on": [
+        "B000"
+      ],
+      "spec_ids": [
+        "S05",
+        "S13",
+        "S15"
+      ],
+      "implementation_brief": "解析其余工具精确版本和平台包；确认执行风险；实现doctor数据源；生成真实toolchain锁。",
+      "expected_outputs": [
+        "toolchains.lock.json",
+        "third-party-notices",
+        "platform-matrix.json"
+      ],
+      "acceptance_test_ids": [
+        "AT003"
+      ],
+      "requirement_ids": [
+        "R003"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B002",
+      "title": "上游边界最小探测",
+      "status": "not_started",
+      "depends_on": [
+        "B000"
+      ],
+      "spec_ids": [
+        "S04",
+        "S13"
+      ],
+      "implementation_brief": "对稀疏ID导出、缓存目录、graph-only无网络、未解析关系做最小实证；确认插入bridge位置。",
+      "expected_outputs": [
+        "upstream-probes/",
+        "ADR适配修订",
+        "真实最小fixture"
+      ],
+      "acceptance_test_ids": [
+        "AT004",
+        "AT005",
+        "AT006"
+      ],
+      "requirement_ids": [
+        "R004",
+        "R005",
+        "R006"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B003",
+      "title": "证据核心和持久事务",
+      "status": "not_started",
+      "depends_on": [
+        "B000"
+      ],
+      "spec_ids": [
+        "S03",
+        "S19"
+      ],
+      "implementation_brief": "新增archmeld-core，建SQLite迁移和CAS对象存储；导入事务、来源与引用校验；拒绝伪语义。",
+      "expected_outputs": [
+        "crates/archmeld-core/src/store",
+        "migrations",
+        "evidence integration tests"
+      ],
+      "acceptance_test_ids": [
+        "AT007",
+        "AT008",
+        "AT071"
+      ],
+      "requirement_ids": [
+        "R007",
+        "R008",
+        "R071"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B004",
+      "title": "快照、身份与源码位置",
+      "status": "not_started",
+      "depends_on": [
+        "B003"
+      ],
+      "spec_ids": [
+        "S02",
+        "S19"
+      ],
+      "implementation_brief": "原始字节快照、配置与环境身份、脏工作区、overlay；字符编码转换和稳定性检测。",
+      "expected_outputs": [
+        "snapshot/identity/source modules",
+        "hash test vectors"
+      ],
+      "acceptance_test_ids": [
+        "AT009",
+        "AT010",
+        "AT011",
+        "AT012"
+      ],
+      "requirement_ids": [
+        "R009",
+        "R010",
+        "R011",
+        "R012"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B005",
+      "title": "CodeGraph桥接和首条真实索引",
+      "status": "not_started",
+      "depends_on": [
+        "B002",
+        "B004"
+      ],
+      "spec_ids": [
+        "S04",
+        "S03"
+      ],
+      "implementation_brief": "为上游添加隔离cache与完整NDJSON导出；保留language parser而不重写；批次幂等与取消。",
+      "expected_outputs": [
+        "codegraph bridge adapter",
+        "first real repo import artifact"
+      ],
+      "acceptance_test_ids": [
+        "AT013",
+        "AT014"
+      ],
+      "requirement_ids": [
+        "R013",
+        "R014"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B006",
+      "title": "统一查询与本地API",
+      "status": "not_started",
+      "depends_on": [
+        "B005"
+      ],
+      "spec_ids": [
+        "S11",
+        "S02",
+        "S19"
+      ],
+      "implementation_brief": "实现分页/范围/来源/局部图查询、历史源码、作业事件和请求幂等；遵循OpenAPI。",
+      "expected_outputs": [
+        "query/http/job modules",
+        "API contract tests"
+      ],
+      "acceptance_test_ids": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ],
+      "requirement_ids": [
+        "R015",
+        "R016",
+        "R073"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B007",
+      "title": "代码—图的首个可操作工作台",
+      "status": "not_started",
+      "depends_on": [
+        "B006"
+      ],
+      "spec_ids": [
+        "S08"
+      ],
+      "implementation_brief": "从上游vscode扩展派生，连同一核心；代码/图/证据导航、稳定布局、错误/未知状态。",
+      "expected_outputs": [
+        "vscode/ARCHMELD UI",
+        "UI integration tests"
+      ],
+      "acceptance_test_ids": [
+        "AT017",
+        "AT018"
+      ],
+      "requirement_ids": [
+        "R017",
+        "R018"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B008",
+      "title": "Manager与Expedition生命周期",
+      "status": "not_started",
+      "depends_on": [
+        "B006"
+      ],
+      "spec_ids": [
+        "S01",
+        "S14"
+      ],
+      "implementation_brief": "外部状态根、持久项目registry、一次性session、干净关闭、不污染源码；同一查询核心。",
+      "expected_outputs": [
+        "project/session manager",
+        "dual-mode lifecycle tests"
+      ],
+      "acceptance_test_ids": [
+        "AT019",
+        "AT020",
+        "AT080"
+      ],
+      "requirement_ids": [
+        "R019",
+        "R020",
+        "R080"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B009",
+      "title": "SCIP语义导入",
+      "status": "not_started",
+      "depends_on": [
+        "B004",
+        "B001"
+      ],
+      "spec_ids": [
+        "S05",
+        "S03"
+      ],
+      "implementation_brief": "使用正式schema解析符号/occurrence；保留范围编码/包作用域；reference不冒充call。",
+      "expected_outputs": [
+        "scip adapter",
+        "semantic golden tests"
+      ],
+      "acceptance_test_ids": [
+        "AT021",
+        "AT022"
+      ],
+      "requirement_ids": [
+        "R021",
+        "R022"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B010",
+      "title": "LSP与语言重构代理",
+      "status": "not_started",
+      "depends_on": [
+        "B009",
+        "B006"
+      ],
+      "spec_ids": [
+        "S05",
+        "S09",
+        "S13"
+      ],
+      "implementation_brief": "语言能力协商、源位置转换、WorkspaceEdit预览；隔离executeCommand和启动权限。",
+      "expected_outputs": [
+        "language broker",
+        "rename preview tests"
+      ],
+      "acceptance_test_ids": [
+        "AT023",
+        "AT024"
+      ],
+      "requirement_ids": [
+        "R023",
+        "R024"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B011",
+      "title": "Python与JS/TS语言包",
+      "status": "not_started",
+      "depends_on": [
+        "B010"
+      ],
+      "spec_ids": [
+        "S05",
+        "S06"
+      ],
+      "implementation_brief": "安装锁定分析器，定义真实fixture和中型repo；分别验证静态/语义/运行/受控变更。",
+      "expected_outputs": [
+        "profiles/python、typescript、javascript",
+        "language evidence"
+      ],
+      "acceptance_test_ids": [
+        "AT025",
+        "AT026"
+      ],
+      "requirement_ids": [
+        "R025",
+        "R026"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": [
+        "B016",
+        "B021",
+        "B022"
+      ]
+    },
+    {
+      "id": "B012",
+      "title": "C/C++语言包及构建变体",
+      "status": "not_started",
+      "depends_on": [
+        "B010"
+      ],
+      "spec_ids": [
+        "S05",
+        "S06"
+      ],
+      "implementation_brief": "compile_commands与平台路径映射；clangd语义和变换；实际采集；Windows工具差异doctor。",
+      "expected_outputs": [
+        "profiles/c-cpp",
+        "macro/virtual/function-pointer fixtures"
+      ],
+      "acceptance_test_ids": [
+        "AT027",
+        "AT028"
+      ],
+      "requirement_ids": [
+        "R027",
+        "R028"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": [
+        "B016",
+        "B021",
+        "B022"
+      ]
+    },
+    {
+      "id": "B013",
+      "title": "Java与C#语言包",
+      "status": "not_started",
+      "depends_on": [
+        "B010"
+      ],
+      "spec_ids": [
+        "S05",
+        "S06"
+      ],
+      "implementation_brief": "接入各自语言原生语义/重构/运行路径；处理生成代码、反射和许可边界。",
+      "expected_outputs": [
+        "profiles/java、csharp",
+        "platform tool evidence"
+      ],
+      "acceptance_test_ids": [
+        "AT029",
+        "AT030"
+      ],
+      "requirement_ids": [
+        "R029",
+        "R030"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": [
+        "B016",
+        "B021",
+        "B022"
+      ]
+    },
+    {
+      "id": "B014",
+      "title": "Go与Rust语言包",
+      "status": "not_started",
+      "depends_on": [
+        "B010"
+      ],
+      "spec_ids": [
+        "S05",
+        "S06"
+      ],
+      "implementation_brief": "接入gopls/rust-analyzer和SCIP路径；显式cfg与异步边界；捕获真实场景。",
+      "expected_outputs": [
+        "profiles/go、rust",
+        "language evidence"
+      ],
+      "acceptance_test_ids": [
+        "AT031",
+        "AT032"
+      ],
+      "requirement_ids": [
+        "R031",
+        "R032"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": [
+        "B016",
+        "B021",
+        "B022"
+      ]
+    },
+    {
+      "id": "B015",
+      "title": "运行证据规范化与时间线",
+      "status": "not_started",
+      "depends_on": [
+        "B004",
+        "B006"
+      ],
+      "spec_ids": [
+        "S06",
+        "S08"
+      ],
+      "implementation_brief": "实现Chrome/VizTracer/OTLP/Perfetto和Tracy摘要接入；保存原件/clock/loss；本地Perfetto展示。",
+      "expected_outputs": [
+        "runtime/importers",
+        "timeline integration",
+        "input limits tests"
+      ],
+      "acceptance_test_ids": [
+        "AT033",
+        "AT034",
+        "AT035",
+        "AT079"
+      ],
+      "requirement_ids": [
+        "R033",
+        "R034",
+        "R035",
+        "R079"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B016",
+      "title": "场景执行与实际因果关联",
+      "status": "not_started",
+      "depends_on": [
+        "B015",
+        "B001"
+      ],
+      "spec_ids": [
+        "S06",
+        "S13"
+      ],
+      "implementation_brief": "受限场景runner、来源manifest、实际探针/关联ID；子进程清理；开销说明。",
+      "expected_outputs": [
+        "scenario runner",
+        "capture manifest",
+        "causal tests"
+      ],
+      "acceptance_test_ids": [
+        "AT036",
+        "AT037",
+        "AT074"
+      ],
+      "requirement_ids": [
+        "R036",
+        "R037",
+        "R074"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B017",
+      "title": "解释调查与架构候选",
+      "status": "not_started",
+      "depends_on": [
+        "B006",
+        "B009"
+      ],
+      "spec_ids": [
+        "S07",
+        "S12",
+        "S13"
+      ],
+      "implementation_brief": "Claim/反例/未知对象；接入隔离CodeBoarding；支持无模型人工建模；模型输出仅候选。",
+      "expected_outputs": [
+        "claims/investigation",
+        "codeboarding adapter",
+        "candidate review UI"
+      ],
+      "acceptance_test_ids": [
+        "AT038",
+        "AT039",
+        "AT076"
+      ],
+      "requirement_ids": [
+        "R038",
+        "R039",
+        "R076"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B018",
+      "title": "As-Is/To-Be与可执行架构规则",
+      "status": "not_started",
+      "depends_on": [
+        "B017",
+        "B007"
+      ],
+      "spec_ids": [
+        "S07",
+        "S10"
+      ],
+      "implementation_brief": "职责/所有权多投影；目标图编辑只更新目标；规则checker与coverage，不生成魔法源修改。",
+      "expected_outputs": [
+        "architecture model/editor",
+        "rule registry and checks"
+      ],
+      "acceptance_test_ids": [
+        "AT040",
+        "AT041",
+        "AT075"
+      ],
+      "requirement_ids": [
+        "R040",
+        "R041",
+        "R075"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B019",
+      "title": "冻结契约与迁移计划",
+      "status": "not_started",
+      "depends_on": [
+        "B018",
+        "B004"
+      ],
+      "spec_ids": [
+        "S09",
+        "S10",
+        "S19"
+      ],
+      "implementation_brief": "Contract、Plan DAG、non-goals、变更类型、digest和审批语义；首先拒绝不完整计划。",
+      "expected_outputs": [
+        "contracts/plan service",
+        "semantic consistency tests"
+      ],
+      "acceptance_test_ids": [
+        "AT042",
+        "AT043",
+        "AT072"
+      ],
+      "requirement_ids": [
+        "R042",
+        "R043",
+        "R072"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B020",
+      "title": "受控暂存与可审查变换",
+      "status": "not_started",
+      "depends_on": [
+        "B019",
+        "B010"
+      ],
+      "spec_ids": [
+        "S09",
+        "S13"
+      ],
+      "implementation_brief": "创建临时source staging并授权执行；优先原生操作/codemod；生成完整read/write集和prepared manifest。",
+      "expected_outputs": [
+        "staging/transform/approval modules",
+        "diff UI"
+      ],
+      "acceptance_test_ids": [
+        "AT044",
+        "AT045"
+      ],
+      "requirement_ids": [
+        "R044",
+        "R045"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B021",
+      "title": "安全应用、并发与恢复",
+      "status": "not_started",
+      "depends_on": [
+        "B020"
+      ],
+      "spec_ids": [
+        "S09",
+        "S14",
+        "S19"
+      ],
+      "implementation_brief": "lease+逐文件CAS+durable journal；应用前后snapshot；恢复保留用户后续改动；路径与大小写测试。",
+      "expected_outputs": [
+        "apply/recovery modules",
+        "fault injection suite"
+      ],
+      "acceptance_test_ids": [
+        "AT046",
+        "AT047",
+        "AT048",
+        "AT049",
+        "AT078"
+      ],
+      "requirement_ids": [
+        "R046",
+        "R047",
+        "R048",
+        "R049",
+        "R078"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B022",
+      "title": "独立验证与验收状态",
+      "status": "not_started",
+      "depends_on": [
+        "B019",
+        "B016"
+      ],
+      "spec_ids": [
+        "S10",
+        "S19"
+      ],
+      "implementation_brief": "实施冻结检查清单、runner/parser、缺失/超时判定；实际snapshot和toolchain绑定；禁止自减验收。",
+      "expected_outputs": [
+        "verification engine",
+        "predicate runners",
+        "validation UI"
+      ],
+      "acceptance_test_ids": [
+        "AT050",
+        "AT051",
+        "AT052"
+      ],
+      "requirement_ids": [
+        "R050",
+        "R051",
+        "R052"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B023",
+      "title": "MCP与上下文包",
+      "status": "not_started",
+      "depends_on": [
+        "B006",
+        "B017",
+        "B019"
+      ],
+      "spec_ids": [
+        "S11",
+        "S12",
+        "S13"
+      ],
+      "implementation_brief": "标准MCP stdio接外部Codex等；有界上下文；统一权限/Job查询；不提供approve工具。",
+      "expected_outputs": [
+        "mcp server",
+        "context pack generator",
+        "external client smoke"
+      ],
+      "acceptance_test_ids": [
+        "AT053",
+        "AT054"
+      ],
+      "requirement_ids": [
+        "R053",
+        "R054"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B024",
+      "title": "可关闭异步Instigator",
+      "status": "not_started",
+      "depends_on": [
+        "B023"
+      ],
+      "spec_ids": [
+        "S12"
+      ],
+      "implementation_brief": "仅订阅事件与发送有版本/TTL的局部NUDGE；独立失败不阻塞；默认关闭。",
+      "expected_outputs": [
+        "instigator policy adapter",
+        "nonblocking tests"
+      ],
+      "acceptance_test_ids": [
+        "AT055"
+      ],
+      "requirement_ids": [
+        "R055"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": false,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B025",
+      "title": "持续漂移、重启与保留策略",
+      "status": "not_started",
+      "depends_on": [
+        "B008",
+        "B017",
+        "B021"
+      ],
+      "spec_ids": [
+        "S14",
+        "S02"
+      ],
+      "implementation_brief": "配置和接口影响失效传播；人工决策保留；一致备份、GC引用保护、崩溃恢复doctor。",
+      "expected_outputs": [
+        "watcher/invalidation/backup/GC",
+        "restart tests"
+      ],
+      "acceptance_test_ids": [
+        "AT056",
+        "AT057"
+      ],
+      "requirement_ids": [
+        "R056",
+        "R057"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B026",
+      "title": "规模、可取消与预算",
+      "status": "not_started",
+      "depends_on": [
+        "B007",
+        "B015"
+      ],
+      "spec_ids": [
+        "S16"
+      ],
+      "implementation_brief": "建立T0/T1/T2基准和固定运行参数；测实际数字；有界查询/导入/内存；性能回归记录。",
+      "expected_outputs": [
+        "benchmark suite/results",
+        "resource guards"
+      ],
+      "acceptance_test_ids": [
+        "AT058"
+      ],
+      "requirement_ids": [
+        "R058"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B027",
+      "title": "离线报告与模式提升",
+      "status": "not_started",
+      "depends_on": [
+        "B008",
+        "B018",
+        "B022"
+      ],
+      "spec_ids": [
+        "S01",
+        "S14"
+      ],
+      "implementation_brief": "自包含HTML/模型/证据索引/附件manifest；敏感内容默认不导出；Expedition保真提升。",
+      "expected_outputs": [
+        "report exporter",
+        "offline viewer",
+        "promotion tests"
+      ],
+      "acceptance_test_ids": [
+        "AT059",
+        "AT060"
+      ],
+      "requirement_ids": [
+        "R059",
+        "R060"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B028",
+      "title": "统一安全与红队验证",
+      "status": "not_started",
+      "depends_on": [
+        "B021",
+        "B023",
+        "B016"
+      ],
+      "spec_ids": [
+        "S13"
+      ],
+      "implementation_brief": "权限、进程与网络隔离、trusted_native标记、token/CSP、提示注入、防外传。",
+      "expected_outputs": [
+        "security acceptance suite",
+        "threat model review"
+      ],
+      "acceptance_test_ids": [
+        "AT061",
+        "AT062",
+        "AT063"
+      ],
+      "requirement_ids": [
+        "R061",
+        "R062",
+        "R063"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B029",
+      "title": "科学计算能力配置",
+      "status": "not_started",
+      "depends_on": [
+        "B022",
+        "B018"
+      ],
+      "spec_ids": [
+        "S17"
+      ],
+      "implementation_brief": "数值/单位/shape/状态顺序/动态响应检查；容差冻结；不破坏数学表达的重构案例。",
+      "expected_outputs": [
+        "scientific profile",
+        "golden data contracts",
+        "numerical checks"
+      ],
+      "acceptance_test_ids": [
+        "AT064",
+        "AT065"
+      ],
+      "requirement_ids": [
+        "R064",
+        "R065"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B030",
+      "title": "七语言及混合项目完整验收",
+      "status": "not_started",
+      "depends_on": [
+        "B011",
+        "B012",
+        "B013",
+        "B014",
+        "B021",
+        "B022",
+        "B025",
+        "B026",
+        "B027",
+        "B028",
+        "B029"
+      ],
+      "spec_ids": [
+        "S05",
+        "S18",
+        "S16"
+      ],
+      "implementation_brief": "运行全部必需用例；记录真实构建/trace/补丁/验收；修复失败而不是压低门槛。",
+      "expected_outputs": [
+        "release-evidence/",
+        "coverage matrix",
+        "known limitations"
+      ],
+      "acceptance_test_ids": [
+        "AT066",
+        "AT067"
+      ],
+      "requirement_ids": [
+        "R066",
+        "R067"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B031",
+      "title": "双平台发行、更新与审计",
+      "status": "not_started",
+      "depends_on": [
+        "B030",
+        "B001"
+      ],
+      "spec_ids": [
+        "S15"
+      ],
+      "implementation_brief": "Windows/Linux实际安装测试、离线资源、SBOM/hash、更新回滚与upstream delta；发布真实状态。",
+      "expected_outputs": [
+        "VSIX/CLI bundles",
+        "SBOM",
+        "release notes",
+        "upgrade evidence"
+      ],
+      "acceptance_test_ids": [
+        "AT068",
+        "AT069",
+        "AT077"
+      ],
+      "requirement_ids": [
+        "R068",
+        "R069",
+        "R077"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    },
+    {
+      "id": "B032",
+      "title": "可持续本地Agent交接",
+      "status": "not_started",
+      "depends_on": [
+        "B007"
+      ],
+      "spec_ids": [
+        "S12",
+        "S14"
+      ],
+      "implementation_brief": "维持结构化PROGRESS；真实命令与提交；故障定位与下一任务；最终在B031后更新交付索引。",
+      "expected_outputs": [
+        "docs/archmeld-progress.md",
+        "handoff checklist",
+        "operator guide"
+      ],
+      "acceptance_test_ids": [
+        "AT070"
+      ],
+      "requirement_ids": [
+        "R070"
+      ],
+      "definition_of_done": [
+        "代码与契约一致；实际执行列出的验收；保存命令/退出码/artifact",
+        "结果区分 passed/failed/not_run/unsupported；剩余问题进入PROGRESS",
+        "增量提交，保留上游测试与许可；不得用mock替代最终真实集成"
+      ],
+      "forbidden_shortcuts": [
+        "删除或放宽失败验收",
+        "把静态候选当运行事实",
+        "未经许可上传源码/安装服务",
+        "提前声称R1完成"
+      ],
+      "stop_conditions": [
+        "需要未授权外部权限或真实设备",
+        "不可复现的上游依赖/许可冲突需记录BLOCKED_EXTERNAL并推进无依赖任务"
+      ],
+      "release_required": true,
+      "acceptance_depends_on": []
+    }
+  ]
+}

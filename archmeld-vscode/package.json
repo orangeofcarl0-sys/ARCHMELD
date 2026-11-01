@@ -1,0 +1,77 @@
+{
+  "name": "archmeld-workbench",
+  "displayName": "ARCHMELD Workbench",
+  "description": "Evidence-driven code and graph navigation for ARCHMELD",
+  "version": "0.1.0",
+  "publisher": "archmeld",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "main": "./src/extension.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "archmeld.openGraph",
+        "title": "ARCHMELD: Open Graph for Symbol"
+      },
+      {
+        "command": "archmeld.openSource",
+        "title": "ARCHMELD: Open Historical Source"
+      },
+      {
+        "command": "archmeld.back",
+        "title": "ARCHMELD: Back"
+      },
+      {
+        "command": "archmeld.editTargetGraph",
+        "title": "ARCHMELD: Edit To-Be Graph"
+      },
+      {
+        "command": "archmeld.reviewArchitecture",
+        "title": "ARCHMELD: Review Architecture Candidate"
+      },
+      {
+        "command": "archmeld.reviewChangeSet",
+        "title": "ARCHMELD: Review ChangeSet"
+      },
+      {
+        "command": "archmeld.exportReport",
+        "title": "ARCHMELD: Export Offline Report"
+      }
+    ],
+    "configuration": {
+      "title": "ARCHMELD",
+      "properties": {
+        "archmeld.endpoint": {
+          "type": "string",
+          "default": "http://127.0.0.1:8765",
+          "description": "Local ARCHMELD API endpoint (loopback only)."
+        },
+        "archmeld.token": {
+          "type": "string",
+          "default": "",
+          "description": "Bearer token supplied by the ARCHMELD core process."
+        },
+        "archmeld.projectId": {
+          "type": "string",
+          "default": "",
+          "description": "Project id to query."
+        },
+        "archmeld.snapshotId": {
+          "type": "string",
+          "default": "",
+          "description": "Snapshot id to query; never silently replaced by the current snapshot."
+        },
+        "archmeld.workspaceHandle": {
+          "type": "string",
+          "default": "",
+          "description": "Trusted workspace handle used when applying or recovering a ChangeSet."
+        }
+      }
+    }
+  }
+}

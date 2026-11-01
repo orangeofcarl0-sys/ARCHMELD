@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "contract": "ArchitectureRule",
+  "change": "add_optional_parameters",
+  "reason": "allowed_layers, interface_only, ownership and custom_contract need declarative checker inputs. The sealed contract 1.0 rule object only carries id/kind/description/scope_ids/required/checker_id/checkability.",
+  "field": {
+    "name": "parameters",
+    "type": "object",
+    "required": false,
+    "max_keys": 64,
+    "max_encoded_bytes": 65536,
+    "note": "Optional; omitted parameters keep the previous canonical bytes. Checker-specific keys are listed in the rule registry."
+  },
+  "checkers": {
+    "architecture.allowed_layers.v1": {
+      "kind": "allowed_layers",
+      "parameters": "layers: [[component_id, ...], ...] ordered outer to inner; allow_same_layer: boolean (default true)",
+      "semantics": "a declared candidate dependency may point to the same or an inner layer; pointing to an outer layer (or same layer when allow_same_layer=false) is a violation",
+      "coverage": "complete_declared_graph when every component is assigned and every dependency endpoint is declared; otherwise partial"
+    },
+    "architecture.interface_only.v1": {
+      "kind": "interface_only",
+      "parameters": "interfaces: [component_id, ...]",
+      "semantics": "a declared cross-component dependency must have at least one endpoint in the declared interface set",
+      "coverage": "partial when a declared interface id is missing from the architecture"
+    },
+    "architecture.ownership.v1": {
+      "kind": "ownership",
+      "parameters": "exclusive: boolean (default true)",
+      "semantics": "when exclusive, no owned_state or owned_resources item may be declared by more than one component",
+      "coverage": "complete_declared_graph"
+    },
+    "architecture.custom_contract.v1": {
+      "kind": "custom_contract",
+      "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason",
+      "semantics": "only the small registered assertion set is executable; unknown assertions are inconclusive and required rules remain blocking",
+      "coverage": "complete_declared_graph",
+      "note": "arbitrary scripts are never executed"
+    }
+  },
+  "status": "contract 1.0 deviation; absorb into the next pack revision"
+}

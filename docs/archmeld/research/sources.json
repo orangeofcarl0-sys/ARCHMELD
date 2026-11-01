@@ -1,0 +1,189 @@
+{
+  "checked_on": "2026-10-30",
+  "kind": "official-source-register",
+  "sources": [
+    {
+      "id": "SRC-CG-PIN",
+      "title": "CodeGraph 固定提交",
+      "url": "https://github.com/codegraph-ai/CodeGraph/commit/590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+      "observed": "GitHub API 已读取 commit；Rust 工具链固定改动可见。不是本地编译结果。"
+    },
+    {
+      "id": "SRC-CG-MANIFEST",
+      "title": "CodeGraph Cargo 工作区",
+      "url": "https://github.com/codegraph-ai/CodeGraph/blob/590c2ca7dd7b37bd1d41caf45fac535b6522f969/Cargo.toml",
+      "observed": "读取工作区、crate 列表、0.21.0 版本与 Apache-2.0 声明。"
+    },
+    {
+      "id": "SRC-CG-LIB",
+      "title": "CodeGraph 图库公开类型",
+      "url": "https://github.com/codegraph-ai/CodeGraph/blob/590c2ca7dd7b37bd1d41caf45fac535b6522f969/crates/codegraph/src/lib.rs",
+      "observed": "读取公开模块/类型与 storage backend 边界。"
+    },
+    {
+      "id": "SRC-CG-EXPORT",
+      "title": "CodeGraph JSON 导出源码",
+      "url": "https://github.com/codegraph-ai/CodeGraph/blob/590c2ca7dd7b37bd1d41caf45fac535b6522f969/crates/codegraph/src/export/json.rs",
+      "observed": "读取导出遍历实现。稀疏编号完整性是待实测风险，不宣称已证实故障。"
+    },
+    {
+      "id": "SRC-CG-VSCODE",
+      "title": "CodeGraph VS Code 扩展清单",
+      "url": "https://github.com/codegraph-ai/CodeGraph/blob/590c2ca7dd7b37bd1d41caf45fac535b6522f969/vscode/package.json",
+      "observed": "读取扩展身份、命令与编辑器最低版本声明。"
+    },
+    {
+      "id": "SRC-CG-README",
+      "title": "CodeGraph 官方说明",
+      "url": "https://github.com/codegraph-ai/CodeGraph/blob/main/README.md",
+      "observed": "graph-only、MCP/LSP、原生引擎、后端缓存和构建入口；宣传性能未作为本产品实测。"
+    },
+    {
+      "id": "SRC-CG-LICENSE",
+      "title": "CodeGraph 许可证",
+      "url": "https://github.com/codegraph-ai/CodeGraph/blob/main/LICENSE",
+      "observed": "根许可证为 Apache-2.0；实际分发仍需检查传递依赖。"
+    },
+    {
+      "id": "SRC-CB",
+      "title": "CodeBoarding 引擎与 CLI",
+      "url": "https://github.com/CodeBoarding/CodeBoarding",
+      "observed": "官方 README 的能力、CLI、遥测和许可说明；固定研究 SHA 见选择记录。"
+    },
+    {
+      "id": "SRC-CB-PIN",
+      "title": "CodeBoarding 固定提交",
+      "url": "https://github.com/CodeBoarding/CodeBoarding/commit/a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+      "observed": "GitHub API 已读取 main 的提交；未在本环境构建。"
+    },
+    {
+      "id": "SRC-SCIP",
+      "title": "SCIP 协议与生态",
+      "url": "https://github.com/scip-code/scip",
+      "observed": "官方索引协议及各语言实现入口；不等于完整运行/数据流分析。"
+    },
+    {
+      "id": "SRC-SCIP-PROTO",
+      "title": "SCIP 数据模型",
+      "url": "https://github.com/scip-code/scip/blob/main/scip.proto",
+      "observed": "符号、出现位置与关系定义；导入需处理源码位置编码。"
+    },
+    {
+      "id": "SRC-SCIP-INDEXERS",
+      "title": "精确代码导航索引器列表",
+      "url": "https://sourcegraph.com/docs/code-navigation/precise-code-navigation",
+      "observed": "多语言工具发现入口；实际版本和运行条件在本地锁定。"
+    },
+    {
+      "id": "SRC-SCIP-CLANG",
+      "title": "scip-clang 平台与编译数据库",
+      "url": "https://github.com/sourcegraph/scip-clang",
+      "observed": "官方预编译平台列 Linux x64 与 macOS arm64；Windows 不直接假设有预编译包。"
+    },
+    {
+      "id": "SRC-SCIP-PY",
+      "title": "scip-python 说明与许可",
+      "url": "https://github.com/sourcegraph/scip-python",
+      "observed": "基于 Pyright 的 Python SCIP 工具；默认分支不一定为 main。"
+    },
+    {
+      "id": "SRC-SCIP-PY-LICENSE",
+      "title": "scip-python 许可证",
+      "url": "https://github.com/sourcegraph/scip-python/blob/scip/LICENSE.txt",
+      "observed": "读取 MIT 许可，不把所有 SCIP 项目统称同一许可证。"
+    },
+    {
+      "id": "SRC-SCIP-TS",
+      "title": "scip-typescript",
+      "url": "https://github.com/sourcegraph/scip-typescript",
+      "observed": "JS/TS 索引与 Node 版本要求；本地按实际选定版本锁定。"
+    },
+    {
+      "id": "SRC-CLANGD",
+      "title": "clangd 编译参数",
+      "url": "https://clangd.llvm.org/design/compile-commands",
+      "observed": "分析需要正确编译命令和构建上下文。"
+    },
+    {
+      "id": "SRC-VSC-WEBVIEW",
+      "title": "VS Code Webview API",
+      "url": "https://code.visualstudio.com/api/extension-guides/webview",
+      "observed": "扩展视图与消息机制；产品必须另做权限/CSP。"
+    },
+    {
+      "id": "SRC-VSC-LANGUAGE",
+      "title": "VS Code 语言能力 API",
+      "url": "https://code.visualstudio.com/api/language-extensions/programmatic-language-features",
+      "observed": "原生符号、引用、rename、code action 等能力复用入口。"
+    },
+    {
+      "id": "SRC-VSC-TRUST",
+      "title": "VS Code Workspace Trust",
+      "url": "https://code.visualstudio.com/api/extension-guides/workspace-trust",
+      "observed": "工作区配置与语言插件可能触发执行；扩展需声明受限行为。"
+    },
+    {
+      "id": "SRC-VIZ",
+      "title": "VizTracer",
+      "url": "https://github.com/gaogaotiantian/viztracer",
+      "observed": "真实 Python 追踪与多种执行模型支持；开销需测量，不能与采样等同。"
+    },
+    {
+      "id": "SRC-TRACY",
+      "title": "Tracy 许可证与工程",
+      "url": "https://github.com/wolfpld/tracy/blob/master/LICENSE",
+      "observed": "BSD-3-Clause 根许可；原生 Trace 与工具版本需配对。"
+    },
+    {
+      "id": "SRC-PERFETTO",
+      "title": "Perfetto 工具与数据分析",
+      "url": "https://perfetto.dev/docs/",
+      "observed": "Trace 处理与可视化基础；产品使用本地资源。"
+    },
+    {
+      "id": "SRC-PERFETTO-EMBED",
+      "title": "Perfetto 嵌入 API",
+      "url": "https://perfetto.dev/docs/visualization/embedding-the-ui",
+      "observed": "官方嵌入方式与消息机制；生产集成需 origin/source 校验。"
+    },
+    {
+      "id": "SRC-OTEL",
+      "title": "OpenTelemetry 追踪概念",
+      "url": "https://opentelemetry.io/docs/specs/otel/overview/",
+      "observed": "Span、上下文与因果 Link；时间接近不等于关联。"
+    },
+    {
+      "id": "SRC-LIBCST",
+      "title": "LibCST codemods",
+      "url": "https://libcst.readthedocs.io/en/latest/codemods.html",
+      "observed": "结构变换、diff 和元数据基础，不保证行为等价。"
+    },
+    {
+      "id": "SRC-ASTGREP",
+      "title": "ast-grep 重写文档",
+      "url": "https://ast-grep.github.io/guide/rewrite-code",
+      "observed": "结构化模式变换；不替代语义重命名。"
+    },
+    {
+      "id": "SRC-MCP",
+      "title": "MCP Tools 规范（已知版本）",
+      "url": "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+      "observed": "工具输入输出与 annotations；本地客户端必须协商兼容协议版本。"
+    },
+    {
+      "id": "SRC-CODEX",
+      "title": "OpenAI 官方本地 MCP 接入说明",
+      "url": "https://developers.openai.com/resources/docs-mcp",
+      "observed": "Codex 可连接 MCP 服务；本方案提供服务而非依赖旧的 Codex-as-MCP-server 模式。"
+    },
+    {
+      "id": "SRC-CYTOSCAPE",
+      "title": "Cytoscape.js official documentation",
+      "url": "https://js.cytoscape.org/",
+      "checked_on": "2026-10-30",
+      "supports": "MIT core license, interactive graph library, serialization and layouts",
+      "verification": "official_documentation_read",
+      "limitation": "Not an ARCHMELD integration test"
+    }
+  ]
+}

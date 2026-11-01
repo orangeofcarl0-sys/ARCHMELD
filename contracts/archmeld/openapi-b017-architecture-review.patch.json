@@ -1,0 +1,42 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-030-architecture-review-and-acyclic.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/architectures/{architecture_id}/review",
+      "summary": "Append a human accept/reject/request_changes/mark_reviewed revision. The action requires expected_revision, reason, actor and idempotency_key; it never edits source, entities or relations."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/architectures/{architecture_id}/reviews",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ],
+      "summary": "List review decisions in revision order."
+    }
+  ],
+  "review": {
+    "actions": {
+      "accept": "accepted",
+      "reject": "needs_review",
+      "request_changes": "needs_review",
+      "mark_reviewed": "reviewed"
+    },
+    "status_change": "appends a new architecture revision; prior revisions remain",
+    "idempotency": "same key and payload returns the recorded revision; different payload returns scope_conflict",
+    "stale_revision": "rejected"
+  },
+  "rules": {
+    "acyclic": {
+      "checker_id": "architecture.acyclic.v1",
+      "checkability": "executable",
+      "coverage": "complete over the declared candidate dependency graph in scope",
+      "cycle": "violated and blocks acceptance",
+      "no_cycle": "passed",
+      "limitations": ["runtime cycles are out of scope"]
+    },
+    "declared_only": ["allowed_layers", "interface_only", "ownership", "custom_contract"]
+  }
+}

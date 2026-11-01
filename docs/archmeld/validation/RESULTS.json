@@ -1,0 +1,129 @@
+{
+  "scope": "specification_pack_only",
+  "checked_at": "2026-10-29T17:18:30.620857+00:00",
+  "status": "passed",
+  "check_groups": 14,
+  "passed_groups": 14,
+  "failed_groups": 0,
+  "product_built": false,
+  "upstream_built": false,
+  "product_acceptance_tests_executed": 0,
+  "dependencies": {
+    "jsonschema": "4.26.0",
+    "referencing": "0.37.0"
+  },
+  "checks": [
+    {
+      "check": "JSON syntax and duplicate-key rejection",
+      "status": "passed",
+      "details": {
+        "files": 84
+      }
+    },
+    {
+      "check": "JSON Schema meta-validation",
+      "status": "passed",
+      "details": {
+        "schema_files": 23,
+        "definitions": 72
+      }
+    },
+    {
+      "check": "Valid contract examples",
+      "status": "passed",
+      "details": {
+        "valid_examples": 26
+      }
+    },
+    {
+      "check": "Invalid schema examples rejected",
+      "status": "passed",
+      "details": {
+        "expected_rejections": 12
+      }
+    },
+    {
+      "check": "Schema-valid semantic negatives",
+      "status": "passed",
+      "details": {
+        "semantic_cases": 6,
+        "scope": "Only documented fixture rules, not full S19 implementation"
+      }
+    },
+    {
+      "check": "Canonicalization and source-byte digests",
+      "status": "passed",
+      "details": {
+        "canonical_vectors": 3,
+        "canonical_rejections": 2,
+        "blob_vectors": 2
+      }
+    },
+    {
+      "check": "Synthetic cross-object references and anchors",
+      "status": "passed",
+      "details": {
+        "artifacts": 4,
+        "note": "No real authorization is created"
+      }
+    },
+    {
+      "check": "Task DAG and bidirectional traceability",
+      "status": "passed",
+      "details": {
+        "tasks": 33,
+        "requirements": 80,
+        "product_acceptance_specifications": 80,
+        "product_tests_executed": 0
+      }
+    },
+    {
+      "check": "Source registry references",
+      "status": "passed",
+      "details": {
+        "sources": 30,
+        "network_revalidation": false
+      }
+    },
+    {
+      "check": "Local Markdown links",
+      "status": "passed",
+      "details": {
+        "local_markdown_links": 48
+      }
+    },
+    {
+      "check": "Local JSON references",
+      "status": "passed",
+      "details": {
+        "references_resolved": 502,
+        "note": "MCP schema roots separately checked below"
+      }
+    },
+    {
+      "check": "OpenAPI/MCP structure and ownership",
+      "status": "passed",
+      "details": {
+        "OpenAPI_operations": 41,
+        "MCP_tools": 14,
+        "validation_scope": "Structural and reference checks; no HTTP server or full OpenAPI conformance suite run"
+      }
+    },
+    {
+      "check": "State-machine consistency",
+      "status": "passed",
+      "details": {
+        "states": 14,
+        "transitions": 22
+      }
+    },
+    {
+      "check": "Package manifest integrity",
+      "status": "passed",
+      "details": {
+        "verified_files": 136,
+        "checksum_entries": 137
+      }
+    }
+  ]
+}

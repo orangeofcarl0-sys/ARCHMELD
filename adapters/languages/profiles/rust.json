@@ -1,0 +1,40 @@
+{
+  "id": "rust",
+  "languages": [
+    "rust"
+  ],
+  "fixture": "fixtures/rust",
+  "status": "partial",
+  "tools": {
+    "lsp": {
+      "name": "rust-analyzer",
+      "version": "1.94.1"
+    },
+    "scip": {
+      "name": "rust-analyzer scip",
+      "status": "verified_real_index"
+    }
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified_by_test",
+    "bounded_refactor": "verified_by_test",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/rust.json",
+    "../scip/rustdemo.scip",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "trait dispatch resolves to the trait method, not a concrete runtime target",
+    "function pointer calls remain unresolved",
+    "cfg variants covered by separate config digests and cargo check",
+    "async runtime tracing pending B016"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

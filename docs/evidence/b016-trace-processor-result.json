@@ -1,0 +1,189 @@
+{
+  "bound": false,
+  "command": "trace-import",
+  "format": "perfetto",
+  "memory_limit_mb": null,
+  "project_id": "project.tp.evidence",
+  "run_id": "run.tp.evidence",
+  "timeline": {
+    "artifact_digest": "sha256:df24032f24648074bdac62c1c448a2d2d6fbedb41263ab33ed6883884d5d06f6",
+    "bound": false,
+    "capture": {
+      "tool": "perfetto-trace-processor",
+      "version": "Perfetto v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)"
+    },
+    "causal": {
+      "bound": false,
+      "causal_edges": 1,
+      "clock_domains": [
+        {
+          "calibrated": true,
+          "clock_id": "default",
+          "kind": "monotonic",
+          "origin_ns": "0",
+          "uncertainty_ns": "0",
+          "unit": "ns",
+          "wall_clock": false
+        }
+      ],
+      "correlation_links": 0,
+      "link_count": 0,
+      "mapped_entities": 0,
+      "mapped_spans": 0,
+      "mapping_conflicts": 0,
+      "metrics": {
+        "causality": "none: counters and states never create causal edges",
+        "counters": 1,
+        "mapped": 0,
+        "mapping_conflicts": 0,
+        "missing_samples": [],
+        "process_scope": 1,
+        "samples": 4,
+        "states": 0,
+        "unknown_entity": 0,
+        "unknown_probe": 0
+      },
+      "missing_association": [
+        {
+          "reason": "trace_has_no_bound_snapshot"
+        },
+        {
+          "reason": "parent_edge_endpoint_unmapped",
+          "span_id": "slice.2"
+        }
+      ],
+      "state": "unbound",
+      "unknown_entity": 0,
+      "unknown_probe": 0,
+      "unmapped_links": 1,
+      "unmapped_spans": 2
+    },
+    "clock": {
+      "domains": [
+        {
+          "calibrated": true,
+          "clock_id": "default",
+          "kind": "monotonic",
+          "origin_ns": "0",
+          "uncertainty_ns": "0",
+          "unit": "ns",
+          "wall_clock": false
+        }
+      ],
+      "kind": "monotonic",
+      "ordering": "single-clock-start-time",
+      "origin_ns": "0",
+      "total_order": true,
+      "unit": "ns"
+    },
+    "counters": [
+      {
+        "attributes": {
+          "perfetto.source": "trace_processor_sql",
+          "perfetto.track_id": "3"
+        },
+        "clock_id": "default",
+        "counter_id": "counter.3",
+        "entity_id": null,
+        "name": "queue_depth",
+        "sample_count": 4,
+        "samples": [
+          {
+            "process_id": null,
+            "thread_id": null,
+            "timestamp_ns": "99579362397100",
+            "value": 0.0
+          },
+          {
+            "process_id": null,
+            "thread_id": null,
+            "timestamp_ns": "99579406552400",
+            "value": 3.0
+          },
+          {
+            "process_id": null,
+            "thread_id": null,
+            "timestamp_ns": "99579438161900",
+            "value": 1.0
+          },
+          {
+            "process_id": null,
+            "thread_id": null,
+            "timestamp_ns": "99579468994000",
+            "value": 0.0
+          }
+        ],
+        "samples_truncated": false,
+        "unit": null
+      }
+    ],
+    "coverage": {
+      "expected_count": 3,
+      "limitations": [],
+      "observed_count": 3,
+      "omitted_count": 0,
+      "scope": "runtime run spans, counters and state intervals in the requested window",
+      "state": "complete",
+      "unresolved_count": 0
+    },
+    "links": [],
+    "links_truncated": false,
+    "loss_notes": [],
+    "lossy": false,
+    "metric_count": 1,
+    "metrics_truncated": false,
+    "run_id": "run.tp.evidence",
+    "scenario_run_id": null,
+    "snapshot_id": null,
+    "span_count": 2,
+    "spans": [
+      {
+        "attributes": {
+          "perfetto.category": "archmeld",
+          "perfetto.depth": 0,
+          "perfetto.source": "trace_processor_sql",
+          "perfetto.track_id": "1",
+          "perfetto.track_name": "",
+          "perfetto.track_type": "thread_execution"
+        },
+        "clock_id": "default",
+        "end_ns": "99579469010400",
+        "kind": "slice",
+        "name": "stage.queue",
+        "parent_span_id": null,
+        "process_id": null,
+        "span_id": "slice.1",
+        "start_ns": "99579362228500",
+        "thread_id": "1"
+      },
+      {
+        "attributes": {
+          "perfetto.category": "archmeld",
+          "perfetto.depth": 1,
+          "perfetto.source": "trace_processor_sql",
+          "perfetto.track_id": "1",
+          "perfetto.track_name": "",
+          "perfetto.track_type": "thread_execution"
+        },
+        "clock_id": "default",
+        "end_ns": "99579438173900",
+        "kind": "slice",
+        "name": "stage.compute",
+        "parent_span_id": "slice.1",
+        "process_id": null,
+        "span_id": "slice.2",
+        "start_ns": "99579406554800",
+        "thread_id": "1"
+      }
+    ],
+    "states": [],
+    "truncated": false
+  },
+  "trace_processor": {
+    "counter_rows": 4,
+    "path": "F:/Codex_Work_Space/_archmeld_tools/perfetto/windows-amd64/trace_processor_shell.exe",
+    "sha256": "sha256:3acc5aca1c764541033a82ba3bb0a47524b5c3c0aa194eea8d9a7b0cdb346bdc",
+    "slice_rows": 2,
+    "version": "Perfetto v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "acceptance": {
+    "AT044": {
+      "operations": [
+        {
+          "after": {
+            "digest": "sha256:7b0ef37c01449ab3e88ce7788610fe6655fe8cdc05aac8f119265f08d6969c33",
+            "size": 8
+          },
+          "before": null,
+          "case_only": false,
+          "destination": null,
+          "op": "create",
+          "path": "src/calc/new.py",
+          "state": "pending"
+        },
+        {
+          "after": {
+            "digest": "sha256:3da6c4b355804b265ecef19dfe5945fe2790a8cc38dc9d0547fb1634c94cbbe7",
+            "size": 10
+          },
+          "before": {
+            "digest": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
+            "executable": false,
+            "size": 10
+          },
+          "case_only": false,
+          "destination": null,
+          "op": "update",
+          "path": "src/a.py",
+          "state": "pending"
+        }
+      ],
+      "patch_artifact": "sha256:9a815210cfe97c1e416228db489fa5ef59161e72999458b0437f2632bd0f82bb",
+      "postimages_recorded": true,
+      "preimages_recorded": true,
+      "prepared_artifact": "sha256:7acb77d41c73be2c1496360e886004c1ab2f4f82fa5470671848c39b04fac394",
+      "prepared_digest": "sha256:7acb77d41c73be2c1496360e886004c1ab2f4f82fa5470671848c39b04fac394",
+      "source_unchanged_during_staging": true,
+      "staging_path": "<local-user>\\AppData\\Local\\Temp\\.tmpjDqdLI\\state\\staging\\project.dee9224f250c5650daab6b2c0f9fe290\\changeset.b020.stage",
+      "status": "passed",
+      "write_set": [
+        "src/a.py",
+        "src/calc/new.py"
+      ]
+    },
+    "AT045": {
+      "old_approval": "approval.df25a3fcababb3f24a85a54e7589e915",
+      "old_approval_rejected": true,
+      "plan_approval_is_not_apply_approval": true,
+      "prepared_digest": "sha256:7acb77d41c73be2c1496360e886004c1ab2f4f82fa5470671848c39b04fac394",
+      "restaged_digest": "sha256:17bd74942a2f0f333b00aad7aaeabe5bc4927ec272335d5ade6df8495d9f1910",
+      "state_after_apply": "applied",
+      "status": "passed"
+    }
+  },
+  "applied_snapshot": "sha256:e2123eca61c033baa7034e19b62ff80707cd6a2d6729ed35be329f10ff53d113",
+  "approval": "approval.76ce2e1134461dc537ff32f57f1c6e3e",
+  "generated_by": "crates/archmeld-core/tests/changeset_stage.rs",
+  "platform": "windows",
+  "project_id": "project.dee9224f250c5650daab6b2c0f9fe290",
+  "snapshot_id": "sha256:8af37d4a181165b60bb8f93b4602351faee37aa92796388cfea2ebfd46e75a48"
+}

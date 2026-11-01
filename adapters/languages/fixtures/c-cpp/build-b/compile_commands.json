@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp",
+    "file": "F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src/circle.cpp",
+    "command": "g++ -std=c++17 -IF:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src -DFACTOR=3 -c F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src/circle.cpp -o F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src/circle.cpp.o"
+  },
+  {
+    "directory": "F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp",
+    "file": "F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src/main.cpp",
+    "command": "g++ -std=c++17 -IF:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src -DFACTOR=3 -c F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src/main.cpp -o F:/Codex_Work_Space/ARCHMELD-work/adapters/languages/fixtures/c-cpp/src/main.cpp.o"
+  }
+]

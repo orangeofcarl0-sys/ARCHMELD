@@ -1,0 +1,214 @@
+{
+  "acceptance": {
+    "AT064": {
+      "accepted_state": "accepted",
+      "baseline_max_abs_error": 0.0,
+      "baseline_phase": [
+        3.0,
+        -3.083185307179586,
+        3.083185307179586,
+        -3.0,
+        -3.141592653589793,
+        -3.141592653589793
+      ],
+      "check_states": [
+        {
+          "check_id": "check.harness",
+          "state": "passed"
+        },
+        {
+          "check_id": "check.invariant",
+          "state": "passed"
+        },
+        {
+          "check_id": "check.output",
+          "state": "passed"
+        },
+        {
+          "check_id": "check.output.statistical",
+          "state": "passed"
+        },
+        {
+          "check_id": "check.output.ulp",
+          "state": "passed"
+        },
+        {
+          "check_id": "check.phase",
+          "state": "passed"
+        }
+      ],
+      "config_digest": "sha256:10a0adc8146e571169f1c83fe3f83174d3f209fc01f673ba8937c3921c9637aa",
+      "contract_digest": "sha256:2e4dc6676d5e3131176f3bebbed379bb152bef5c98eb3843ee36d9f091ff3456",
+      "dynamic_checks": {
+        "final": 0.3046875,
+        "first_step_value": 0.5,
+        "full_trace_compared": true,
+        "peak": 0.875,
+        "state_update_order": "y[n]=alpha*x[n]+(1-alpha)*y[n-1]"
+      },
+      "full_trace_compared": 8,
+      "golden_contract_digest": "sha256:9eb397018a849d98f18c29780326821799977b57ef451caa11f4fc3d49dd4104",
+      "output_check": {
+        "actual_artifact": "artifacts/filter-output.json",
+        "artifacts": [
+          {
+            "digest": "sha256:809fab4f73ef6363c4a42a932410ccd0e2e2994ed7470b0fffdfa34950b4696c",
+            "media_type": "application/octet-stream",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:72054cafadf717e33ba5c2a3ac7f898452703b98377a34a307a44403f7eff474",
+            "media_type": "application/json",
+            "role": "actual"
+          }
+        ],
+        "atol": "0.000000000001",
+        "columns": [
+          "output"
+        ],
+        "compared": 8,
+        "custom_units": [],
+        "eps_multiplier": null,
+        "expected_artifact": "sha256:809fab4f73ef6363c4a42a932410ccd0e2e2994ed7470b0fffdfa34950b4696c",
+        "ignored_nan": 0,
+        "kind": "numeric_tolerance",
+        "max_abs_error": "0",
+        "max_rel_error": "0",
+        "mismatch_count": 0,
+        "mismatches": [],
+        "mismatches_truncated": false,
+        "mode": "absolute_relative",
+        "nonfinite_count": 0,
+        "nonfinite_policy": "reject",
+        "rtol": "0.000000000001",
+        "semantics": "ieee754_elementwise",
+        "shape": [
+          8,
+          1
+        ],
+        "tolerance_model": "atol_rtol",
+        "unit_mode": "dimension",
+        "units": [
+          "V"
+        ]
+      },
+      "phase_boundaries": [
+        3.0,
+        -3.083185307179586,
+        3.083185307179586,
+        -3.0,
+        -3.141592653589793,
+        -3.141592653589793
+      ],
+      "phase_check": {
+        "actual_artifact": "artifacts/phase.json",
+        "artifacts": [
+          {
+            "digest": "sha256:1c92cd72c433581a3e04c4245a8cd518a9fedad1a02991b7ba98aca8c6a698c6",
+            "media_type": "application/octet-stream",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:1cbcab878daac1bcc631f9851a62b823a218c6e12761b765a212534cb1e15cab",
+            "media_type": "application/json",
+            "role": "actual"
+          }
+        ],
+        "atol": "0.000000000001",
+        "columns": [
+          "phase"
+        ],
+        "compared": 6,
+        "custom_units": [],
+        "eps_multiplier": null,
+        "expected_artifact": "sha256:1c92cd72c433581a3e04c4245a8cd518a9fedad1a02991b7ba98aca8c6a698c6",
+        "ignored_nan": 0,
+        "kind": "numeric_tolerance",
+        "max_abs_error": "0",
+        "max_rel_error": "0",
+        "mismatch_count": 0,
+        "mismatches": [],
+        "mismatches_truncated": false,
+        "mode": "absolute_relative",
+        "nonfinite_count": 0,
+        "nonfinite_policy": "reject",
+        "rtol": "0.000000000001",
+        "semantics": "ieee754_elementwise",
+        "shape": [
+          6,
+          1
+        ],
+        "tolerance_model": "atol_rtol",
+        "unit_mode": "dimension",
+        "units": [
+          "rad"
+        ]
+      },
+      "profile_digest": "sha256:a9814dd28959191d722211dee96f50164b7211f8594bc65a20a7b7ef5966ed76",
+      "shape_checked_before_values": true,
+      "snapshot_id": "sha256:70cfc76bbac3167d4ccfb5197717452ad4c90be268f59776f4f7083f7a53e545",
+      "source": "deterministic synthetic truth plus measured baseline; no user data was available",
+      "status": "passed",
+      "tolerance": [
+        "1e-12",
+        "1e-12"
+      ],
+      "units_checked_before_values": true
+    },
+    "AT065": {
+      "adr": "docs/adr/ADR-034-scientific-refactor-boundary.md",
+      "no_refactor_remains_legitimate": true,
+      "options": [
+        {
+          "abstraction_benefit_claimed": false,
+          "behavior_risk": "none",
+          "legal": true,
+          "option": "no_refactor",
+          "reason": "math is already clear; no measured maintenance benefit"
+        },
+        {
+          "chosen": true,
+          "classes_added": 0,
+          "measurements": {
+            "baseline": {
+              "median_ms": 13.371,
+              "samples_ms": [
+                13.598,
+                14.338,
+                13.371,
+                12.465,
+                12.676
+              ]
+            },
+            "outputs_equal": true,
+            "refactored": {
+              "median_ms": 18.058,
+              "samples_ms": [
+                16.566,
+                18.57,
+                18.058,
+                18.778,
+                17.869
+              ]
+            },
+            "samples": 100000
+          },
+          "option": "minimal_pure_step",
+          "state_owner": "run_filter",
+          "update_order_preserved": true
+        },
+        {
+          "abstraction_benefit_claimed": false,
+          "chosen": false,
+          "implemented": false,
+          "option": "class_abstraction",
+          "reason": "no evidence that a class/lifecycle improves this scalar update; adds state ambiguity and review surface"
+        }
+      ],
+      "status": "passed",
+      "unproven_abstraction_counted_as_complete": false
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/scientific_profile.rs",
+  "platform": "windows"
+}

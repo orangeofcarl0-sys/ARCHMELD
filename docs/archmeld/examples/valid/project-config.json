@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "project_id": "project.synthetic",
+  "mode": "manager",
+  "default_trust": "read_only",
+  "telemetry": false,
+  "auto_model_download": false,
+  "source_egress": "deny",
+  "include_globs": [
+    "src/**",
+    "tests/**"
+  ],
+  "exclude_globs": [
+    ".git/**",
+    "**/.env"
+  ],
+  "language_profiles": [
+    "python"
+  ],
+  "instigator_enabled": false,
+  "retention_unpinned_snapshots": 20,
+  "persist_config_in_repository": false
+}

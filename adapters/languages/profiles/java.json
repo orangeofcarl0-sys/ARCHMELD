@@ -1,0 +1,55 @@
+{
+  "id": "java",
+  "languages": [
+    "java"
+  ],
+  "status": "verified",
+  "fixture": null,
+  "tools": {
+    "required": [
+      {
+        "name": "jdtls",
+        "status": "present",
+        "version": "1.64.0.202610301801",
+        "required_java": "25"
+      },
+      {
+        "name": "JDK",
+        "status": "present",
+        "version": "Temurin 25.0.5+8",
+        "path": "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8"
+      },
+      {
+        "name": "maven/gradle",
+        "status": "not_installed",
+        "note": "fixture uses a real .classpath project; build verification remains B022"
+      }
+    ],
+    "scip": {
+      "name": "scip-java",
+      "status": "not_used",
+      "note": "jdtls provides semantic evidence; scip-java still requires a build tool"
+    }
+  },
+  "capabilities": {
+    "structure": "verified",
+    "definition_reference": "verified",
+    "bounded_refactor": "verified_apply:B030",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/java.json",
+    "evidence/java-jdtls-startup.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "jdtls 1.64 requires JavaSE 25; the earlier JDK 21 launch failure is retained as historical evidence",
+    "rename is preview-only; writing files is B020/B021",
+    "build verification and a Java runtime scenario remain future work"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

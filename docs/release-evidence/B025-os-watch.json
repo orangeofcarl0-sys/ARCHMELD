@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual evidence after real CLI run; recorded in baseline/commands.ndjson",
+  "generated_at": "2026-11-01T00:30:17+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "unit_tests": {
+    "command": "b025-os-watch-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "archmeld-core",
+      "--test",
+      "drift_watch",
+      "--offline"
+    ],
+    "exit_code": 0,
+    "passed": 3,
+    "failed": 0,
+    "log": "baseline/logs/b025-os-watch-tests.log",
+    "log_sha256": "sha256:cbacb922b2a662de9a298f9c8eb37d4de05d77d827b1ea2b04811b49ad1e1b37"
+  },
+  "cli_run": {
+    "command": "b025-cli-os-watch",
+    "cwd": "F:/Codex_Work_Space/_archmeld_temp/b016_trace_evidence",
+    "argv": [
+      "archmeld",
+      "watch",
+      "--state",
+      "state",
+      "--project",
+      "project.cli",
+      "--snapshot",
+      "sha256:852e7684f8bd40c9ef4e97329e43793400d087e66aa007354320b0a5d9042c6a",
+      "--workspace",
+      "repo",
+      "--mode",
+      "os",
+      "--iterations",
+      "2",
+      "--interval-ms",
+      "3600000",
+      "--debounce-ms",
+      "150"
+    ],
+    "exit_code": 0,
+    "log": "baseline/logs/b025-cli-os-watch.json",
+    "log_sha256": "sha256:1601f82ae2f265d36742076db41186a8d90e789a7530fa06ccb4a3803ff44847",
+    "mode": "os",
+    "watcher_kind": "os_notify",
+    "watcher_backend": "notify::RecommendedWatcher",
+    "debounce_ms": 150,
+    "ticks": 2,
+    "stopped_by": "iterations",
+    "report_states": [
+      "changed",
+      "changed"
+    ],
+    "changed_paths": [
+      [
+        "app.py"
+      ],
+      [
+        "app.py"
+      ]
+    ],
+    "source_mutation": "none"
+  },
+  "behavior": [
+    "the notify watcher is installed before the initial report; the initial report is always persisted",
+    "a real file append wakes the watcher and produces a second report without waiting for the 1-hour polling interval",
+    "the workspace is re-hashed for every report; no event payload is trusted as drift evidence",
+    "the stop flag is checked during waits and between events; no report is fabricated for a stopped watcher"
+  ],
+  "limitations": [
+    "Windows backend is notify::RecommendedWatcher; Linux/macOS use their native backends but were not exercised in this run",
+    "OS notifications can be coalesced or dropped; the re-hash makes a missed event safe but can delay detection until the next event",
+    "remote retention and encryption-key rotation are not implemented; local encrypted backups remain the only backup path"
+  ],
+  "cli_mode_test": {
+    "command": "b025-watch-cli-test",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "archmeld-api",
+      "--test",
+      "watch_cli",
+      "--offline"
+    ],
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "log": "baseline/logs/b025-watch-cli.log",
+    "log_sha256": "sha256:e80df337ed44279eb0a0f3d8015830f562d0e817fac81f122c303a51eb5618c5"
+  },
+  "full_regression": {
+    "command": "b025-full-regression",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "archmeld-core",
+      "-p",
+      "archmeld-api",
+      "--offline"
+    ],
+    "exit_code": 0,
+    "sections": 58,
+    "passed": 129,
+    "failed": 0,
+    "ignored": 0,
+    "log": "baseline/logs/b025-full-regression.log",
+    "log_sha256": "sha256:7c1ce41220d031f21278a5a39b49c39ad9c5d201c839b915a7ad1d125e0ecedc"
+  }
+}

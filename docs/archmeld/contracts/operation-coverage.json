@@ -1,0 +1,457 @@
+{
+  "status": "specification_mapping_not_implemented",
+  "operations": [
+    {
+      "operation_id": "health",
+      "method": "GET",
+      "path": "/v1/health",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "openProject",
+      "method": "POST",
+      "path": "/v1/projects/open",
+      "owner_task": "B008",
+      "acceptance_tests": [
+        "AT019",
+        "AT020",
+        "AT080"
+      ]
+    },
+    {
+      "operation_id": "getProject",
+      "method": "GET",
+      "path": "/v1/projects/{project_id}",
+      "owner_task": "B008",
+      "acceptance_tests": [
+        "AT019",
+        "AT020",
+        "AT080"
+      ]
+    },
+    {
+      "operation_id": "captureSnapshot",
+      "method": "POST",
+      "path": "/v1/snapshots",
+      "owner_task": "B004",
+      "acceptance_tests": [
+        "AT009",
+        "AT010",
+        "AT011",
+        "AT012"
+      ]
+    },
+    {
+      "operation_id": "getSnapshot",
+      "method": "GET",
+      "path": "/v1/snapshots/{snapshot_id}",
+      "owner_task": "B004",
+      "acceptance_tests": [
+        "AT009",
+        "AT010",
+        "AT011",
+        "AT012"
+      ]
+    },
+    {
+      "operation_id": "query",
+      "method": "POST",
+      "path": "/v1/query",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "getEntity",
+      "method": "GET",
+      "path": "/v1/entities/{entity_id}",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "readSource",
+      "method": "POST",
+      "path": "/v1/source",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "createContext",
+      "method": "POST",
+      "path": "/v1/context",
+      "owner_task": "B023",
+      "acceptance_tests": [
+        "AT053",
+        "AT054"
+      ]
+    },
+    {
+      "operation_id": "startAnalysis",
+      "method": "POST",
+      "path": "/v1/analyses",
+      "owner_task": "B005",
+      "acceptance_tests": [
+        "AT013",
+        "AT014"
+      ]
+    },
+    {
+      "operation_id": "registerArtifact",
+      "method": "POST",
+      "path": "/v1/artifacts/register",
+      "owner_task": "B003",
+      "acceptance_tests": [
+        "AT007",
+        "AT008",
+        "AT071"
+      ]
+    },
+    {
+      "operation_id": "getArtifactMetadata",
+      "method": "GET",
+      "path": "/v1/artifacts/{digest}",
+      "owner_task": "B003",
+      "acceptance_tests": [
+        "AT007",
+        "AT008",
+        "AT071"
+      ]
+    },
+    {
+      "operation_id": "proposeScenario",
+      "method": "POST",
+      "path": "/v1/scenarios",
+      "owner_task": "B016",
+      "acceptance_tests": [
+        "AT036",
+        "AT037",
+        "AT074"
+      ]
+    },
+    {
+      "operation_id": "runScenario",
+      "method": "POST",
+      "path": "/v1/scenarios/run",
+      "owner_task": "B016",
+      "acceptance_tests": [
+        "AT036",
+        "AT037",
+        "AT074"
+      ]
+    },
+    {
+      "operation_id": "importTrace",
+      "method": "POST",
+      "path": "/v1/traces/import",
+      "owner_task": "B015",
+      "acceptance_tests": [
+        "AT033",
+        "AT034",
+        "AT035",
+        "AT079"
+      ]
+    },
+    {
+      "operation_id": "getRuntimeRun",
+      "method": "GET",
+      "path": "/v1/runtime-runs/{runtime_run_id}",
+      "owner_task": "B015",
+      "acceptance_tests": [
+        "AT033",
+        "AT034",
+        "AT035",
+        "AT079"
+      ]
+    },
+    {
+      "operation_id": "proposeArchitecture",
+      "method": "POST",
+      "path": "/v1/architectures",
+      "owner_task": "B018",
+      "acceptance_tests": [
+        "AT040",
+        "AT041",
+        "AT075"
+      ]
+    },
+    {
+      "operation_id": "getArchitecture",
+      "method": "GET",
+      "path": "/v1/architectures/{architecture_id}",
+      "owner_task": "B018",
+      "acceptance_tests": [
+        "AT040",
+        "AT041",
+        "AT075"
+      ]
+    },
+    {
+      "operation_id": "proposeContract",
+      "method": "POST",
+      "path": "/v1/contracts",
+      "owner_task": "B019",
+      "acceptance_tests": [
+        "AT042",
+        "AT043",
+        "AT072"
+      ]
+    },
+    {
+      "operation_id": "getContract",
+      "method": "GET",
+      "path": "/v1/contracts/{contract_id}",
+      "owner_task": "B019",
+      "acceptance_tests": [
+        "AT042",
+        "AT043",
+        "AT072"
+      ]
+    },
+    {
+      "operation_id": "proposePlan",
+      "method": "POST",
+      "path": "/v1/plans",
+      "owner_task": "B019",
+      "acceptance_tests": [
+        "AT042",
+        "AT043",
+        "AT072"
+      ]
+    },
+    {
+      "operation_id": "getPlan",
+      "method": "GET",
+      "path": "/v1/plans/{plan_id}",
+      "owner_task": "B019",
+      "acceptance_tests": [
+        "AT042",
+        "AT043",
+        "AT072"
+      ]
+    },
+    {
+      "operation_id": "proposeChange",
+      "method": "POST",
+      "path": "/v1/changes",
+      "owner_task": "B020",
+      "acceptance_tests": [
+        "AT044",
+        "AT045"
+      ]
+    },
+    {
+      "operation_id": "getChange",
+      "method": "GET",
+      "path": "/v1/changes/{changeset_id}",
+      "owner_task": "B020",
+      "acceptance_tests": [
+        "AT044",
+        "AT045"
+      ]
+    },
+    {
+      "operation_id": "prepareChange",
+      "method": "POST",
+      "path": "/v1/changes/{changeset_id}/prepare",
+      "owner_task": "B020",
+      "acceptance_tests": [
+        "AT044",
+        "AT045"
+      ]
+    },
+    {
+      "operation_id": "applyChange",
+      "method": "POST",
+      "path": "/v1/changes/{changeset_id}/apply",
+      "owner_task": "B021",
+      "acceptance_tests": [
+        "AT046",
+        "AT047",
+        "AT048",
+        "AT049",
+        "AT078"
+      ]
+    },
+    {
+      "operation_id": "recoverChange",
+      "method": "POST",
+      "path": "/v1/changes/{changeset_id}/recover",
+      "owner_task": "B021",
+      "acceptance_tests": [
+        "AT046",
+        "AT047",
+        "AT048",
+        "AT049",
+        "AT078"
+      ]
+    },
+    {
+      "operation_id": "recordApproval",
+      "method": "POST",
+      "path": "/v1/approvals",
+      "owner_task": "B019",
+      "acceptance_tests": [
+        "AT042",
+        "AT043",
+        "AT072"
+      ]
+    },
+    {
+      "operation_id": "startVerification",
+      "method": "POST",
+      "path": "/v1/verifications",
+      "owner_task": "B022",
+      "acceptance_tests": [
+        "AT050",
+        "AT051",
+        "AT052"
+      ]
+    },
+    {
+      "operation_id": "getVerification",
+      "method": "GET",
+      "path": "/v1/verifications/{verification_id}",
+      "owner_task": "B022",
+      "acceptance_tests": [
+        "AT050",
+        "AT051",
+        "AT052"
+      ]
+    },
+    {
+      "operation_id": "getJob",
+      "method": "GET",
+      "path": "/v1/jobs/{job_id}",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "cancelJob",
+      "method": "POST",
+      "path": "/v1/jobs/{job_id}/cancel",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "createReport",
+      "method": "POST",
+      "path": "/v1/reports",
+      "owner_task": "B027",
+      "acceptance_tests": [
+        "AT059",
+        "AT060"
+      ]
+    },
+    {
+      "operation_id": "getReport",
+      "method": "GET",
+      "path": "/v1/reports/{report_id}",
+      "owner_task": "B027",
+      "acceptance_tests": [
+        "AT059",
+        "AT060"
+      ]
+    },
+    {
+      "operation_id": "promoteProject",
+      "method": "POST",
+      "path": "/v1/projects/{project_id}/promote",
+      "owner_task": "B027",
+      "acceptance_tests": [
+        "AT059",
+        "AT060"
+      ]
+    },
+    {
+      "operation_id": "watchEvents",
+      "method": "GET",
+      "path": "/v1/events",
+      "owner_task": "B006",
+      "acceptance_tests": [
+        "AT015",
+        "AT016",
+        "AT073"
+      ]
+    },
+    {
+      "operation_id": "proposeClaim",
+      "method": "POST",
+      "path": "/v1/claims",
+      "owner_task": "B017",
+      "acceptance_tests": [
+        "AT038",
+        "AT039",
+        "AT076"
+      ]
+    },
+    {
+      "operation_id": "getClaim",
+      "method": "GET",
+      "path": "/v1/claims/{claim_id}",
+      "owner_task": "B017",
+      "acceptance_tests": [
+        "AT038",
+        "AT039",
+        "AT076"
+      ]
+    },
+    {
+      "operation_id": "closeProject",
+      "method": "POST",
+      "path": "/v1/projects/{project_id}/close",
+      "owner_task": "B008",
+      "acceptance_tests": [
+        "AT019",
+        "AT020",
+        "AT080"
+      ]
+    },
+    {
+      "operation_id": "compareSnapshots",
+      "method": "POST",
+      "path": "/v1/snapshots/compare",
+      "owner_task": "B004",
+      "acceptance_tests": [
+        "AT009",
+        "AT010",
+        "AT011",
+        "AT012"
+      ]
+    },
+    {
+      "operation_id": "readArtifactContent",
+      "method": "GET",
+      "path": "/v1/artifacts/{digest}/content",
+      "owner_task": "B003",
+      "acceptance_tests": [
+        "AT007",
+        "AT008",
+        "AT071"
+      ]
+    }
+  ]
+}

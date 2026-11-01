@@ -1,0 +1,802 @@
+// Copyright 2025-2026 Andrey Vasilevsky <anvanster@gmail.com>
+// SPDX-License-Identifier: Apache-2.0
+
+//! CodeGraph Server Entry Point
+//!
+//! This is the main entry point for the CodeGraph Server.
+//! It supports two modes:
+//! - LSP mode (default): Serves Language Server Protocol over stdio for editors
+//! - MCP mode (--mcp): Serves Model Context Protocol over stdio for AI clients
+
+use clap::Parser;
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+// glibc 2.31 compat: ONNX Runtime references `__libc_single_threaded`, which
+// glibc only defines from 2.32 on, so a build for SLES 15 SP4 and similar
+// needs a definition to link against. The storage has to be writable - glibc
+// writes the flag at startup - which is what `SingleThreaded` provides; see
+// `codegraph_server::glibc_compat` for the full story (issue #15).
+#[cfg(target_os = "linux")]
+#[no_mangle]
+#[allow(non_upper_case_globals)]
+pub static __libc_single_threaded: codegraph_server::glibc_compat::SingleThreaded =
+    codegraph_server::glibc_compat::SingleThreaded::ZERO;
+
+#[derive(Parser)]
+#[command(name = "codegraph-server")]
+#[command(about = "CodeGraph Language Server with MCP support")]
+#[command(version = codegraph_server::metadata::VERSION)]
+struct Args {
+    /// Print build info (git hash, build time, rustc version) and exit
+    #[arg(long)]
+    info: bool,
+    /// Run in MCP (Model Context Protocol) mode for AI clients
+    #[arg(long)]
+    mcp: bool,
+
+    /// Run in LSP mode over stdio (default, kept for compatibility)
+    #[arg(long)]
+    stdio: bool,
+
+    /// Workspace directories to index (can be specified multiple times for multi-project)
+    #[arg(long, short)]
+    workspace: Vec<PathBuf>,
+
+    /// Directories to exclude from indexing (can be specified multiple times)
+    #[arg(long, short)]
+    exclude: Vec<String>,
+
+    /// Maximum number of files to index (default: 5000)
+    #[arg(long, default_value = "5000")]
+    max_files: usize,
+
+    /// Embedding model: bge-small (384d, 512 ctx, fast — default),
+    /// jina-code-v2 (768d, 8K ctx, 6× slower), or granite-97m (384d, 32K ctx,
+    /// IBM ModernBERT multilingual, ~3× slower than bge-small but no
+    /// truncation on long function bodies).
+    #[arg(long, default_value = "bge-small")]
+    embedding_model: String,
+
+    /// Embed full function body instead of just name+signature (captured at parse time, minimal overhead).
+    /// Takes an optional value: `--full-body-embedding=false` turns it off.
+    // With a bare `default_value` this parsed as a flag that rejected a value
+    // and was always true, which made the option impossible to disable.
+    #[arg(
+        long,
+        num_args = 0..=1,
+        default_value_t = true,
+        default_missing_value = "true",
+        action = clap::ArgAction::Set
+    )]
+    full_body_embedding: bool,
+
+    /// Prepend the word-split form of run-together identifiers to their
+    /// embedding text, so `getUserById` also embeds as "get user by id".
+    ///
+    /// Names already separated by `_` or `-` are left alone: they tokenise into
+    /// the same words, where this measured as a wash to a small loss. A leading
+    /// or trailing delimiter separates nothing, so `_handleClick` is split.
+    /// Disable to embed raw names, as releases up to 0.20.1 did.
+    /// `--split-identifiers` and `--split-identifiers=true` enable it,
+    /// `--split-identifiers=false` disables it.
+    // Takes an optional value for the same reason as `--full-body-embedding`:
+    // a bare `default_value` on a `bool` parses as an always-true flag.
+    #[arg(
+        long,
+        num_args = 0..=1,
+        default_value_t = true,
+        default_missing_value = "true",
+        action = clap::ArgAction::Set
+    )]
+    split_identifiers: bool,
+
+    /// Scope the MCP tool surface to a named profile.
+    ///
+    /// `all` (default) exposes every tool (community + pro). Narrower profiles
+    /// reduce the agent's prompt-context cost on chatty sessions:
+    ///   - `core`     — search + symbol info + AI context (8 tools)
+    ///   - `graph`    — callers/callees/deps/impact/traverse (16 tools)
+    ///   - `memory`   — codegraph_memory_* only (7 tools)
+    ///   - `security` — pro security tools only (empty on community)
+    ///
+    /// Also reads `CODEGRAPH_TOOL_PROFILE` env var when the flag is unset.
+    /// MCP mode only — LSP mode ignores this.
+    #[arg(long)]
+    profile: Option<String>,
+
+    /// Skip embedding generation — build the graph and serve structural
+    /// tools only. The ONNX model is never loaded (faster startup, lower
+    /// memory, ~10-50× faster indexing). Semantic search and similarity
+    /// tools are unavailable. Ideal for CI / one-shot graph queries.
+    #[arg(long)]
+    graph_only: bool,
+
+    /// One-shot mode: index the workspace, run a single tool, print its
+    /// JSON result to stdout, and exit. No MCP stdio handshake. Pair with
+    /// --tool-args for arguments and --graph-only for CI speed. Example:
+    ///   codegraph-server --graph-only --run-tool codegraph_pr_context \
+    ///     --tool-args '{"baseBranch":"main","format":"markdown"}'
+    #[arg(long)]
+    run_tool: Option<String>,
+
+    /// JSON arguments for --run-tool (default: {}).
+    #[arg(long, default_value = "{}")]
+    tool_args: String,
+
+    /// ARCHMELD bridge: index the workspace, write the complete structural
+    /// export (`archmeld-export-v1` NDJSON) to this path, and exit. Forces
+    /// graph-only analysis; no embedding model is loaded.
+    #[arg(long)]
+    archmeld_export_v1: Option<PathBuf>,
+
+    /// ARCHMELD bridge: process state root replacing `~/.codegraph`. The
+    /// directory is created on demand and never shared with another snapshot.
+    #[arg(long)]
+    archmeld_state_root: Option<PathBuf>,
+
+    /// Run as a background watcher daemon: index the workspace, keep it fresh
+    /// as files change (file watcher + incremental embedding), and persist
+    /// periodically so MCP/LSP sessions load a warm graph instead of
+    /// re-indexing. Runs until SIGINT/SIGTERM. Use with --workspace.
+    #[arg(long)]
+    watch: bool,
+
+    /// Path to the extension/package directory that contains the embedding
+    /// model (daemon mode). When omitted the daemon runs graph-only.
+    #[arg(long)]
+    extension_path: Option<PathBuf>,
+
+    /// Run as the resident socket engine (Model B): index the workspace, then
+    /// serve the MCP tool surface to thin `--connect` clients over `--socket`.
+    /// One heavy process holds the graph + model; sessions become thin relays.
+    #[arg(long)]
+    serve: bool,
+
+    /// Thin MCP client: connect to a running engine's `--socket` and relay this
+    /// process's stdio to it. Loads no graph and no model.
+    #[arg(long)]
+    connect: bool,
+
+    /// Unix socket path for `--serve` / `--connect`
+    /// (default: ~/.codegraph/cg-engine.sock).
+    #[arg(long)]
+    socket: Option<PathBuf>,
+}
+
+/// The settings an auto-spawned engine is started with.
+///
+/// Only the model name used to be passed, so an engine started on a client's
+/// behalf ignored its `--exclude`, `--max-files` and `--graph-only` and indexed
+/// and embedded as if none had been given (issue #23). These are the
+/// engine-level settings: they decide what is indexed and whether a model is
+/// loaded, for every client of that engine.
+///
+/// `--profile` is deliberately not forwarded. It filters the tools one client
+/// is shown, and a shared engine would apply the first client's profile to
+/// every client that connects after it.
+///
+/// `--full-body-embedding` and `--split-identifiers` are forwarded with their
+/// values, and must be. Both decide the text every symbol is embedded from,
+/// so both are part of the vector stamp: an engine started with defaults
+/// would write vectors under one stamp while the client that started it
+/// expects another, and the client would be served no vectors at all.
+fn engine_args(args: &Args) -> Vec<std::ffi::OsString> {
+    let mut out: Vec<std::ffi::OsString> = vec![
+        "--embedding-model".into(),
+        args.embedding_model.clone().into(),
+        "--max-files".into(),
+        args.max_files.to_string().into(),
+    ];
+    for dir in &args.exclude {
+        out.push("--exclude".into());
+        out.push(dir.into());
+    }
+    if args.graph_only {
+        out.push("--graph-only".into());
+    }
+    out.push(format!("--full-body-embedding={}", args.full_body_embedding).into());
+    out.push(format!("--split-identifiers={}", args.split_identifiers).into());
+    out
+}
+
+/// Default engine socket path (`~/.codegraph/cg-engine.sock`).
+fn default_socket_path() -> PathBuf {
+    if let Some(root) = std::env::var_os("ARCHMELD_STATE_ROOT") {
+        return PathBuf::from(root).join("cg-engine.sock");
+    }
+    let home = std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("."));
+    home.join(".codegraph").join("cg-engine.sock")
+}
+
+/// Re-entrancy guard for the panic hook. A second panic during hook
+/// execution skips the hook body and aborts directly to avoid deadlock.
+static PANIC_DEPTH: AtomicUsize = AtomicUsize::new(0);
+
+/// Best-effort: write a tiny crash breadcrumb to `~/.codegraph/` that the
+/// VS Code extension reads on the next start to classify the crash cause.
+/// Contains only an enum `class` + `site` bucket — never source, path
+/// content, or the panic message text. Must never panic (runs inside the
+/// panic hook), so every fallible step is swallowed.
+fn write_crash_breadcrumb(kind: &str, class: &str, site: &str) {
+    let dir = if let Some(root) = std::env::var_os("ARCHMELD_STATE_ROOT") {
+        std::path::PathBuf::from(root)
+    } else {
+        let home = match std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")) {
+            Some(h) => h,
+            None => return,
+        };
+        std::path::PathBuf::from(home).join(".codegraph")
+    };
+    let _ = std::fs::create_dir_all(&dir);
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    let pid = std::process::id();
+    // Every field value is a known ASCII enum — no JSON escaping required.
+    let json = format!(
+        "{{\"schema\":1,\"ts\":{ts},\"pid\":{pid},\"kind\":\"{kind}\",\"class\":\"{class}\",\"site\":\"{site}\"}}"
+    );
+    let _ = std::fs::write(dir.join(format!("last-crash.{pid}.json")), json);
+}
+
+/// Map a panic message + location into a coarse (class, site) pair. Both
+/// are fixed enums; the raw message is never persisted or transmitted.
+fn classify_panic(payload: &str, location: &str) -> (&'static str, &'static str) {
+    let p = payload.to_ascii_lowercase();
+    let class = if p.contains("lock") || p.contains("rocksdb") {
+        "rocksdb_lock"
+    } else if p.contains("utf-8")
+        || p.contains("utf8")
+        || p.contains("byte index")
+        || p.contains("char boundary")
+    {
+        "utf8_parse"
+    } else if p.contains("poison") {
+        "mutex_poison"
+    } else if p.contains("memory allocation")
+        || p.contains("capacity overflow")
+        || p.contains("cannot allocate")
+    {
+        "oom"
+    } else if p.contains("out of bounds") || p.contains("out of range") || p.contains("slice index")
+    {
+        "bounds"
+    } else {
+        "panic_other"
+    };
+    let l = location.to_ascii_lowercase();
+    let site = if l.contains("codegraph-memory") || l.contains("codegraph_memory") {
+        "memory"
+    } else if l.contains("mcp") {
+        "mcp"
+    } else if l.contains("rocks") || l.contains("backend") || l.contains("storage") {
+        "storage"
+    } else if l.contains("parser") || l.contains("tree-sitter") || l.contains("tree_sitter") {
+        "parser"
+    } else if l.contains("codegraph-server") {
+        "server"
+    } else {
+        "other"
+    };
+    (class, site)
+}
+
+/// Install a panic hook + signal listeners so the process exits cleanly
+/// instead of leaving the RocksDB `LOCK` held by a wedged or panicking
+/// instance.
+///
+/// Strategy: panic / SIGINT / SIGTERM all funnel into `process::exit`.
+/// At process exit the kernel releases all fcntl / LockFileEx grants,
+/// so the next launch sees only the `LOCK` *file* (no live holder),
+/// which RocksDB reuses without complaint. WAL
+/// durability is per-write, so any in-flight batch is either fully
+/// applied or fully discarded on next open — `exit` skipping `Drop` is
+/// a safe tradeoff here.
+fn install_crash_handlers() {
+    std::panic::set_hook(Box::new(|info| {
+        if PANIC_DEPTH.fetch_add(1, Ordering::SeqCst) > 0 {
+            eprintln!("codegraph-server: re-entrant panic — aborting");
+            std::process::abort();
+        }
+        let location = info
+            .location()
+            .map(|l| format!("{}:{}", l.file(), l.line()))
+            .unwrap_or_else(|| "<unknown>".into());
+        let payload = info
+            .payload()
+            .downcast_ref::<&str>()
+            .copied()
+            .or_else(|| info.payload().downcast_ref::<String>().map(String::as_str))
+            .unwrap_or("<non-string panic payload>");
+        // Drop a sanitized breadcrumb (enum class only) so the extension
+        // can report WHY we crashed, not just that we did.
+        let (class, site) = classify_panic(payload, &location);
+        write_crash_breadcrumb("panic", class, site);
+        // Use eprintln in addition to tracing — the panic may fire before
+        // the subscriber is installed (e.g. during arg parsing).
+        eprintln!(
+            "codegraph-server: panic at {location} — {payload}\n\
+             Exiting so RocksDB releases its LOCK. Restart will auto-recover \
+             via stale-LOCK detection in ~/.codegraph/graph.db."
+        );
+        tracing::error!("panic at {location} — {payload}; exiting");
+        std::process::exit(1);
+    }));
+}
+
+fn spawn_signal_listeners() {
+    tokio::spawn(async {
+        if tokio::signal::ctrl_c().await.is_ok() {
+            tracing::info!("Ctrl-C received — shutting down");
+            codegraph_server::crash_phase::clear();
+            std::process::exit(0);
+        }
+    });
+
+    #[cfg(unix)]
+    tokio::spawn(async {
+        use tokio::signal::unix::{signal, SignalKind};
+        if let Ok(mut term) = signal(SignalKind::terminate()) {
+            if term.recv().await.is_some() {
+                tracing::info!("SIGTERM received — shutting down");
+                codegraph_server::crash_phase::clear();
+                std::process::exit(0);
+            }
+        }
+    });
+}
+
+fn main() {
+    // Windows gives the main thread a 1 MiB stack and tokio worker/blocking
+    // threads 2 MiB — far below the 8 MiB Linux/macOS default. Deeply nested
+    // source files push recursive tree-sitter / graph traversal past that
+    // ceiling, which showed up in telemetry as a Windows-only crash loop
+    // (STATUS_STACK_OVERFLOW 0xC00000FD plus many ACCESS_VIOLATION 0xC0000005,
+    // dying in <10s). Give every runtime thread a generous 32 MiB stack and run
+    // the root future on a dedicated big-stack thread so the synchronous startup
+    // index can't overflow the OS main thread either.
+    const STACK_SIZE: usize = 32 * 1024 * 1024;
+
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .thread_stack_size(STACK_SIZE)
+        .build()
+        .expect("Failed to build Tokio runtime");
+
+    std::thread::Builder::new()
+        .name("cg-main".into())
+        .stack_size(STACK_SIZE)
+        .spawn(move || rt.block_on(run()))
+        .expect("Failed to spawn main worker thread")
+        .join()
+        .expect("main worker thread panicked");
+}
+
+async fn run() {
+    // Parse args and install the state root before any crash marker, lock or
+    // cache path is resolved. crash_phase::mark("startup") runs immediately
+    // below and must never touch the user's real ~/.codegraph in bridge mode.
+    let args = Args::parse();
+    if let Some(root) = &args.archmeld_state_root {
+        std::env::set_var("ARCHMELD_STATE_ROOT", root);
+    }
+
+    install_crash_handlers();
+    codegraph_server::crash_phase::mark("startup");
+    // Clean up after processes that were killed before they could clear their
+    // own marker, which is every engine a client force-kills. Runs after our
+    // own mark so this process's marker is never a candidate.
+    codegraph_server::crash_phase::sweep_orphans();
+
+    if args.info {
+        codegraph_server::metadata::print_metadata();
+        return;
+    }
+
+    // Initialize logging
+    let log_filter = if args.mcp {
+        // MCP mode: more verbose logging to stderr
+        "codegraph_server=debug,codegraph=info"
+    } else {
+        "codegraph_server=info"
+    };
+
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| log_filter.into()),
+        )
+        .with(tracing_subscriber::fmt::layer().with_writer(std::io::stderr))
+        .init();
+
+    // Thin MCP client (Model B): relay this process's stdio to a running engine.
+    // No indexing, no model. Handled before the global signal hook; it exits
+    // when the agent closes stdin or the engine drops the connection.
+    if args.connect {
+        let sock = args.socket.clone().unwrap_or_else(default_socket_path);
+        let workspace =
+            args.workspace.first().cloned().unwrap_or_else(|| {
+                std::env::current_dir().expect("Failed to get current directory")
+            });
+        if let Err(e) =
+            codegraph_server::mcp::engine::connect(&sock, workspace, &engine_args(&args)).await
+        {
+            eprintln!("connect failed: {e}");
+            std::process::exit(1);
+        }
+        return;
+    }
+
+    // Background watcher daemon. It owns its own signal handling and clean
+    // shutdown (final persist + heartbeat removal), so it runs BEFORE the global
+    // process::exit signal hook below — which would otherwise abort mid-flush.
+    if args.watch {
+        let workspace =
+            args.workspace.first().cloned().unwrap_or_else(|| {
+                std::env::current_dir().expect("Failed to get current directory")
+            });
+        let config = codegraph_server::daemon::DaemonConfig {
+            workspace,
+            exclude_patterns: args.exclude.clone(),
+            extension_path: args.extension_path.clone(),
+            embedding_model: Some(args.embedding_model.clone()),
+            full_body_embedding: args.full_body_embedding,
+            split_identifiers: args.split_identifiers,
+        };
+        if let Err(e) = codegraph_server::daemon::run(config).await {
+            eprintln!("daemon error: {e}");
+            std::process::exit(1);
+        }
+        return;
+    }
+
+    // Install AFTER the runtime starts (tokio::spawn requires it). Runs
+    // before any RocksDB open so the LOCK release path is wired up first.
+    spawn_signal_listeners();
+
+    // ARCHMELD structural export: index, dump every node/edge via the real
+    // iterators, exit. This is the only path the bridge consumes.
+    if let Some(export_path) = args.archmeld_export_v1.clone() {
+        let workspaces = if args.workspace.is_empty() {
+            vec![std::env::current_dir().expect("Failed to get current directory")]
+        } else {
+            args.workspace.clone()
+        };
+        let embedding_model = codegraph_memory::EmbeddingBackend::parse(&args.embedding_model);
+        let mut server = codegraph_server::mcp::McpServer::new(
+            workspaces,
+            args.exclude.clone(),
+            args.max_files,
+            embedding_model,
+            args.full_body_embedding,
+        )
+        .with_split_identifiers(args.split_identifiers)
+        .with_graph_only(true);
+        match server.run_archmeld_export(&export_path).await {
+            Ok((nodes, edges)) => {
+                println!(
+                    "{}",
+                    serde_json::json!({
+                        "format": "archmeld-export-v1",
+                        "path": export_path,
+                        "nodes": nodes,
+                        "edges": edges,
+                    })
+                );
+            }
+            Err(e) => {
+                eprintln!("ARCHMELD export failed: {e}");
+                std::process::exit(1);
+            }
+        }
+        return;
+    }
+
+    // One-shot tool mode: index, run a single tool, print JSON, exit.
+    if let Some(tool_name) = args.run_tool.clone() {
+        let workspaces = if args.workspace.is_empty() {
+            vec![std::env::current_dir().expect("Failed to get current directory")]
+        } else {
+            args.workspace.clone()
+        };
+        let embedding_model = codegraph_memory::EmbeddingBackend::parse(&args.embedding_model);
+        let tool_args: serde_json::Value =
+            serde_json::from_str(&args.tool_args).unwrap_or_else(|e| {
+                eprintln!("Invalid --tool-args JSON: {e}");
+                std::process::exit(2);
+            });
+
+        let mut server = codegraph_server::mcp::McpServer::new(
+            workspaces,
+            args.exclude.clone(),
+            args.max_files,
+            embedding_model,
+            args.full_body_embedding,
+        )
+        .with_split_identifiers(args.split_identifiers)
+        .with_graph_only(args.graph_only);
+
+        match server.run_single_tool(&tool_name, Some(tool_args)).await {
+            Ok(result) => {
+                // If the tool returned a markdown field, print it raw —
+                // CI pipes it straight into a PR comment. Otherwise print JSON.
+                if let Some(md) = result.get("markdown").and_then(|v| v.as_str()) {
+                    println!("{md}");
+                } else {
+                    println!(
+                        "{}",
+                        serde_json::to_string_pretty(&result).unwrap_or_default()
+                    );
+                }
+            }
+            Err(e) => {
+                eprintln!("Tool '{tool_name}' failed: {e}");
+                std::process::exit(1);
+            }
+        }
+        return;
+    }
+
+    // Resident socket engine (Model B): one shared model, many thin clients.
+    if args.serve {
+        let embedding_model = codegraph_memory::EmbeddingBackend::parse(&args.embedding_model);
+        let cfg = codegraph_server::mcp::engine::EngineConfig {
+            socket_path: args.socket.clone().unwrap_or_else(default_socket_path),
+            embedding_model,
+            exclude_dirs: args.exclude.clone(),
+            max_files: args.max_files,
+            full_body_embedding: args.full_body_embedding,
+            split_identifiers: args.split_identifiers,
+            graph_only: args.graph_only,
+            seeds: args.workspace.clone(),
+        };
+        if let Err(e) = codegraph_server::mcp::engine::serve(cfg).await {
+            eprintln!("engine error: {e}");
+            std::process::exit(1);
+        }
+        return;
+    }
+
+    if args.mcp {
+        // MCP mode
+        let workspaces = if args.workspace.is_empty() {
+            vec![std::env::current_dir().expect("Failed to get current directory")]
+        } else {
+            args.workspace
+        };
+
+        let embedding_model = codegraph_memory::EmbeddingBackend::parse(&args.embedding_model);
+
+        tracing::info!("Starting CodeGraph MCP server");
+        tracing::info!("Workspaces: {:?}", workspaces);
+        tracing::info!("Embedding model: {}", embedding_model.display_name());
+        tracing::info!("Full-body embedding: {}", args.full_body_embedding);
+        tracing::info!("Split identifiers: {}", args.split_identifiers);
+        if !args.exclude.is_empty() {
+            tracing::info!("Excluding: {:?}", args.exclude);
+        }
+
+        // Resolve tool profile: --profile takes precedence over env var,
+        // both fall through to All when unset/unknown.
+        let profile_str = args
+            .profile
+            .clone()
+            .or_else(|| std::env::var("CODEGRAPH_TOOL_PROFILE").ok())
+            .unwrap_or_default();
+        let tool_profile = codegraph_server::mcp::tools::ToolProfile::from_str_or_all(&profile_str);
+        if !profile_str.is_empty() {
+            tracing::info!("Tool profile: {:?} (from '{}')", tool_profile, profile_str);
+        }
+
+        let mut server = codegraph_server::mcp::McpServer::new(
+            workspaces,
+            args.exclude,
+            args.max_files,
+            embedding_model,
+            args.full_body_embedding,
+        )
+        .with_split_identifiers(args.split_identifiers)
+        .with_tool_profile(tool_profile)
+        .with_graph_only(args.graph_only);
+        codegraph_server::crash_phase::mark("serving");
+        if let Err(e) = server.run().await {
+            tracing::error!("MCP server error: {}", e);
+            std::process::exit(1);
+        }
+        codegraph_server::crash_phase::clear();
+    } else {
+        // LSP mode (default)
+        use codegraph_server::CodeGraphBackend;
+        use tower_lsp::{LspService, Server};
+
+        tracing::info!("Starting CodeGraph LSP server");
+
+        let stdin = tokio::io::stdin();
+        let stdout = tokio::io::stdout();
+
+        let (service, socket) = LspService::new(CodeGraphBackend::new);
+
+        codegraph_server::crash_phase::mark("serving");
+        // Race the serve loop against the exit signal: tower-lsp will not
+        // return from `serve()` on the `exit` notification alone.
+        let exited_on_request = tokio::select! {
+            () = Server::new(stdin, stdout, socket).serve(service) => {
+                tracing::info!("LSP stream closed");
+                false
+            }
+            () = codegraph_server::lsp_exit::wait_for_exit() => {
+                tracing::info!("Exiting after client shutdown");
+                true
+            }
+        };
+        codegraph_server::crash_phase::clear();
+
+        if exited_on_request {
+            // Returning here would hang. `tokio::io::stdin()` reads on a
+            // blocking-pool thread that cannot be cancelled, and dropping the
+            // runtime waits for blocking tasks to finish - a read that only
+            // completes when the client closes the pipe, which is exactly the
+            // wait we are trying to avoid.
+            //
+            // Cleanup that matters has already run: the crash breadcrumb is
+            // cleared above, and the client has had its shutdown response plus
+            // the grace period. This path replaces a SIGKILL from the client,
+            // so it is strictly the gentler of the two.
+            tracing::info!("Exit complete");
+            std::process::exit(0);
+        }
+    }
+}
+
+#[cfg(test)]
+mod crash_breadcrumb_tests {
+    use super::{classify_panic, write_crash_breadcrumb};
+
+    #[test]
+    fn classify_panic_maps_message_class() {
+        assert_eq!(
+            classify_panic("Result::unwrap() on Err: RocksDB LOCK held", "x").0,
+            "rocksdb_lock"
+        );
+        assert_eq!(
+            classify_panic("byte index 7 is not a char boundary", "x").0,
+            "utf8_parse"
+        );
+        assert_eq!(classify_panic("PoisonError { .. }", "x").0, "mutex_poison");
+        assert_eq!(
+            classify_panic("memory allocation of 9999 bytes failed", "x").0,
+            "oom"
+        );
+        assert_eq!(
+            classify_panic("index out of bounds: the len is 3", "x").0,
+            "bounds"
+        );
+        assert_eq!(classify_panic("something unexpected", "x").0, "panic_other");
+    }
+
+    #[test]
+    fn classify_panic_maps_site() {
+        assert_eq!(
+            classify_panic("x", "crates/codegraph-memory/src/embed.rs:1").1,
+            "memory"
+        );
+        assert_eq!(
+            classify_panic("x", "crates/codegraph-server/src/mcp/server.rs:1").1,
+            "mcp"
+        );
+        assert_eq!(
+            classify_panic("x", "crates/codegraph-server/src/main.rs:1").1,
+            "server"
+        );
+    }
+
+    #[test]
+    fn breadcrumb_roundtrip_writes_parseable_json() {
+        // Isolate HOME to a temp dir so we never touch the real ~/.codegraph.
+        let tmp = std::env::temp_dir().join(format!("cg-crash-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&tmp);
+        let prev_home = std::env::var_os("HOME");
+        let prev_up = std::env::var_os("USERPROFILE");
+        std::env::set_var("HOME", &tmp);
+        std::env::set_var("USERPROFILE", &tmp);
+
+        write_crash_breadcrumb("panic", "rocksdb_lock", "storage");
+
+        let dir = tmp.join(".codegraph");
+        let entry = std::fs::read_dir(&dir)
+            .expect("breadcrumb dir exists")
+            .filter_map(|e| e.ok())
+            .find(|e| e.file_name().to_string_lossy().starts_with("last-crash."))
+            .expect("a breadcrumb file was written");
+        let content = std::fs::read_to_string(entry.path()).expect("readable");
+        let v: serde_json::Value = serde_json::from_str(&content).expect("valid JSON");
+        assert_eq!(v["kind"], "panic");
+        assert_eq!(v["class"], "rocksdb_lock");
+        assert_eq!(v["site"], "storage");
+        assert_eq!(v["schema"], 1);
+
+        match prev_home {
+            Some(h) => std::env::set_var("HOME", h),
+            None => std::env::remove_var("HOME"),
+        }
+        match prev_up {
+            Some(h) => std::env::set_var("USERPROFILE", h),
+            None => std::env::remove_var("USERPROFILE"),
+        }
+        let _ = std::fs::remove_dir_all(&tmp);
+    }
+}
+
+#[cfg(test)]
+mod engine_args_tests {
+    use super::*;
+
+    fn forwarded(argv: &[&str]) -> Vec<String> {
+        let args =
+            Args::try_parse_from(std::iter::once("codegraph-server").chain(argv.iter().copied()))
+                .expect("parses");
+        engine_args(&args)
+            .into_iter()
+            .map(|a| a.into_string().unwrap())
+            .collect()
+    }
+
+    #[test]
+    fn engine_level_resource_settings_reach_an_auto_spawned_engine() {
+        let got = forwarded(&[
+            "--connect",
+            "--graph-only",
+            "--max-files",
+            "7",
+            "--exclude",
+            "cache",
+            "--exclude",
+            "generated",
+            "--embedding-model",
+            "static",
+        ]);
+        let pairs: Vec<&[String]> = got.chunks(2).collect();
+        assert!(got.contains(&"--graph-only".to_string()));
+        assert!(pairs.iter().any(|p| p == &["--max-files", "7"]));
+        assert!(pairs.iter().any(|p| p == &["--embedding-model", "static"]));
+        let excludes: Vec<&String> = got
+            .windows(2)
+            .filter(|w| w[0] == "--exclude")
+            .map(|w| &w[1])
+            .collect();
+        assert_eq!(excludes, ["cache", "generated"]);
+    }
+
+    /// Both settings are part of the vector stamp. An engine started without
+    /// them would stamp its vectors differently from the client that started
+    /// it, and that client would then load none of them.
+    #[test]
+    fn embed_text_settings_reach_the_engine_with_their_values() {
+        let off = forwarded(&[
+            "--connect",
+            "--full-body-embedding=false",
+            "--split-identifiers=false",
+        ]);
+        assert!(off.contains(&"--full-body-embedding=false".to_string()));
+        assert!(off.contains(&"--split-identifiers=false".to_string()));
+
+        let defaults = forwarded(&["--connect"]);
+        assert!(defaults.contains(&"--full-body-embedding=true".to_string()));
+        assert!(defaults.contains(&"--split-identifiers=true".to_string()));
+    }
+
+    #[test]
+    fn per_client_settings_stay_with_the_client() {
+        // A shared engine would apply one client's profile to every client.
+        let got = forwarded(&["--connect", "--profile", "core"]);
+        assert!(!got.iter().any(|a| a == "--profile" || a == "core"));
+        // And graph-only is not forced on when the client did not ask for it.
+        assert!(!got.iter().any(|a| a == "--graph-only"));
+    }
+}

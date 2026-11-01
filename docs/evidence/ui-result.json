@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "snapshot_id": "sha256:505c5fcf9301d85bb9346881666f184507c8b901ef6bfbd97ff1c3183171b9cc",
+  "project_id": "project.ui",
+  "endpoint": "http://127.0.0.1:8702",
+  "opened_tab": "ARCHMELD Graph",
+  "active_tab_before_capture": "ARCHMELD Graph",
+  "group_index": 1,
+  "commands": [
+    "archmeld.openGraph",
+    "archmeld.openSource",
+    "archmeld.back"
+  ],
+  "screenshot": "F:\\Codex_Work_Space\\ARCHMELD-work\\docs\\evidence\\b007-workbench.png",
+  "capture_method": "cdp",
+  "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+  "captured_at": "2026-10-30T19:36:40.914Z",
+  "activator": "code --extensionDevelopmentPath --extensionTestsPath --wait"
+}

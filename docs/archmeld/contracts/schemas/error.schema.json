@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://archmeld.invalid/contracts/1.0/error.schema.json",
+  "title": "Error",
+  "$ref": "https://archmeld.invalid/contracts/1.0/archmeld.schema.json#/$defs/Error"
+}

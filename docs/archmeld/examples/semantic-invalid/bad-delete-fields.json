@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "change.demo",
+  "project_id": "project.synthetic",
+  "plan_id": "plan.demo",
+  "step_id": "step.rename",
+  "revision": 1,
+  "state": "draft",
+  "base_snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "result_snapshot_id": null,
+  "contract_digest": "sha256:3c018d678a0656e214c4ae1345182f56854289c8a3f2a8d20924044cb3d12bf3",
+  "allowed_paths": [
+    "src/example.py"
+  ],
+  "read_set": [
+    {
+      "path": "src/example.py",
+      "digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413"
+    }
+  ],
+  "operations": [
+    {
+      "op": "delete",
+      "path": "src/example.py",
+      "destination": null,
+      "before_digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413",
+      "after_digest": "sha256:ca375a3ffe93734b38c7b0a22febf3fd8e06f7f0289b0a0cecc5132c137acab8",
+      "content_artifact": "sha256:ca375a3ffe93734b38c7b0a22febf3fd8e06f7f0289b0a0cecc5132c137acab8"
+    }
+  ],
+  "prepared_digest": null,
+  "approval_id": null,
+  "verification_ids": [],
+  "journal_artifact": null
+}

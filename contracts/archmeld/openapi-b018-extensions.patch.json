@@ -1,0 +1,23 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-021-target-diff-and-rules.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/architectures/{architecture_id}/diff",
+      "summary": "Diff an As-Is architecture against a To-Be candidate; return typed intents, affected ledger paths and a candidate plan without source mutation."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/architectures/{architecture_id}/check",
+      "summary": "Run the registered architecture rule checkers and return verdicts, coverage and blocking rules."
+    }
+  ],
+  "semantics": {
+    "source_mutation": "none; files_written=0; changesets_created=0",
+    "partial_coverage_never_passes": true,
+    "declared_only_required_blocks_acceptance": true,
+    "unregistered_executable_checker": "declared_only"
+  }
+}

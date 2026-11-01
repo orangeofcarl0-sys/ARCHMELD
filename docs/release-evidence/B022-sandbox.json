@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "acceptance": true,
+      "applied_file_content": "VALUE = 20\n",
+      "case": "workspace_copy",
+      "sandbox": {
+        "bytes": 58,
+        "declared": true,
+        "enforcement": "materialized_snapshot_copy",
+        "exclude": [],
+        "file_count": 5,
+        "include": [
+          "src",
+          "config"
+        ],
+        "isolated": true,
+        "limitations": [
+          "the process can still address absolute paths outside the sandbox; OS-level confinement is not applied"
+        ],
+        "manifest_digest": "sha256:857560fa72a2da2623e24098a4e41f2c232d3af56ac7c3289c7d6bc1ed14c114",
+        "mode": "workspace_copy",
+        "retained": false,
+        "root": "<local-user>\\AppData\\Local\\Temp\\.tmpfxaL1C\\state\\verify-sandboxes\\verification.c238a1834f59dd1d5e70957a400f9269\\check.sandbox.copy",
+        "snapshot_id": "sha256:ee149dfd4928a0743d66b72b0e96921b78a9155796d096a4884cfcb047ec9066",
+        "source": "resulting_snapshot"
+      },
+      "state": "accepted",
+      "workspace_scratch_present": false
+    }
+  ],
+  "generated_by": "crates/archmeld-core/tests/verification.rs",
+  "platform": "windows",
+  "project_id": "project.71d8306f505128c95c4d33e9f5366673",
+  "schema_version": "1.0",
+  "snapshot_id": "sha256:01f84cd4ca9160b00466eb0f20cb68cf66ee3c3caf94d7b9fc2821a4daddd464"
+}

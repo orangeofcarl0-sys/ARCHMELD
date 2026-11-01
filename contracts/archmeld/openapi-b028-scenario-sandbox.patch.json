@@ -1,0 +1,40 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-051-scenario-sandbox.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/scenarios",
+      "summary": "Run one scenario against an existing snapshot, optionally over a materialized snapshot copy or a digest-pinned local OCI container. The default workspace mode stays trusted-native and is recorded as isolated=false.",
+      "request_extension": {
+        "sandbox": {
+          "mode": "workspace | workspace_copy | container",
+          "include": "relative POSIX file or directory prefixes; non-empty for workspace_copy and container",
+          "exclude": "relative POSIX prefixes; exclusion wins",
+          "image": "container only; name@sha256:... or a local sha256:<id>, verified against the local image and never pulled",
+          "network": "container only; absent or exactly \"none\"",
+          "cwd": "relative cwd inside the snapshot copy; defaults to its root"
+        }
+      }
+    }
+  ],
+  "behavior": {
+    "snapshot_source": "the ledger CAS for the declared snapshot; the live workspace is never read in a sandboxed mode",
+    "copy_lifecycle": "removed after succeeded; retained with retained=true for every other completion",
+    "container": "docker run --rm --network none --read-only --tmpfs /tmp:rw,size=64m --security-opt no-new-privileges --pull never, copy bind-mounted at /workspace",
+    "cleanup": "docker rm -f by name after success, timeout and cancellation; sandbox.container.removed records the outcome",
+    "environment": "host allowlist for the docker client; target values via -e and redacted in sandbox.exec_argv, only names in env_names",
+    "refusals": [
+      "unknown sandbox mode",
+      "empty include for workspace_copy or container",
+      "tag-only or missing container image",
+      "container network other than none",
+      "absolute or '..' sandbox cwd",
+      "image/network on a non-container mode",
+      "unknown sandbox fields"
+    ]
+  },
+  "evidence": "docs/release-evidence/B028-scenario-container.json",
+  "limitation": "Docker/Linux only, image must be provisioned locally, container process is outside the host process audit, no CPU/memory limits"
+}

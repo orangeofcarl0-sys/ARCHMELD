@@ -1,0 +1,227 @@
+{
+  "lock_version": "1.0",
+  "generated_at": "2026-10-30T17:34:11.618369+00:00",
+  "generated_by": "tooling/lock_toolchains.py",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "pinned": {
+    "rust_channel": "1.94.1",
+    "rust_host": "x86_64-pc-windows-gnu",
+    "reason": "upstream rust-toolchain.toml pins 1.94.1; the MSVC host has no linker on this machine",
+    "codegraph_commit": "590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+    "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938"
+  },
+  "tools": [
+    {
+      "name": "git",
+      "status": "present",
+      "path": "C:\\Program Files\\Git\\mingw64\\bin\\git.EXE",
+      "version": "git version 2.53.0.windows.2",
+      "sha256": "c39b1b4f7a57935bbeadf246dc2466316619453a6a9da77c4a9c6bd6d8fb21d3",
+      "source": "https://git-scm.com/",
+      "license": "GPL-2.0-only",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "node",
+      "status": "present",
+      "path": "C:\\Program Files\\nodejs\\node.EXE",
+      "version": "v24.14.1",
+      "sha256": "58e74bf02fc5bbacc41dcb8bef089961cd5bddd37830b87784e4fc624d145d1f",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "python",
+      "status": "present",
+      "path": "<local-user>\\AppData\\Local\\Programs\\Python\\Python311\\python.EXE",
+      "version": "Python 3.11.9",
+      "sha256": "5f7b89a612c9b8af1d6456cdfcd1dbe5ca630849e79aebced9bee9a6694952ec",
+      "source": "https://www.python.org/",
+      "license": "PSF-2.0",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "gcc",
+      "status": "present",
+      "path": "D:\\Strawberry\\c\\bin\\gcc.EXE",
+      "version": "gcc.EXE (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+      "sha256": "34a92e71f6814bd936135d0bd82b80b63daaf445791bba4a6bba93075235e8a4",
+      "source": "https://gcc.gnu.org/",
+      "license": "GPL-3.0-or-later",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "gxx",
+      "status": "present",
+      "path": "D:\\Strawberry\\c\\bin\\g++.EXE",
+      "version": "g++.EXE (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+      "sha256": "a30b01810e44edaa465cc51f1dffae6267cb0092cc653d71b881970866039cca",
+      "source": "https://gcc.gnu.org/",
+      "license": "GPL-3.0-or-later",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "cmake",
+      "status": "present",
+      "path": "D:\\Strawberry\\c\\bin\\cmake.EXE",
+      "version": "cmake version 3.29.2",
+      "sha256": "a70006acc73c861babd377a984c63b850fe12ae7cbd568aaa420bf3d690c192f",
+      "source": "https://cmake.org/",
+      "license": "BSD-3-Clause",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "ninja",
+      "status": "present",
+      "path": "D:\\Strawberry\\c\\bin\\ninja.EXE",
+      "version": "1.12.0",
+      "sha256": "442adbdc1906da39acd56d1a3b5b9aaffb01eda5eb55a6882a3651b8f9ff09b0",
+      "source": "https://ninja-build.org/",
+      "license": "Apache-2.0",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "perl",
+      "status": "present",
+      "path": "C:\\Program Files\\Git\\usr\\bin\\perl.EXE",
+      "version": "This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-msys-thread-multi",
+      "sha256": "ba92b05b95b2a8c70534b7517d23623332e15b3395641c30ecc1deffc1ed5f27",
+      "source": "https://www.perl.org/",
+      "license": "Artistic-1.0-Perl OR GPL-1.0-or-later",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "docker",
+      "status": "present",
+      "path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.EXE",
+      "version": "Docker version 29.7.2, build a7dcaa6",
+      "sha256": "5c077f7e830dd07109dd062b99c0ad9154714a2a5baf4ec3dcbd44ff9545972d",
+      "source": "https://www.docker.com/",
+      "license": "Apache-2.0",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "rustc-default-outside-repo",
+      "status": "present",
+      "path": "<local-user>\\.cargo\\bin\\rustc.EXE",
+      "version": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+      "sha256": null,
+      "source": "https://rust-lang.org/",
+      "license": "MIT OR Apache-2.0",
+      "verified": true,
+      "probe_exit": 0,
+      "informational": true,
+      "note": "informational; builds use the pinned toolchain below"
+    },
+    {
+      "name": "cargo-default-outside-repo",
+      "status": "present",
+      "path": "<local-user>\\.cargo\\bin\\cargo.EXE",
+      "version": "cargo 1.97.1 (c980f4866 2026-06-30)",
+      "sha256": null,
+      "source": "https://rust-lang.org/",
+      "license": "MIT OR Apache-2.0",
+      "verified": true,
+      "probe_exit": 0,
+      "informational": true,
+      "note": "informational; builds use the pinned toolchain below"
+    },
+    {
+      "name": "rustc-pinned-gnu",
+      "status": "present",
+      "path": "<local-user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rustc.exe",
+      "version": "rustc 1.94.1 (e408947bf 2026-03-25)",
+      "sha256": "d79425896ac19fa86d8e039d0fd64eefdb544e0bb9481563bb9b0b08c45f188c",
+      "source": "https://rust-lang.org/",
+      "license": "MIT OR Apache-2.0",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "cargo-pinned-gnu",
+      "status": "present",
+      "path": "<local-user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\cargo.exe",
+      "version": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+      "sha256": "cfa068c87c13521410df59cd502f3d07aaf2e9bed1b6932ff2531b49d3ba2b60",
+      "source": "https://rust-lang.org/",
+      "license": "MIT OR Apache-2.0",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "rust-analyzer-pinned",
+      "status": "present",
+      "path": "<local-user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rust-analyzer.exe",
+      "version": "rust-analyzer 1.94.1 (e408947b 2026-03-25)",
+      "sha256": "1e8e2f4efb8a9d1d945fa247a7f346d771b1746cf20fdbf686a58f7df54f3aba",
+      "source": "https://rust-analyzer.github.io/",
+      "license": "MIT OR Apache-2.0",
+      "verified": true,
+      "usage": "real SCIP golden index generation (upstream-probes/scip)"
+    },
+    {
+      "name": "rustup",
+      "status": "present",
+      "path": "<local-user>\\.cargo\\bin\\rustup.EXE",
+      "version": "rustup 1.29.2 (d8c92c676 2026-10-21)",
+      "sha256": "00f139da614dced87d3c3d4121c43eebdac3c1bf8a5ee86b9d80dfd71c8d70fd",
+      "source": "https://rust-lang.org/",
+      "license": "MIT OR Apache-2.0",
+      "verified": true,
+      "probe_exit": 0
+    },
+    {
+      "name": "libclang",
+      "status": "present",
+      "path": "F:\\Codex_Work_Space\\_archmeld_tools\\pylibclang\\clang\\native\\libclang.dll",
+      "version": "18.1.1 (PyPI libclang bundle)",
+      "sha256": "b13ec96d9a036d6c6c36dd09e00415ead7acc7fcfd40e721bf33ea86b3490f9d",
+      "source": "https://pypi.org/project/libclang/",
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "verified": true,
+      "usage": "RocksDB bindgen only; not linked into product code"
+    }
+  ],
+  "container": {
+    "image": "rust:1.94.1-bookworm",
+    "digest": null,
+    "use": "Linux x64 baseline because RocksDB crashes under Windows GNU"
+  },
+  "summary": {
+    "present": [
+      "git",
+      "node",
+      "python",
+      "gcc",
+      "gxx",
+      "cmake",
+      "ninja",
+      "perl",
+      "docker",
+      "rustc-default-outside-repo",
+      "cargo-default-outside-repo",
+      "rustc-pinned-gnu",
+      "cargo-pinned-gnu",
+      "rust-analyzer-pinned",
+      "rustup",
+      "libclang"
+    ],
+    "missing": [],
+    "verified": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "description": "Contract 1.1 correction: GET /v1/entities/{entity_id} must be scoped to a project and snapshot (see docs/adr/ADR-018-getentity-scope.md).",
+  "target": "contracts/openapi.json#/paths/~1v1~1entities~1{entity_id}/get",
+  "replace": {
+    "parameters": [
+      {
+        "name": "entity_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      {
+        "name": "project_id",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      {
+        "name": "snapshot_id",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    ]
+  },
+  "implemented_by": "crates/archmeld-api/src/lib.rs::get_entity",
+  "verified_by": "crates/archmeld-api/tests/http_contract.rs"
+}

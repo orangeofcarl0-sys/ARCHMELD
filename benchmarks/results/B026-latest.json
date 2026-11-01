@@ -1,0 +1,312 @@
+{
+  "budgets": {
+    "cancel_ms": 3000.0,
+    "t1_query_p95_ms": 300.0,
+    "t1_source_p95_ms": 500.0,
+    "t1_stale_p95_ms": 1000.0,
+    "ui_render_p95_ms": 500.0
+  },
+  "cancellation": {
+    "cancelled": true,
+    "exit_code": 1,
+    "process_audit": {
+      "cleanup": [
+        {
+          "method": "taskkill /T /F",
+          "pid": 33452,
+          "result": "terminated"
+        }
+      ],
+      "error": null,
+      "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+      "observed": 1,
+      "processes": [
+        {
+          "first_seen_ms": 355,
+          "name": "python.exe",
+          "parent_pid": 33452,
+          "pid": 48892
+        }
+      ],
+      "state": "complete",
+      "survivors": [],
+      "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+    },
+    "retried": false,
+    "wall_ms": 872
+  },
+  "datasets": {
+    "T0": {
+      "cold_capture": {
+        "count": 5,
+        "max_ms": 97.118,
+        "median_ms": 94.626,
+        "min_ms": 93.408,
+        "p95_ms": 97.118,
+        "samples_ms": [
+          93.408,
+          95.164,
+          97.118,
+          94.423,
+          94.626
+        ]
+      },
+      "files": 5,
+      "kind": "deterministic fixture"
+    },
+    "T1": {
+      "coverage": {
+        "expected_count": 335,
+        "limitations": [
+          "line-only anchors; upstream exposes no byte ranges",
+          "call/reference edges are syntax candidates, not resolved semantics",
+          "25 upstream node(s) merged by content identity"
+        ],
+        "observed_count": 335,
+        "omitted_count": 0,
+        "scope": "codegraph structural export over the declared snapshot",
+        "state": "complete",
+        "unresolved_count": 0
+      },
+      "drift_stale": {
+        "count": 10,
+        "max_ms": 177.411,
+        "median_ms": 156.652,
+        "min_ms": 146.426,
+        "p95_ms": 177.411,
+        "samples_ms": [
+          153.954,
+          156.652,
+          177.411,
+          158.921,
+          148.374,
+          157.083,
+          166.608,
+          157.616,
+          147.777,
+          146.426
+        ]
+      },
+      "export_edges": 972,
+      "export_nodes": 335,
+      "kind": "fixed real CodeGraph export of archmeld-core",
+      "ledger_entities": 310,
+      "ledger_import_ms": 878.888,
+      "ledger_relations": 972,
+      "source_files": 84,
+      "source_read": {
+        "count": 30,
+        "max_ms": 0.677,
+        "median_ms": 0.51,
+        "min_ms": 0.465,
+        "p95_ms": 0.664,
+        "samples_ms": [
+          0.576,
+          0.482,
+          0.581,
+          0.603,
+          0.654,
+          0.583,
+          0.657,
+          0.664,
+          0.677,
+          0.532,
+          0.546,
+          0.484,
+          0.491,
+          0.482,
+          0.491,
+          0.483,
+          0.469,
+          0.487,
+          0.517,
+          0.513,
+          0.561,
+          0.492,
+          0.525,
+          0.51,
+          0.509,
+          0.515,
+          0.485,
+          0.479,
+          0.474,
+          0.465
+        ]
+      },
+      "symbol_query": {
+        "count": 30,
+        "max_ms": 20.359,
+        "median_ms": 14.021,
+        "min_ms": 13.047,
+        "p95_ms": 18.926,
+        "samples_ms": [
+          18.926,
+          18.347,
+          13.919,
+          16.978,
+          17.748,
+          20.359,
+          15.032,
+          13.577,
+          15.078,
+          13.732,
+          13.698,
+          13.496,
+          15.181,
+          14.583,
+          14.796,
+          13.627,
+          15.101,
+          14.808,
+          13.978,
+          13.265,
+          14.163,
+          13.154,
+          13.314,
+          13.053,
+          15.528,
+          13.047,
+          14.642,
+          13.479,
+          14.021,
+          13.238
+        ]
+      }
+    },
+    "T2": {
+      "batch_size": 500,
+      "batches": 200,
+      "business_correctness": "not claimed from synthetic data; T1 carries real-source checks",
+      "db_size_bytes": 542650368,
+      "entities": 100000,
+      "kind": "deterministic synthetic scale data",
+      "ledger_import_ms": 98333.924,
+      "relations": 99500,
+      "symbol_query": {
+        "count": 20,
+        "max_ms": 449.541,
+        "median_ms": 424.471,
+        "min_ms": 403.541,
+        "p95_ms": 449.292,
+        "samples_ms": [
+          408.707,
+          406.719,
+          417.708,
+          413.812,
+          449.541,
+          446.833,
+          425.645,
+          440.831,
+          411.206,
+          424.471,
+          449.292,
+          410.732,
+          409.293,
+          403.541,
+          410.783,
+          433.356,
+          436.041,
+          429.216,
+          424.94,
+          445.749
+        ]
+      },
+      "text_query": {
+        "count": 10,
+        "max_ms": 382.086,
+        "median_ms": 333.434,
+        "min_ms": 322.592,
+        "p95_ms": 382.086,
+        "samples_ms": [
+          338.587,
+          333.434,
+          327.322,
+          328.454,
+          329.17,
+          352.957,
+          322.592,
+          382.086,
+          345.825,
+          363.358
+        ]
+      },
+      "working_set_after_mb": 22.3,
+      "working_set_before_mb": 18.0
+    }
+  },
+  "environment": {
+    "arch": "x86_64",
+    "cpus": 24,
+    "environment_digest": "sha256:6b068b7f483389ddedafece3dfe3bf8dcc46be61ba6d4307e78d97ff79a960be",
+    "os": "windows",
+    "reference_profile": "this Windows reference machine; no cross-machine normalization"
+  },
+  "generated_by": "crates/archmeld-core/tests/benchmark.rs",
+  "guards": {
+    "import_501_entities": "resource_exhausted",
+    "max_depth_over_cap": "invalid",
+    "max_nodes_over_cap": "invalid",
+    "silent_skip": false,
+    "source_max_bytes_zero": "invalid",
+    "stdout_cap_bytes": 4194304,
+    "stdout_truncated": true
+  },
+  "limitations": [
+    "T2 is synthetic scale data; its business correctness is not claimed",
+    "UI latency is webview HTML generation, not VS Code host paint latency",
+    "no cross-machine normalization; budgets apply to the declared reference environment",
+    "cancellation uses the declared cooperative flag and process-tree termination"
+  ],
+  "results": {
+    "cancel_ms": 572.477,
+    "t1_query_p95_ms": 18.926,
+    "t1_source_p95_ms": 0.664,
+    "t1_stale_p95_ms": 177.411,
+    "ui_render_p95_ms": 5.589
+  },
+  "status": "passed",
+  "ui": {
+    "edge_count": 1000,
+    "html_bytes": 335011,
+    "kind": "webview_html_generation",
+    "limitation": "editor host and paint latency are not measured; this is deterministic renderer cost",
+    "max_ms": 9.37,
+    "median_ms": 3.96,
+    "min_ms": 2.816,
+    "node_count": 500,
+    "p95_ms": 5.589,
+    "repetitions": 30,
+    "samples_ms": [
+      9.37,
+      5.234,
+      3.96,
+      4.33,
+      4.643,
+      3.589,
+      4.003,
+      3.914,
+      3.688,
+      4.735,
+      3.95,
+      5.237,
+      5.589,
+      3.353,
+      3.16,
+      3.594,
+      2.861,
+      3.208,
+      3.163,
+      2.816,
+      3.14,
+      3.006,
+      5.005,
+      4.814,
+      4.38,
+      4.273,
+      3.532,
+      4.095,
+      4.476,
+      4.363
+    ]
+  }
+}

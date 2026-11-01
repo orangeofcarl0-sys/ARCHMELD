@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "tool": "codeboarding-static-analyzer",
+  "repo": "<local-user>\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\asyncio",
+  "codeboarding": "F:\\Codex_Work_Space\\_archmeld_tools\\codeboarding",
+  "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+  "python": "3.12.12",
+  "python_executable": "F:\\Codex_Work_Space\\_archmeld_tools\\codeboarding-venv\\Scripts\\python.exe",
+  "cache_dir": "F:\\Codex_Work_Space\\_archmeld_temp\\cb-static-cache",
+  "languages": [
+    "python"
+  ],
+  "cfgs": {
+    "python": {
+      "nodes": 986,
+      "edges": 1075
+    }
+  },
+  "references": {
+    "python": 1070
+  },
+  "diagnostics": {
+    "python": 536
+  },
+  "analysis_json_produced": false,
+  "llm_called": false,
+  "limitations": [
+    "static analysis only; CodeBoarding's LLM component interpretation is not run",
+    "no analysis.json is produced by this probe",
+    "counts describe the pinned fixture/project; they are not a precision claim"
+  ]
+}

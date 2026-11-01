@@ -1,0 +1,44 @@
+{
+  "checks": {
+    "malformed_name_exit": 2,
+    "no_token_status": 403,
+    "test_file": "crates/archmeld-api/tests/named_pipe.rs",
+    "valid_token_reaches_handler": true,
+    "wrong_token_status": 403
+  },
+  "commands": [
+    "#b028-named-pipe-tests"
+  ],
+  "generated_by": "crates/archmeld-api/tests/named_pipe.rs",
+  "platform": {
+    "machine": "x86_64",
+    "system": "windows"
+  },
+  "schema_version": "1.0",
+  "scope": {
+    "implemented": "CreateNamedPipeW with a protected DACL for the current user, SYSTEM and Administrators; every instance is created with the same descriptor; bearer middleware unchanged",
+    "not_implemented": []
+  },
+  "status": "passed",
+  "transport": {
+    "acl": {
+      "ace_count": 3,
+      "anonymous": false,
+      "current_user": true,
+      "dacl_digest": "sha256:c624c6912b612ba373dc64dd17337ec2b82c2ef0da6e57ede213ff54b92a6cd9",
+      "everyone": false,
+      "protected": true,
+      "readback": "GetSecurityInfo + ConvertSecurityDescriptorToStringSecurityDescriptorW",
+      "type": "custom_dacl",
+      "verified": true
+    },
+    "announcement": {
+      "acl": "custom_dacl",
+      "endpoint": null,
+      "named_pipe": "\\\\.\\pipe\\archmeld-test-17824",
+      "token": "set"
+    },
+    "first_pipe_instance": true,
+    "name": "\\\\.\\pipe\\archmeld-test-17824"
+  }
+}

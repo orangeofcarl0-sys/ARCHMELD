@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "verification.demo",
+  "project_id": "project.synthetic",
+  "changeset_id": null,
+  "checked_snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "contract_digest": "sha256:3c018d678a0656e214c4ae1345182f56854289c8a3f2a8d20924044cb3d12bf3",
+  "toolchain_digest": "sha256:69e81dddf3fd3ba499ed032cbb24d9836e3d8118bbf6f07f4826ce0803428c3d",
+  "started_at": "2026-10-30T00:00:00Z",
+  "finished_at": "2026-10-30T00:00:00Z",
+  "checks": [
+    {
+      "check_id": "check.behavior",
+      "required": true,
+      "status": "not_run",
+      "exit_code": null,
+      "executed_test_count": null,
+      "artifact_digests": [],
+      "reason": "Synthetic fixture only. No product tests were run.",
+      "tool_run_id": null
+    }
+  ],
+  "verdict": "inconclusive",
+  "coverage": {
+    "state": "unknown",
+    "scope": "No execution in initialization pack",
+    "expected_count": 1,
+    "observed_count": 0,
+    "omitted_count": 0,
+    "unresolved_count": 0,
+    "limitations": [
+      "Implementation required"
+    ]
+  }
+}

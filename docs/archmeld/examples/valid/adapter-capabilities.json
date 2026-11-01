@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "adapter_id": "synthetic",
+  "version": "1.0",
+  "protocol_major": 1,
+  "languages": [
+    "python"
+  ],
+  "platforms": [
+    "design-only"
+  ],
+  "may_execute_project_code": false,
+  "requires_network": false,
+  "capabilities": [
+    {
+      "name": "structure",
+      "state": "unavailable",
+      "limitations": [
+        "This is a schema example, not an adapter"
+      ],
+      "test_ids": []
+    }
+  ]
+}

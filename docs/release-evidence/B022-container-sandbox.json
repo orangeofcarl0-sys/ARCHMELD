@@ -1,0 +1,44 @@
+{
+  "check": {
+    "exit_code": 0,
+    "sandbox_retained": false,
+    "state": "passed",
+    "stdout_contains": "container-ok",
+    "workspace_file_content": "VALUE = 20\n",
+    "workspace_report_present": false
+  },
+  "container": {
+    "image": "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+    "image_id": "sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+    "name": "archmeld-caf2c773648b96c5-check.sandbox.container.run",
+    "platform": "linux/amd64",
+    "removed": true,
+    "repo_digests": [
+      "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3"
+    ],
+    "workdir": "/workspace"
+  },
+  "generated_by": "crates/archmeld-core/tests/verification.rs",
+  "image": {
+    "image_id": "sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+    "platform": "linux/amd64",
+    "reference": "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+    "repo_digests": [
+      "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3"
+    ]
+  },
+  "isolation": {
+    "bind_mount": "/workspace is the materialized snapshot copy",
+    "network": "none",
+    "read_only": true,
+    "tmpfs": "/tmp:rw,size=64m",
+    "workdir": "/workspace"
+  },
+  "limitations": [
+    "Docker/Linux containers only; the host must provide a local pinned image (no pull)",
+    "the process runs as the image default user and can write the bind-mounted snapshot copy",
+    "a timeout triggers docker rm -f and the result records whether the container was removed"
+  ],
+  "platform": "windows",
+  "schema_version": "1.0"
+}

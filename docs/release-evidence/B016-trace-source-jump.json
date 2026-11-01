@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/b016_trace_jump_evidence.py",
+  "generated_at": "2026-11-01T05:29:10+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "fixture": {
+    "ledger": "docs/evidence/ui-trace-state",
+    "repository": "docs/evidence/ui-trace-repo",
+    "trace": "adapters/traces/fixtures/tracy-zones-plots.tracy",
+    "csv": "adapters/traces/fixtures/tracy-zones-plots.csv",
+    "project_id": "project.traceui",
+    "snapshot_id": "sha256:3c6f1acc344a9ce3220ba4b9686c3721fd167901fa41bb76e4a2ba175dd9a1ce",
+    "run_id": "run.tracy.ui",
+    "spans": [
+      {
+        "file": "tracy_probe.cc",
+        "line": "14",
+        "name": "stage.queue",
+        "span_id": "tracy.zone.1"
+      },
+      {
+        "file": "tracy_probe.cc",
+        "line": "19",
+        "name": "stage.compute",
+        "span_id": "tracy.zone.2"
+      }
+    ]
+  },
+  "host": {
+    "status": "passed",
+    "command_exit_code": 0,
+    "span_id": "tracy.zone.1",
+    "path": "tracy_probe.cc",
+    "line": 14,
+    "line_start": 10,
+    "line_end": 18,
+    "active_line": 4,
+    "expected_line": 4,
+    "trace_command_ms": 164,
+    "budgets": {
+      "trace_command_ms": 10000
+    },
+    "budget_failures": [],
+    "result": "docs/evidence/ui-result-b016-trace-jump.json",
+    "result_sha256": "sha256:7da5cc6e8cb0ce06f6208ef000d473d878bb446d0da8115db00bd1c431dd9b01",
+    "screenshot": "docs/evidence/b016-trace-source-jump.png",
+    "screenshot_sha256": "sha256:c55f93a87c9c90441d38004cb174ce9da7c73c4becc72ccbf3a5c2877c86086c"
+  },
+  "scope": {
+    "measured": "actual vscode-webview-independent source document opened from the snapshot CAS at the retained zone line",
+    "not_measured": "trace processor queries and Tracy native protocol decoding remain out of scope"
+  },
+  "status": "passed"
+}

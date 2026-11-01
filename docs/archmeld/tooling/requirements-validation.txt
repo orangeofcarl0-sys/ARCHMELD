@@ -1,0 +1,3 @@
+# Only the specification-pack checker. Not ARCHMELD product dependencies.
+jsonschema==4.26.0
+referencing==0.37.0

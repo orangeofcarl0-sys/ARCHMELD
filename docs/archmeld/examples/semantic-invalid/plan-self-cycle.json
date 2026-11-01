@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "id": "plan.demo",
+  "project_id": "project.synthetic",
+  "revision": 1,
+  "kind": "structural_refactor",
+  "objective": "Demonstrate a bounded internal rename",
+  "non_goals": [
+    "No algorithm or public protocol changes"
+  ],
+  "base_snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "target_architecture_id": "architecture.target",
+  "contract_id": "contract.demo",
+  "contract_digest": "sha256:3c018d678a0656e214c4ae1345182f56854289c8a3f2a8d20924044cb3d12bf3",
+  "steps": [
+    {
+      "id": "step.rename",
+      "title": "Rename compute to estimate in authorized file",
+      "depends_on": [
+        "step.rename"
+      ],
+      "allowed_paths": [
+        "src/example.py"
+      ],
+      "required_check_ids": [
+        "check.behavior"
+      ],
+      "completion_criteria": [
+        "Behavior checks pass on actual result snapshot"
+      ]
+    }
+  ],
+  "risks": [
+    "Dynamic callers not proven absent by this sample"
+  ],
+  "evidence_ids": [
+    "evidence.syntax"
+  ],
+  "status": "draft"
+}

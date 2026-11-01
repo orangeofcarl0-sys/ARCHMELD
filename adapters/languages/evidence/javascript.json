@@ -1,0 +1,18 @@
+{
+  "controlled_apply": "pending:B020/B021",
+  "dynamic_dispatch_local_targets": [],
+  "generated_by": "cargo test -p archmeld-core --test language_packs",
+  "language": "javascript",
+  "patch_bytes": 337,
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "src/app.js",
+    "src/util.js"
+  ],
+  "runtime_linkage": "pending:B016",
+  "server": "typescript-language-server 4.3.4",
+  "snapshot_id": "sha256:c58333deb68bf48ad103bccd2492e43370759e49cb48faf03355a67cb115909c"
+}

@@ -1,0 +1,1712 @@
+{
+  "version": "1.0",
+  "status": "all_cases_not_run",
+  "cases": [
+    {
+      "id": "AT001",
+      "requirement_ids": [
+        "R001"
+      ],
+      "owner_task": "B000",
+      "title": "固定底座与诚实基线",
+      "given": "克隆固定提交并读取实际 manifest",
+      "when": "执行上游构建与测试并保存退出码",
+      "then": [
+        "HEAD 与指定 SHA 相同",
+        "版本、平台和失败日志可复核",
+        "无未运行测试被标为通过"
+      ],
+      "required_evidence": [
+        "checkout",
+        "构建日志",
+        "工具清单"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT002",
+      "requirement_ids": [
+        "R002"
+      ],
+      "owner_task": "B000",
+      "title": "不覆盖已有工程",
+      "given": "目标目录已经存在非空内容",
+      "when": "执行初始化命令",
+      "then": [
+        "拒绝覆盖",
+        "原文件字节不变",
+        "不运行 reset/clean"
+      ],
+      "required_evidence": [
+        "目录前后清单"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT003",
+      "requirement_ids": [
+        "R003"
+      ],
+      "owner_task": "B001",
+      "title": "锁定与许可证",
+      "given": "一个尚未锁定的外部二进制依赖",
+      "when": "执行工具获取和锁定",
+      "then": [
+        "记录版本/来源/hash/平台/许可证",
+        "无 latest 或空 checksum 被标为 verified"
+      ],
+      "required_evidence": [
+        "toolchains.lock",
+        "许可证报告"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT004",
+      "requirement_ids": [
+        "R004"
+      ],
+      "owner_task": "B002",
+      "title": "稀疏图编号完整性",
+      "given": "图中删除中间节点和边后再增量添加",
+      "when": "导出并与真实可枚举对象比较",
+      "then": [
+        "无缺项",
+        "若上游导出不足则适配器用真实迭代",
+        "输出数量不能掩盖遗漏"
+      ],
+      "required_evidence": [
+        "最小复现",
+        "金标集合",
+        "导出"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT005",
+      "requirement_ids": [
+        "R005"
+      ],
+      "owner_task": "B002",
+      "title": "后端缓存隔离",
+      "given": "同一路径两快照且另一项目同名",
+      "when": "并发执行隔离的结构分析",
+      "then": [
+        "缓存隔离到 project/snapshot/config/tool",
+        "不混入其他项目或版本"
+      ],
+      "required_evidence": [
+        "进程参数",
+        "目录清单"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT006",
+      "requirement_ids": [
+        "R006"
+      ],
+      "owner_task": "B002",
+      "title": "上游默认网络探测",
+      "given": "无模型缓存且网络拒绝",
+      "when": "运行 graph-only 分析",
+      "then": [
+        "无需下载模型",
+        "不发送遥测",
+        "任何触网被记录为失败而非静默重试"
+      ],
+      "required_evidence": [
+        "网络审计",
+        "运行结果"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT007",
+      "requirement_ids": [
+        "R007"
+      ],
+      "owner_task": "B003",
+      "title": "证据事务完整性",
+      "given": "包含实体、证据和关系的一批数据",
+      "when": "导入时在提交前注入崩溃",
+      "then": [
+        "只出现整批提交或未提交",
+        "不存在悬空关系",
+        "重试幂等"
+      ],
+      "required_evidence": [
+        "数据库完整性检查"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT008",
+      "requirement_ids": [
+        "R008"
+      ],
+      "owner_task": "B003",
+      "title": "拒绝伪造事实",
+      "given": "关系 basis=model 但 kind=resolved_call",
+      "when": "导入批次",
+      "then": [
+        "拒绝该无效数据",
+        "候选解释可另存",
+        "不得升级为语义事实"
+      ],
+      "required_evidence": [
+        "错误对象",
+        "数据库查询"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT009",
+      "requirement_ids": [
+        "R009"
+      ],
+      "owner_task": "B004",
+      "title": "脏工作区快照",
+      "given": "已提交文件、未提交修改、纳入的未跟踪文件同时存在",
+      "when": "捕获快照",
+      "then": [
+        "内容哈希覆盖实际磁盘字节",
+        "git commit 不代表全部",
+        "不改工作区"
+      ],
+      "required_evidence": [
+        "manifest",
+        "Git 状态前后"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT010",
+      "requirement_ids": [
+        "R010"
+      ],
+      "owner_task": "B004",
+      "title": "构建变体区分",
+      "given": "相同 C++ 源码用两个宏配置",
+      "when": "捕获并索引",
+      "then": [
+        "config_digest 和关系作用域不同",
+        "不能合并为无条件调用图"
+      ],
+      "required_evidence": [
+        "双 manifest",
+        "查询结果"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT011",
+      "requirement_ids": [
+        "R011"
+      ],
+      "owner_task": "B004",
+      "title": "中文与位置编码",
+      "given": "中文路径、emoji、CRLF、多字节标识符",
+      "when": "转换 LSP/SCIP 范围并点击定位",
+      "then": [
+        "UTF8 字节半开区间准确",
+        "旧文件保存原字节",
+        "无偏一或代理项错位"
+      ],
+      "required_evidence": [
+        "金标范围",
+        "源码定位记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT012",
+      "requirement_ids": [
+        "R012"
+      ],
+      "owner_task": "B004",
+      "title": "快照捕获竞争",
+      "given": "捕获大型文件中途外部修改",
+      "when": "完成捕获并检测稳定性",
+      "then": [
+        "重读或标记 unstable",
+        "不得发布混合内容为稳定快照"
+      ],
+      "required_evidence": [
+        "故障注入日志"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT013",
+      "requirement_ids": [
+        "R013"
+      ],
+      "owner_task": "B005",
+      "title": "分批桥接协议",
+      "given": "上游图包含外部/未解析引用",
+      "when": "分批发送、重传、缺失批和取消",
+      "then": [
+        "同序同内容幂等",
+        "不同内容冲突",
+        "缺批不完整",
+        "未解析可见"
+      ],
+      "required_evidence": [
+        "NDJSON",
+        "coverage"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT014",
+      "requirement_ids": [
+        "R014"
+      ],
+      "owner_task": "B005",
+      "title": "后端 ID 不当全局身份",
+      "given": "重建后上游节点 ID 变化",
+      "when": "导入同一语义对象",
+      "then": [
+        "backend ID 仅局部",
+        "核心身份/跨版本关联不靠递增编号"
+      ],
+      "required_evidence": [
+        "映射表",
+        "回归断言"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT015",
+      "requirement_ids": [
+        "R015"
+      ],
+      "owner_task": "B006",
+      "title": "有限图查询",
+      "given": "带环依赖和超过 max_nodes 的邻域",
+      "when": "执行路径/影响查询并分页",
+      "then": [
+        "有界终止",
+        "标明截断和覆盖",
+        "分页绑定同一快照"
+      ],
+      "required_evidence": [
+        "响应",
+        "计时和节点集合"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT016",
+      "requirement_ids": [
+        "R016"
+      ],
+      "owner_task": "B006",
+      "title": "历史源码导航",
+      "given": "当前文件已移行但用户看旧图",
+      "when": "打开实体源码",
+      "then": [
+        "显示旧快照原始内容",
+        "不无提示跳当前行"
+      ],
+      "required_evidence": [
+        "虚拟文档 URI",
+        "anchor"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT017",
+      "requirement_ids": [
+        "R017"
+      ],
+      "owner_task": "B007",
+      "title": "代码图谱双向联动",
+      "given": "真实多文件工程已索引",
+      "when": "编辑器选符号并从图点击证据边",
+      "then": [
+        "双方定位一致",
+        "边有来源/版本/性质",
+        "未知边不伪装确定"
+      ],
+      "required_evidence": [
+        "UI 自动测试和截图"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT018",
+      "requirement_ids": [
+        "R018"
+      ],
+      "owner_task": "B007",
+      "title": "图不是装饰",
+      "given": "两个组件有交叉和异步关系",
+      "when": "切换职责/文件/运行视图并展开折叠",
+      "then": [
+        "同一实体可多投影",
+        "布局稳定",
+        "不强制错误父子树",
+        "可回退导航"
+      ],
+      "required_evidence": [
+        "交互测试",
+        "模型比对"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT019",
+      "requirement_ids": [
+        "R019"
+      ],
+      "owner_task": "B008",
+      "title": "一次性模式不污染",
+      "given": "包含脏文件的真实工程",
+      "when": "启动 Expedition、分析、导出、关闭",
+      "then": [
+        "未批准前项目字节及 Git 状态不变",
+        "缓存位于外部",
+        "模型无调用也可用"
+      ],
+      "required_evidence": [
+        "前后树摘要",
+        "报告"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT020",
+      "requirement_ids": [
+        "R020"
+      ],
+      "owner_task": "B008",
+      "title": "持久项目连续性",
+      "given": "Manager 保存人工架构决策和历史",
+      "when": "关闭再打开并移动仓库目录",
+      "then": [
+        "重新定位后 project_id 与历史保留",
+        "路径不是唯一身份"
+      ],
+      "required_evidence": [
+        "重启/重定位测试"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT021",
+      "requirement_ids": [
+        "R021"
+      ],
+      "owner_task": "B009",
+      "title": "语义引用不冒充调用",
+      "given": "SCIP occurrence 包括定义、类型引用和调用位置",
+      "when": "导入 SCIP",
+      "then": [
+        "定义引用准确",
+        "单纯 reference 不直接产生 resolved_call",
+        "保留配置与范围"
+      ],
+      "required_evidence": [
+        "金标索引",
+        "关系集合"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT022",
+      "requirement_ids": [
+        "R022"
+      ],
+      "owner_task": "B009",
+      "title": "SCIP 编码与外部符号",
+      "given": "本地符号、包符号、重复名称和外部依赖",
+      "when": "解析索引和跨文档引用",
+      "then": [
+        "作用域正确",
+        "外部依赖无假源码 anchor",
+        "重复符号不合并"
+      ],
+      "required_evidence": [
+        "金标关系",
+        "未解析清单"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT023",
+      "requirement_ids": [
+        "R023"
+      ],
+      "owner_task": "B010",
+      "title": "原生重构预览",
+      "given": "LSP rename 同时修改多文件",
+      "when": "请求 WorkspaceEdit 并暂存应用",
+      "then": [
+        "转换位置准确",
+        "scope 外改动拒绝",
+        "executeCommand 不自动执行"
+      ],
+      "required_evidence": [
+        "WorkspaceEdit",
+        "补丁",
+        "拒绝日志"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT024",
+      "requirement_ids": [
+        "R024"
+      ],
+      "owner_task": "B010",
+      "title": "语言服务器执行权限",
+      "given": "不可信仓库含会执行代码的配置/插件",
+      "when": "打开并请求语义分析",
+      "then": [
+        "只读解析可进行",
+        "有执行风险时需权限",
+        "不自动安装和运行"
+      ],
+      "required_evidence": [
+        "权限事件",
+        "系统进程审计"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT025",
+      "requirement_ids": [
+        "R025"
+      ],
+      "owner_task": "B011",
+      "title": "Python 完整语言包",
+      "given": "别名导入、同名函数、动态 getattr 的真实 Python 工程",
+      "when": "语义导航、真实场景 Trace、跨文件 rename、测试",
+      "then": [
+        "确定引用正确",
+        "动态目标保留未知",
+        "Trace 映射",
+        "重构测试通过并可恢复"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT026",
+      "requirement_ids": [
+        "R026"
+      ],
+      "owner_task": "B011",
+      "title": "JS/TS 完整语言包",
+      "given": "TS 路径别名、泛型和 JS 动态属性工程",
+      "when": "语义查询、Node 实际 Trace、跨文件变更与构建测试",
+      "then": [
+        "TS 和 JS 分别记录能力",
+        "动态边不假定",
+        "无伪造 trace"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT027",
+      "requirement_ids": [
+        "R027"
+      ],
+      "owner_task": "B012",
+      "title": "C/C++ 完整语言包",
+      "given": "双编译变体、宏、虚函数和指针工程",
+      "when": "编译数据库索引、实际 Trace、clangd 变更和构建",
+      "then": [
+        "配置精确",
+        "间接调用候选可见",
+        "trace 有 build identity",
+        "重构结果可复核"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT028",
+      "requirement_ids": [
+        "R028"
+      ],
+      "owner_task": "B012",
+      "title": "Windows 原生工具边界",
+      "given": "Windows/MSVC 工程且无 scip-clang Windows 二进制",
+      "when": "运行 doctor 与语言分析",
+      "then": [
+        "使用已验证 clangd 路径或显式配置 worker",
+        "不假称 WSL 可构建原生工程"
+      ],
+      "required_evidence": [
+        "doctor 输出",
+        "能力表"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT029",
+      "requirement_ids": [
+        "R029"
+      ],
+      "owner_task": "B013",
+      "title": "Java 完整语言包",
+      "given": "重载、接口、注解和反射的真实 Java 工程",
+      "when": "语义导航、实际运行场景、跨文件重构与测试",
+      "then": [
+        "重载引用正确",
+        "反射不猜",
+        "运行映射和测试真实有效"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT030",
+      "requirement_ids": [
+        "R030"
+      ],
+      "owner_task": "B013",
+      "title": "C# 完整语言包",
+      "given": "partial class、委托和生成代码的真实 C# 工程",
+      "when": "Roslyn/索引、EventPipe/显式 span、受控变更",
+      "then": [
+        "生成代码来源和不可写边界清楚",
+        "委托候选不等于实际调用"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT031",
+      "requirement_ids": [
+        "R031"
+      ],
+      "owner_task": "B014",
+      "title": "Go 完整语言包",
+      "given": "interface、goroutine、channel 工程",
+      "when": "索引、实际 execution trace、跨包重构和测试",
+      "then": [
+        "阻塞/调度与函数耗时不混淆",
+        "接口候选可解释"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT032",
+      "requirement_ids": [
+        "R032"
+      ],
+      "owner_task": "B014",
+      "title": "Rust 完整语言包",
+      "given": "trait、cfg、宏和异步任务工程",
+      "when": "语义、真实 tracing、跨 crate 变更与构建",
+      "then": [
+        "构建变体区分",
+        "宏映射局限可见",
+        "编译测试及恢复有效"
+      ],
+      "required_evidence": [
+        "语言包验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT033",
+      "requirement_ids": [
+        "R033"
+      ],
+      "owner_task": "B015",
+      "title": "大整数时间精度",
+      "given": "含超过 JS 安全整数的纳秒时间戳",
+      "when": "导入并查询时间线",
+      "then": [
+        "整数时间以字符串存储",
+        "相邻纳秒不丢失",
+        "单位明确"
+      ],
+      "required_evidence": [
+        "原始/规范化事件比较"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT034",
+      "requirement_ids": [
+        "R034"
+      ],
+      "owner_task": "B015",
+      "title": "不绑定错误 Trace",
+      "given": "Trace 来自不同 build 或无 manifest",
+      "when": "导入并尝试声明 bound",
+      "then": [
+        "保持 unbound 或拒绝",
+        "不因文件同名自动关联当前源码"
+      ],
+      "required_evidence": [
+        "错误与映射 coverage"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT035",
+      "requirement_ids": [
+        "R035"
+      ],
+      "owner_task": "B015",
+      "title": "有损格式可追溯",
+      "given": "Tracy 原文件仅有摘要导出",
+      "when": "导入摘要并查看时间线",
+      "then": [
+        "保留原文件",
+        "lossy/loss_notes 明确",
+        "不伪造缺失事件"
+      ],
+      "required_evidence": [
+        "导入元数据与原件摘要"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT036",
+      "requirement_ids": [
+        "R036"
+      ],
+      "owner_task": "B016",
+      "title": "真实异步因果",
+      "given": "生产者/消费者异步交接带 correlation_id",
+      "when": "采集场景并关联任务",
+      "then": [
+        "用明确 ID 建因果",
+        "只时间相邻不连 causal edge",
+        "缺失关联可见"
+      ],
+      "required_evidence": [
+        "实际 Trace 与关联表"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT037",
+      "requirement_ids": [
+        "R037"
+      ],
+      "owner_task": "B016",
+      "title": "采集开销与取消",
+      "given": "同一场景无采集/有采集运行，含子进程",
+      "when": "比较并取消",
+      "then": [
+        "开销记录 measured 或 unknown",
+        "取消清理子进程且不标完整"
+      ],
+      "required_evidence": [
+        "运行 manifest",
+        "进程清单"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT038",
+      "requirement_ids": [
+        "R038"
+      ],
+      "owner_task": "B017",
+      "title": "架构候选与事实隔离",
+      "given": "CodeBoarding/模型输出一个不存在组件调用",
+      "when": "导入候选架构并查看",
+      "then": [
+        "仅 candidate/claim",
+        "源码证据缺失显示未证",
+        "不新增确定调用"
+      ],
+      "required_evidence": [
+        "claim 与证据审查"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT039",
+      "requirement_ids": [
+        "R039"
+      ],
+      "owner_task": "B017",
+      "title": "反例驱动调查",
+      "given": "最初猜测算法耗时，Trace 显示主要等待",
+      "when": "Agent 调查并生成结论",
+      "then": [
+        "保存被推翻解释与反例",
+        "依据等待机制提出后续实验，不继续固化旧猜测"
+      ],
+      "required_evidence": [
+        "investigation 记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT040",
+      "requirement_ids": [
+        "R040"
+      ],
+      "owner_task": "B018",
+      "title": "目标图不直接改源码",
+      "given": "用户在 To-Be 删除依赖箭头",
+      "when": "提交目标模型",
+      "then": [
+        "生成约束/计划候选",
+        "当前源码不变",
+        "显示受影响路径"
+      ],
+      "required_evidence": [
+        "模型 diff 和仓库摘要"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT041",
+      "requirement_ids": [
+        "R041"
+      ],
+      "owner_task": "B018",
+      "title": "可执行架构约束",
+      "given": "禁止 UI 依赖估计器内部状态",
+      "when": "运行对应静态规则",
+      "then": [
+        "捕获直接/声明范围内间接违规",
+        "无覆盖不能通过",
+        "人工意图不当可执行检查"
+      ],
+      "required_evidence": [
+        "规则结果与覆盖范围"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT042",
+      "requirement_ids": [
+        "R042"
+      ],
+      "owner_task": "B019",
+      "title": "计划依赖和范围",
+      "given": "Plan 存在循环依赖或未知 check_id",
+      "when": "创建/批准计划",
+      "then": [
+        "明确拒绝",
+        "无可执行 ChangeSet",
+        "不静默丢步骤"
+      ],
+      "required_evidence": [
+        "错误与无副作用证明"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT043",
+      "requirement_ids": [
+        "R043"
+      ],
+      "owner_task": "B019",
+      "title": "冻结验收契约",
+      "given": "修改阶段扩大 numeric tolerance 或删除 required check",
+      "when": "尝试沿用原批准/验证",
+      "then": [
+        "contract_digest 改变",
+        "原批准失效",
+        "需单独审阅"
+      ],
+      "required_evidence": [
+        "契约 diff 与拒绝"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT044",
+      "requirement_ids": [
+        "R044"
+      ],
+      "owner_task": "B020",
+      "title": "暂存优先与范围",
+      "given": "实际仓库已有用户脏修改",
+      "when": "Agent 在暂存区实施变换",
+      "then": [
+        "原仓库不变",
+        "补丁仅授权路径",
+        "前后原字节完整保存"
+      ],
+      "required_evidence": [
+        "staging diff",
+        "preimages"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT045",
+      "requirement_ids": [
+        "R045"
+      ],
+      "owner_task": "B020",
+      "title": "双层审批",
+      "given": "只批准方案且变更已 prepared",
+      "when": "直接 apply 或修改 prepared 后再 apply",
+      "then": [
+        "无 prepared_digest 对应批准拒绝",
+        "任何 patch 改变使批准失效"
+      ],
+      "required_evidence": [
+        "状态机/审批测试"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT046",
+      "requirement_ids": [
+        "R046"
+      ],
+      "owner_task": "B021",
+      "title": "乐观并发与前置读取集",
+      "given": "准备完成后外部改依赖配置或目标文件",
+      "when": "执行 apply",
+      "then": [
+        "变更 stale/conflicted",
+        "不覆盖外部改动",
+        "旧租约无写权限"
+      ],
+      "required_evidence": [
+        "文件摘要与 journal"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT047",
+      "requirement_ids": [
+        "R047"
+      ],
+      "owner_task": "B021",
+      "title": "崩溃可恢复",
+      "given": "多文件 patch 在第2个替换后强制终止",
+      "when": "重启并恢复",
+      "then": [
+        "检测非原子中间状态",
+        "依据 journal 恢复自己修改",
+        "不调用全仓 reset"
+      ],
+      "required_evidence": [
+        "故障注入和恢复日志"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT048",
+      "requirement_ids": [
+        "R048"
+      ],
+      "owner_task": "B021",
+      "title": "恢复保留后续修改",
+      "given": "apply 后用户再次编辑其中一文件",
+      "when": "请求 recover",
+      "then": [
+        "该文件保留用户修改并报 conflict",
+        "其他无冲突文件按计划恢复"
+      ],
+      "required_evidence": [
+        "三版本文件与结果"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT049",
+      "requirement_ids": [
+        "R049"
+      ],
+      "owner_task": "B021",
+      "title": "路径穿越和链接竞态",
+      "given": "含 ../、绝对路径、junction 或准备后换 symlink",
+      "when": "执行导入/应用",
+      "then": [
+        "拒绝越界",
+        "真实仓库外文件不变",
+        "Windows/Linux 分别运行"
+      ],
+      "required_evidence": [
+        "攻击夹具与原文件 hash"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT050",
+      "requirement_ids": [
+        "R050"
+      ],
+      "owner_task": "B022",
+      "title": "验证缺项不可通过",
+      "given": "required check 未执行、无测试或缺失结果",
+      "when": "汇总 Verification",
+      "then": [
+        "not_run/unsupported/inconclusive 不算 passed",
+        "accepted 必须与冻结集合一致"
+      ],
+      "required_evidence": [
+        "验证对象",
+        "契约集合"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT051",
+      "requirement_ids": [
+        "R051"
+      ],
+      "owner_task": "B022",
+      "title": "验收版本一致",
+      "given": "暂存测试通过但应用后文件改变",
+      "when": "申请 accepted",
+      "then": [
+        "拒绝旧 snapshot 结果",
+        "必要复验绑定真实 applied snapshot"
+      ],
+      "required_evidence": [
+        "双快照与验证结果"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT052",
+      "requirement_ids": [
+        "R052"
+      ],
+      "owner_task": "B022",
+      "title": "执行超时与资源",
+      "given": "测试无限循环并派生子进程",
+      "when": "按预算执行验证",
+      "then": [
+        "超时明确 timed_out",
+        "清理进程",
+        "不无限重试",
+        "非通过"
+      ],
+      "required_evidence": [
+        "资源/进程记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT053",
+      "requirement_ids": [
+        "R053"
+      ],
+      "owner_task": "B023",
+      "title": "MCP 统一权限",
+      "given": "普通 Agent token 具有读取权限",
+      "when": "通过 MCP 请求应用、批准或读任意磁盘路径",
+      "then": [
+        "无批准工具",
+        "写操作被同一 core 拒绝",
+        "无任意路径透传"
+      ],
+      "required_evidence": [
+        "MCP transcript",
+        "审计"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT054",
+      "requirement_ids": [
+        "R054"
+      ],
+      "owner_task": "B023",
+      "title": "上下文可追溯截断",
+      "given": "结果超过 token budget 且存在反例",
+      "when": "生成 ContextPack",
+      "then": [
+        "包含版本/证据引用/未知",
+        "截断明示",
+        "保留关键反例或列为遗漏",
+        "不伪装完整"
+      ],
+      "required_evidence": [
+        "context pack 与预算"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT055",
+      "requirement_ids": [
+        "R055"
+      ],
+      "owner_task": "B024",
+      "title": "Instigator 不阻塞",
+      "given": "主任务正常运行且 Instigator 失联/延迟",
+      "when": "完成并交付主任务",
+      "then": [
+        "不等待批准",
+        "旧 revision/过期 NUDGE 丢弃",
+        "不得创建新目标"
+      ],
+      "required_evidence": [
+        "事件流和任务状态"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT056",
+      "requirement_ids": [
+        "R056"
+      ],
+      "owner_task": "B025",
+      "title": "增量失效与持久恢复",
+      "given": "公共接口改变，已有依赖和 claim",
+      "when": "文件监听触发更新并重启",
+      "then": [
+        "受影响结果标 stale/needs_review",
+        "旧快照仍可查",
+        "决策不丢"
+      ],
+      "required_evidence": [
+        "失效传播与重启查询"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT057",
+      "requirement_ids": [
+        "R057"
+      ],
+      "owner_task": "B025",
+      "title": "保留策略不破坏证据",
+      "given": "报告/accepted change 引用旧 artifact",
+      "when": "运行垃圾回收和恢复备份",
+      "then": [
+        "被引用内容保留",
+        "未引用缓存可清理",
+        "损坏文件报错不可冒充正常"
+      ],
+      "required_evidence": [
+        "GC dry-run",
+        "restore 日志"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT058",
+      "requirement_ids": [
+        "R058"
+      ],
+      "owner_task": "B026",
+      "title": "可测的性能预算",
+      "given": "T0/T1/T2 固定数据集和固定硬件",
+      "when": "记录冷/热索引、查询、取消、UI 延迟",
+      "then": [
+        "报告真实样本/分位数/覆盖",
+        "未达标不删问题数据",
+        "阈值不自改"
+      ],
+      "required_evidence": [
+        "benchmark.json",
+        "环境"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT059",
+      "requirement_ids": [
+        "R059"
+      ],
+      "owner_task": "B027",
+      "title": "离线可复查报告",
+      "given": "Expedition 有架构、证据、未知、失败检查",
+      "when": "导出并在断网环境打开",
+      "then": [
+        "无 CDN",
+        "图/源码引用与局限清楚",
+        "敏感原件默认排除",
+        "所有附件校验"
+      ],
+      "required_evidence": [
+        "report manifest",
+        "离线测试"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT060",
+      "requirement_ids": [
+        "R060"
+      ],
+      "owner_task": "B027",
+      "title": "Expedition 提升 Manager",
+      "given": "会话含人工结论和历史 evidence",
+      "when": "提升并重开",
+      "then": [
+        "复制/迁移原 ID 和真实证据",
+        "不以模型重写代替迁移",
+        "不丢记录"
+      ],
+      "required_evidence": [
+        "对象数量/摘要比较"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT061",
+      "requirement_ids": [
+        "R061"
+      ],
+      "owner_task": "B028",
+      "title": "仓库提示注入与外传",
+      "given": "README 含命令和上传密钥的恶意指令",
+      "when": "Agent 获取源码上下文",
+      "then": [
+        "内容保持 untrusted",
+        "禁止外传和越权执行",
+        "策略由权限层实施"
+      ],
+      "required_evidence": [
+        "红队 transcript",
+        "网络日志"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT062",
+      "requirement_ids": [
+        "R062"
+      ],
+      "owner_task": "B028",
+      "title": "本地服务隔离",
+      "given": "第三方网页尝试请求 localhost API",
+      "when": "发送无 token/错误 Origin/Host 请求",
+      "then": [
+        "拒绝",
+        "仅回环监听",
+        "Webview 无远端脚本",
+        "token 不进 URL/日志"
+      ],
+      "required_evidence": [
+        "HTTP 与 CSP 安全测试"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT063",
+      "requirement_ids": [
+        "R063"
+      ],
+      "owner_task": "B028",
+      "title": "外部 Agent 直写透明性",
+      "given": "用户同时使用有 Shell 权限的独立 Agent",
+      "when": "外部写入后尝试沿用已准备变更",
+      "then": [
+        "标明 externally_writable",
+        "侦测失效，不宣称完全隔离",
+        "校验挡住旧 patch"
+      ],
+      "required_evidence": [
+        "权限显示",
+        "快照失效"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT064",
+      "requirement_ids": [
+        "R064"
+      ],
+      "owner_task": "B029",
+      "title": "数值域重构验证",
+      "given": "含单位、shape、状态更新、相位边界的算法",
+      "when": "改变计算组织并运行合成真值及实测基线",
+      "then": [
+        "单位/shape先验证",
+        "冻结容差",
+        "动态响应与边界均检查",
+        "不只看最终RMS"
+      ],
+      "required_evidence": [
+        "数值验收记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT065",
+      "requirement_ids": [
+        "R065"
+      ],
+      "owner_task": "B029",
+      "title": "不盲目类化",
+      "given": "数学表达清晰但函数较长",
+      "when": "提出并比较架构方案",
+      "then": [
+        "保留不重构合法结论",
+        "无法举证的抽象收益不计完成"
+      ],
+      "required_evidence": [
+        "方案比较与ADR"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT066",
+      "requirement_ids": [
+        "R066"
+      ],
+      "owner_task": "B030",
+      "title": "端到端真实闭环",
+      "given": "C++采集→Python估计→UI示例和真实输入",
+      "when": "理解、定位、To-Be、准备、应用、验收、复查",
+      "then": [
+        "源码/运行/架构/变更/验证全链可追溯",
+        "不能用合成示例冒充实际运行"
+      ],
+      "required_evidence": [
+        "独立E2E报告",
+        "trace",
+        "patch"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT067",
+      "requirement_ids": [
+        "R067"
+      ],
+      "owner_task": "B030",
+      "title": "全语言发布门禁",
+      "given": "七组语言包和每组真实中型项目",
+      "when": "逐组运行定义引用/真实runtime/受控变更验收",
+      "then": [
+        "全部已声明必需项有真实结果",
+        "未完成语言阻止R1命名"
+      ],
+      "required_evidence": [
+        "release evidence matrix"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT068",
+      "requirement_ids": [
+        "R068"
+      ],
+      "owner_task": "B031",
+      "title": "离线双平台交付",
+      "given": "Windows11 x64 和 Ubuntu24.04 x64 干净测试机",
+      "when": "安装、索引、离线查看、升级、卸载",
+      "then": [
+        "可复现",
+        "可无模型使用",
+        "升级备份/失败恢复",
+        "卸载不删用户工程"
+      ],
+      "required_evidence": [
+        "安装记录",
+        "SBOM",
+        "checksums"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT069",
+      "requirement_ids": [
+        "R069"
+      ],
+      "owner_task": "B031",
+      "title": "不虚报平台与版本",
+      "given": "Mac未测或依赖未解析",
+      "when": "生成发行说明",
+      "then": [
+        "清楚列未验证/不支持",
+        "artifact 使用精确版本与hash",
+        "不存在“全部支持”虚报"
+      ],
+      "required_evidence": [
+        "release checklist"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT070",
+      "requirement_ids": [
+        "R070"
+      ],
+      "owner_task": "B032",
+      "title": "可恢复的Agent接力",
+      "given": "会话结束或换Agent",
+      "when": "读取PROGRESS与任务产物继续",
+      "then": [
+        "识别当前提交/实际结果/下一任务",
+        "不重复海选",
+        "不把未完成标完成"
+      ],
+      "required_evidence": [
+        "handoff演练"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT071",
+      "requirement_ids": [
+        "R071"
+      ],
+      "owner_task": "B003",
+      "title": "跨对象身份一致",
+      "given": "有效Schema数据引用其他project证据",
+      "when": "写入数据库",
+      "then": [
+        "语义校验拒绝",
+        "事务无残留",
+        "schema通过不是事实可信"
+      ],
+      "required_evidence": [
+        "负例输入/错误"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT072",
+      "requirement_ids": [
+        "R072"
+      ],
+      "owner_task": "B019",
+      "title": "规范化摘要一致",
+      "given": "中文、控制字符、整数和不同键序对象",
+      "when": "Rust/TS/Python按测试向量计算",
+      "then": [
+        "摘要完全一致",
+        "重复键、float、孤立代理项拒绝",
+        "blob不归一化CRLF"
+      ],
+      "required_evidence": [
+        "hash vectors结果"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT073",
+      "requirement_ids": [
+        "R073"
+      ],
+      "owner_task": "B006",
+      "title": "事件重连与幂等",
+      "given": "事件断线重连、重复HTTP idempotency_key",
+      "when": "恢复游标并重放请求",
+      "then": [
+        "不重复应用变更",
+        "同key不同内容冲突",
+        "旧游标明确resync_required"
+      ],
+      "required_evidence": [
+        "事件与请求记录"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT074",
+      "requirement_ids": [
+        "R074"
+      ],
+      "owner_task": "B016",
+      "title": "多时钟不伪造顺序",
+      "given": "两进程/机器时间偏移且仅有部分因果ID",
+      "when": "合并时间线",
+      "then": [
+        "保留clock/uncertainty",
+        "无证据不宣称全序",
+        "跨界关联强度可见"
+      ],
+      "required_evidence": [
+        "时钟与link检查"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT075",
+      "requirement_ids": [
+        "R075"
+      ],
+      "owner_task": "B018",
+      "title": "无覆盖规则不装通过",
+      "given": "目标架构 rule 仅有人工描述无checker",
+      "when": "请求作为required验收",
+      "then": [
+        "declared_only显示",
+        "禁止required验收通过，提示实现检查器或显式重新定义契约"
+      ],
+      "required_evidence": [
+        "规则与验证状态"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT076",
+      "requirement_ids": [
+        "R076"
+      ],
+      "owner_task": "B017",
+      "title": "模型可选且输出不执行",
+      "given": "没有任何模型密钥/网络",
+      "when": "完成导航、人工架构与现有检查",
+      "then": [
+        "核心可用",
+        "模型增强显示未配置",
+        "模型输出命令仅数据不得自动执行"
+      ],
+      "required_evidence": [
+        "离线操作与审计"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT077",
+      "requirement_ids": [
+        "R077"
+      ],
+      "owner_task": "B031",
+      "title": "薄分叉升级边界",
+      "given": "上游修改一个复用模块接口",
+      "when": "执行升级兼容演练",
+      "then": [
+        "适配器契约测试发现差异",
+        "保留upstream署名NOTICE",
+        "不静默换版本"
+      ],
+      "required_evidence": [
+        "upstream delta",
+        "回归报告"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT078",
+      "requirement_ids": [
+        "R078"
+      ],
+      "owner_task": "B021",
+      "title": "大小写重命名及新建删除",
+      "given": "大小写不敏感系统和新增/删除文件变更",
+      "when": "应用再恢复并注入部分失败",
+      "then": [
+        "case-only move可恢复",
+        "目标已存在拒绝",
+        "不会删除后来被用户改过的新文件"
+      ],
+      "required_evidence": [
+        "文件系统操作日志"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT079",
+      "requirement_ids": [
+        "R079"
+      ],
+      "owner_task": "B015",
+      "title": "异常输入资源限制",
+      "given": "深层JSON、巨量Trace、损坏事件和压缩炸弹",
+      "when": "导入并取消",
+      "then": [
+        "有界内存/体积/深度",
+        "清理临时文件",
+        "原始artifact可诊断",
+        "不崩溃主服务"
+      ],
+      "required_evidence": [
+        "导入fuzz和资源报告"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    },
+    {
+      "id": "AT080",
+      "requirement_ids": [
+        "R080"
+      ],
+      "owner_task": "B008",
+      "title": "双模式默认行为",
+      "given": "新建Manager和Expedition且没有执行批准",
+      "when": "打开工程并等待watcher",
+      "then": [
+        "两模式均不自动测试/安装/上传",
+        "Expedition关闭无孤儿进程"
+      ],
+      "required_evidence": [
+        "系统调用/进程监控"
+      ],
+      "status": "not_run",
+      "execution_environment": "see language/platform profile; actual implementation required",
+      "synthetic_fixture_alone_is_sufficient": false
+    }
+  ]
+}

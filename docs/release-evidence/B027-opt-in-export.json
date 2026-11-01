@@ -1,0 +1,251 @@
+{
+  "bundle_digest": "sha256:00cf693dcb17629543c32d0e9cd4e41849c7401ee9d7b279132fb444147e53dd",
+  "generated_by": "crates/archmeld-core/tests/offline_report.rs",
+  "html": {
+    "anchor_links": true,
+    "external_urls": 0,
+    "graph_view": true,
+    "scripts": 0,
+    "sensitive_banner": true
+  },
+  "manifest": {
+    "attachments": [
+      {
+        "digest": "sha256:fc03e6dff04eccde143dc6b51d20705bc587705a8d255be9a59517ea7b8477e6",
+        "kind": "report",
+        "media_type": "application/json",
+        "path": "evidence/index.json",
+        "size": 1744
+      },
+      {
+        "digest": "sha256:fcb8456358ccfb924973fa372fc25dcf901e18d7175454b6c123670be1eea52d",
+        "kind": "report",
+        "media_type": "application/json",
+        "path": "model.json",
+        "size": 1814
+      },
+      {
+        "digest": "sha256:01c9fa7c363db827022eba2a90c52b243384cf1a7573b0e62e5951a3469b63be",
+        "kind": "report",
+        "media_type": "text/html",
+        "path": "report.html",
+        "size": 8372
+      },
+      {
+        "digest": "sha256:68296b66fe23759682379b88f5a72e0aab3aef9a5624a608b31926b7ec9c834d",
+        "kind": "report",
+        "media_type": "application/json",
+        "path": "report.json",
+        "size": 11553
+      },
+      {
+        "digest": "sha256:e2f9ca6329d7892ab5b73c008265c67ca4480b99569b9d48e858669a7f52fa35",
+        "kind": "source",
+        "media_type": "application/toml",
+        "path": "source/config/settings.toml",
+        "size": 14,
+        "source_path": "config/settings.toml"
+      },
+      {
+        "digest": "sha256:a4c4abd9d870d24247e21291845198376b6349008bf69b6f1b0ba3f0587467a3",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/Name.py",
+        "size": 14,
+        "source_path": "src/Name.py"
+      },
+      {
+        "digest": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/a.py",
+        "size": 10,
+        "source_path": "src/a.py"
+      },
+      {
+        "digest": "sha256:0332788b003fce09b25256d2d656cf97207612d1dfdb3dd65fc1745d699d39dc",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/b.py",
+        "size": 10,
+        "source_path": "src/b.py"
+      },
+      {
+        "digest": "sha256:c9e222c1584657308630b83eba704fb5ec64151bdedf46e89286bd16ba23aaab",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/calc/keep.py",
+        "size": 9,
+        "source_path": "src/calc/keep.py"
+      },
+      {
+        "digest": "sha256:0e947360937133a5d156fc11e5d551fc73ba3b69fc6b84522e6818b8eec0ae31",
+        "kind": "raw_trace",
+        "media_type": "application/octet-stream",
+        "owners": "runtime_native:run.report.trace",
+        "path": "traces/sha256/0e947360937133a5d156fc11e5d551fc73ba3b69fc6b84522e6818b8eec0ae31.bin",
+        "size": 55
+      },
+      {
+        "digest": "sha256:7a7f52871c690aa6c36e9925729d4a7f1ae44f94afb2b2ad212c8c05fbeeb4df",
+        "kind": "raw_trace",
+        "media_type": "application/json",
+        "owners": "",
+        "path": "traces/sha256/7a7f52871c690aa6c36e9925729d4a7f1ae44f94afb2b2ad212c8c05fbeeb4df.json",
+        "size": 574
+      }
+    ],
+    "bundle_digest": "sha256:00cf693dcb17629543c32d0e9cd4e41849c7401ee9d7b279132fb444147e53dd",
+    "external_urls": 0,
+    "files": [
+      {
+        "digest": "sha256:fc03e6dff04eccde143dc6b51d20705bc587705a8d255be9a59517ea7b8477e6",
+        "kind": "report",
+        "media_type": "application/json",
+        "path": "evidence/index.json",
+        "size": 1744
+      },
+      {
+        "digest": "sha256:fcb8456358ccfb924973fa372fc25dcf901e18d7175454b6c123670be1eea52d",
+        "kind": "report",
+        "media_type": "application/json",
+        "path": "model.json",
+        "size": 1814
+      },
+      {
+        "digest": "sha256:01c9fa7c363db827022eba2a90c52b243384cf1a7573b0e62e5951a3469b63be",
+        "kind": "report",
+        "media_type": "text/html",
+        "path": "report.html",
+        "size": 8372
+      },
+      {
+        "digest": "sha256:68296b66fe23759682379b88f5a72e0aab3aef9a5624a608b31926b7ec9c834d",
+        "kind": "report",
+        "media_type": "application/json",
+        "path": "report.json",
+        "size": 11553
+      },
+      {
+        "digest": "sha256:e2f9ca6329d7892ab5b73c008265c67ca4480b99569b9d48e858669a7f52fa35",
+        "kind": "source",
+        "media_type": "application/toml",
+        "path": "source/config/settings.toml",
+        "size": 14,
+        "source_path": "config/settings.toml"
+      },
+      {
+        "digest": "sha256:a4c4abd9d870d24247e21291845198376b6349008bf69b6f1b0ba3f0587467a3",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/Name.py",
+        "size": 14,
+        "source_path": "src/Name.py"
+      },
+      {
+        "digest": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/a.py",
+        "size": 10,
+        "source_path": "src/a.py"
+      },
+      {
+        "digest": "sha256:0332788b003fce09b25256d2d656cf97207612d1dfdb3dd65fc1745d699d39dc",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/b.py",
+        "size": 10,
+        "source_path": "src/b.py"
+      },
+      {
+        "digest": "sha256:c9e222c1584657308630b83eba704fb5ec64151bdedf46e89286bd16ba23aaab",
+        "kind": "source",
+        "media_type": "text/x-python",
+        "path": "source/src/calc/keep.py",
+        "size": 9,
+        "source_path": "src/calc/keep.py"
+      },
+      {
+        "digest": "sha256:0e947360937133a5d156fc11e5d551fc73ba3b69fc6b84522e6818b8eec0ae31",
+        "kind": "raw_trace",
+        "media_type": "application/octet-stream",
+        "owners": "runtime_native:run.report.trace",
+        "path": "traces/sha256/0e947360937133a5d156fc11e5d551fc73ba3b69fc6b84522e6818b8eec0ae31.bin",
+        "size": 55
+      },
+      {
+        "digest": "sha256:7a7f52871c690aa6c36e9925729d4a7f1ae44f94afb2b2ad212c8c05fbeeb4df",
+        "kind": "raw_trace",
+        "media_type": "application/json",
+        "owners": "",
+        "path": "traces/sha256/7a7f52871c690aa6c36e9925729d4a7f1ae44f94afb2b2ad212c8c05fbeeb4df.json",
+        "size": 574
+      }
+    ],
+    "generated_at": 1793524859,
+    "offline": true,
+    "project_id": "project.68fdd2281e352e74a7b7e3675949e427",
+    "raw_trace_state": "included",
+    "raw_traces_included": true,
+    "report_kind": "archmeld.offline_review",
+    "risk_labels": [
+      "this bundle contains opted-in source or trace bytes and is sensitive",
+      "source bytes may contain credentials, personal data or proprietary code",
+      "raw traces may contain process names, paths, environment values or user identifiers",
+      "no secret scanner ran; secrets_included is unknown",
+      "do not upload, publish or share this bundle without a manual review"
+    ],
+    "risk_level": "high",
+    "schema_version": "1.0",
+    "scripts": 0,
+    "secrets_included": "unknown: no secret scanner ran",
+    "snapshot_id": "sha256:140bdff56bff0d3e8392586264492261547a05b421835b3ea9c1ec5c3df365c1",
+    "source_bytes": 57,
+    "source_file_count": 5,
+    "source_included": true,
+    "source_state": "included",
+    "trace_bytes": 629,
+    "trace_file_count": 2,
+    "verification": "each file digest is checked again before publication"
+  },
+  "platform": "windows",
+  "risk": {
+    "labels": [
+      "this bundle contains opted-in source or trace bytes and is sensitive",
+      "source bytes may contain credentials, personal data or proprietary code",
+      "raw traces may contain process names, paths, environment values or user identifiers",
+      "no secret scanner ran; secrets_included is unknown",
+      "do not upload, publish or share this bundle without a manual review"
+    ],
+    "level": "high"
+  },
+  "schema_version": "1.0",
+  "source_policy": {
+    "raw_trace_max_bytes": 268435456,
+    "raw_trace_state": "included",
+    "raw_traces_included": true,
+    "reason": "explicit opt-in; the bundle now carries source/trace bytes and must be handled as sensitive",
+    "secrets_included": "unknown: no secret scanner ran",
+    "source_bytes": 57,
+    "source_file_count": 5,
+    "source_included": true,
+    "source_max_bytes": 67108864,
+    "source_state": "included",
+    "trace_bytes": 629,
+    "trace_file_count": 2
+  },
+  "tamper": {
+    "detected": true,
+    "error": "storage: bundle file source/src/a.py does not match its manifest digest"
+  },
+  "verified_checked_files": 11,
+  "viewer": {
+    "external_urls": 0,
+    "interaction": "anchor links to entity detail cards and CSS :target highlighting; no JavaScript",
+    "kind": "inline_svg_anchor_navigation",
+    "max_edges": 480,
+    "max_nodes": 240,
+    "scripts": 0
+  }
+}

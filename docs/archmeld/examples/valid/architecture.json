@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "id": "architecture.target",
+  "project_id": "project.synthetic",
+  "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "revision": 1,
+  "layer": "to_be",
+  "status": "candidate",
+  "components": [
+    {
+      "id": "component.compute",
+      "name": "计算职责",
+      "purpose": "保持输入输出明确",
+      "responsibilities": [
+        "纯计算"
+      ],
+      "non_responsibilities": [
+        "文件IO"
+      ],
+      "member_entity_ids": [
+        "symbol.compute"
+      ],
+      "owned_state": [],
+      "owned_resources": [],
+      "runtime_placement": [
+        "unknown until actual observation"
+      ],
+      "evidence_ids": [
+        "evidence.syntax"
+      ],
+      "open_questions": [
+        "外部契约尚需用户审阅"
+      ]
+    }
+  ],
+  "dependencies": [],
+  "rules": [],
+  "claim_ids": [
+    "claim.example"
+  ]
+}

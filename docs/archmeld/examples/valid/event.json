@@ -1,0 +1,14 @@
+{
+  "event_id": "event.demo",
+  "project_id": "project.synthetic",
+  "job_id": null,
+  "sequence": "1",
+  "type": "snapshot.created",
+  "timestamp": "2026-10-30T00:00:00Z",
+  "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "payload": {
+    "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+    "previous_snapshot_id": null,
+    "project_revision": 1
+  }
+}

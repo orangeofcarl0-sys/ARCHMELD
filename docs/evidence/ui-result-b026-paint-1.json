@@ -1,0 +1,419 @@
+{
+  "status": "passed",
+  "snapshot_id": "sha256:505c5fcf9301d85bb9346881666f184507c8b901ef6bfbd97ff1c3183171b9cc",
+  "project_id": "project.ui",
+  "endpoint": "http://127.0.0.1:1307",
+  "opened_tab": "ARCHMELD Graph",
+  "active_tab_before_capture": "ARCHMELD Graph",
+  "group_index": 1,
+  "commands": [
+    "archmeld.openGraph",
+    "archmeld.openSource",
+    "archmeld.back"
+  ],
+  "screenshot": "F:\\Codex_Work_Space\\ARCHMELD-work\\docs\\evidence\\b026-workbench-paint-1.png",
+  "capture_method": "cdp",
+  "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+  "captured_at": "2026-10-31T19:23:44.248Z",
+  "activator": "code --extensionDevelopmentPath --extensionTestsPath --wait",
+  "timings": {
+    "open_graph_command_ms": 147,
+    "panel_ready_ms": 350,
+    "settle_ms": 3000,
+    "webview_paint": {
+      "source": "graph webview postMessage paintReport/renderReport",
+      "first_contentful_paint_ms": 512,
+      "largest_contentful_paint_ms": 512,
+      "double_raf_ms": 5.600000000000023,
+      "webview_probe_double_raf_ms": 5.600000000000364,
+      "time_origin_ms": 1793474613672.1,
+      "load_report": {
+        "received_epoch_ms": 1793474614026,
+        "probe_version": 1,
+        "phase": "load",
+        "time_origin_ms": 1793474613672.1,
+        "captured_ms": 321.1000000089407,
+        "ready_state": "complete",
+        "paint_entries": [],
+        "first_contentful_paint_ms": null,
+        "largest_contentful_paint_ms": null,
+        "navigation": {
+          "response_end_ms": 81.20000000298023,
+          "dom_content_loaded_ms": 91.80000001192093,
+          "load_event_ms": 92
+        },
+        "first_raf_ms": 309.2,
+        "second_raf_ms": 314.8,
+        "double_raf_ms": 5.600000000000023
+      },
+      "settled_report": {
+        "received_epoch_ms": 1793474614989,
+        "probe_version": 1,
+        "phase": "settled",
+        "time_origin_ms": 1793474613672.1,
+        "captured_ms": 1316.300000011921,
+        "ready_state": "complete",
+        "paint_entries": [
+          {
+            "name": "first-paint",
+            "start_ms": 512
+          },
+          {
+            "name": "first-contentful-paint",
+            "start_ms": 512
+          }
+        ],
+        "first_contentful_paint_ms": 512,
+        "largest_contentful_paint_ms": 512,
+        "navigation": {
+          "response_end_ms": 81.20000000298023,
+          "dom_content_loaded_ms": 91.80000001192093,
+          "load_event_ms": 92
+        }
+      },
+      "render_reports": [
+        {
+          "received_epoch_ms": 1793474613965,
+          "renderer": "cytoscape",
+          "render_ms": 274.6000000089407,
+          "node_count": 2,
+          "edge_count": 1
+        }
+      ],
+      "probe_roundtrips_ms": [
+        10.6152,
+        8.7406,
+        9.4886
+      ],
+      "probe_double_raf_ms": [
+        5.5,
+        5.599999999998545,
+        5.600000000000364
+      ],
+      "probe_protocol_elapsed_ms": [
+        8,
+        6.5999999940395355,
+        7.4000000059604645
+      ]
+    },
+    "webview_frame": {
+      "frame_count": 6,
+      "first_frame_after_trigger_ms": 18.277,
+      "timestamp_scale": "epoch_ms",
+      "intervals_ms": [
+        61.712,
+        248.397,
+        289.127,
+        215.175,
+        312.929
+      ],
+      "interval_p95_ms": 312.929,
+      "scope": "workbench page screencast while only the webview document mutated (includes workbench compositing)"
+    },
+    "webview_frame_scope": "requestAnimationFrame double-frame interval and compositor screencast presentation timestamps; not GPU execution time",
+    "capture_target_metrics": {
+      "Timestamp": 114454.613096,
+      "AudioHandlers": 0,
+      "AudioWorkletProcessors": 0,
+      "Documents": 7,
+      "Frames": 7,
+      "JSEventListeners": 13578,
+      "LayoutObjects": 2107,
+      "MediaKeySessions": 0,
+      "MediaKeys": 0,
+      "Nodes": 3164,
+      "Resources": 17,
+      "ContextLifecycleStateObservers": 16,
+      "V8PerContextDatas": 2,
+      "WorkerGlobalScopes": 2,
+      "UACSSResources": 0,
+      "RTCPeerConnections": 0,
+      "ResourceFetchers": 11,
+      "AdSubframes": 0,
+      "DetachedScriptStates": 1,
+      "ArrayBufferContents": 2114,
+      "LayoutCount": 0,
+      "RecalcStyleCount": 0,
+      "LayoutDuration": 0,
+      "RecalcStyleDuration": 0,
+      "DevToolsCommandDuration": 0.000483,
+      "ScriptDuration": 0,
+      "V8CompileDuration": 0,
+      "TaskDuration": 0.001049,
+      "TaskOtherDuration": 0.000566,
+      "ThreadTime": 0.000329,
+      "ProcessTime": 11.850593,
+      "JSHeapUsedSize": 100780548,
+      "JSHeapTotalSize": 152338432,
+      "FirstMeaningfulPaint": 0,
+      "DomContentLoaded": 114438.536137,
+      "NavigationStart": 114437.982137
+    },
+    "metrics_scope": "CDP page capture metrics; webview paint/frame values come from the webview document and frame observations recorded separately"
+  },
+  "paint_reports": [
+    {
+      "received_epoch_ms": 1793474613966,
+      "probe_version": 1,
+      "phase": "interactive",
+      "time_origin_ms": 1793474613672.1,
+      "captured_ms": 276.80000001192093,
+      "ready_state": "loading",
+      "paint_entries": [],
+      "first_contentful_paint_ms": null,
+      "largest_contentful_paint_ms": null,
+      "navigation": {
+        "response_end_ms": 81.20000000298023,
+        "dom_content_loaded_ms": 91.80000001192093,
+        "load_event_ms": 92
+      }
+    },
+    {
+      "received_epoch_ms": 1793474614026,
+      "probe_version": 1,
+      "phase": "load",
+      "time_origin_ms": 1793474613672.1,
+      "captured_ms": 321.1000000089407,
+      "ready_state": "complete",
+      "paint_entries": [],
+      "first_contentful_paint_ms": null,
+      "largest_contentful_paint_ms": null,
+      "navigation": {
+        "response_end_ms": 81.20000000298023,
+        "dom_content_loaded_ms": 91.80000001192093,
+        "load_event_ms": 92
+      },
+      "first_raf_ms": 309.2,
+      "second_raf_ms": 314.8,
+      "double_raf_ms": 5.600000000000023
+    },
+    {
+      "received_epoch_ms": 1793474614989,
+      "probe_version": 1,
+      "phase": "settled",
+      "time_origin_ms": 1793474613672.1,
+      "captured_ms": 1316.300000011921,
+      "ready_state": "complete",
+      "paint_entries": [
+        {
+          "name": "first-paint",
+          "start_ms": 512
+        },
+        {
+          "name": "first-contentful-paint",
+          "start_ms": 512
+        }
+      ],
+      "first_contentful_paint_ms": 512,
+      "largest_contentful_paint_ms": 512,
+      "navigation": {
+        "response_end_ms": 81.20000000298023,
+        "dom_content_loaded_ms": 91.80000001192093,
+        "load_event_ms": 92
+      }
+    }
+  ],
+  "paint_probes": [
+    {
+      "probe_id": "paint-1",
+      "roundtrip_ms": 10.6152,
+      "report": {
+        "probe_version": 1,
+        "phase": "probe",
+        "time_origin_ms": 1793474613672.1,
+        "captured_ms": 10082.90000000596,
+        "ready_state": "complete",
+        "paint_entries": [
+          {
+            "name": "first-paint",
+            "start_ms": 512
+          },
+          {
+            "name": "first-contentful-paint",
+            "start_ms": 512
+          }
+        ],
+        "first_contentful_paint_ms": 512,
+        "largest_contentful_paint_ms": 512,
+        "navigation": {
+          "response_end_ms": 81.20000000298023,
+          "dom_content_loaded_ms": 91.80000001192093,
+          "load_event_ms": 92
+        },
+        "probe_id": "paint-1",
+        "start_ms": 10074.90000000596,
+        "first_raf_ms": 10076.1,
+        "second_raf_ms": 10081.6,
+        "double_raf_ms": 5.5,
+        "protocol_elapsed_ms": 8
+      }
+    },
+    {
+      "probe_id": "paint-2",
+      "roundtrip_ms": 8.7406,
+      "report": {
+        "probe_version": 1,
+        "phase": "probe",
+        "time_origin_ms": 1793474613672.1,
+        "captured_ms": 10243.90000000596,
+        "ready_state": "complete",
+        "paint_entries": [
+          {
+            "name": "first-paint",
+            "start_ms": 512
+          },
+          {
+            "name": "first-contentful-paint",
+            "start_ms": 512
+          }
+        ],
+        "first_contentful_paint_ms": 512,
+        "largest_contentful_paint_ms": 512,
+        "navigation": {
+          "response_end_ms": 81.20000000298023,
+          "dom_content_loaded_ms": 91.80000001192093,
+          "load_event_ms": 92
+        },
+        "probe_id": "paint-2",
+        "start_ms": 10237.40000000596,
+        "first_raf_ms": 10237.2,
+        "second_raf_ms": 10242.8,
+        "double_raf_ms": 5.599999999998545,
+        "protocol_elapsed_ms": 6.5999999940395355
+      }
+    },
+    {
+      "probe_id": "paint-3",
+      "roundtrip_ms": 9.4886,
+      "report": {
+        "probe_version": 1,
+        "phase": "probe",
+        "time_origin_ms": 1793474613672.1,
+        "captured_ms": 10416.10000000894,
+        "ready_state": "complete",
+        "paint_entries": [
+          {
+            "name": "first-paint",
+            "start_ms": 512
+          },
+          {
+            "name": "first-contentful-paint",
+            "start_ms": 512
+          }
+        ],
+        "first_contentful_paint_ms": 512,
+        "largest_contentful_paint_ms": 512,
+        "navigation": {
+          "response_end_ms": 81.20000000298023,
+          "dom_content_loaded_ms": 91.80000001192093,
+          "load_event_ms": 92
+        },
+        "probe_id": "paint-3",
+        "start_ms": 10408.70000000298,
+        "first_raf_ms": 10409.4,
+        "second_raf_ms": 10415,
+        "double_raf_ms": 5.600000000000364,
+        "protocol_elapsed_ms": 7.4000000059604645
+      }
+    }
+  ],
+  "webview_measurement": {
+    "available": true,
+    "frame_url": "vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/index.html?id=01c893f8-3cb8-4075-8ad1-6c3ff74f4abf&parentId=1&origin=82637116-1015-42f6-b555-553721728587&swVersion=6&extensionId=archmeld.archmeld-workbench&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app",
+    "frames": [
+      {
+        "url": ""
+      },
+      {
+        "url": ""
+      }
+    ],
+    "probe": {
+      "accessible": true,
+      "depth": 1,
+      "href": "vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/index.html?id=01c893f8-3cb8-4075-8ad1-6c3ff74f4abf&parentId=1&origin=82637116-1015-42f6-b555-553721728587&swVersion=6&extensionId=archmeld.archmeld-workbench&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app",
+      "ready_state": "complete",
+      "time_origin_ms": 1793474613672.1,
+      "paint_entries": [
+        {
+          "name": "first-paint",
+          "start_ms": 512
+        },
+        {
+          "name": "first-contentful-paint",
+          "start_ms": 512
+        }
+      ],
+      "first_contentful_paint_ms": 512,
+      "largest_contentful_paint_ms": null,
+      "navigation": {
+        "response_end_ms": 81.20000000298023,
+        "dom_content_loaded_ms": 91.80000001192093,
+        "load_event_ms": 92
+      },
+      "node_count": 0,
+      "edge_count": 0,
+      "cytoscape_container": true,
+      "header_text": "ARCHMELD · file",
+      "double_raf": {
+        "start_ms": 8832.800000011921,
+        "first_raf_ms": 8831.6,
+        "second_raf_ms": 8837.2,
+        "double_raf_ms": 5.600000000000364,
+        "elapsed_ms": 5.899999991059303
+      }
+    },
+    "screencast": {
+      "frame_count": 6,
+      "first_frame_after_trigger_ms": 18.277,
+      "timestamp_scale": "epoch_ms",
+      "intervals_ms": [
+        61.712,
+        248.397,
+        289.127,
+        215.175,
+        312.929
+      ],
+      "interval_p95_ms": 312.929,
+      "scope": "workbench page screencast while only the webview document mutated (includes workbench compositing)"
+    },
+    "targets": [
+      {
+        "type": "page",
+        "title": "[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+        "url": "vscode-file://vscode-app/d:/Program%20Files/Microsoft%20VS%20Code/2a59476c9b/resources/app/out/vs/code/electron-browser/workbench/workbench.html"
+      },
+      {
+        "type": "iframe",
+        "title": "vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/index.html?id=01c893f8-3cb8-4075-8ad1-6c3ff74f4abf",
+        "url": "vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/index.html?id=01c893f8-3cb8-4075-8ad1-6c3ff74f4abf&parentId=1&origin=82637116-1015-42f6-b5"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/service-worker.js?v=6&amp;vscode-re",
+        "url": "vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/service-worker.js?v=6&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&remote"
+      },
+      {
+        "type": "worker",
+        "title": "",
+        "url": ""
+      },
+      {
+        "type": "worker",
+        "title": "",
+        "url": ""
+      }
+    ],
+    "limitations": []
+  },
+  "budgets": {
+    "open_graph_command_ms": 10000,
+    "panel_ready_ms": 20000,
+    "capture_target_task_duration_s": 30,
+    "webview_first_contentful_paint_ms": 5000,
+    "webview_probe_roundtrip_ms": 2000,
+    "webview_double_raf_ms": 1000,
+    "webview_first_frame_after_trigger_ms": 500
+  },
+  "budget_failures": []
+}

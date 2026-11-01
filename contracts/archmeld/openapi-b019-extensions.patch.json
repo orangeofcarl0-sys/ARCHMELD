@@ -1,0 +1,32 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-022-contract-digest-and-plan-approval.md",
+  "changes": [
+    {
+      "method": "GET",
+      "path": "/v1/contracts/{contract_id}",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/plans/{plan_id}",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/plans/{plan_id}/approve",
+      "summary": "Append an approved plan revision bound to the exact frozen contract digest; stale contracts are rejected."
+    }
+  ],
+  "digest_preimage": "AM-C14N-1(BehaviorContract excluding digest and frozen)",
+  "plan_approval": {
+    "requires_status": "draft",
+    "requires_latest_contract_digest": true,
+    "creates_changeset": false
+  }
+}

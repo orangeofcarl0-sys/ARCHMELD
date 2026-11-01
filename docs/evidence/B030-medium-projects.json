@@ -1,0 +1,994 @@
+{
+  "generated_by": "crates/archmeld-core/tests/language_medium_projects.rs",
+  "groups": {
+    "c_cpp": {
+      "archive": {
+        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/5.4.7.tar.gz",
+        "sha256": "5c39111b3fc4c1c9e56671008955a1730f54a15b95e1f1bd0752b868b929d8e3",
+        "verified": true
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "D:/Strawberry/c/bin/gcc.exe",
+            "-O2",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lapi.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lauxlib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lbaselib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lcode.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lcorolib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lctype.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldblib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldebug.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldo.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldump.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lfunc.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lgc.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\linit.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\liolib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\llex.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lmathlib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lmem.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\loadlib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lobject.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lopcodes.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\loslib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lparser.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lstate.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lstring.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lstrlib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltable.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltablib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltests.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltm.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lua.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lundump.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lutf8lib.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lvm.c",
+            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lzio.c",
+            "-o",
+            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out\\lua.exe",
+            "-lm"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 26,
+            "processes": [
+              {
+                "first_seen_ms": 6399,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 1016
+              },
+              {
+                "first_seen_ms": 3229,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 8148
+              },
+              {
+                "first_seen_ms": 12743,
+                "name": "as.exe",
+                "parent_pid": 50412,
+                "pid": 10712
+              },
+              {
+                "first_seen_ms": 2702,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 12088
+              },
+              {
+                "first_seen_ms": 4819,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 17292
+              },
+              {
+                "first_seen_ms": 1650,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 26332
+              },
+              {
+                "first_seen_ms": 17489,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 27396
+              },
+              {
+                "first_seen_ms": 4287,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 27828
+              },
+              {
+                "first_seen_ms": 3760,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 28692
+              },
+              {
+                "first_seen_ms": 5873,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 28728
+              },
+              {
+                "first_seen_ms": 11687,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 28808
+              },
+              {
+                "first_seen_ms": 12215,
+                "name": "as.exe",
+                "parent_pid": 50412,
+                "pid": 29060
+              },
+              {
+                "first_seen_ms": 13272,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 31196
+              },
+              {
+                "first_seen_ms": 11162,
+                "name": "as.exe",
+                "parent_pid": 50412,
+                "pid": 31212
+              },
+              {
+                "first_seen_ms": 1123,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 31840
+              },
+              {
+                "first_seen_ms": 13802,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 32192
+              },
+              {
+                "first_seen_ms": 9576,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 38712
+              },
+              {
+                "first_seen_ms": 69,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 39244
+              },
+              {
+                "first_seen_ms": 9045,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 41280
+              },
+              {
+                "first_seen_ms": 10108,
+                "name": "as.exe",
+                "parent_pid": 50412,
+                "pid": 41528
+              },
+              {
+                "first_seen_ms": 15385,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 44092
+              },
+              {
+                "first_seen_ms": 6927,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 44172
+              },
+              {
+                "first_seen_ms": 15911,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 45720
+              },
+              {
+                "first_seen_ms": 10636,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 48096
+              },
+              {
+                "first_seen_ms": 2177,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 49332
+              },
+              {
+                "first_seen_ms": 7456,
+                "name": "cc1.exe",
+                "parent_pid": 50412,
+                "pid": 50472
+              }
+            ],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "",
+          "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false,
+          "wall_ms": 17956
+        },
+        "smoke": {
+          "argv": [
+            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out\\lua.exe",
+            "-e",
+            "print(2+2)"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "4\r\n",
+          "stdout_digest": "sha256:7c468f5e59f2871b946e051445493bbcace531d597edbbcc9935e7d02d025114",
+          "timed_out": false,
+          "wall_ms": 179
+        }
+      },
+      "license": "MIT",
+      "limitations": [
+        "Windows GNU build; Lua's readline/termcap integration is not compiled"
+      ],
+      "minimum_source_files": 30,
+      "sample": "lua",
+      "source_file_count": 40,
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7",
+      "source_tree_digest": "sha256:807a5cb390ef29a260b7ce6dc71a7a7d05e0754e00400e397afc543719e0aa55",
+      "source_url": "https://github.com/lua/lua/tree/v5.4.7",
+      "status": "verified",
+      "version": "5.4.7"
+    },
+    "csharp": {
+      "archive": {
+        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/newtonsoft.tar.gz",
+        "sha256": "3dc1eeeb8f781122e0713481bad993329c669feb9928cc4ec86e0ab24d9eff9e",
+        "verified": true
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+            "build",
+            "Src/Newtonsoft.Json/Newtonsoft.Json.csproj",
+            "-f",
+            "netstandard2.0",
+            "-nologo",
+            "-v:q"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(24,5): warning : 找不到具有带目录“F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json”的工作目录的存储库。 [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(47,5): warning : 找不到具有带目录“F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json”的工作目录的存储库。 [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.sourcelink.common\\1.0.0\\build\\Microsoft.SourceLink.Common.targets(52,5): warning : 源代码管理信息不可用 - 生成的源链接为空。 [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.codeanalysis.netanalyzers\\6.0.0\\build\\Microsoft.CodeAnalysis.NetAnalyzers.targets(591,5): warning : The .NET SDK has newer analyzers with version '8.0.0' than what version '6.0.0' of 'Microsoft.CodeAnalysis.NetAnalyzers' package provides. Update or remove this package reference. [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\n\r\n已成功生成。\r\n\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(24,5): warning : 找不到具有带目录“F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json”的工作目录的存储库。 [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(47,5): warning : 找不到具有带目录“F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json”的工作目录的存储库。 [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.sourcelink.common\\1.0.0\\build\\Microsoft.SourceLink.Common.targets(52,5): warning : 源代码管理信息不可用 - 生成的源链接为空。 [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\nF:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\nuget-packages\\microsoft.codeanalysis.netanalyzers\\6.0.0\\build\\Microsoft.CodeAnalysis.NetAnalyzers.targets(591,5): warning : The .NET SDK has newer analyzers with version '8.0.0' than what version '6.0.0' of 'Microsoft.CodeAnalysis.NetAnalyzers' package provides. Update or remove this package reference. [F:\\Codex_Work_Space\\_archmeld_tools\\fixtures\\Newtonsoft.Json-13.0.3\\Src\\Newtonsoft.Json\\Newtonsoft.Json.csproj::TargetFramework=netstandard2.0]\r\n    4 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:00.55\r\n",
+          "stdout_digest": "sha256:cbd3f5fa27868c5e0d0b73bef7552620090c4b2b5ecf810c8ed6965cd5270ee4",
+          "timed_out": false,
+          "wall_ms": 2764
+        }
+      },
+      "license": "MIT",
+      "limitations": [
+        "NuGet restore may require network on a new machine; package versions are resolved by the pinned project"
+      ],
+      "minimum_source_files": 200,
+      "sample": "newtonsoft-json",
+      "source_file_count": 235,
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3/Src/Newtonsoft.Json",
+      "source_tree_digest": "sha256:bd440c517a83b6f140a99cf9b03dd5efb7c5d7574850cf8dee7b58f5af92eea9",
+      "source_url": "https://github.com/JamesNK/Newtonsoft.Json/tree/13.0.3",
+      "status": "verified",
+      "version": "13.0.3"
+    },
+    "go": {
+      "archive": {
+        "reason": "sample comes from the pinned local toolchain",
+        "verified": false
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+            "test",
+            "net/http",
+            "-run",
+            "TestStatusText"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-go-NIx1H5",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "ok  \tnet/http\t(cached) [no tests to run]\n",
+          "stdout_digest": "sha256:304716db75ddb80997e7e2700dee5a264eb0083844af51cd4c847dae60003106",
+          "timed_out": false,
+          "wall_ms": 948
+        }
+      },
+      "license": "BSD-3-Clause",
+      "limitations": [
+        "standard-library package, not a standalone module"
+      ],
+      "minimum_source_files": 150,
+      "sample": "go-stdlib-net-http",
+      "source_file_count": 158,
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/go/go/src/net/http",
+      "source_tree_digest": "sha256:c6f3c1875c17b66f7aa3ffcd9806211b25b6ab7c1fcbd34c02e19232e987d9cc",
+      "source_url": "https://github.com/golang/go/tree/go1.27.3/src/net/http",
+      "status": "verified",
+      "version": "go1.27.3"
+    },
+    "java": {
+      "archive": {
+        "path": "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/lib/src.zip",
+        "sha256": "726ad631e289979e88688dc53ca8b4486f2296001525011313a548c8e55a3840",
+        "verified": true
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+            "--patch-module",
+            "java.base=F:/Codex_Work_Space/_archmeld_tools/fixtures/jdk-src/java.base",
+            "-d",
+            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-java-5mGvcW\\out",
+            "@F:/Codex_Work_Space/_archmeld_temp\\b030-medium-java-5mGvcW\\sources.txt"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-java-5mGvcW",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "",
+          "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false,
+          "wall_ms": 5287
+        }
+      },
+      "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+      "limitations": [
+        "compiled with --patch-module java.base; no JDK image is produced"
+      ],
+      "minimum_source_files": 60,
+      "sample": "openjdk-java.util.concurrent",
+      "source_file_count": 68,
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/jdk-src/java.base/java/util/concurrent",
+      "source_tree_digest": "sha256:ce252315f0de4497750ee4134d80870b9c81e7913a5d07d1f2966185600db373",
+      "source_url": "https://github.com/adoptium/temurin25-binaries/releases/tag/jdk-25.0.5%2B8",
+      "status": "verified",
+      "version": "Temurin JDK 25.0.5+8"
+    },
+    "javascript_typescript": {
+      "archive": {
+        "reason": "sample comes from the pinned local toolchain",
+        "verified": false
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "node",
+            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-javascript_typescript-fHUOsh\\parse_all.cjs",
+            "C:/Program Files/nodejs/node_modules/npm/lib"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-javascript_typescript-fHUOsh",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "117\n",
+          "stdout_digest": "sha256:a737da4882749cf1706e40662641df964aeb7fb3311242782663c76ad8fb3593",
+          "timed_out": false,
+          "wall_ms": 262
+        },
+        "parsed_scripts": 117
+      },
+      "license": "Artistic-2.0",
+      "limitations": [
+        "JavaScript is parsed, not bundled; there is no compile step in the sample",
+        "TypeScript capability is verified on the golden fixture, not by this JavaScript sample"
+      ],
+      "minimum_source_files": 100,
+      "sample": "npm",
+      "source_file_count": 117,
+      "source_path": "C:/Program Files/nodejs/node_modules/npm/lib",
+      "source_tree_digest": "sha256:915b6265df6512ad48a9b2c5b51a8e04321978e4049095b0f539e5159aa6ef8a",
+      "source_url": "https://github.com/npm/cli",
+      "status": "verified",
+      "version": "npm bundled with Node 24.14.1"
+    },
+    "python": {
+      "archive": {
+        "reason": "sample comes from the pinned local toolchain",
+        "verified": false
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "python",
+            "-m",
+            "compileall",
+            "-q",
+            "asyncio"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-python-cDlzfx",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "",
+          "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false,
+          "wall_ms": 830
+        },
+        "smoke": {
+          "argv": [
+            "python",
+            "-c",
+            "import asyncio; print(asyncio.__name__)"
+          ],
+          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-python-cDlzfx",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 0,
+            "processes": [],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "",
+          "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "asyncio\r\n",
+          "stdout_digest": "sha256:c7a716e5f2256be3e41f9c07c61202de82232d4c9afbb09936e5d24595a91e50",
+          "timed_out": false,
+          "wall_ms": 308
+        }
+      },
+      "license": "PSF-2.0",
+      "limitations": [
+        "sample is the stdlib package shipped with the pinned Windows CPython build"
+      ],
+      "minimum_source_files": 30,
+      "sample": "cpython-asyncio",
+      "source_file_count": 33,
+      "source_path": "<local-user>/AppData/Local/Programs/Python/Python311/Lib/asyncio",
+      "source_tree_digest": "sha256:f77136b376d86c470888cb117ad2fa97887eb3be8af652e0dd0362cff4b8e06f",
+      "source_url": "https://github.com/python/cpython/tree/v3.11.9/Lib/asyncio",
+      "status": "verified",
+      "version": "3.11.9"
+    },
+    "rust": {
+      "archive": {
+        "reason": "sample comes from the pinned local toolchain",
+        "verified": false
+      },
+      "build": {
+        "build": {
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "codegraph",
+            "--no-default-features",
+            "--offline",
+            "--target-dir",
+            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-rust-AvPIuY\\target"
+          ],
+          "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../..",
+          "exit_code": 0,
+          "process_audit": {
+            "cleanup": [],
+            "error": null,
+            "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+            "observed": 67,
+            "processes": [
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 3556
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 3556,
+                "pid": 5644
+              },
+              {
+                "first_seen_ms": 14833,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 14528
+              },
+              {
+                "first_seen_ms": 2686,
+                "name": "rustc.exe",
+                "parent_pid": 50472,
+                "pid": 20996
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 23028
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 42536,
+                "pid": 23176
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 44772,
+                "pid": 25736
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "build-script-build.exe",
+                "parent_pid": 44876,
+                "pid": 25740
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 27296
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 27552
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 27552,
+                "pid": 28024
+              },
+              {
+                "first_seen_ms": 558,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 28204
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 28288
+              },
+              {
+                "first_seen_ms": 4811,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 28456
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "rustc.exe",
+                "parent_pid": 25740,
+                "pid": 28544
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 30488,
+                "pid": 28628
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 41756,
+                "pid": 28692
+              },
+              {
+                "first_seen_ms": 9030,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 28808
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 44844,
+                "pid": 30488
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 46424,
+                "pid": 30896
+              },
+              {
+                "first_seen_ms": 13255,
+                "name": "collect2.exe",
+                "parent_pid": 39064,
+                "pid": 31356
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 28628,
+                "pid": 35900
+              },
+              {
+                "first_seen_ms": 10624,
+                "name": "ld.exe",
+                "parent_pid": 49612,
+                "pid": 37788
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 50304,
+                "pid": 38792
+              },
+              {
+                "first_seen_ms": 12730,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 28808,
+                "pid": 39064
+              },
+              {
+                "first_seen_ms": 13780,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 40252
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 41288
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 5644,
+                "pid": 41756
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 42268
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 42536
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 49164,
+                "pid": 43488
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "git.exe",
+                "parent_pid": 46884,
+                "pid": 43964
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 51172,
+                "pid": 44028
+              },
+              {
+                "first_seen_ms": 2160,
+                "name": "build-script-build.exe",
+                "parent_pid": 44876,
+                "pid": 44328
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 45672,
+                "pid": 44772
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 44844
+              },
+              {
+                "first_seen_ms": 558,
+                "name": "cargo.exe",
+                "parent_pid": 40936,
+                "pid": 44876
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 51100,
+                "pid": 45096
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 44028,
+                "pid": 45248
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 45256
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 45256,
+                "pid": 45672
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 45904
+              },
+              {
+                "first_seen_ms": 10099,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 50696,
+                "pid": 45952
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 46424
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 46536
+              },
+              {
+                "first_seen_ms": 3222,
+                "name": "build-script-build.exe",
+                "parent_pid": 44876,
+                "pid": 46884
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "ld.exe",
+                "parent_pid": 48664,
+                "pid": 48564
+              },
+              {
+                "first_seen_ms": 3746,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 48628
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "collect2.exe",
+                "parent_pid": 43488,
+                "pid": 48664
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 49600,
+                "pid": 49104
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 49164
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 49208
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 51124,
+                "pid": 49600
+              },
+              {
+                "first_seen_ms": 10099,
+                "name": "collect2.exe",
+                "parent_pid": 45952,
+                "pid": 49612
+              },
+              {
+                "first_seen_ms": 1097,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 49988
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "ld.exe",
+                "parent_pid": 50732,
+                "pid": 50072
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 23176,
+                "pid": 50304
+              },
+              {
+                "first_seen_ms": 7440,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 50464
+              },
+              {
+                "first_seen_ms": 2686,
+                "name": "build-script-build.exe",
+                "parent_pid": 44876,
+                "pid": 50472
+              },
+              {
+                "first_seen_ms": 7440,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 50548
+              },
+              {
+                "first_seen_ms": 9030,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 50696
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 30896,
+                "pid": 50732
+              },
+              {
+                "first_seen_ms": 4284,
+                "name": "rustc.exe",
+                "parent_pid": 44876,
+                "pid": 50764
+              },
+              {
+                "first_seen_ms": 13255,
+                "name": "ld.exe",
+                "parent_pid": 31356,
+                "pid": 51000
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "collect2.exe",
+                "parent_pid": 28024,
+                "pid": 51100
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 41288,
+                "pid": 51124
+              },
+              {
+                "first_seen_ms": 1632,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 49988,
+                "pid": 51172
+              }
+            ],
+            "state": "complete",
+            "survivors": [],
+            "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+          },
+          "stderr": "   Compiling proc-macro2 v1.0.106\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.45\n   Compiling serde_core v1.0.228\n   Compiling zmij v1.0.21\n   Compiling getrandom v0.4.2\n    Checking cfg-if v1.0.4\n   Compiling thiserror v1.0.69\n   Compiling serde v1.0.228\n   Compiling serde_json v1.0.149\n   Compiling codegraph v0.2.0 (F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\codegraph)\n    Checking itoa v1.0.18\n    Checking memchr v2.8.0\n    Checking log v0.4.29\n   Compiling syn v2.0.117\n    Checking uuid v1.23.0\n   Compiling thiserror-impl v1.0.69\n   Compiling serde_derive v1.0.228\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.01s\n",
+          "stderr_digest": "sha256:9c5c2531924a5071a09c47f9a82ddba101aa4217345b219020500f0a6ce2a4ae",
+          "stdout": "",
+          "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false,
+          "wall_ms": 16158
+        }
+      },
+      "license": "Apache-2.0",
+      "limitations": [
+        "checked without the rocksdb-backend feature in an isolated target directory; the default-feature build is covered by workspace tests"
+      ],
+      "minimum_source_files": 40,
+      "sample": "codegraph-core",
+      "source_file_count": 44,
+      "source_path": "crates/codegraph",
+      "source_tree_digest": "sha256:59dc6a4f744aeb6a1688b221787f966f02a1eab731b3975996155949f9c8573f",
+      "source_url": "upstream CodeGraph 590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+      "status": "verified",
+      "version": "workspace pinned at the ARCHMELD checkout"
+    }
+  },
+  "lock": "adapters/languages/fixtures.lock.json",
+  "note": "Each sample is a pinned public project or toolchain source tree. Builds and smoke commands were executed for real; limitations are copied from the lock and are not averaged into a score.",
+  "platform": {
+    "arch": "x86_64",
+    "os": "windows"
+  },
+  "schema_version": "1.0"
+}

@@ -1,0 +1,44 @@
+{
+  "generated_by": "benchmarks/security-csp.js",
+  "status": "passed",
+  "injection": "<script>alert(1)</script> https://evil.example/leak",
+  "surfaces": [
+    {
+      "surface": "graph",
+      "bytes": 3399,
+      "csp_default_none": true,
+      "remote_asset_present": false,
+      "unescaped_script_tag": false,
+      "escaped_script_visible": true,
+      "script_src": "script-src 'nonce-b028csp'",
+      "nonce_when_required": true,
+      "unsafe_inline_script": false
+    },
+    {
+      "surface": "architecture-review",
+      "bytes": 2092,
+      "csp_default_none": true,
+      "remote_asset_present": false,
+      "unescaped_script_tag": false,
+      "escaped_script_visible": true,
+      "script_src": "",
+      "nonce_when_required": null,
+      "unsafe_inline_script": false
+    },
+    {
+      "surface": "changeset-review",
+      "bytes": 3721,
+      "csp_default_none": true,
+      "remote_asset_present": false,
+      "unescaped_script_tag": false,
+      "escaped_script_visible": true,
+      "script_src": "script-src 'nonce-b028csp'",
+      "nonce_when_required": true,
+      "unsafe_inline_script": false
+    }
+  ],
+  "limitations": [
+    "CSP is checked in rendered HTML, not by a browser security engine",
+    "VS Code webview host policy is outside this script"
+  ]
+}

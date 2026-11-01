@@ -1,0 +1,191 @@
+{
+  "version": "1.0",
+  "state": "targets_not_implemented_or_verified",
+  "profiles": [
+    {
+      "id": "c-cpp",
+      "languages": [
+        "c",
+        "cpp"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "scip-clang + clangd",
+      "transform": "clangd/Clang structured tooling",
+      "runtime": "Tracy or explicit OTLP spans",
+      "build_context": "compile_commands.json and per-target configuration",
+      "limits": [
+        "Native Windows clangd; scip-clang official binary platform limitations must be diagnosed"
+      ],
+      "acceptance_anchor": "AT027",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    },
+    {
+      "id": "python",
+      "languages": [
+        "python"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "scip-python + Pyright",
+      "transform": "language rename / LibCST",
+      "runtime": "VizTracer actual capture",
+      "build_context": "interpreter and dependency environment",
+      "limits": [
+        "Dynamic import/reflection unresolved targets remain candidates"
+      ],
+      "acceptance_anchor": "AT025",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    },
+    {
+      "id": "js-ts",
+      "languages": [
+        "javascript",
+        "typescript"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "scip-typescript + TypeScript language service",
+      "transform": "TypeScript language service / ast-grep",
+      "runtime": "Node trace/Inspector or explicit OTLP spans",
+      "build_context": "tsconfig, package lock, runtime/bundler aliases",
+      "limits": [
+        "JS and TS status separate; dynamic property resolution not guaranteed"
+      ],
+      "acceptance_anchor": "AT026",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    },
+    {
+      "id": "java",
+      "languages": [
+        "java"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "scip-java + JDT",
+      "transform": "JDT; separately audited OSS recipes only",
+      "runtime": "JFR or explicit OTLP spans with source manifest",
+      "build_context": "JDK, build configuration, annotation processors",
+      "limits": [
+        "Reflection/DI/annotation generation explicit limitations"
+      ],
+      "acceptance_anchor": "AT029",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    },
+    {
+      "id": "csharp",
+      "languages": [
+        "csharp"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "scip-dotnet + Roslyn/csharp-ls",
+      "transform": "Roslyn",
+      "runtime": "EventPipe or explicit OTLP spans",
+      "build_context": "SDK, project targets and source generators",
+      "limits": [
+        "Generated source not silently editable"
+      ],
+      "acceptance_anchor": "AT030",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    },
+    {
+      "id": "go",
+      "languages": [
+        "go"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "scip-go + gopls",
+      "transform": "gopls / native AST",
+      "runtime": "Go execution trace or explicit OTLP spans",
+      "build_context": "go.mod/go.sum, build tags, GOOS/GOARCH",
+      "limits": [
+        "cgo/reflect/interface dispatch explicit candidates"
+      ],
+      "acceptance_anchor": "AT031",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    },
+    {
+      "id": "rust",
+      "languages": [
+        "rust"
+      ],
+      "mandatory_R1": true,
+      "structure": "CodeGraph pinned parsers",
+      "semantics": "rust-analyzer SCIP and language services",
+      "transform": "rust-analyzer assists",
+      "runtime": "tracing/OTLP or Tracy",
+      "build_context": "Cargo lock, features, target, build scripts",
+      "limits": [
+        "proc macros/build scripts require execution permission"
+      ],
+      "acceptance_anchor": "AT032",
+      "capabilities": {
+        "structure": "target_not_verified",
+        "definition_reference": "target_not_verified",
+        "runtime_linkage": "target_not_verified",
+        "bounded_refactor": "target_not_verified",
+        "build_verify": "target_not_verified"
+      },
+      "call_graph_guarantee": "best evidenced candidates, not whole-program soundness/completeness"
+    }
+  ],
+  "scientific_profile": {
+    "mandatory_domain_fixture": true,
+    "languages": [
+      "python",
+      "c-cpp"
+    ],
+    "matlab": "optional separate adapter, not parity claim; license review required"
+  },
+  "platforms": {
+    "required_release": [
+      "windows-11-x64",
+      "ubuntu-24.04-x64"
+    ],
+    "macos": "not_verified_no_release_claim"
+  }
+}

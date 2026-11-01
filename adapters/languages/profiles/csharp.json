@@ -1,0 +1,40 @@
+{
+  "id": "csharp",
+  "languages": [
+    "csharp"
+  ],
+  "status": "partial",
+  "fixture": "fixtures/csharp",
+  "tools": {
+    "installed": [
+      {
+        "name": "dotnet",
+        "version": "8.0.427",
+        "path": "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe"
+      },
+      {
+        "name": "csharp-ls",
+        "version": "0.14.0"
+      }
+    ]
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified_by_test",
+    "bounded_refactor": "verified_by_test",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/csharp.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "delegate/interface targets are not fabricated as concrete calls",
+    "generated-code writability and EventPipe runtime pending B016/B021"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

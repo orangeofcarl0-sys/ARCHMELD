@@ -1,0 +1,88 @@
+# CodeGraph PR Review — posts a code-graph analysis comment on every PR.
+#
+# Runs graph-only (no embeddings, no ONNX model) so it's fast and light:
+# typically completes in well under a minute even on large repos.
+#
+# Copy this file into your own repo at .github/workflows/codegraph-pr.yml
+# No secrets or API keys required — uses the built-in GITHUB_TOKEN.
+name: CodeGraph PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 is REQUIRED — pr_context runs
+          # `git diff <base>...HEAD`, which needs the base branch history.
+          # The default shallow clone breaks the diff.
+          fetch-depth: 0
+
+      - name: Install CodeGraph
+        run: npm install -g @astudioplus/codegraph-mcp
+
+      - name: Run PR review
+        id: review
+        run: |
+          # Resolve the npm-installed binary for this platform
+          BIN="$(npm root -g)/@astudioplus/codegraph-mcp/bin/codegraph-server-linux-x64"
+          # stderr → log (visible in the Actions run); stdout → comment body
+          # Use origin/<base> — in a PR checkout the base branch exists as
+          # a remote-tracking ref, not a local branch. (codegraph 0.17.6+
+          # auto-resolves this, but origin/ works on all versions.)
+          if "$BIN" \
+              --graph-only \
+              --run-tool codegraph_pr_context \
+              --tool-args "{\"baseBranch\":\"origin/${{ github.base_ref }}\",\"format\":\"markdown\"}" \
+              > review.md 2> review.err; then
+            echo "CodeGraph review succeeded"
+          else
+            echo "::warning::CodeGraph review failed — see stderr below"
+            cat review.err
+            {
+              echo "## 🔍 CodeGraph PR Review"
+              echo ""
+              echo "Review could not be generated for this PR. <sub>(CodeGraph)</sub>"
+            } > review.md
+          fi
+
+      - name: Post or update PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('review.md', 'utf8');
+            const marker = '## 🔍 CodeGraph PR Review';
+
+            // Find an existing CodeGraph comment to update (avoids comment spam)
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.startsWith(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

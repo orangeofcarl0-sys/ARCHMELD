@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-10-30T20:42:01.624443+00:00",
+  "status": "resolved_by_jdk25",
+  "language": "java",
+  "tool": {
+    "jdk": "Temurin 21.0.13+9",
+    "jdtls": "snapshot 2026-08"
+  },
+  "observed": "jdtls process closed while waiting for initialize; stderr contained only -noverify deprecation and jdk.incubator.vector warnings",
+  "stderr_tail": [
+    "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13",
+    "WARNING: Using incubator modules: jdk.incubator.vector"
+  ],
+  "not_claimed": "AT029 not_run; no Java semantic evidence produced",
+  "next": "build verification remains B022; Java runtime scenario remains future work",
+  "root_cause": "org.eclipse.core.filesystem 1.12.0 requires osgi.ee JavaSE 25; JDK 21 could not resolve org.eclipse.jdt.ls.core, so the application registry only exposed antRunner",
+  "resolved_by": "Temurin JDK 25.0.5+8 (pinned archive sha256:636bdc13...); real jdtls semantic/rename evidence in evidence/java.json"
+}

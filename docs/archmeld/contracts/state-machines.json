@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0",
+  "changeset": {
+    "states": [
+      "draft",
+      "approved",
+      "preparing",
+      "prepared",
+      "applying",
+      "applied",
+      "verifying",
+      "accepted",
+      "rejected",
+      "stale",
+      "conflicted",
+      "failed",
+      "recovering",
+      "recovered"
+    ],
+    "initial": "draft",
+    "transitions": [
+      {
+        "from": "draft",
+        "event": "approve",
+        "to": "approved",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "draft",
+        "event": "reject",
+        "to": "rejected",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "approved",
+        "event": "prepare",
+        "to": "preparing",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "preparing",
+        "event": "prepare_succeeded",
+        "to": "prepared",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "preparing",
+        "event": "prepare_failed",
+        "to": "failed",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "prepared",
+        "event": "apply",
+        "to": "applying",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "applying",
+        "event": "apply_succeeded",
+        "to": "applied",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "applying",
+        "event": "apply_failed",
+        "to": "failed",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "applying",
+        "event": "external_conflict",
+        "to": "conflicted",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "applied",
+        "event": "verify",
+        "to": "verifying",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "verifying",
+        "event": "all_required_passed",
+        "to": "accepted",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "verifying",
+        "event": "check_failed",
+        "to": "failed",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "failed",
+        "event": "recover",
+        "to": "recovering",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "conflicted",
+        "event": "recover",
+        "to": "recovering",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "applied",
+        "event": "recover",
+        "to": "recovering",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "recovering",
+        "event": "restore_succeeded",
+        "to": "recovered",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "recovering",
+        "event": "restore_conflict",
+        "to": "conflicted",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "recovering",
+        "event": "restore_failed",
+        "to": "failed",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "approved",
+        "event": "inputs_changed",
+        "to": "stale",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "prepared",
+        "event": "inputs_changed",
+        "to": "stale",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "stale",
+        "event": "replan",
+        "to": "draft",
+        "guard": "server_authorized_and_preconditions_checked"
+      },
+      {
+        "from": "failed",
+        "event": "replan",
+        "to": "draft",
+        "guard": "server_authorized_and_preconditions_checked"
+      }
+    ],
+    "illegal_transition": "reject_without_side_effect",
+    "terminal_history_immutable": [
+      "accepted",
+      "rejected",
+      "recovered"
+    ]
+  },
+  "verification": {
+    "check_states": [
+      "passed",
+      "failed",
+      "not_run",
+      "unsupported",
+      "inconclusive",
+      "cancelled",
+      "timed_out",
+      "error"
+    ],
+    "acceptance": "all_required_passed_and_snapshot_contract_toolchain_match"
+  },
+  "instigator": {
+    "may_change_task_state": false,
+    "may_create_tasks": false,
+    "may_block_delivery": false,
+    "messages": [
+      "NUDGE",
+      "SILENT"
+    ]
+  }
+}

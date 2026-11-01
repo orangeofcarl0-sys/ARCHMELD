@@ -1,0 +1,359 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/b016_trace_evidence.py",
+  "generated_at": "2026-10-31T23:52:41+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "tools": {
+    "perfetto": {
+      "argv": [
+        "F:\\Codex_Work_Space\\_archmeld_tools\\perfetto\\windows-amd64\\traceconv.exe",
+        "--version"
+      ],
+      "exit": 0,
+      "first_line": "Perfetto v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)"
+    },
+    "tracy": {
+      "version": "0.13.1",
+      "capture": "tracy-capture.exe",
+      "export": "tracy-csvexport.exe"
+    },
+    "g++": {
+      "argv": [
+        "g++",
+        "--version"
+      ],
+      "exit": 0,
+      "first_line": "g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0"
+    },
+    "rustc": {
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "exit": 0,
+      "first_line": "rustc 1.94.1 (e408947bf 2026-03-25)"
+    }
+  },
+  "fixture_lock": {
+    "path": "adapters/traces/fixtures.lock.json",
+    "sha256": "sha256:24e12b41826ea5e087fe58399a86676f778223c1d80b3a024889c3a872c4279a"
+  },
+  "fixtures": {
+    "perfetto": {
+      "path": "adapters/traces/fixtures/perfetto-counter-state.pftrace",
+      "sha256": "sha256:2db061e83ea81df992e16c912c4f9ba02cfc0c09689e0de6e799824054b3b3a4",
+      "size": 1212
+    },
+    "tracy_capture": {
+      "path": "adapters/traces/fixtures/tracy-zones-plots.tracy",
+      "sha256": "sha256:33b3932e9d9d06ecb47d90a2616ecdf5d1036582ea5be6170a76c91bed5fbfbf",
+      "size": 1118
+    },
+    "tracy_csv": {
+      "path": "adapters/traces/fixtures/tracy-zones-plots.csv",
+      "sha256": "sha256:15959de4e4e8069be16e7632b9062f5d7f99beaa32438b9103201be52b05add1"
+    }
+  },
+  "perfetto_cli": {
+    "snapshot_id": "sha256:852e7684f8bd40c9ef4e97329e43793400d087e66aa007354320b0a5d9042c6a",
+    "config_digest": "sha256:d5dcf03db3aaf02abbf5920ab70bc38cfbfdd4d86c27588d7f428ac1cfa593a4",
+    "span_count": 2,
+    "metric_count": 2,
+    "bound": true,
+    "counters": [
+      {
+        "name": "queue_depth",
+        "samples": 4
+      }
+    ],
+    "states": [
+      {
+        "name": "queue.state",
+        "intervals": 2
+      }
+    ],
+    "causal_state": "partial",
+    "mapped_spans": 0,
+    "unmapped_spans": 2,
+    "unknown_entity": 1,
+    "metrics": {
+      "causality": "none: counters and states never create causal edges",
+      "counters": 1,
+      "mapped": 0,
+      "mapping_conflicts": 0,
+      "missing_samples": [],
+      "process_scope": 2,
+      "samples": 6,
+      "states": 1,
+      "unknown_entity": 0,
+      "unknown_probe": 0
+    }
+  },
+  "tracy_cli": {
+    "span_count": 2,
+    "metric_count": 1,
+    "bound": true,
+    "native_capture": {
+      "path": "F:\\Codex_Work_Space\\ARCHMELD-work\\adapters\\traces\\fixtures\\tracy-zones-plots.tracy",
+      "sha256": "sha256:33b3932e9d9d06ecb47d90a2616ecdf5d1036582ea5be6170a76c91bed5fbfbf",
+      "size": 1118
+    },
+    "counters": [
+      {
+        "name": "queue_depth",
+        "samples": 4
+      }
+    ],
+    "causal_state": "complete",
+    "mapped_spans": 2,
+    "unmapped_spans": 0,
+    "lossy": true,
+    "loss_notes": [
+      "3 frame-rate rows were ignored; they are not application events"
+    ]
+  },
+  "retention": {
+    "artifact_ref": true,
+    "retained_blob": {
+      "digest": "sha256:33b3932e9d9d06ecb47d90a2616ecdf5d1036582ea5be6170a76c91bed5fbfbf",
+      "size": 1118,
+      "sha256": "sha256:33b3932e9d9d06ecb47d90a2616ecdf5d1036582ea5be6170a76c91bed5fbfbf"
+    }
+  },
+  "refusals": {
+    "unbound_without_flag": {
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "{\"error\":\"unbound trace import requires --allow-unbound\"}"
+    },
+    "snapshot_config_mismatch": {
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "{\"error\":\"--config-digest sha256:0000000000000000000000000000000000000000000000000000000000000000 does not match the snapshot build sha256:d5dcf03db3aaf02abbf5920ab70bc38cfbfdd4d86c27588d7f428ac1cfa593a4\"}"
+    }
+  },
+  "commands": [
+    {
+      "id": "b016-perfetto-tests",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-perfetto-tests.log",
+      "log_sha256": "sha256:df60c958e3506daad147fa43e98640dd7f1c00d2ed485fab39fc0a1733488357",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "archmeld-core",
+        "--test",
+        "perfetto_native",
+        "--offline"
+      ]
+    },
+    {
+      "id": "b016-tracy-tests",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-tracy-tests.log",
+      "log_sha256": "sha256:54dc60ccb7287c9cb29d60c3deb75c7adcf6b6f9a75194c1ac19605bd1d30b71",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "archmeld-core",
+        "--test",
+        "tracy_native",
+        "--offline"
+      ]
+    },
+    {
+      "id": "b016-perfetto-probe-build",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-perfetto-probe-build.log",
+      "log_sha256": "sha256:a1a0b68e38b24ec5517745fb89f7c217e4557d5c41a65d4d6a024b47fed2a504",
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-DNDEBUG",
+        "-I.",
+        "probe.cc",
+        "perfetto.cc",
+        "-o",
+        "perfetto_probe.exe",
+        "-lws2_32",
+        "-ladvapi32",
+        "-lole32",
+        "-luuid"
+      ]
+    },
+    {
+      "id": "b016-perfetto-capture",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-perfetto-capture.log",
+      "log_sha256": "sha256:b46c9ba2ac0b1f5b83674a4bdf3d939c46c5998f746916bc15b0b1840a0d5da0",
+      "argv": [
+        "F:\\Codex_Work_Space\\_archmeld_tools\\perfetto\\perfetto_probe.exe",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.pftrace"
+      ]
+    },
+    {
+      "id": "b016-perfetto-traceconv",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-perfetto-traceconv.log",
+      "log_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "F:\\Codex_Work_Space\\_archmeld_tools\\perfetto\\windows-amd64\\traceconv.exe",
+        "json",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.pftrace",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.json"
+      ]
+    },
+    {
+      "id": "b016-tracy-client-build",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-tracy-client-build.log",
+      "log_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-DTRACY_ENABLE",
+        "-Itracy-0.13.1/public",
+        "tracy_probe.cc",
+        "tracy-0.13.1/public/TracyClient.cpp",
+        "-o",
+        "tracy_probe.exe",
+        "-lws2_32",
+        "-ldbghelp",
+        "-luser32",
+        "-ladvapi32",
+        "-lole32",
+        "-luuid"
+      ]
+    },
+    {
+      "id": "b016-cli-perfetto-import",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-cli-perfetto.log",
+      "log_sha256": "sha256:91b43b5ad2471fd2cf5a6d9ad6f756ee7f9aebf3bb7f6062b9172cb7d27d9e1d",
+      "argv": [
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\bin\\archmeld.exe",
+        "trace-import",
+        "--state",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\state",
+        "--project",
+        "project.cli",
+        "--run-id",
+        "run.perfetto.cli",
+        "--snapshot",
+        "sha256:852e7684f8bd40c9ef4e97329e43793400d087e66aa007354320b0a5d9042c6a",
+        "--format",
+        "perfetto",
+        "--input",
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\adapters\\traces\\fixtures\\perfetto-counter-state.pftrace",
+        "--tool",
+        "perfetto-sdk",
+        "--tool-version",
+        "59.1",
+        "--out",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-import.json"
+      ]
+    },
+    {
+      "id": "b016-cli-tracy-import",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-cli-tracy.log",
+      "log_sha256": "sha256:db0a69c989061f8e0435b7d1b0875142f27cd0f1490753678b362a3170de7366",
+      "argv": [
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\bin\\archmeld.exe",
+        "trace-import",
+        "--state",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\state",
+        "--project",
+        "project.cli",
+        "--run-id",
+        "run.tracy.cli",
+        "--snapshot",
+        "sha256:852e7684f8bd40c9ef4e97329e43793400d087e66aa007354320b0a5d9042c6a",
+        "--format",
+        "tracy",
+        "--tracy-capture",
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\adapters\\traces\\fixtures\\tracy-zones-plots.tracy",
+        "--tracy-csv",
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\adapters\\traces\\fixtures\\tracy-zones-plots.csv",
+        "--locator",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\locator.json",
+        "--tool",
+        "tracy",
+        "--tool-version",
+        "0.13.1",
+        "--out",
+        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\tracy-import.json"
+      ]
+    },
+    {
+      "id": "b016-trace-import-cli-tests",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-trace-import-cli-tests.log",
+      "log_sha256": "sha256:1c46efd1809ddb8a0828434138e2de7bde36e38535d062a36c735e769fcc223a",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "archmeld-api",
+        "--test",
+        "trace_import_cli",
+        "--offline"
+      ]
+    },
+    {
+      "id": "b016-full-regression-2",
+      "exit_code": 0,
+      "log": "baseline/logs/b016-full-regression-2.log",
+      "log_sha256": "sha256:cc9e2a2598e56be9a54b78b8a7ca5f596fd7adc3e51ae5268b5cb4cb72225ee7",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "archmeld-core",
+        "-p",
+        "archmeld-api",
+        "--offline"
+      ]
+    }
+  ],
+  "tests": {
+    "perfetto_native": "cargo test -p archmeld-core --test perfetto_native --offline: 5 passed",
+    "tracy_native": "cargo test -p archmeld-core --test tracy_native --offline: 3 passed",
+    "trace_import_cli": "cargo test -p archmeld-api --test trace_import_cli --offline: 3 passed",
+    "full_regression": {
+      "command": "b016-full-regression-2",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "archmeld-core",
+        "-p",
+        "archmeld-api",
+        "--offline"
+      ],
+      "exit_code": 0,
+      "sections": 57,
+      "passed": 126,
+      "failed": 0,
+      "ignored": 0,
+      "log": "baseline/logs/b016-full-regression-2.log",
+      "log_sha256": "sha256:cc9e2a2598e56be9a54b78b8a7ca5f596fd7adc3e51ae5268b5cb4cb72225ee7"
+    }
+  },
+  "limitations": [
+    "counters and states never create causal edges, observed calls or architecture facts",
+    "Tracy's native protocol is not decoded; the official tracy-csvexport summary is the declared evidence and the raw .tracy is retained",
+    "Tracy plots have no unit metadata and the CSV has no application state intervals",
+    "the Perfetto SDK cannot attach debug annotations to TRACE_COUNTER; those counters are process-scope",
+    "the Perfetto fixture's final state interval is open at capture end and is reported as a loss"
+  ]
+}

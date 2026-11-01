@@ -1,0 +1,1367 @@
+{
+  "acceptance": {
+    "AT040": {
+      "base_architecture_id": "arch.base.b018",
+      "diff": {
+        "affected_paths": [
+          {
+            "depth": 1,
+            "nodes": [
+              "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+              "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+            ],
+            "state": "candidate_path",
+            "steps": [
+              {
+                "basis": "ledger",
+                "from": "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                "kind": "references",
+                "relation_id": "rel.b018.ui.estimator",
+                "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "nodes": [
+              "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+              "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+              "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+            ],
+            "state": "candidate_path",
+            "steps": [
+              {
+                "basis": "ledger",
+                "from": "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                "kind": "references",
+                "relation_id": "rel.b018.ui.adapter",
+                "to": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9"
+              },
+              {
+                "basis": "ledger",
+                "from": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                "kind": "references",
+                "relation_id": "rel.b018.adapter.estimator",
+                "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+              }
+            ]
+          },
+          {
+            "depth": 1,
+            "nodes": [
+              "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+              "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+            ],
+            "state": "candidate_path",
+            "steps": [
+              {
+                "basis": "ledger",
+                "from": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                "kind": "references",
+                "relation_id": "rel.b018.adapter.estimator",
+                "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+              }
+            ]
+          }
+        ],
+        "base_architecture_id": "arch.base.b018",
+        "base_revision": 1,
+        "components": {
+          "added": [],
+          "changed": [],
+          "removed": []
+        },
+        "dependencies": {
+          "added": [],
+          "removed": [
+            {
+              "reason": "UI reads estimator internal state through a helper",
+              "source_id": "component.ui",
+              "status": "candidate",
+              "target_id": "component.estimator"
+            }
+          ]
+        },
+        "intents": [
+          {
+            "affected_paths": [
+              {
+                "depth": 1,
+                "nodes": [
+                  "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                  "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                ],
+                "state": "candidate_path",
+                "steps": [
+                  {
+                    "basis": "ledger",
+                    "from": "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                    "kind": "references",
+                    "relation_id": "rel.b018.ui.estimator",
+                    "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                  }
+                ]
+              },
+              {
+                "depth": 2,
+                "nodes": [
+                  "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                  "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                  "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                ],
+                "state": "candidate_path",
+                "steps": [
+                  {
+                    "basis": "ledger",
+                    "from": "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                    "kind": "references",
+                    "relation_id": "rel.b018.ui.adapter",
+                    "to": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9"
+                  },
+                  {
+                    "basis": "ledger",
+                    "from": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                    "kind": "references",
+                    "relation_id": "rel.b018.adapter.estimator",
+                    "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                  }
+                ]
+              },
+              {
+                "depth": 1,
+                "nodes": [
+                  "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                  "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                ],
+                "state": "candidate_path",
+                "steps": [
+                  {
+                    "basis": "ledger",
+                    "from": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                    "kind": "references",
+                    "relation_id": "rel.b018.adapter.estimator",
+                    "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                  }
+                ]
+              }
+            ],
+            "contracts_to_preserve": [
+              "public interfaces of both components",
+              "runtime behaviour of existing callers"
+            ],
+            "path_state": "observed_ledger_paths",
+            "questions": [
+              "confirm each observed path is acceptable to remove"
+            ],
+            "reason": "UI reads estimator internal state through a helper",
+            "source_component": "component.ui",
+            "target_component": "component.estimator",
+            "type": "remove_dependency"
+          }
+        ],
+        "plan_candidate": {
+          "non_goals": [
+            "automatic source edits",
+            "applying a ChangeSet"
+          ],
+          "state": "candidate",
+          "steps": [
+            {
+              "intent": "remove_dependency",
+              "requires_change_set": true,
+              "state": "candidate",
+              "step": 1
+            }
+          ]
+        },
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "source_mutation": {
+          "changesets_created": 0,
+          "files_written": 0,
+          "repository_files_in_snapshot": 3,
+          "state": "none"
+        },
+        "target_architecture_id": "arch.target.b018",
+        "target_revision": 1
+      },
+      "source_hashes_after": [
+        "sha256:a00e010f740faa237409d1bab0c2cb6bc210aee834d1529021f76fa64ece15fc",
+        "sha256:7a7469e31b8a176a41a413a851a109290224d470aa42d9916483fcfcdf845bb2",
+        "sha256:2e31acf8844f52feec8d71eba2f263d4975adde56a39e86186c9cc0b22083c6f"
+      ],
+      "source_hashes_before": [
+        "sha256:a00e010f740faa237409d1bab0c2cb6bc210aee834d1529021f76fa64ece15fc",
+        "sha256:7a7469e31b8a176a41a413a851a109290224d470aa42d9916483fcfcdf845bb2",
+        "sha256:2e31acf8844f52feec8d71eba2f263d4975adde56a39e86186c9cc0b22083c6f"
+      ],
+      "status": "passed",
+      "target_architecture_id": "arch.target.b018"
+    },
+    "AT041": {
+      "checks": {
+        "architecture_id": "arch.base.b018",
+        "blocking_rules": [
+          "rule.no-ui-estimator",
+          "rule.no-reverse",
+          "rule.declared-only"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ],
+              "reason": "cycle checker not implemented"
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)",
+              "reason": "layer checker not implemented"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason",
+              "reason": "custom contracts need a registered checker"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface",
+              "reason": "interface-boundary checker not implemented"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)",
+              "reason": "ownership requires runtime/manual contract"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "ledger.dependency_path.v1",
+            "coverage": {
+              "edges_considered": 3,
+              "limitations": [
+                "static ledger relations only; dynamic dispatch and unresolved calls are not traversed",
+                "absence of a path is not proof of absence"
+              ],
+              "max_depth": 6,
+              "members_expected": 3,
+              "members_found": 3,
+              "missing_members": [],
+              "state": "partial"
+            },
+            "kind": "forbid_dependency",
+            "passed": false,
+            "reason": "a dependency path reaches the forbidden component",
+            "required": true,
+            "rule_id": "rule.no-ui-estimator",
+            "verdict": "violated",
+            "violations": [
+              {
+                "depth": 1,
+                "nodes": [
+                  "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                  "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                ],
+                "state": "candidate_path",
+                "steps": [
+                  {
+                    "basis": "ledger",
+                    "from": "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                    "kind": "references",
+                    "relation_id": "rel.b018.ui.estimator",
+                    "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                  }
+                ]
+              },
+              {
+                "depth": 2,
+                "nodes": [
+                  "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                  "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                  "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                ],
+                "state": "candidate_path",
+                "steps": [
+                  {
+                    "basis": "ledger",
+                    "from": "syn.0632cf0502968bce219e48dd387e202efc504ce8e8a16cdacbd62cfc6fd486da",
+                    "kind": "references",
+                    "relation_id": "rel.b018.ui.adapter",
+                    "to": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9"
+                  },
+                  {
+                    "basis": "ledger",
+                    "from": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                    "kind": "references",
+                    "relation_id": "rel.b018.adapter.estimator",
+                    "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                  }
+                ]
+              },
+              {
+                "depth": 1,
+                "nodes": [
+                  "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                  "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                ],
+                "state": "candidate_path",
+                "steps": [
+                  {
+                    "basis": "ledger",
+                    "from": "syn.ec689bdd29744635e943e662f2b3d601b97e47ecf94d0caee2e014141ffb5aa9",
+                    "kind": "references",
+                    "relation_id": "rel.b018.adapter.estimator",
+                    "to": "syn.119a98d6396a7725357fedcd1640843b5f0e569ec2a2e0c67bd304ac73e47d4e"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "ledger.dependency_path.v1",
+            "coverage": {
+              "edges_considered": 3,
+              "limitations": [
+                "static ledger relations only; dynamic dispatch and unresolved calls are not traversed",
+                "absence of a path is not proof of absence"
+              ],
+              "max_depth": 6,
+              "members_expected": 3,
+              "members_found": 3,
+              "missing_members": [],
+              "state": "partial"
+            },
+            "kind": "forbid_dependency",
+            "passed": false,
+            "reason": "no path was found, but static coverage is partial",
+            "required": true,
+            "rule_id": "rule.no-reverse",
+            "verdict": "no_violation_found",
+            "violations": []
+          },
+          {
+            "blocks_acceptance": true,
+            "checkability": "declared_only",
+            "checker_id": null,
+            "coverage": {
+              "reason": "no executable checker is registered",
+              "state": "none"
+            },
+            "kind": "custom_contract",
+            "passed": false,
+            "reason": "custom_contract requires the registered architecture.custom_contract.v1 checker",
+            "required": true,
+            "rule_id": "rule.declared-only",
+            "verdict": "declared_only",
+            "violations": []
+          },
+          {
+            "blocks_acceptance": false,
+            "checkability": "declared_only",
+            "checker_id": "human.opinion",
+            "coverage": {
+              "reason": "no executable checker is registered",
+              "state": "none"
+            },
+            "kind": "forbid_dependency",
+            "passed": false,
+            "reason": "checker_id is not registered; human intent cannot be treated as executable",
+            "required": false,
+            "rule_id": "rule.human-intent",
+            "verdict": "declared_only",
+            "violations": []
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "failed"
+      },
+      "status": "passed"
+    },
+    "AT041_acyclic": {
+      "acyclic_check": {
+        "architecture_id": "arch.acyclic.ok",
+        "blocking_rules": [],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)",
+              "reason": "layer checker not implemented"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason",
+              "reason": "custom contracts need a registered checker"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface",
+              "reason": "interface-boundary checker not implemented"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)",
+              "reason": "ownership requires runtime/manual contract"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": false,
+            "checkability": "executable",
+            "checker_id": "architecture.acyclic.v1",
+            "coverage": {
+              "components": 3,
+              "edges_considered": 2,
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ],
+              "state": "complete_declared_graph"
+            },
+            "kind": "acyclic",
+            "passed": true,
+            "reason": "no cycle exists in the declared candidate dependency graph",
+            "required": true,
+            "rule_id": "rule.acyclic",
+            "verdict": "passed",
+            "violations": []
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "passed"
+      },
+      "cyclic_check": {
+        "architecture_id": "arch.acyclic.bad",
+        "blocking_rules": [
+          "rule.acyclic"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)",
+              "reason": "layer checker not implemented"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason",
+              "reason": "custom contracts need a registered checker"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface",
+              "reason": "interface-boundary checker not implemented"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)",
+              "reason": "ownership requires runtime/manual contract"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "architecture.acyclic.v1",
+            "coverage": {
+              "components": 3,
+              "edges_considered": 3,
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ],
+              "state": "complete_declared_graph"
+            },
+            "kind": "acyclic",
+            "passed": false,
+            "reason": "the declared candidate dependency graph contains a cycle",
+            "required": true,
+            "rule_id": "rule.acyclic",
+            "verdict": "violated",
+            "violations": [
+              {
+                "cycle": [
+                  "component.adapter",
+                  "component.estimator",
+                  "component.ui",
+                  "component.adapter"
+                ]
+              }
+            ]
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "failed"
+      },
+      "source_unchanged": true,
+      "status": "passed",
+      "unregistered_checker": {
+        "architecture_id": "arch.acyclic.unregistered",
+        "blocking_rules": [
+          "rule.acyclic"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)",
+              "reason": "layer checker not implemented"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason",
+              "reason": "custom contracts need a registered checker"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface",
+              "reason": "interface-boundary checker not implemented"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)",
+              "reason": "ownership requires runtime/manual contract"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "declared_only",
+            "checker_id": "architecture.cycle.unknown",
+            "coverage": {
+              "reason": "no executable checker is registered",
+              "state": "none"
+            },
+            "kind": "acyclic",
+            "passed": false,
+            "reason": "acyclic requires the registered architecture.acyclic.v1 checker",
+            "required": true,
+            "rule_id": "rule.acyclic",
+            "verdict": "declared_only",
+            "violations": []
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "blocked"
+      }
+    },
+    "AT041_declarative_checkers": {
+      "allowed_layers_pass": {
+        "architecture_id": "arch.layers.ok",
+        "blocking_rules": [],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": false,
+            "checkability": "executable",
+            "checker_id": "architecture.allowed_layers.v1",
+            "coverage": {
+              "components": 3,
+              "edges_considered": 2,
+              "layers": 3,
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "missing_components": [],
+              "state": "complete_declared_graph",
+              "uncovered_edges": 0
+            },
+            "kind": "allowed_layers",
+            "passed": true,
+            "reason": "every declared dependency follows the layer order",
+            "required": true,
+            "rule_id": "rule.layers",
+            "verdict": "passed",
+            "violations": []
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "passed"
+      },
+      "allowed_layers_violation": {
+        "architecture_id": "arch.layers.bad",
+        "blocking_rules": [
+          "rule.layers"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "architecture.allowed_layers.v1",
+            "coverage": {
+              "components": 3,
+              "edges_considered": 1,
+              "layers": 3,
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "missing_components": [],
+              "state": "complete_declared_graph",
+              "uncovered_edges": 0
+            },
+            "kind": "allowed_layers",
+            "passed": false,
+            "reason": "a declared dependency crosses layers in the forbidden direction",
+            "required": true,
+            "rule_id": "rule.layers",
+            "verdict": "violated",
+            "violations": [
+              {
+                "reason": "dependency points to an outer layer",
+                "source_id": "component.estimator",
+                "source_layer": 2,
+                "target_id": "component.ui",
+                "target_layer": 0
+              }
+            ]
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "failed"
+      },
+      "custom_unsupported": {
+        "architecture_id": "arch.custom.unsupported",
+        "blocking_rules": [
+          "rule.custom.unknown"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "architecture.custom_contract.v1",
+            "coverage": {
+              "state": "none"
+            },
+            "kind": "custom_contract",
+            "passed": false,
+            "reason": "unsupported custom assertion \"run_arbitrary_script\"",
+            "required": true,
+            "rule_id": "rule.custom.unknown",
+            "verdict": "inconclusive",
+            "violations": []
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "blocked"
+      },
+      "custom_violation": {
+        "architecture_id": "arch.custom.bad",
+        "blocking_rules": [
+          "rule.custom"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "architecture.custom_contract.v1",
+            "coverage": {
+              "assertion": "no_self_dependencies",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "state": "complete_declared_graph"
+            },
+            "kind": "custom_contract",
+            "passed": false,
+            "reason": "the declared custom assertion is violated",
+            "required": true,
+            "rule_id": "rule.custom",
+            "verdict": "violated",
+            "violations": [
+              {
+                "reason": "self dependency",
+                "source_id": "component.ui"
+              }
+            ]
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "failed"
+      },
+      "interface_pass": {
+        "architecture_id": "arch.interface.ok",
+        "blocking_rules": [],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": false,
+            "checkability": "executable",
+            "checker_id": "architecture.interface_only.v1",
+            "coverage": {
+              "edges_considered": 2,
+              "interfaces": 1,
+              "limitations": [
+                "interface membership is declared; runtime dispatch is not proven"
+              ],
+              "missing_interfaces": [],
+              "state": "complete_declared_graph"
+            },
+            "kind": "interface_only",
+            "passed": true,
+            "reason": "every cross-component dependency touches a declared interface",
+            "required": true,
+            "rule_id": "rule.interfaces",
+            "verdict": "passed",
+            "violations": []
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "passed"
+      },
+      "interface_violation": {
+        "architecture_id": "arch.interface.bad",
+        "blocking_rules": [
+          "rule.interfaces"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "architecture.interface_only.v1",
+            "coverage": {
+              "edges_considered": 1,
+              "interfaces": 1,
+              "limitations": [
+                "interface membership is declared; runtime dispatch is not proven"
+              ],
+              "missing_interfaces": [],
+              "state": "complete_declared_graph"
+            },
+            "kind": "interface_only",
+            "passed": false,
+            "reason": "a cross-component dependency does not touch a declared interface",
+            "required": true,
+            "rule_id": "rule.interfaces",
+            "verdict": "violated",
+            "violations": [
+              {
+                "reason": "cross-component dependency bypasses every declared interface",
+                "source_id": "component.ui",
+                "target_id": "component.estimator"
+              }
+            ]
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "failed"
+      },
+      "ownership_violation": {
+        "architecture_id": "arch.ownership.bad",
+        "blocking_rules": [
+          "rule.ownership"
+        ],
+        "registry": {
+          "rules": {
+            "acyclic": {
+              "checkability": "executable",
+              "checker_id": "architecture.acyclic.v1",
+              "coverage": "candidate dependency graph declared in the architecture",
+              "limitations": [
+                "declared candidate dependencies only; runtime cycles are out of scope"
+              ]
+            },
+            "allowed_layers": {
+              "checkability": "executable",
+              "checker_id": "architecture.allowed_layers.v1",
+              "coverage": "declared candidate dependencies against declared layer order",
+              "limitations": [
+                "declared candidate dependencies only; runtime edges are out of scope"
+              ],
+              "parameters": "layers: [[component_id,...], ...] ordered outer to inner; allow_same_layer: boolean (default true)"
+            },
+            "custom_contract": {
+              "checkability": "executable",
+              "checker_id": "architecture.custom_contract.v1",
+              "coverage": "declared candidate graph",
+              "limitations": [
+                "small registered assertion set; arbitrary scripts are not executed"
+              ],
+              "parameters": "assertion: no_self_dependencies | max_dependencies_per_component (+limit) | require_dependency_reason"
+            },
+            "forbid_dependency": {
+              "checkability": "executable",
+              "checker_id": "ledger.dependency_path.v1",
+              "coverage": "static ledger relations (imports, references, calls, observed calls)",
+              "limitations": [
+                "dynamic dispatch and unresolved calls are not traversed",
+                "a missing path is only no_violation_found, not proof of absence"
+              ],
+              "max_depth": 6
+            },
+            "interface_only": {
+              "checkability": "executable",
+              "checker_id": "architecture.interface_only.v1",
+              "coverage": "declared candidate dependencies crossing a component boundary",
+              "limitations": [
+                "interface membership is declared on the architecture; no runtime dispatch proof"
+              ],
+              "parameters": "interfaces: [component_id, ...]; a cross-component dependency must touch a declared interface"
+            },
+            "ownership": {
+              "checkability": "executable",
+              "checker_id": "architecture.ownership.v1",
+              "coverage": "declared owned_state/owned_resources across components",
+              "limitations": [
+                "declared ownership only; actual write paths and runtime ownership are not proven"
+              ],
+              "parameters": "exclusive: boolean (default true)"
+            }
+          },
+          "version": "1"
+        },
+        "results": [
+          {
+            "blocks_acceptance": true,
+            "checkability": "executable",
+            "checker_id": "architecture.ownership.v1",
+            "coverage": {
+              "exclusive": true,
+              "limitations": [
+                "declared ownership only; actual writes are not proven"
+              ],
+              "owned_items": 1,
+              "state": "complete_declared_graph"
+            },
+            "kind": "ownership",
+            "passed": false,
+            "reason": "a declared state or resource has more than one owner",
+            "required": true,
+            "rule_id": "rule.ownership",
+            "verdict": "violated",
+            "violations": [
+              {
+                "item": "state.shared",
+                "owners": [
+                  "component.estimator",
+                  "component.ui"
+                ],
+                "reason": "declared ownership is not exclusive"
+              }
+            ]
+          }
+        ],
+        "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3",
+        "state": "failed"
+      },
+      "source_unchanged": true,
+      "status": "passed"
+    },
+    "AT075": {
+      "partial_coverage_passes": false,
+      "required_declared_only_blocks": true,
+      "status": "passed"
+    }
+  },
+  "config_digest": "sha256:63c08e141050ebb951641c4f255efb16a8f30153cfd1c60fa0861d3fbf0e6ec0",
+  "generated_by": "crates/archmeld-core/tests/blueprint_rules.rs",
+  "snapshot_id": "sha256:281282fe5718974dfe5dfe7f7a411522204297f7e3b049bdfaf78f1dee19c4c3"
+}

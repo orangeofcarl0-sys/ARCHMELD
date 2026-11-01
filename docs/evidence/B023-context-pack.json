@@ -1,0 +1,66 @@
+{
+  "acceptance": {
+    "AT054": {
+      "counterevidence_id": "evidence.codegraph.export.run.context.pack",
+      "counterexample_claim": "claim.context.dominant",
+      "counterexample_kept_or_omitted": true,
+      "large_budget": {
+        "claims": 1,
+        "context_digest": "sha256:8fd1dcbfd996204a4194c3f92621f11494b54ba442ad61d5f9012aa8aa5df51b",
+        "estimated_tokens": 881,
+        "evidence_refs": [
+          {
+            "artifact_digest": "sha256:22a3d2cea88830e39aa3c05ac2bae279246ceed3e51e1099d221fdf2794c43d2",
+            "coverage": {
+              "expected_count": 3,
+              "limitations": [
+                "structural export; call edges are syntax candidates"
+              ],
+              "observed_count": 3,
+              "omitted_count": 0,
+              "scope": "codegraph structural export",
+              "state": "partial",
+              "unresolved_count": 0
+            },
+            "evidence_id": "evidence.codegraph.export.run.context.pack",
+            "freshness": "current",
+            "kind": "syntax",
+            "producer": {
+              "name": "codegraph",
+              "run_id": "run.context.pack",
+              "source_ref": "archmeld-export-v1",
+              "version": "0.2.0"
+            }
+          }
+        ],
+        "pack_artifact": "sha256:7bd5ad8c4c57d5f39685d628b6514cf3ef946e3bedd67c0c1142faa95d38085f",
+        "relations": 2,
+        "snippets": 1,
+        "tokens": 4000,
+        "truncated": false
+      },
+      "small_budget": {
+        "estimated_tokens": 418,
+        "next_cursor": null,
+        "omissions": [
+          {
+            "count": 5,
+            "kind": "omitted",
+            "reason": "final_budget_trim"
+          }
+        ],
+        "tokens": 512,
+        "truncated": true,
+        "unresolved_questions": [
+          "4 item(s) were omitted by budget; use next_cursor or a larger budget"
+        ]
+      },
+      "status": "passed"
+    }
+  },
+  "config_digest": "sha256:63067c1411025491d7cd9d461182e00cdc188adf8e9e17aa0e3557416a418622",
+  "generated_by": "crates/archmeld-core/tests/context_pack.rs",
+  "platform": "windows",
+  "project_id": "project.a52a3449910516ee007777be35301b8e",
+  "snapshot_id": "sha256:8f432475d3151b9bea83cf68a8ea550fd326b8dbd0fbf3027d47f38a097b7857"
+}

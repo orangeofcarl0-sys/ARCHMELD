@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "scientific.numeric.v1",
+  "status": "supported",
+  "scope": "first-order numeric estimators and phase-wrapped signals",
+  "capabilities": {
+    "units": "declared per column and checked before values",
+    "shape": "declared row/column shape and checked before values",
+    "dtype": "float64",
+    "state": "explicit previous-output state with documented update order",
+    "dynamic_response": "full trace compared, including first step, peak and final values",
+    "phase_boundaries": "[-pi, pi) wrap including +/-pi and near-boundary angles",
+    "golden_truth": "deterministic synthetic truth plus measured baseline",
+    "tolerance": "atol/rtol frozen in the BehaviorContract before apply"
+  },
+  "verification": {
+    "predicates": ["test_report", "numeric_tolerance", "invariant", "performance_budget"],
+    "checks_units_before_values": true,
+    "checks_shape_before_values": true,
+    "checks_full_trace": true,
+    "statistical_test": "unsupported in R1; no p-value claim"
+  },
+  "limitations": [
+    "not a full dimensional-analysis engine",
+    "MATLAB semantics are not a release promise",
+    "real recorded user data requires explicit authorization",
+    "statistical and ULP comparison modes are not implemented"
+  ]
+}

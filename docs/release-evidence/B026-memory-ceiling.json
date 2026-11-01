@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual evidence after real Linux cgroup runs; commands recorded in baseline/commands.ndjson",
+  "generated_at": "2026-11-01T02:32:54+0800",
+  "local_platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64"
+  },
+  "remote": {
+    "host": "<authorized-remote-workstation> (WSL2)",
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "cpu_count": 24,
+    "memory_mb": 24030,
+    "systemd": "255 (255.4-1ubuntu8.18)",
+    "cgroup_version": 2,
+    "binary": "target-linux/release/archmeld",
+    "binary_sha256": "sha256:1310edc7706ff81a91d259bd338d4127a9594b937530dd644e9b8d280a05e3de"
+  },
+  "product_flag": {
+    "cli": "archmeld trace-import --memory-limit-mb <MB>",
+    "windows": "job object with JOB_OBJECT_LIMIT_PROCESS_MEMORY and JOB_OBJECT_LIMIT_JOB_MEMORY, applied to the current process before the trace is read",
+    "linux": "setrlimit(RLIMIT_AS) lowered before the trace is read",
+    "macos": "setrlimit(RLIMIT_AS)",
+    "other_platforms": "explicit unsupported error",
+    "recorded_in_output": "memory_limit_mb"
+  },
+  "trace": {
+    "events": 1000000,
+    "spans": 100000,
+    "counters": 9,
+    "samples": 900000,
+    "size": 81728764,
+    "sha256": "sha256:c10e5d91c611148235ce108d8419f42882eb6d6985591db42279589002af26da",
+    "format": "normalized archmeld-trace-v1"
+  },
+  "cgroup": {
+    "unit": "archmeld-b026-peak2.scope",
+    "memory_max_bytes": 4294967296,
+    "memory_swap_max": "0",
+    "memory_peak_bytes": 1869725696,
+    "memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0
+    },
+    "elapsed_ms": 5662,
+    "exit_code": 0,
+    "summary": {
+      "memory_limit_mb": 4096,
+      "bound": true,
+      "span_count": 100000,
+      "metric_count": 9,
+      "counter_samples_each": 10000,
+      "causal_state": "partial"
+    }
+  },
+  "tight_ceiling": {
+    "unit": "archmeld-b026-low2.scope",
+    "memory_limit_mb": 1024,
+    "memory_max_bytes": 4294967296,
+    "memory_peak_bytes": 1054494720,
+    "exit_code": 134,
+    "elapsed_ms": 4426,
+    "stderr": "memory allocation of 12800000 bytes failed\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+    "runtime_row_written": false,
+    "ledger_integrity": "ok",
+    "interpretation": "RLIMIT_AS stopped the import with an allocation failure before it could exceed the declared ceiling; the failed run left no runtime_runs row and SQLite integrity stayed ok"
+  },
+  "local_tests": {
+    "command": "b026-trace-cli-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "archmeld-api",
+      "--test",
+      "trace_import_cli",
+      "--offline"
+    ],
+    "exit_code": 0,
+    "passed": 5,
+    "failed": 0,
+    "log": "baseline/logs/b026-trace-cli-tests.log",
+    "log_sha256": "sha256:3e6075d2abd7d7b9c0981fe188cf54855d97263ee23731baa7ba9e072e546768",
+    "covered": [
+      "memory_limit_mb recorded",
+      "1 MB ceiling fails the process",
+      "normalized envelope import"
+    ]
+  },
+  "raw_logs": {
+    "success_meta": {
+      "path": "baseline/logs/b026-remote-success.meta",
+      "sha256": "sha256:ab9ac774349a5eba089376fa797c44c7c10cb73f41d92989ad2db4b01e94a360"
+    },
+    "low_meta": {
+      "path": "baseline/logs/b026-remote-low.meta",
+      "sha256": "sha256:248db075bb13952aeac2e714498fbaf0703c75239f9cd5446ebc104047e694e8"
+    },
+    "low_stderr": {
+      "path": "baseline/logs/b026-remote-low.err",
+      "sha256": "sha256:7a9fa409f66e59e2184ca230dc43842b88d6a00fccde8a62eb8a924ebe3b052b"
+    }
+  },
+  "budget": {
+    "declared_memory_limit_mb": 4096,
+    "observed_peak_bytes": 1869725696,
+    "observed_peak_mb": 1783,
+    "headroom_mb": 2257,
+    "outcome": "passed under the OS-enforced ceiling with no cgroup OOM events"
+  },
+  "limitations": [
+    "RLIMIT_AS limits virtual address space and is stricter than RSS; the reported cgroup peak is the comparable RSS-like number",
+    "the remote validation used a Linux release binary built from this source; Windows uses a job object and was tested locally with the CLI fixture",
+    "the Windows job object limit counts committed/private memory; a 1 MB ceiling failed before the store opened",
+    "a ceiling breach aborts the process; there is no in-process graceful recovery after an allocation failure"
+  ],
+  "full_regression": {
+    "command": "b026-memory-full-regression",
+    "exit_code": 0,
+    "sections": 59,
+    "passed": 136,
+    "failed": 0,
+    "ignored": 0,
+    "log": "baseline/logs/b026-memory-full-regression.log",
+    "log_sha256": "sha256:360a1c4c1cccfb2807f9a3c57baff5466079227c3a9b7e6ac5ad2dc49f118954"
+  }
+}

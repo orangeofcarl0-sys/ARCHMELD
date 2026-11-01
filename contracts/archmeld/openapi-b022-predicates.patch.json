@@ -1,0 +1,44 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-028-numeric-invariant-performance-predicates.md",
+  "changes": [
+    {
+      "surface": "BehaviorContract.checks[].predicate",
+      "summary": "numeric_tolerance, invariant and performance_budget are executable predicates; previously they were declared unsupported."
+    }
+  ],
+  "predicates": {
+    "numeric_tolerance": {
+      "required": ["expected_artifact", "actual_artifact", "atol", "rtol", "nonfinite_policy"],
+      "optional": ["columns"],
+      "artifacts": "sha256 digest in the CAS or workspace-relative path; file bytes are stored in the CAS",
+      "order": "shape, column identity, units, then values",
+      "comparison": "abs(expected-actual) <= atol + rtol*max(abs(expected),abs(actual))",
+      "nonfinite_policy": ["reject", "match"]
+    },
+    "invariant": {
+      "required": ["checker_id", "version", "configuration"],
+      "registered_checker": "numeric.invariants.v1",
+      "version": "1",
+      "rule_kinds": ["finite", "nonnegative", "range", "monotonic", "constant", "sum"],
+      "unknown_checker_or_rule": "unsupported"
+    },
+    "performance_budget": {
+      "required": ["measurements_artifact", "metric", "statistic", "threshold", "unit", "comparison", "min_repetitions", "environment_digest"],
+      "optional": ["baseline_artifact"],
+      "statistics": ["min", "max", "mean", "median", "p95", "p99", "sum", "count"],
+      "comparisons": ["max", "min", "baseline_max_ratio"],
+      "inconclusive": [
+        "fewer samples than min_repetitions",
+        "metric/unit/environment digest mismatch",
+        "baseline_max_ratio without a baseline",
+        "zero baseline statistic for a ratio"
+      ]
+    }
+  },
+  "state_mapping": {
+    "required_not_passed": "blocks accepted",
+    "optional_not_passed": "visible but does not block accepted"
+  }
+}

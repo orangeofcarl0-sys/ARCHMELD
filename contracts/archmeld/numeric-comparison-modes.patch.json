@@ -1,0 +1,91 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-053-numeric-modes-and-real-data.md",
+  "changes": [
+    {
+      "kind": "numeric_tolerance",
+      "path": "checks[].predicate",
+      "summary": "Add explicit ULP, statistical and MATLAB-epsilon comparison semantics, ignore_nan handling, sample/population variance and contract-declared multiplicative units."
+    }
+  ],
+  "numeric_tolerance": {
+    "mode": {
+      "default": "absolute_relative",
+      "values": ["absolute_relative", "ulp", "statistical"]
+    },
+    "absolute_relative": {
+      "tolerance_model": {
+        "default": "atol_rtol",
+        "values": ["atol_rtol", "matlab_eps"],
+        "atol_rtol": {
+          "atol": "required non-negative decimal string",
+          "rtol": "required non-negative decimal string"
+        },
+        "matlab_eps": {
+          "eps_multiplier": "required non-negative integer",
+          "formula": "atol + rtol*scale + multiplier*eps(max(|expected|,|actual|)) where eps is the IEEE-754 spacing at that magnitude",
+          "atol": "optional non-negative decimal string, default 0",
+          "rtol": "optional non-negative decimal string, default 0"
+        }
+      }
+    },
+    "ulp": {
+      "max_ulps": "required non-negative integer; IEEE-754 bit distance; -0.0 and 0.0 are distance 0",
+      "nonfinite_policy": "reject | match | ignore_nan"
+    },
+    "statistical": {
+      "statistics": {
+        "mean_abs_error_max": "optional non-negative decimal string",
+        "rms_error_max": "optional non-negative decimal string",
+        "max_abs_error_max": "optional non-negative decimal string",
+        "p95_abs_error_max": "optional non-negative decimal string",
+        "variance_max": "optional non-negative decimal string",
+        "stddev_max": "optional non-negative decimal string"
+      },
+      "normalization": {
+        "default": "sample",
+        "values": ["sample", "population"],
+        "sample": "divide by N-1; MATLAB convention; fewer than two finite pairs is inconclusive when variance/stddev is declared"
+      },
+      "requirement": "at least one threshold; unknown thresholds are contract errors"
+    },
+    "nonfinite_policy": {
+      "default": "required",
+      "values": ["reject", "match", "ignore_nan"],
+      "ignore_nan": "skip pairs where either side is NaN and record ignored_nan; infinities must still match sign and type"
+    },
+    "unit_mode": {
+      "default": "exact",
+      "values": ["exact", "dimension"],
+      "dimension": {
+        "algebra": "fixed SI/derived symbol table, products, quotients, integer powers, decimal scale constants",
+        "equivalent_example": ["mm", "1e-3*m"],
+        "refused": ["unknown symbols", "degC", "dB", "dBm"],
+        "unknown_result": "inconclusive"
+      },
+      "unit_definitions": {
+        "limit": 64,
+        "shape": "object mapping symbol to an expression over the built-in table or other declared units",
+        "rules": ["cycle checked", "unknown bases refused", "built-in names cannot be shadowed", "affine/log units still refused"]
+      }
+    },
+    "semantics": {
+      "default": "ieee754_elementwise",
+      "supported": ["ieee754_elementwise"],
+      "implemented_comparison_features": ["ignore_nan", "sample/population variance and stddev", "matlab_eps tolerance"],
+      "matlab_expression_language": "out of scope and refused: colon/linspace, implicit expansion, column-major reshape"
+    }
+  },
+  "operator_command": {
+    "argv": ["archmeld", "numeric-check", "--state", "<ledger>", "--root", "<artifacts>", "--predicate", "<json>"],
+    "effect": "evaluates the same engine, stores exact artifact bytes in the CAS, creates no verification and accepts no ChangeSet"
+  },
+  "real_data_evidence": "docs/release-evidence/B029-real-data.json",
+  "limitations": [
+    "the unit algebra is multiplicative only; affine and logarithmic units are refused",
+    "unit_definitions is contract-declared, not a shipped conversion database",
+    "MATLAB expression-language semantics are not implemented",
+    "real-data reproducibility gates do not establish agreement between different estimators"
+  ]
+}

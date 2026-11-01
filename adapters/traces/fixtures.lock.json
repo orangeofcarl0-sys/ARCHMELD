@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-10-31",
+  "purpose": "Real native runtime trace fixtures for B016. Each file was produced by the pinned tool below, not synthesized.",
+  "tools": [
+    {
+      "name": "Perfetto SDK / traceconv",
+      "version": "v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)",
+      "archive": "https://github.com/google/perfetto/releases/download/v59.1/windows-amd64.zip",
+      "archive_sha256": "sha256:f7ce9e3f43cb2c0c0525e79861054aa1a50a800bb88023b990d767247c80ac88",
+      "sdk_archive": "https://github.com/google/perfetto/releases/download/v59.1/perfetto-cpp-sdk-src.zip",
+      "sdk_archive_sha256": "sha256:79951246078ea0406eb4c7c6bb71dbbc31849d5dc13de2c0697995c7acfd0b04",
+      "perfetto_h_sha256": "sha256:a8ef92e33c50bf5c8e4eb1851bf27956f6a127729d7daec7d5c17557171da421",
+      "perfetto_cc_sha256": "sha256:7f5ad897e3aeb71baad003c9ba07302032a575281c78b617498deb89a4457a1d",
+      "traceconv_sha256": "sha256:88664f09d334f6f86731d74226605cdb2d42524fd20bd2b0da5b2b38a5fe358a",
+      "compiler": "g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders) 13.2.0",
+      "build_argv": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-DNDEBUG",
+        "-I.",
+        "probe.cc",
+        "perfetto.cc",
+        "-o",
+        "perfetto_probe.exe",
+        "-lws2_32",
+        "-ladvapi32",
+        "-lole32",
+        "-luuid"
+      ],
+      "probe_source": "tooling/perfetto_probe.cc",
+      "probe_source_sha256": "sha256:f6f2d5fefada6cbda1e1a19e370bfe16d62036c813e9a1aeead2ccdd64cd2b43",
+      "probe_sha256": "sha256:ce11512a7fbb75445f0d5f423e8a2477f0359536522223eaa761ed05a98099ae",
+      "trace_processor_version": "Perfetto v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)",
+      "trace_processor_sha256": "sha256:3acc5aca1c764541033a82ba3bb0a47524b5c3c0aa194eea8d9a7b0cdb346bdc",
+      "trace_processor_note": "extracted from the pinned windows-amd64.zip; used only by the optional --trace-processor backend"
+    },
+    {
+      "name": "Tracy capture and CSV export",
+      "version": "0.13.1",
+      "archive": "https://github.com/wolfpld/tracy/releases/download/v0.13.1/windows-0.13.1.zip",
+      "archive_sha256": "sha256:ee6db1a7e71a12deb5973a8dbfdf9f36d3635bec0e0b31b1cc74f28de7dac4c9",
+      "note": "release archive hash computed from the downloaded windows-0.13.1.zip",
+      "capture_argv": [
+        "tracy-capture.exe",
+        "-o",
+        "capture.tracy",
+        "-s",
+        "20"
+      ],
+      "summary_argv": [
+        "tracy-csvexport.exe",
+        "-u",
+        "-p",
+        "capture.tracy"
+      ],
+      "compiler": "g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders) 13.2.0",
+      "client_build_argv": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-DTRACY_ENABLE",
+        "-Itracy-0.13.1/public",
+        "tracy_probe.cc",
+        "tracy-0.13.1/public/TracyClient.cpp",
+        "-o",
+        "tracy_probe.exe",
+        "-lws2_32",
+        "-ldbghelp",
+        "-luser32",
+        "-ladvapi32",
+        "-lole32",
+        "-luuid"
+      ],
+      "probe_source": "tooling/tracy_probe.cc",
+      "probe_source_sha256": "sha256:c65fa91b1383b191fe5add0633c850af58d6af170324d7a6427851d216bbbc02",
+      "probe_sha256": "sha256:a44cc45370ae82f846f834e490dfca47ec6aff364c23a73b4b8f4c35fe0370cc"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "perfetto-counter-state",
+      "kind": "perfetto-native",
+      "path": "adapters/traces/fixtures/perfetto-counter-state.pftrace",
+      "sha256": "sha256:2db061e83ea81df992e16c912c4f9ba02cfc0c09689e0de6e799824054b3b3a4",
+      "size": 1212,
+      "producer": "Perfetto C++ SDK, in-process backend, written by tooling/perfetto_probe.cc",
+      "contains": [
+        "2 nested slices: stage.queue (about 105 ms) and stage.compute (about 30 ms)",
+        "1 counter series queue_depth with 4 samples [0, 3, 1, 0]",
+        "1 state track queue.state with 2 closed intervals idle, running",
+        "explicit debug annotation archmeld.entity_id=entity.queue on stage.queue"
+      ],
+      "limitations": [
+        "captured on Windows x64 with Perfetto SDK v59.1",
+        "TRACE_COUNTER in SDK v59.1 cannot carry debug annotations, so counters are process-scope observations",
+        "the final idle state is open at trace end; the adapter reports it as a loss instead of inventing an end timestamp"
+      ]
+    },
+    {
+      "id": "tracy-zones-plots",
+      "kind": "tracy-native",
+      "capture": "adapters/traces/fixtures/tracy-zones-plots.tracy",
+      "capture_sha256": "sha256:33b3932e9d9d06ecb47d90a2616ecdf5d1036582ea5be6170a76c91bed5fbfbf",
+      "capture_size": 1118,
+      "summary": "adapters/traces/fixtures/tracy-zones-plots.csv",
+      "summary_sha256": "sha256:15959de4e4e8069be16e7632b9062f5d7f99beaa32438b9103201be52b05add1",
+      "producer": "Tracy 0.13.1: tooling/tracy_probe.cc connected to tracy-capture 0.13.1",
+      "summary_command": "tracy-csvexport -u -p capture.tracy",
+      "contains": [
+        "2 zones with ns_since_start and exec_time_ns",
+        "1 plot queue_depth with 4 samples [0, 3, 1, 0]",
+        "3 frame-rate rows"
+      ],
+      "limitations": [
+        "the CSV export is the declared summary; the raw .tracy protocol is not decoded by ARCHMELD",
+        "frame-rate rows are ignored and recorded as a loss note",
+        "Tracy plots carry no unit metadata in this export",
+        "Tracy has no application state-interval export; state capture comes from the explicit probe adapter"
+      ]
+    }
+  ]
+}

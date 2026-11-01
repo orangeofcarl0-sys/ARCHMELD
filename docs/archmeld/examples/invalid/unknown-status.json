@@ -1,0 +1,10 @@
+{
+  "id": "job.demo",
+  "project_id": "project.synthetic",
+  "operation": "startAnalysis",
+  "state": "probably_done",
+  "progress": 0,
+  "result_ids": [],
+  "artifact_digests": [],
+  "error": null
+}

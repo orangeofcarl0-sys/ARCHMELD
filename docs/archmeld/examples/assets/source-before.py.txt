@@ -1,0 +1,6 @@
+# 合成契约夹具，不是产品实现
+def compute(x):
+    return x + 1
+
+def main():
+    return compute(1)

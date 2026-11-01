@@ -1,0 +1,2171 @@
+{
+  "contract_version": "1.0",
+  "status": "specification_not_implementation",
+  "transport": "stdio via official SDK; negotiate supported MCP protocol",
+  "tools": [
+    {
+      "name": "archmeld_inspect",
+      "description": "Inspect a registered project, frozen snapshot, job, or record by authorized ID. No filesystem traversal.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "project",
+              "snapshot",
+              "entity",
+              "architecture",
+              "plan",
+              "contract",
+              "change",
+              "verification",
+              "runtime_run",
+              "report",
+              "job",
+              "claim"
+            ]
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "getProject",
+        "getSnapshot",
+        "getEntity",
+        "getArchitecture",
+        "getPlan",
+        "getContract",
+        "getChange",
+        "getVerification",
+        "getRuntimeRun",
+        "getReport",
+        "getJob",
+        "getClaim"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_query",
+      "description": "Search symbols/text or query bounded neighbors, paths and impact. Relations include basis and evidence.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_id": {
+            "$ref": "#/$defs/Digest"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "symbols",
+              "text",
+              "neighbors",
+              "path",
+              "impact"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "minLength": 0
+          },
+          "entity_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0
+          },
+          "relation_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "contains",
+                "declares",
+                "imports",
+                "references",
+                "static_call_candidate",
+                "resolved_call",
+                "observed_call",
+                "implements",
+                "owns",
+                "reads",
+                "writes",
+                "publishes",
+                "consumes",
+                "awaits",
+                "schedules",
+                "guarded_by",
+                "generated_from",
+                "communicates_with"
+              ]
+            },
+            "minItems": 0
+          },
+          "max_nodes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2000
+          },
+          "max_depth": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_id",
+          "kind",
+          "query",
+          "entity_ids",
+          "relation_kinds",
+          "max_nodes",
+          "max_depth",
+          "cursor"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "query"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_context",
+      "description": "Build a bounded, snapshot-bound context package with evidence, counterclaims and explicit omissions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_id": {
+            "$ref": "#/$defs/Digest"
+          },
+          "objective": {
+            "type": "string",
+            "minLength": 1
+          },
+          "entity_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "minItems": 0
+          },
+          "budget_tokens": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 64000
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_id",
+          "objective",
+          "entity_ids",
+          "budget_tokens"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "createContext"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_source",
+      "description": "Read an authorized source anchor in its original snapshot, not an arbitrary local path.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_id": {
+            "$ref": "#/$defs/Digest"
+          },
+          "entity_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "anchor_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1048576
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_id",
+          "entity_id",
+          "anchor_index",
+          "max_bytes"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "readSource"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_analyze",
+      "description": "Request approved adapters for an existing snapshot; may require execution permission.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_id": {
+            "$ref": "#/$defs/Digest"
+          },
+          "adapter_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_id",
+          "adapter_ids",
+          "expected_revision",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "startAnalysis"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_architecture",
+      "description": "Submit candidate architecture or evidence-linked claim. No source mutation or acceptance authority.",
+      "inputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "model": {
+                "$ref": "#/$defs/Architecture"
+              },
+              "expected_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "const": "propose_model"
+              }
+            },
+            "required": [
+              "project_id",
+              "model",
+              "expected_revision",
+              "idempotency_key",
+              "action"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "claim": {
+                "$ref": "#/$defs/Claim"
+              },
+              "expected_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "const": "propose_claim"
+              }
+            },
+            "required": [
+              "project_id",
+              "claim",
+              "expected_revision",
+              "idempotency_key",
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        ],
+        "$defs": {
+          "Architecture": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "const": "1.0"
+              },
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "snapshot_id": {
+                "$ref": "#/$defs/Digest"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "layer": {
+                "type": "string",
+                "enum": [
+                  "as_is",
+                  "to_be",
+                  "transition"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "candidate",
+                  "reviewed",
+                  "accepted",
+                  "needs_review"
+                ]
+              },
+              "components": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ArchitectureComponent"
+                },
+                "minItems": 1
+              },
+              "dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "source_id": {
+                      "$ref": "#/$defs/Id"
+                    },
+                    "target_id": {
+                      "$ref": "#/$defs/Id"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/Id"
+                      },
+                      "minItems": 0
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "candidate",
+                        "required",
+                        "temporary"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "source_id",
+                    "target_id",
+                    "reason",
+                    "evidence_ids",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 0
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ArchitectureRule"
+                },
+                "minItems": 0
+              },
+              "claim_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "schema_version",
+              "id",
+              "project_id",
+              "snapshot_id",
+              "revision",
+              "layer",
+              "status",
+              "components",
+              "dependencies",
+              "rules",
+              "claim_ids"
+            ],
+            "additionalProperties": false
+          },
+          "ArchitectureComponent": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "responsibilities": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "non_responsibilities": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "member_entity_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              },
+              "owned_state": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "owned_resources": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "runtime_placement": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              },
+              "open_questions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "purpose",
+              "responsibilities",
+              "non_responsibilities",
+              "member_entity_ids",
+              "owned_state",
+              "owned_resources",
+              "runtime_placement",
+              "evidence_ids",
+              "open_questions"
+            ],
+            "additionalProperties": false
+          },
+          "ArchitectureRule": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "forbid_dependency",
+                  "allowed_layers",
+                  "acyclic",
+                  "interface_only",
+                  "ownership",
+                  "custom_contract"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 1
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "checker_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "checkability": {
+                "type": "string",
+                "enum": [
+                  "executable",
+                  "declared_only"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "description",
+              "scope_ids",
+              "required",
+              "checker_id",
+              "checkability"
+            ],
+            "additionalProperties": false
+          },
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          },
+          "Claim": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "snapshot_id": {
+                "$ref": "#/$defs/Digest"
+              },
+              "claim_type": {
+                "type": "string",
+                "enum": [
+                  "explanation",
+                  "hypothesis",
+                  "requirement",
+                  "decision"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "proposed",
+                  "accepted",
+                  "rejected",
+                  "needs_review"
+                ]
+              },
+              "support_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              },
+              "counterevidence_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "producer": {
+                "$ref": "#/$defs/Producer"
+              },
+              "unresolved_questions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "id",
+              "project_id",
+              "snapshot_id",
+              "claim_type",
+              "text",
+              "status",
+              "support_ids",
+              "counterevidence_ids",
+              "scope",
+              "producer",
+              "unresolved_questions"
+            ],
+            "additionalProperties": false
+          },
+          "Producer": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "run_id": {
+                "$ref": "#/$defs/Id"
+              }
+            },
+            "required": [
+              "name",
+              "version",
+              "source_ref",
+              "run_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "proposeArchitecture",
+        "proposeClaim"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_plan",
+      "description": "Propose a draft plan or behavior contract. Frozen/approved fields cannot be granted by the caller.",
+      "inputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "plan": {
+                "$ref": "#/$defs/Plan"
+              },
+              "expected_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "const": "propose_plan"
+              }
+            },
+            "required": [
+              "project_id",
+              "plan",
+              "expected_revision",
+              "idempotency_key",
+              "action"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "contract": {
+                "$ref": "#/$defs/BehaviorContract"
+              },
+              "expected_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "const": "propose_contract"
+              }
+            },
+            "required": [
+              "project_id",
+              "contract",
+              "expected_revision",
+              "idempotency_key",
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        ],
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          },
+          "Plan": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "const": "1.0"
+              },
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "structural_refactor",
+                  "behavior_fix",
+                  "architecture_migration"
+                ]
+              },
+              "objective": {
+                "type": "string",
+                "minLength": 1
+              },
+              "non_goals": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "base_snapshot_id": {
+                "$ref": "#/$defs/Digest"
+              },
+              "target_architecture_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "contract_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "contract_digest": {
+                "$ref": "#/$defs/Digest"
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/PlanStep"
+                },
+                "minItems": 1
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "approved",
+                  "rejected",
+                  "stale"
+                ]
+              }
+            },
+            "required": [
+              "schema_version",
+              "id",
+              "project_id",
+              "revision",
+              "kind",
+              "objective",
+              "non_goals",
+              "base_snapshot_id",
+              "target_architecture_id",
+              "contract_id",
+              "contract_digest",
+              "steps",
+              "risks",
+              "evidence_ids",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "PlanStep": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 0
+              },
+              "allowed_paths": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/RelativePath"
+                },
+                "minItems": 1
+              },
+              "required_check_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Id"
+                },
+                "minItems": 1
+              },
+              "completion_criteria": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "depends_on",
+              "allowed_paths",
+              "required_check_ids",
+              "completion_criteria"
+            ],
+            "additionalProperties": false
+          },
+          "RelativePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*:)(?!.*\\x00).+$"
+          },
+          "BehaviorContract": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "const": "1.0"
+              },
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "structural_refactor",
+                  "behavior_fix",
+                  "architecture_migration"
+                ]
+              },
+              "invariants": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "allowed_changes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "known_defects": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "checks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Check"
+                },
+                "minItems": 1
+              },
+              "digest": {
+                "$ref": "#/$defs/Digest"
+              },
+              "frozen": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "schema_version",
+              "id",
+              "project_id",
+              "revision",
+              "kind",
+              "invariants",
+              "allowed_changes",
+              "known_defects",
+              "checks",
+              "digest",
+              "frozen"
+            ],
+            "additionalProperties": false
+          },
+          "Check": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "build",
+                  "behavior",
+                  "concurrency",
+                  "architecture",
+                  "performance",
+                  "domain"
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Command"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "checker_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "predicate": {
+                "$ref": "#/$defs/Predicate"
+              },
+              "input_artifacts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Digest"
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "required",
+              "description",
+              "command",
+              "checker_id",
+              "predicate",
+              "input_artifacts"
+            ],
+            "additionalProperties": false
+          },
+          "Command": {
+            "type": "object",
+            "properties": {
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "cwd": {
+                "$ref": "#/$defs/RepoDirectory"
+              },
+              "environment": {
+                "type": "object",
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 0
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "secret_ref": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "secret_ref"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "timeout_ms": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "memory_limit_mib": {
+                "type": "integer",
+                "minimum": 64
+              },
+              "network": {
+                "type": "string",
+                "enum": [
+                  "deny",
+                  "allowlisted"
+                ]
+              },
+              "allowed_hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "trust_mode": {
+                "type": "string",
+                "enum": [
+                  "read_only",
+                  "isolated",
+                  "trusted_native",
+                  "external_side_effects"
+                ]
+              }
+            },
+            "required": [
+              "argv",
+              "cwd",
+              "environment",
+              "timeout_ms",
+              "memory_limit_mib",
+              "network",
+              "allowed_hosts",
+              "trust_mode"
+            ],
+            "additionalProperties": false
+          },
+          "Predicate": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "exit_code",
+                  "test_report",
+                  "file_digest",
+                  "numeric_tolerance",
+                  "architecture_rules",
+                  "invariant",
+                  "performance_budget"
+                ]
+              },
+              "parameters": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "kind",
+              "parameters"
+            ],
+            "additionalProperties": false
+          },
+          "RepoDirectory": {
+            "anyOf": [
+              {
+                "const": "."
+              },
+              {
+                "$ref": "#/$defs/RelativePath"
+              }
+            ]
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "proposePlan",
+        "proposeContract"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_change",
+      "description": "Submit a bounded change proposal using artifact digests; core creates draft only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "plan_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "step_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "base_snapshot_id": {
+            "$ref": "#/$defs/Digest"
+          },
+          "contract_digest": {
+            "$ref": "#/$defs/Digest"
+          },
+          "allowed_paths": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/RelativePath"
+            },
+            "minItems": 1
+          },
+          "read_set": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ReadEntry"
+            },
+            "minItems": 1
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteOperation"
+            },
+            "minItems": 1
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "project_id",
+          "plan_id",
+          "step_id",
+          "base_snapshot_id",
+          "contract_digest",
+          "allowed_paths",
+          "read_set",
+          "operations",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          },
+          "ReadEntry": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/RelativePath"
+              },
+              "digest": {
+                "$ref": "#/$defs/Digest"
+              }
+            },
+            "required": [
+              "path",
+              "digest"
+            ],
+            "additionalProperties": false
+          },
+          "RelativePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*:)(?!.*\\x00).+$"
+          },
+          "WriteOperation": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "update",
+                  "delete",
+                  "move"
+                ]
+              },
+              "path": {
+                "$ref": "#/$defs/RelativePath"
+              },
+              "destination": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/RelativePath"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "before_digest": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Digest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "after_digest": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Digest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "content_artifact": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Digest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "op",
+              "path",
+              "destination",
+              "before_digest",
+              "after_digest",
+              "content_artifact"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "proposeChange"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_change_action",
+      "description": "Prepare/apply/recover only with existing applicable authorization. Never approve own work.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approval_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changeset_id": {
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "prepare",
+              "apply",
+              "recover"
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "expected_revision",
+          "approval_id",
+          "idempotency_key",
+          "changeset_id",
+          "action"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "prepareChange",
+        "applyChange",
+        "recoverChange"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_run",
+      "description": "Register a scenario or run it with existing authorization and resource limits.",
+      "inputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "scenario": {
+                "$ref": "#/$defs/Scenario"
+              },
+              "expected_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "const": "register_scenario"
+              }
+            },
+            "required": [
+              "project_id",
+              "scenario",
+              "expected_revision",
+              "idempotency_key",
+              "action"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "snapshot_id": {
+                "$ref": "#/$defs/Digest"
+              },
+              "scenario_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "approval_id": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "const": "run_scenario"
+              }
+            },
+            "required": [
+              "project_id",
+              "snapshot_id",
+              "scenario_id",
+              "approval_id",
+              "idempotency_key",
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        ],
+        "$defs": {
+          "Command": {
+            "type": "object",
+            "properties": {
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "cwd": {
+                "$ref": "#/$defs/RepoDirectory"
+              },
+              "environment": {
+                "type": "object",
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 0
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "secret_ref": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "secret_ref"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "timeout_ms": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "memory_limit_mib": {
+                "type": "integer",
+                "minimum": 64
+              },
+              "network": {
+                "type": "string",
+                "enum": [
+                  "deny",
+                  "allowlisted"
+                ]
+              },
+              "allowed_hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "trust_mode": {
+                "type": "string",
+                "enum": [
+                  "read_only",
+                  "isolated",
+                  "trusted_native",
+                  "external_side_effects"
+                ]
+              }
+            },
+            "required": [
+              "argv",
+              "cwd",
+              "environment",
+              "timeout_ms",
+              "memory_limit_mib",
+              "network",
+              "allowed_hosts",
+              "trust_mode"
+            ],
+            "additionalProperties": false
+          },
+          "DecimalInteger": {
+            "type": "string",
+            "pattern": "^-?(0|[1-9][0-9]*)$"
+          },
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          },
+          "RelativePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*:)(?!.*\\x00).+$"
+          },
+          "RepoDirectory": {
+            "anyOf": [
+              {
+                "const": "."
+              },
+              {
+                "$ref": "#/$defs/RelativePath"
+              }
+            ]
+          },
+          "Scenario": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "const": "1.0"
+              },
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "project_id": {
+                "$ref": "#/$defs/Id"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "objective": {
+                "type": "string",
+                "minLength": 1
+              },
+              "snapshot_id": {
+                "$ref": "#/$defs/Digest"
+              },
+              "command": {
+                "$ref": "#/$defs/Command"
+              },
+              "input_artifacts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Digest"
+                },
+                "minItems": 0
+              },
+              "collectors": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "seed": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/DecimalInteger"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "expected_properties": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "external_resources": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "approval_id": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "schema_version",
+              "id",
+              "project_id",
+              "name",
+              "objective",
+              "snapshot_id",
+              "command",
+              "input_artifacts",
+              "collectors",
+              "seed",
+              "expected_properties",
+              "external_resources",
+              "approval_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "proposeScenario",
+        "runScenario"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_verify",
+      "description": "Run immutable contract checks on the specified actual snapshot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_id": {
+            "$ref": "#/$defs/Digest"
+          },
+          "contract_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "contract_digest": {
+            "$ref": "#/$defs/Digest"
+          },
+          "changeset_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approval_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_id",
+          "contract_id",
+          "contract_digest",
+          "changeset_id",
+          "approval_id",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "startVerification"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_import_trace",
+      "description": "Import an already authorized artifact. Binding must be evidenced, not asserted by model.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Digest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "artifact_digest": {
+            "$ref": "#/$defs/Digest"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "chrome_trace",
+              "viztracer",
+              "otlp_json",
+              "perfetto",
+              "tracy_summary"
+            ]
+          },
+          "binding": {
+            "type": "string",
+            "enum": [
+              "bound",
+              "unbound"
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_id",
+          "scenario_id",
+          "artifact_digest",
+          "format",
+          "binding",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "importTrace"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_report",
+      "description": "Export an offline report with explicit source/raw-data inclusion permissions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "snapshot_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Digest"
+            },
+            "minItems": 1
+          },
+          "include_source": {
+            "type": "boolean"
+          },
+          "include_raw_traces": {
+            "type": "boolean"
+          },
+          "approval_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "project_id",
+          "snapshot_ids",
+          "include_source",
+          "include_raw_traces",
+          "approval_id",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "createReport"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_cancel",
+      "description": "Cancel a job owned by this project; does not imply transactional rollback.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "$ref": "#/$defs/Id"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approval_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "job_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "expected_revision",
+          "approval_id",
+          "idempotency_key",
+          "job_id"
+        ],
+        "additionalProperties": false,
+        "$defs": {
+          "Id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]+$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "cancelJob"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    }
+  ],
+  "output_policy": "structured result of mapped operation plus a bounded text summary; tool errors reflect Error; no raw secrets or huge artifacts",
+  "approval_exposed": false
+}

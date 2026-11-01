@@ -1,0 +1,1789 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ARCHMELD local core specification",
+    "version": "1.0.0",
+    "description": "Design contract, not a running service. Server chooses an ephemeral loopback port and passes token through authenticated parent IPC. All responses are project-authorized; identifiers are not access capabilities."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:{port}",
+      "variables": {
+        "port": {
+          "default": "8765",
+          "description": "Example only. Actual ephemeral port supplied by parent; never fixed-port trust."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "LocalBearer": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "LocalBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Per-process secret from trusted parent; not URL, repository or stdout"
+      }
+    }
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Service and contract version; no repository data",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Health"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/open": {
+      "post": {
+        "operationId": "openProject",
+        "summary": "Resolve authorized workspace handle; never arbitrary filesystem path",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Project"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ProjectOpenRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}": {
+      "get": {
+        "operationId": "getProject",
+        "summary": "getProject",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Project"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/snapshots": {
+      "post": {
+        "operationId": "captureSnapshot",
+        "summary": "captureSnapshot",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/SnapshotRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/snapshots/{snapshot_id}": {
+      "get": {
+        "operationId": "getSnapshot",
+        "summary": "getSnapshot",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "snapshot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Snapshot"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/query": {
+      "post": {
+        "operationId": "query",
+        "summary": "query",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/QueryResult"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/QueryRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/entities/{entity_id}": {
+      "get": {
+        "operationId": "getEntity",
+        "summary": "getEntity",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Entity"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/source": {
+      "post": {
+        "operationId": "readSource",
+        "summary": "readSource",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/SourceExcerpt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/SourceRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/context": {
+      "post": {
+        "operationId": "createContext",
+        "summary": "createContext",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/ContextPack"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ContextRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/analyses": {
+      "post": {
+        "operationId": "startAnalysis",
+        "summary": "startAnalysis",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/AnalysisRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/artifacts/register": {
+      "post": {
+        "operationId": "registerArtifact",
+        "summary": "registerArtifact",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Artifact"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ArtifactRegistration"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/artifacts/{digest}": {
+      "get": {
+        "operationId": "getArtifactMetadata",
+        "summary": "getArtifactMetadata",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "digest",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Artifact"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scenarios": {
+      "post": {
+        "operationId": "proposeScenario",
+        "summary": "proposeScenario",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Scenario"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ScenarioProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scenarios/run": {
+      "post": {
+        "operationId": "runScenario",
+        "summary": "runScenario",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/RunRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/traces/import": {
+      "post": {
+        "operationId": "importTrace",
+        "summary": "importTrace",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/TraceImportRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/runtime-runs/{runtime_run_id}": {
+      "get": {
+        "operationId": "getRuntimeRun",
+        "summary": "getRuntimeRun",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "runtime_run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/RuntimeRun"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/architectures": {
+      "post": {
+        "operationId": "proposeArchitecture",
+        "summary": "proposeArchitecture",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Architecture"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ArchitectureProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/architectures/{architecture_id}": {
+      "get": {
+        "operationId": "getArchitecture",
+        "summary": "getArchitecture",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "architecture_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Architecture"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/contracts": {
+      "post": {
+        "operationId": "proposeContract",
+        "summary": "proposeContract",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/BehaviorContract"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ContractProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/contracts/{contract_id}": {
+      "get": {
+        "operationId": "getContract",
+        "summary": "getContract",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "contract_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/BehaviorContract"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans": {
+      "post": {
+        "operationId": "proposePlan",
+        "summary": "proposePlan",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Plan"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/PlanProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans/{plan_id}": {
+      "get": {
+        "operationId": "getPlan",
+        "summary": "getPlan",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Plan"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/changes": {
+      "post": {
+        "operationId": "proposeChange",
+        "summary": "proposeChange",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/ChangeSet"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ChangeProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/changes/{changeset_id}": {
+      "get": {
+        "operationId": "getChange",
+        "summary": "getChange",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "changeset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/ChangeSet"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/changes/{changeset_id}/prepare": {
+      "post": {
+        "operationId": "prepareChange",
+        "summary": "prepareChange",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "changeset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ActionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/changes/{changeset_id}/apply": {
+      "post": {
+        "operationId": "applyChange",
+        "summary": "applyChange",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "changeset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ActionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/changes/{changeset_id}/recover": {
+      "post": {
+        "operationId": "recoverChange",
+        "summary": "recoverChange",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "changeset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ActionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/approvals": {
+      "post": {
+        "operationId": "recordApproval",
+        "summary": "recordApproval",
+        "tags": [
+          "human-approval"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Approval"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ApprovalRequest"
+              }
+            }
+          }
+        },
+        "x-required-actor": "human_interactive_or_preapproved_bounded_policy",
+        "description": "Not exposed by MCP. Server derives actor, expiry and capabilities from authenticated local interaction. Cannot be minted by model."
+      }
+    },
+    "/v1/verifications": {
+      "post": {
+        "operationId": "startVerification",
+        "summary": "startVerification",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/VerifyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verifications/{verification_id}": {
+      "get": {
+        "operationId": "getVerification",
+        "summary": "getVerification",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "verification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Verification"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "getJob",
+        "summary": "getJob",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancelJob",
+        "summary": "cancelJob",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ActionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reports": {
+      "post": {
+        "operationId": "createReport",
+        "summary": "createReport",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Job"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ReportRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reports/{report_id}": {
+      "get": {
+        "operationId": "getReport",
+        "summary": "getReport",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/ReportManifest"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}/promote": {
+      "post": {
+        "operationId": "promoteProject",
+        "summary": "promoteProject",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation; domain verdict remains explicit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Project"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/PromoteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events": {
+      "get": {
+        "operationId": "watchEvents",
+        "summary": "Replayable server-sent events; each data payload validates Event",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after_sequence",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SSE stream; durable per-project sequence",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Each data field is a serialized Event"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Cursor no longer available; resync required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/claims": {
+      "post": {
+        "operationId": "proposeClaim",
+        "summary": "proposeClaim",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Claim"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ClaimProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/claims/{claim_id}": {
+      "get": {
+        "operationId": "getClaim",
+        "summary": "getClaim",
+        "parameters": [
+          {
+            "name": "claim_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Claim"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}/close": {
+      "post": {
+        "operationId": "closeProject",
+        "summary": "closeProject",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Project"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ProjectActionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/snapshots/compare": {
+      "post": {
+        "operationId": "compareSnapshots",
+        "summary": "compareSnapshots",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Authorized result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/ComparisonResult"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schemas/archmeld.schema.json#/$defs/ComparisonRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/artifacts/{digest}/content": {
+      "get": {
+        "operationId": "readArtifactContent",
+        "summary": "Read a project-authorized artifact; file content permission and size limits apply",
+        "parameters": [
+          {
+            "name": "digest",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exact artifact bytes; Content-Type set from metadata; no executable render by default",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

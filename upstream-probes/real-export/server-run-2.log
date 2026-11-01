@@ -1,0 +1,14 @@
+[2m2026-10-29T19:12:26.571066Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Project slug: archmeld-core-8b67
+[2m2026-10-29T19:12:26.572241Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Workspace folders: ["/work/crates/archmeld-core"] (1 total)
+[2m2026-10-29T19:12:26.869387Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m No persisted graph found — starting fresh
+[2m2026-10-29T19:12:26.870955Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Extension path for models: Some("/")
+[2m2026-10-29T19:12:26.877718Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m No persisted graph to resume from - indexing every file
+[2m2026-10-29T19:12:26.878779Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Indexing workspace: ["/work/crates/archmeld-core"]
+[2m2026-10-29T19:12:27.793184Z[0m [32m INFO[0m [2mcodegraph_server::watcher[0m[2m:[0m [resolve_cross_file] Phase 2: resolved 253 cross-file call edges
+[2m2026-10-29T19:12:27.794346Z[0m [32m INFO[0m [2mcodegraph_server::watcher[0m[2m:[0m [resolve_cross_file] Phase 2 complete: call edges added
+[2m2026-10-29T19:12:27.818313Z[0m [32m INFO[0m [2mcodegraph_server::index_state[0m[2m:[0m Saved index state (16 files)
+[2m2026-10-29T19:12:28.127670Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Persisted 338 nodes, 983 edges to graph.db (namespace: archmeld-core-8b67)
+[2m2026-10-29T19:12:28.151346Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Graph-only mode — skipping embedding generation
+[2m2026-10-29T19:12:28.152457Z[0m [32m INFO[0m [2mcodegraph_server::mcp::server[0m[2m:[0m Indexed 16 files (16 parsed, 0 skipped)
+[2m2026-10-29T19:12:28.231105Z[0m [32m INFO[0m [2mcodegraph_server::mcp::file_watcher[0m[2m:[0m MCP file watcher started (1 directories)
+{"edges":983,"format":"archmeld-export-v1","nodes":338,"path":"/out/archmeld-core-3.ndjson"}

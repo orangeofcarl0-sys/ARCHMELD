@@ -1,0 +1,533 @@
+// Copyright 2025-2026 Andrey Vasilevsky <anvanster@gmail.com>
+// SPDX-License-Identifier: Apache-2.0
+
+//! Model B socket engine.
+//!
+//! One resident process holds the heavy state — N project graphs plus a SINGLE
+//! shared ONNX model — and serves the MCP tool surface to many thin clients over
+//! a Unix socket. Each agent session is a `--connect` relay (~20 MB, no graph,
+//! no model), so per-session RAM stops scaling with session count.
+//!
+//! Multi-root: a connection's first line is an attach frame
+//! (`{"cg_attach":{"workspace":"<abs>"}}`) naming its workspace; the engine
+//! lazily loads that workspace's backend (reusing the shared model) and routes
+//! the connection's requests to it via the `&self` `handle_request_shared`.
+//!
+//! Lifecycle: a `--connect` shim auto-spawns the engine if no socket is live,
+//! and the engine self-exits after an idle period with no connections.
+
+use std::path::PathBuf;
+
+use codegraph_memory::EmbeddingBackend;
+
+use super::server::McpServer;
+
+/// Configuration for a running engine.
+pub struct EngineConfig {
+    pub socket_path: PathBuf,
+    pub embedding_model: EmbeddingBackend,
+    pub exclude_dirs: Vec<String>,
+    pub max_files: usize,
+    pub full_body_embedding: bool,
+    pub split_identifiers: bool,
+    /// Build graphs only and never load the embedding model. An auto-spawned
+    /// engine used to drop this along with every other resource setting but the
+    /// model name, so a client that asked for graph-only still caused a model
+    /// load in the engine it started (issue #23).
+    pub graph_only: bool,
+    /// Workspaces to pre-load at startup (optional; others load on attach).
+    pub seeds: Vec<PathBuf>,
+}
+
+/// `~/.codegraph/fastembed_cache` — where the embedding model is cached.
+#[cfg(unix)]
+fn model_cache_dir() -> PathBuf {
+    std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| PathBuf::from("."))
+        .join(".codegraph")
+        .join("fastembed_cache")
+}
+
+/// Seconds with no connections before the engine self-exits.
+/// Override with `CODEGRAPH_ENGINE_IDLE_SECS` (default 1800 = 30 min).
+#[cfg(unix)]
+fn idle_timeout_secs() -> u64 {
+    std::env::var("CODEGRAPH_ENGINE_IDLE_SECS")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(1800)
+}
+
+#[cfg(unix)]
+fn now_unix() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0)
+}
+
+#[cfg(unix)]
+mod imp {
+    use super::*;
+    use std::collections::HashMap;
+    use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
+    use std::sync::Arc;
+    use std::time::Duration;
+    use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+    use tokio::net::{UnixListener, UnixStream};
+    use tokio::sync::Mutex;
+
+    use codegraph_memory::VectorEngine;
+
+    /// One slot per workspace. The slot is created under the lock; the load
+    /// runs inside it, outside the lock, and every concurrent attach for the
+    /// same workspace awaits that one load.
+    type Registry = Arc<Mutex<HashMap<PathBuf, Arc<tokio::sync::OnceCell<Arc<McpServer>>>>>>;
+
+    struct Engine {
+        cfg: EngineConfig,
+        registry: Registry,
+        /// One model shared by every workspace; `None` if the model couldn't be
+        /// loaded (low memory) — workspaces then run graph-only.
+        shared_engine: Option<Arc<VectorEngine>>,
+        /// Live connection count and the unix time the engine last went idle
+        /// (0 while connections are active) — drives the idle-exit timer.
+        active: AtomicUsize,
+        idle_since: AtomicU64,
+    }
+
+    /// Load (or fetch from the registry) the backend for `workspace`, reusing the
+    /// shared model.
+    ///
+    /// This used to check the registry, release the lock, build, then insert -
+    /// so two attaches to a cold workspace both built a full backend, each
+    /// indexing the workspace and starting its own file watcher. Worse, the
+    /// loser kept the registry's entry but returned its own backend, so that
+    /// connection was served for its whole life by a second, unregistered copy
+    /// (issue #23). A per-workspace `OnceCell` makes the second attach wait for
+    /// the first load instead, while a slow first index of one workspace still
+    /// does not block attaches to others.
+    async fn get_or_load(engine: &Arc<Engine>, workspace: PathBuf) -> Arc<McpServer> {
+        let ws = workspace
+            .canonicalize()
+            .unwrap_or_else(|_| workspace.clone());
+        let slot = {
+            let mut registry = engine.registry.lock().await;
+            Arc::clone(registry.entry(ws.clone()).or_default())
+        };
+        Arc::clone(slot.get_or_init(|| load_workspace(engine, ws)).await)
+    }
+
+    async fn load_workspace(engine: &Arc<Engine>, ws: PathBuf) -> Arc<McpServer> {
+        tracing::info!("Engine: loading workspace {}", ws.display());
+        let mut server = McpServer::new(
+            vec![ws],
+            engine.cfg.exclude_dirs.clone(),
+            engine.cfg.max_files,
+            engine.cfg.embedding_model.clone(),
+            engine.cfg.full_body_embedding,
+        )
+        .with_split_identifiers(engine.cfg.split_identifiers)
+        .with_graph_only(engine.cfg.graph_only);
+        if let Some(shared) = &engine.shared_engine {
+            server.set_shared_engine(Arc::clone(shared)).await;
+        }
+        server.ensure_indexed().await;
+        Arc::new(server)
+    }
+
+    /// First line of a connection: an attach frame selects the workspace.
+    /// Returns `(workspace, leftover_request_line)` — if the first line was a
+    /// plain JSON-RPC request instead, it's returned to be dispatched.
+    fn parse_attach(line: &str) -> (Option<PathBuf>, Option<String>) {
+        if let Ok(v) = serde_json::from_str::<serde_json::Value>(line) {
+            if let Some(ws) = v
+                .get("cg_attach")
+                .and_then(|a| a.get("workspace"))
+                .and_then(|w| w.as_str())
+            {
+                return (Some(PathBuf::from(ws)), None);
+            }
+        }
+        (None, Some(line.to_string()))
+    }
+
+    async fn handle_conn(engine: Arc<Engine>, stream: UnixStream) {
+        engine.active.fetch_add(1, Ordering::SeqCst);
+        engine.idle_since.store(0, Ordering::SeqCst);
+
+        serve_conn(&engine, stream).await;
+
+        if engine.active.fetch_sub(1, Ordering::SeqCst) == 1 {
+            // Last connection closed — start the idle clock.
+            engine.idle_since.store(now_unix(), Ordering::SeqCst);
+        }
+    }
+
+    async fn serve_conn(engine: &Arc<Engine>, stream: UnixStream) {
+        let (read_half, mut write_half) = stream.into_split();
+        let mut lines = BufReader::new(read_half).lines();
+
+        // Resolve the connection's workspace from the attach frame (or fall back
+        // to the first seed, or the engine's cwd).
+        let first = match lines.next_line().await {
+            Ok(Some(l)) => l,
+            _ => return,
+        };
+        let (attach_ws, pending) = parse_attach(&first);
+        let workspace = attach_ws
+            .or_else(|| engine.cfg.seeds.first().cloned())
+            .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        let server = get_or_load(engine, workspace).await;
+
+        // If the first line was actually a request (no attach frame), dispatch it.
+        let mut queued = pending;
+        loop {
+            let line = match queued.take() {
+                Some(l) => l,
+                None => match lines.next_line().await {
+                    Ok(Some(l)) => l,
+                    Ok(None) | Err(_) => break,
+                },
+            };
+            if line.trim().is_empty() {
+                continue;
+            }
+            let req: crate::mcp::JsonRpcRequest = match serde_json::from_str(&line) {
+                Ok(r) => r,
+                Err(e) => {
+                    tracing::debug!("Engine: skipping malformed JSON-RPC line: {e}");
+                    continue;
+                }
+            };
+            if let Some(resp) = server.handle_request_shared(req).await {
+                match serde_json::to_vec(&resp) {
+                    Ok(mut bytes) => {
+                        bytes.push(b'\n');
+                        if write_half.write_all(&bytes).await.is_err() {
+                            break;
+                        }
+                        let _ = write_half.flush().await;
+                    }
+                    Err(e) => tracing::warn!("Engine: failed to serialize response: {e}"),
+                }
+            }
+        }
+    }
+
+    enum EngineLock {
+        /// This process is the engine for the socket. Released by the OS when
+        /// the process exits, crashes included.
+        Held(std::fs::File),
+        /// Another live process already is.
+        Contended,
+        /// The lock file could not be opened or locked.
+        Unavailable,
+    }
+
+    /// Take the exclusive lock, kept beside the socket, that marks this process
+    /// as the engine for `socket_path`.
+    fn acquire_engine_lock(socket_path: &std::path::Path) -> EngineLock {
+        let mut lock_path = socket_path.as_os_str().to_owned();
+        lock_path.push(".lock");
+        let lock_path = PathBuf::from(lock_path);
+        if let Some(parent) = lock_path.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        let file = match std::fs::OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(&lock_path)
+        {
+            Ok(f) => f,
+            Err(e) => {
+                tracing::warn!("Engine: cannot open {}: {e}", lock_path.display());
+                return EngineLock::Unavailable;
+            }
+        };
+        match file.try_lock() {
+            Ok(()) => EngineLock::Held(file),
+            Err(std::fs::TryLockError::WouldBlock) => EngineLock::Contended,
+            Err(std::fs::TryLockError::Error(e)) => {
+                tracing::warn!("Engine: cannot lock {}: {e}", lock_path.display());
+                EngineLock::Unavailable
+            }
+        }
+    }
+
+    /// True if a live engine is already listening on the socket (probe by
+    /// connecting). Distinguishes a stale socket file from a running engine so we
+    /// neither steal a live socket nor refuse to start over a dead one.
+    async fn engine_is_live(socket_path: &std::path::Path) -> bool {
+        UnixStream::connect(socket_path).await.is_ok()
+    }
+
+    pub async fn serve(cfg: EngineConfig) -> Result<(), String> {
+        // Held for the life of the engine. The socket probe alone did not stop
+        // two auto-spawned engines: both probed before either had bound, both
+        // loaded a model and their seed workspaces - which can take minutes -
+        // and the second then removed the first one's live socket file to bind
+        // its own, leaving the first running, holding a model, and unreachable
+        // until its idle timeout (issue #23). Taking an exclusive lock first
+        // makes the loser exit before it loads anything.
+        let _engine_lock = match acquire_engine_lock(&cfg.socket_path) {
+            EngineLock::Held(lock) => Some(lock),
+            EngineLock::Contended => {
+                tracing::info!("Engine: another instance owns this socket — exiting");
+                return Ok(());
+            }
+            // Could not lock at all: fall back to the socket probe below
+            // rather than refuse to start.
+            EngineLock::Unavailable => None,
+        };
+
+        // Still checked: an engine started by an older build holds no lock.
+        if engine_is_live(&cfg.socket_path).await {
+            tracing::info!("Engine: another instance is already live — exiting");
+            return Ok(());
+        }
+
+        // One model for the whole engine. Gate on free memory the same way the
+        // per-workspace path does, so a constrained box runs graph-only instead
+        // of OOM-crashing on the model load.
+        let shared_engine = if cfg.graph_only {
+            tracing::info!("Engine: graph-only — not loading an embedding model");
+            None
+        } else {
+            let mut sys = sysinfo::System::new();
+            sys.refresh_memory();
+            let avail = sys.available_memory();
+            let gate = crate::memory::evaluate_memory_gate(
+                avail,
+                crate::memory::MODEL_MIN_FREE_BYTES,
+                crate::memory::memory_check_bypassed(),
+            );
+            if let crate::memory::MemoryGate::Skip(avail) = gate {
+                tracing::warn!(
+                    "Engine: only {} MB available — skipping shared embedding model to avoid OOM; running graph-only. Set CODEGRAPH_SKIP_MEMORY_CHECK=1 to override.",
+                    avail / 1_000_000
+                );
+                None
+            } else {
+                if gate == crate::memory::MemoryGate::ProceedDetectionFailed {
+                    tracing::warn!(
+                        "Engine: available memory read as 0 MB — treating as a detection failure (common on macOS, where reclaimable memory is not counted as free) and proceeding with the shared model load. Set CODEGRAPH_SKIP_MEMORY_CHECK=1 to always bypass this check."
+                    );
+                }
+                match VectorEngine::from_backend(model_cache_dir(), &cfg.embedding_model) {
+                    Ok(e) => {
+                        tracing::info!("Engine: shared embedding model loaded");
+                        Some(Arc::new(e))
+                    }
+                    Err(e) => {
+                        tracing::warn!("Engine: model load failed ({e}); running graph-only");
+                        None
+                    }
+                }
+            }
+        };
+
+        let socket_path = cfg.socket_path.clone();
+        let seeds = cfg.seeds.clone();
+        let engine = Arc::new(Engine {
+            cfg,
+            registry: Arc::new(Mutex::new(HashMap::new())),
+            shared_engine,
+            active: AtomicUsize::new(0),
+            idle_since: AtomicU64::new(now_unix()),
+        });
+
+        // Pre-load any seed workspaces.
+        for ws in seeds {
+            let _ = get_or_load(&engine, ws).await;
+        }
+
+        // Stale socket from a prior run — safe to clear now (probe above showed
+        // no live engine).
+        let _ = std::fs::remove_file(&socket_path);
+        if let Some(parent) = socket_path.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        let listener = UnixListener::bind(&socket_path)
+            .map_err(|e| format!("Failed to bind {}: {e}", socket_path.display()))?;
+        tracing::info!("Engine listening on {}", socket_path.display());
+
+        // Idle-exit monitor: stop the process after `idle_timeout_secs` with no
+        // connections, so an auto-spawned engine doesn't linger forever.
+        {
+            let engine = Arc::clone(&engine);
+            let timeout = idle_timeout_secs();
+            let check = (timeout / 2).clamp(2, 30);
+            tokio::spawn(async move {
+                loop {
+                    tokio::time::sleep(Duration::from_secs(check)).await;
+                    if engine.active.load(Ordering::SeqCst) == 0 {
+                        let since = engine.idle_since.load(Ordering::SeqCst);
+                        if since != 0 && now_unix().saturating_sub(since) >= timeout {
+                            tracing::info!(
+                                "Engine: idle {timeout}s with no clients — shutting down"
+                            );
+                            let _ = std::fs::remove_file(&engine.cfg.socket_path);
+                            std::process::exit(0);
+                        }
+                    }
+                }
+            });
+        }
+
+        loop {
+            let (stream, _) = listener
+                .accept()
+                .await
+                .map_err(|e| format!("accept failed: {e}"))?;
+            let engine = Arc::clone(&engine);
+            tokio::spawn(handle_conn(engine, stream));
+        }
+    }
+
+    /// Spawn a detached engine for `socket_path` using this binary, so the engine
+    /// outlives the shim. Best-effort; the caller retries the connect.
+    fn spawn_engine(socket_path: &std::path::Path, engine_args: &[std::ffi::OsString]) {
+        let exe = match std::env::current_exe() {
+            Ok(e) => e,
+            Err(e) => {
+                tracing::warn!("Engine auto-spawn: cannot resolve current exe: {e}");
+                return;
+            }
+        };
+        let mut cmd = std::process::Command::new(exe);
+        cmd.arg("--serve")
+            .arg("--socket")
+            .arg(socket_path)
+            .args(engine_args)
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null());
+        match cmd.spawn() {
+            Ok(_) => tracing::info!(
+                "Engine auto-spawn: started engine for {}",
+                socket_path.display()
+            ),
+            Err(e) => tracing::warn!("Engine auto-spawn failed: {e}"),
+        }
+    }
+
+    /// `engine_args` are the engine-level settings an auto-spawned engine should
+    /// start with. They only take effect when this call is the one that starts
+    /// the engine: one already running keeps the settings it was started with.
+    pub async fn connect(
+        socket_path: &std::path::Path,
+        workspace: PathBuf,
+        engine_args: &[std::ffi::OsString],
+    ) -> Result<(), String> {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+        // Connect, auto-spawning the engine if none is live yet.
+        let stream = match UnixStream::connect(socket_path).await {
+            Ok(s) => s,
+            Err(_) => {
+                spawn_engine(socket_path, engine_args);
+                let mut connected = None;
+                for _ in 0..60 {
+                    tokio::time::sleep(Duration::from_millis(500)).await;
+                    if let Ok(s) = UnixStream::connect(socket_path).await {
+                        connected = Some(s);
+                        break;
+                    }
+                }
+                connected.ok_or_else(|| {
+                    format!(
+                        "engine did not come up at {} within 30s",
+                        socket_path.display()
+                    )
+                })?
+            }
+        };
+        let (mut sock_read, mut sock_write) = stream.into_split();
+
+        // Bind this connection to the workspace before relaying.
+        let ws = workspace.canonicalize().unwrap_or(workspace);
+        let attach = format!(
+            "{}\n",
+            serde_json::json!({ "cg_attach": { "workspace": ws.to_string_lossy() } })
+        );
+        if sock_write.write_all(attach.as_bytes()).await.is_err() {
+            return Err("failed to send attach frame".to_string());
+        }
+
+        // Agent stdin -> engine.
+        let up = tokio::spawn(async move {
+            let mut stdin = tokio::io::stdin();
+            let _ = tokio::io::copy(&mut stdin, &mut sock_write).await;
+        });
+        // Engine -> agent stdout, flushed per chunk.
+        let down = tokio::spawn(async move {
+            let mut stdout = tokio::io::stdout();
+            let mut buf = vec![0u8; 16 * 1024];
+            loop {
+                match sock_read.read(&mut buf).await {
+                    Ok(0) | Err(_) => break,
+                    Ok(n) => {
+                        if stdout.write_all(&buf[..n]).await.is_err() {
+                            break;
+                        }
+                        let _ = stdout.flush().await;
+                    }
+                }
+            }
+        });
+
+        tokio::select! {
+            _ = up => {}
+            _ = down => {}
+        }
+        Ok(())
+    }
+
+    #[cfg(test)]
+    mod lock_tests {
+        use super::*;
+
+        /// flock is per open file description, not per process, so a second
+        /// open in the same process contends exactly as a second engine would.
+        #[test]
+        fn only_one_engine_may_own_a_socket() {
+            let dir = tempfile::tempdir().unwrap();
+            let socket = dir.path().join("cg-engine.sock");
+
+            let first = acquire_engine_lock(&socket);
+            assert!(
+                matches!(first, EngineLock::Held(_)),
+                "first engine takes the lock"
+            );
+            assert!(
+                matches!(acquire_engine_lock(&socket), EngineLock::Contended),
+                "a second engine must back off before loading anything"
+            );
+
+            // Released on drop, as on process exit: the socket is free again.
+            drop(first);
+            assert!(matches!(acquire_engine_lock(&socket), EngineLock::Held(_)));
+        }
+    }
+}
+
+#[cfg(unix)]
+pub use imp::{connect, serve};
+
+#[cfg(not(unix))]
+pub async fn serve(_cfg: EngineConfig) -> Result<(), String> {
+    Err("the socket engine is not yet supported on this platform".to_string())
+}
+
+#[cfg(not(unix))]
+pub async fn connect(
+    _socket_path: &std::path::Path,
+    _workspace: PathBuf,
+    _engine_args: &[std::ffi::OsString],
+) -> Result<(), String> {
+    Err("the socket engine is not yet supported on this platform".to_string())
+}

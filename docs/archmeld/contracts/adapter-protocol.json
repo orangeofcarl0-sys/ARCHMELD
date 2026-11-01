@@ -1,0 +1,64 @@
+{
+  "contract_version": "1.0",
+  "transport": {
+    "framing": "UTF-8 NDJSON one object per physical line",
+    "stdout": "protocol only",
+    "stderr": "bounded diagnostic text, secrets redacted",
+    "max_frame_bytes": 16777216,
+    "default_max_entities_per_batch": 500,
+    "default_max_relations_per_batch": 2000
+  },
+  "request_envelope": {
+    "version": "1.0",
+    "request_id": "opaque id",
+    "operation": "capabilities|analyze|cancel|shutdown",
+    "params": "operation-specific fields below"
+  },
+  "requests": {
+    "capabilities": {
+      "params": {},
+      "response_schema": "AdapterCapabilities"
+    },
+    "analyze": {
+      "params": {
+        "run_id": "Id",
+        "project_id": "Id",
+        "snapshot_id": "Digest",
+        "config_digest": "Digest",
+        "materialized_root_handle": "authorized adapter-local path handle",
+        "state_root_handle": "authorized isolated cache root handle",
+        "language_profiles": "array of configured IDs",
+        "limits": "cpu/memory/time/output/network policy"
+      },
+      "response_schema": "EvidenceBatch, multiple sequential frames; final=true required"
+    },
+    "cancel": {
+      "params": {
+        "run_id": "Id"
+      },
+      "response": "ack; final cancellation coverage if process remains alive"
+    },
+    "shutdown": {
+      "params": {},
+      "response": "ack then exit"
+    }
+  },
+  "error_schema": "Error",
+  "semantics": [
+    "Core resolves handles; target repository paths never accepted from model directly",
+    "sequence starts at 0 per run, decimal string; duplicate same payload is idempotent",
+    "Do not publish complete scope before final and reference checks",
+    "Child death marks run failed and staging batch unpublished; preserve diagnostics",
+    "Major version mismatch rejected before analysis",
+    "Deadline exceeded: cooperative cancel then kill owned process tree; no arbitrary PID killing",
+    "Untrusted source text and prompts are data; cannot install tools or alter policy"
+  ],
+  "source_bridge": {
+    "existing_upstream_api": "codegraph::export::export_json is an inspected library function, not sufficient proof of complete incremental export",
+    "new_flags_to_implement": [
+      "--archmeld-export-v1",
+      "--archmeld-state-root"
+    ],
+    "requirement": "Bridge streams actual enumerated nodes/edges with provenance; if iterators missing add narrowly scoped upstream API, never scan 0..count as identity assumption"
+  }
+}

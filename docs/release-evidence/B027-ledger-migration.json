@@ -1,0 +1,64 @@
+{
+  "generated_by": "crates/archmeld-core/tests/ledger_migration.rs",
+  "platform": "windows",
+  "receipt": {
+    "cas": {
+      "bytes": 1789,
+      "missing_referenced": 0,
+      "objects": 8,
+      "referenced_artifacts": 8
+    },
+    "created_at": 1793524853,
+    "kind": "archmeld.ledger_migration",
+    "limitations": [
+      "copies the entire ledger; merging into an existing target is refused",
+      "the source ledger is read-only and left untouched",
+      "exports, verification sandboxes, scenario sandboxes and other transient state are not copied",
+      "the receipt is written beside state.sqlite3 and is not covered by the database hash"
+    ],
+    "merge": false,
+    "mode": "copy_entire_ledger",
+    "reason": "move the evidence ledger to a new disk",
+    "schema_version": "1.0",
+    "source": {
+      "database_sha256": "sha256:1fe8f6113488865c546d2faa55b21482662ce4be19d4f505eeefa09bc3131489",
+      "projects": [
+        "project.e7f659e8cba6ac3e8fff1b503700da84"
+      ],
+      "root": "\\\\?\\<local-user>\\AppData\\Local\\Temp\\.tmpJbnkkn\\state",
+      "schema_version": 18
+    },
+    "target": {
+      "database_sha256": "sha256:75892b1ad23044f550c3f02abe9fd2761c9930a661247f37437712ff6c3e1596",
+      "root": "\\\\?\\<local-user>\\AppData\\Local\\Temp\\.tmpJbnkkn\\migrated-state",
+      "schema_version": 18
+    },
+    "verification": {
+      "database_bytes_equal": false,
+      "foreign_key_violations": 0,
+      "logical_check": "schema version and every table row count match the source",
+      "schema_versions_match": true,
+      "sqlite_integrity": "ok",
+      "table_counts_match": true,
+      "tables_checked": 55
+    }
+  },
+  "refusals": {
+    "empty_reason": true,
+    "existing_target": true,
+    "overlapping_target": true
+  },
+  "reopened": {
+    "integrity": "ok",
+    "project_id": "project.e7f659e8cba6ac3e8fff1b503700da84",
+    "project_mode": "expedition",
+    "snapshot_id": "sha256:65654e7d9b7b15acc2bdbf45d65f1c6ce668de3d7571af4d5f3141fa42585baa",
+    "source_bytes": "VALUE = 1\n",
+    "source_file": "src/a.py"
+  },
+  "schema_version": "1.0",
+  "tamper": {
+    "detected": true,
+    "target_removed": true
+  }
+}

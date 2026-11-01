@@ -1,0 +1,20 @@
+{
+  "controlled_apply": "pending:B020/B021",
+  "dynamic_dispatch_local_targets": [
+    "app."
+  ],
+  "generated_by": "cargo test -p archmeld-core --test language_packs",
+  "language": "typescript",
+  "patch_bytes": 376,
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "src/app.ts",
+    "src/util.ts"
+  ],
+  "runtime_linkage": "pending:B016",
+  "server": "typescript-language-server 4.3.4",
+  "snapshot_id": "sha256:0110c70c699aee56c6b3a8e12853b929b254dd4f86c769c04208a1420ef49975"
+}

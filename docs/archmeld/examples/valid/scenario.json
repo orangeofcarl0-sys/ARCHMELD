@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "id": "scenario.demo",
+  "project_id": "project.synthetic",
+  "name": "Synthetic example, not executed",
+  "objective": "Demonstrate scenario contract shape",
+  "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "command": {
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml=results.xml"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "timeout_ms": 30000,
+    "memory_limit_mib": 512,
+    "network": "deny",
+    "allowed_hosts": [],
+    "trust_mode": "isolated"
+  },
+  "input_artifacts": [
+    "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413"
+  ],
+  "collectors": [
+    "viztracer"
+  ],
+  "seed": "42",
+  "expected_properties": [
+    "No product claim is made by this fixture"
+  ],
+  "external_resources": [],
+  "approval_id": null
+}

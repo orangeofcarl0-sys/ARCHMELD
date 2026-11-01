@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "mode": "trace_frame",
+  "snapshot_id": "sha256:3c6f1acc344a9ce3220ba4b9686c3721fd167901fa41bb76e4a2ba175dd9a1ce",
+  "project_id": "project.traceui",
+  "endpoint": "http://127.0.0.1:4938",
+  "run_id": "run.tracy.ui",
+  "span_id": "tracy.zone.1",
+  "path": "tracy_probe.cc",
+  "line": 14,
+  "line_start": 10,
+  "line_end": 18,
+  "active_document": "archmeld-snapshot-file:/sha256%3A3c6f1acc344a9ce3220ba4b9686c3721fd167901fa41bb76e4a2ba175dd9a1ce/tracy_probe.cc/14",
+  "active_line": 4,
+  "expected_line": 4,
+  "trace_command_ms": 164,
+  "screenshot": "F:\\Codex_Work_Space\\ARCHMELD-work\\docs\\evidence\\b016-trace-source-jump.png",
+  "capture_method": "cdp",
+  "capture_target": "page:[Extension Development Host] fixture - Visual Studio Code",
+  "captured_at": "2026-10-31T21:29:10.078Z",
+  "budgets": {
+    "trace_command_ms": 10000
+  },
+  "budget_failures": []
+}

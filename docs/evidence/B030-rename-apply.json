@@ -1,0 +1,148 @@
+{
+  "generated_by": "crates/archmeld-core/tests/language_rename_apply.rs",
+  "groups": {
+    "c_cpp": {
+      "after_output": "12.57 6",
+      "applied": {
+        "approval_id": "approval.0476c6431228432026af9d97ffe06e8c",
+        "changed_files": [
+          "src/circle.cpp",
+          "src/main.cpp",
+          "src/shape.h"
+        ],
+        "changeset_id": "changeset.cpp",
+        "plan_id": "plan.cpp",
+        "prepared_digest": "sha256:16a3009316ad6398c6495cab991476b4ca896de26fb41959a125702a7b3364b1",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "clangd 18.1.8"
+      },
+      "before_output": "12.57 6"
+    },
+    "csharp": {
+      "after_output": "12",
+      "applied": {
+        "approval_id": "approval.659b9d80ecabcca11b4287f221cd3150",
+        "changed_files": [
+          "Program.cs",
+          "Util.cs"
+        ],
+        "changeset_id": "changeset.csharp",
+        "plan_id": "plan.csharp",
+        "prepared_digest": "sha256:ca0ec517438935c2dad1555ba58976a47a3250fffe3ef3dc80f04bbcad56b081",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "csharp-ls 0.14.0"
+      },
+      "before_output": "12"
+    },
+    "go": {
+      "after_output": "2 4 6",
+      "applied": {
+        "approval_id": "approval.14a297e2c52e119aaf0bf38c6eebd045",
+        "changed_files": [
+          "main.go",
+          "util/util.go"
+        ],
+        "changeset_id": "changeset.go",
+        "plan_id": "plan.go",
+        "prepared_digest": "sha256:eafa47741b4f8e263a08914a8c1590d240ebae9a4affe8f7b69f0fec40e4fdda",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "gopls 0.20.0"
+      },
+      "before_output": "2 4 6"
+    },
+    "java": {
+      "after_output": "compiled",
+      "applied": {
+        "approval_id": "approval.00a34b836e4d7885e1c256d8771ae1db",
+        "changed_files": [
+          "src/main/java/pkg/App.java",
+          "src/main/java/pkg/Util.java"
+        ],
+        "changeset_id": "changeset.java",
+        "plan_id": "plan.java",
+        "prepared_digest": "sha256:b0aae12d42025918a61386de1acbf61f1ede6d99e43f01f34c50209627b5d38c",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "jdtls 1.64.0"
+      },
+      "before_output": "compiled"
+    },
+    "javascript_typescript": {
+      "after_output": "4",
+      "applied": {
+        "approval_id": "approval.34b3d3fccbc8bfff1ea570b3f32c6f53",
+        "changed_files": [
+          "src/app.ts",
+          "src/util.ts"
+        ],
+        "changeset_id": "changeset.typescript",
+        "plan_id": "plan.typescript",
+        "prepared_digest": "sha256:b9e88dc2004565c91e1397c9fbbc14aceb551a528b2d4592ba30134b65923f5a",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "typescript-language-server 4.3.4"
+      },
+      "before_output": "4",
+      "javascript": {
+        "after_output": "4",
+        "applied": {
+          "approval_id": "approval.ce89a743cd27a0a4eb0d4b55676abb4c",
+          "changed_files": [
+            "src/app.js",
+            "src/util.js"
+          ],
+          "changeset_id": "changeset.javascript",
+          "plan_id": "plan.javascript",
+          "prepared_digest": "sha256:768a5755fe6840aae2a508bd2571bc92ab8626c7693826df728e562d49609d5a",
+          "staged_only_until_apply": true,
+          "state": "applied",
+          "tool": "typescript-language-server 4.3.4"
+        },
+        "before_output": "4"
+      }
+    },
+    "python": {
+      "after_output": "6",
+      "applied": {
+        "approval_id": "approval.cde9d2b90f89e89c696ee131f73928a0",
+        "changed_files": [
+          "app.py",
+          "pkg/util.py"
+        ],
+        "changeset_id": "changeset.python",
+        "plan_id": "plan.python",
+        "prepared_digest": "sha256:5d78267ee3e7821f2801e04636a020356d5e48a357983956028f781ad7a43c65",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "pyright 1.1.408"
+      },
+      "before_output": "6"
+    },
+    "rust": {
+      "after_output": "2",
+      "applied": {
+        "approval_id": "approval.f4a2b43cb03a7f58e4f3fa26f301b8ee",
+        "changed_files": [
+          "src/lib.rs",
+          "src/util.rs"
+        ],
+        "changeset_id": "changeset.rust",
+        "plan_id": "plan.rust",
+        "prepared_digest": "sha256:6b9e025a72d12f2ab3d9e2cd86beddbbc5998d7e1780c7fcf8884305e437c4f8",
+        "staged_only_until_apply": true,
+        "state": "applied",
+        "tool": "rust-analyzer 1.94.1"
+      },
+      "before_output": "2"
+    }
+  },
+  "note": "Each rename came from a real language server, was applied to the staging tree only, approved by exact prepared digest, applied through the journaled writer gate, then built and executed again. Same-named symbols in other files and reflective/string literals remained untouched.",
+  "platform": {
+    "arch": "x86_64",
+    "os": "windows"
+  },
+  "schema_version": "1.0"
+}

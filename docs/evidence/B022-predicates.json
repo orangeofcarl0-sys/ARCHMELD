@@ -1,0 +1,661 @@
+{
+  "acceptance": {
+    "predicates": {
+      "acceptance": true,
+      "accepted_state": "accepted",
+      "checks": [
+        {
+          "check_id": "check.invariant.fail",
+          "predicate": {
+            "artifact": "sha256:bc66fbef1bbfb13b496c4a921f06bed30b16462ac7103283a4541a607ffadc1a",
+            "artifacts": [
+              {
+                "digest": "sha256:bc66fbef1bbfb13b496c4a921f06bed30b16462ac7103283a4541a607ffadc1a",
+                "media_type": "application/octet-stream",
+                "role": "invariant"
+              }
+            ],
+            "checker_id": "numeric.invariants.v1",
+            "columns": [
+              "x",
+              "y"
+            ],
+            "kind": "invariant",
+            "rule_results": [
+              {
+                "detail": {
+                  "column": "x",
+                  "max": "5",
+                  "min": "1",
+                  "rule": "range",
+                  "violations": [
+                    {
+                      "row": 0,
+                      "value": "0"
+                    }
+                  ]
+                },
+                "rule_id": "range.x",
+                "state": "failed"
+              }
+            ],
+            "rules_total": 1,
+            "shape": [
+              3,
+              2
+            ],
+            "version": "1"
+          },
+          "state": "failed"
+        },
+        {
+          "check_id": "check.invariant.pass",
+          "predicate": {
+            "artifact": "sha256:bc66fbef1bbfb13b496c4a921f06bed30b16462ac7103283a4541a607ffadc1a",
+            "artifacts": [
+              {
+                "digest": "sha256:bc66fbef1bbfb13b496c4a921f06bed30b16462ac7103283a4541a607ffadc1a",
+                "media_type": "application/octet-stream",
+                "role": "invariant"
+              }
+            ],
+            "checker_id": "numeric.invariants.v1",
+            "columns": [
+              "x",
+              "y"
+            ],
+            "kind": "invariant",
+            "rule_results": [
+              {
+                "detail": {
+                  "column": "x",
+                  "rule": "finite",
+                  "violations": []
+                },
+                "rule_id": "finite",
+                "state": "passed"
+              },
+              {
+                "detail": {
+                  "column": "y",
+                  "rule": "finite",
+                  "violations": []
+                },
+                "rule_id": "finite",
+                "state": "passed"
+              },
+              {
+                "detail": {
+                  "column": "x",
+                  "max": "2",
+                  "min": "0",
+                  "rule": "range",
+                  "violations": []
+                },
+                "rule_id": "range.x",
+                "state": "passed"
+              },
+              {
+                "detail": {
+                  "column": "y",
+                  "direction": "nondecreasing",
+                  "rule": "monotonic",
+                  "violations": []
+                },
+                "rule_id": "mono.y",
+                "state": "passed"
+              },
+              {
+                "detail": {
+                  "actual": "3",
+                  "atol": "0",
+                  "column": "x",
+                  "expected": "3",
+                  "rtol": "0",
+                  "rule": "sum"
+                },
+                "rule_id": "sum.x",
+                "state": "passed"
+              }
+            ],
+            "rules_total": 4,
+            "shape": [
+              3,
+              2
+            ],
+            "version": "1"
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.invariant.unknown",
+          "predicate": {
+            "artifact": "sha256:bc66fbef1bbfb13b496c4a921f06bed30b16462ac7103283a4541a607ffadc1a",
+            "artifacts": [
+              {
+                "digest": "sha256:bc66fbef1bbfb13b496c4a921f06bed30b16462ac7103283a4541a607ffadc1a",
+                "media_type": "application/octet-stream",
+                "role": "invariant"
+              }
+            ],
+            "checker_id": "numeric.invariants.v1",
+            "columns": [
+              "x",
+              "y"
+            ],
+            "kind": "invariant",
+            "rule_results": [
+              {
+                "reason": "unregistered invariant rule \"periodic\"",
+                "rule_id": "periodic",
+                "state": "unsupported"
+              },
+              {
+                "reason": "unregistered invariant rule \"periodic\"",
+                "rule_id": "periodic",
+                "state": "unsupported"
+              }
+            ],
+            "rules_total": 1,
+            "shape": [
+              3,
+              2
+            ],
+            "version": "1"
+          },
+          "state": "unsupported"
+        },
+        {
+          "check_id": "check.numeric.command",
+          "predicate": {
+            "actual_artifact": "actual-numbers.json",
+            "artifacts": [
+              {
+                "digest": "sha256:4258fa77b12ff507cdfaab51285e5a3ad1385934bc30bb54cf934e09ec33b346",
+                "media_type": "application/octet-stream",
+                "role": "expected"
+              },
+              {
+                "digest": "sha256:1488c48bcc1a2305e76f4bc998d03acec4512088f0af4a241c1c442308ee1c81",
+                "media_type": "application/json",
+                "role": "actual"
+              }
+            ],
+            "atol": "0.001",
+            "columns": [
+              "x",
+              "y"
+            ],
+            "compared": 4,
+            "expected_artifact": "sha256:4258fa77b12ff507cdfaab51285e5a3ad1385934bc30bb54cf934e09ec33b346",
+            "kind": "numeric_tolerance",
+            "max_abs_error": "0.000500000000000167",
+            "max_rel_error": "0.0004997501249374762",
+            "mismatch_count": 0,
+            "mismatches": [],
+            "mismatches_truncated": false,
+            "nonfinite_count": 0,
+            "nonfinite_policy": "reject",
+            "rtol": "0",
+            "shape": [
+              2,
+              2
+            ],
+            "units": [
+              null,
+              null
+            ]
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.numeric.fail",
+          "predicate": {
+            "actual_artifact": "sha256:5b6779ed2708d657c8a8a92ffbf0b0f3e6b55ea4a75a168b2c9f112275dab013",
+            "artifacts": [
+              {
+                "digest": "sha256:4258fa77b12ff507cdfaab51285e5a3ad1385934bc30bb54cf934e09ec33b346",
+                "media_type": "application/octet-stream",
+                "role": "expected"
+              },
+              {
+                "digest": "sha256:5b6779ed2708d657c8a8a92ffbf0b0f3e6b55ea4a75a168b2c9f112275dab013",
+                "media_type": "application/octet-stream",
+                "role": "actual"
+              }
+            ],
+            "atol": "0.001",
+            "columns": [
+              "x",
+              "y"
+            ],
+            "compared": 4,
+            "expected_artifact": "sha256:4258fa77b12ff507cdfaab51285e5a3ad1385934bc30bb54cf934e09ec33b346",
+            "kind": "numeric_tolerance",
+            "max_abs_error": "0.010000000000000009",
+            "max_rel_error": "0.00990099009900991",
+            "mismatch_count": 1,
+            "mismatches": [
+              {
+                "abs_error": "0.010000000000000009",
+                "actual": "1.01",
+                "column": "x",
+                "expected": "1",
+                "row": 0,
+                "tolerance": "0.001"
+              }
+            ],
+            "mismatches_truncated": false,
+            "nonfinite_count": 0,
+            "nonfinite_policy": "reject",
+            "rtol": "0",
+            "shape": [
+              2,
+              2
+            ],
+            "units": [
+              null,
+              null
+            ]
+          },
+          "state": "failed"
+        },
+        {
+          "check_id": "check.numeric.nan",
+          "predicate": {
+            "actual_artifact": "sha256:b799a7415772abbb9bd816b983118dc758671e34fe5e06c35f871848cbbf2a8b",
+            "artifacts": [
+              {
+                "digest": "sha256:b799a7415772abbb9bd816b983118dc758671e34fe5e06c35f871848cbbf2a8b",
+                "media_type": "application/octet-stream",
+                "role": "expected"
+              },
+              {
+                "digest": "sha256:b799a7415772abbb9bd816b983118dc758671e34fe5e06c35f871848cbbf2a8b",
+                "media_type": "application/octet-stream",
+                "role": "actual"
+              }
+            ],
+            "atol": "0",
+            "columns": [
+              "x"
+            ],
+            "compared": 2,
+            "expected_artifact": "sha256:b799a7415772abbb9bd816b983118dc758671e34fe5e06c35f871848cbbf2a8b",
+            "kind": "numeric_tolerance",
+            "max_abs_error": "0",
+            "max_rel_error": "0",
+            "mismatch_count": 0,
+            "mismatches": [],
+            "mismatches_truncated": false,
+            "nonfinite_count": 2,
+            "nonfinite_policy": "match",
+            "rtol": "0",
+            "shape": [
+              2,
+              1
+            ],
+            "units": [
+              null
+            ]
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.numeric.shape",
+          "predicate": {
+            "actual_artifact": "sha256:ba67c0fa8c56c78584d1b40497613538c7a86794a603124871c897fb31c3bc17",
+            "actual_columns": [
+              "x",
+              "y"
+            ],
+            "actual_shape": [
+              1,
+              2
+            ],
+            "artifacts": [
+              {
+                "digest": "sha256:4258fa77b12ff507cdfaab51285e5a3ad1385934bc30bb54cf934e09ec33b346",
+                "media_type": "application/octet-stream",
+                "role": "expected"
+              },
+              {
+                "digest": "sha256:ba67c0fa8c56c78584d1b40497613538c7a86794a603124871c897fb31c3bc17",
+                "media_type": "application/octet-stream",
+                "role": "actual"
+              }
+            ],
+            "expected_artifact": "sha256:4258fa77b12ff507cdfaab51285e5a3ad1385934bc30bb54cf934e09ec33b346",
+            "expected_columns": [
+              "x",
+              "y"
+            ],
+            "expected_shape": [
+              2,
+              2
+            ],
+            "kind": "numeric_tolerance",
+            "reason": "shape mismatch"
+          },
+          "state": "failed"
+        },
+        {
+          "check_id": "check.numeric.units",
+          "predicate": {
+            "actual_artifact": "sha256:9cc3b404c0af218f70c0d13095bc7335c199aedb5943790546bed27414bd2abc",
+            "artifacts": [
+              {
+                "digest": "sha256:695098ede1b44cc9f8e1238ce0c94696574385b0c4689c07a226d352e02ce436",
+                "media_type": "application/octet-stream",
+                "role": "expected"
+              },
+              {
+                "digest": "sha256:9cc3b404c0af218f70c0d13095bc7335c199aedb5943790546bed27414bd2abc",
+                "media_type": "application/octet-stream",
+                "role": "actual"
+              }
+            ],
+            "expected_artifact": "sha256:695098ede1b44cc9f8e1238ce0c94696574385b0c4689c07a226d352e02ce436",
+            "kind": "numeric_tolerance",
+            "reason": "unit mismatch (checked before numeric values)",
+            "shape": [
+              2,
+              2
+            ],
+            "unit_mismatches": [
+              {
+                "actual_unit": "cm",
+                "column": "x",
+                "expected_unit": "m"
+              }
+            ]
+          },
+          "state": "failed"
+        },
+        {
+          "check_id": "check.performance.baseline",
+          "predicate": {
+            "artifacts": [
+              {
+                "digest": "sha256:f4a4a4ac5fa9fc941d541791c008196f3c65e93d05a5f6e334bc1169133ef416",
+                "media_type": "application/octet-stream",
+                "role": "measurements"
+              },
+              {
+                "digest": "sha256:c73f276ece5859ff22b8e76f5cf9bdf5f560772bfd294cd3a808fa324271674d",
+                "media_type": "application/octet-stream",
+                "role": "baseline"
+              }
+            ],
+            "baseline": {
+              "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+              "metric": "query.p95",
+              "samples": [
+                "10",
+                "10",
+                "10",
+                "10",
+                "10"
+              ],
+              "samples_truncated": false,
+              "statistics": {
+                "count": 5,
+                "max": "10",
+                "mean": "10",
+                "median": "10",
+                "min": "10",
+                "p95": "10",
+                "p99": "10"
+              },
+              "unit": "ms"
+            },
+            "comparison": "baseline_max_ratio",
+            "coverage": {
+              "min_repetitions": 3,
+              "samples": 5,
+              "satisfied": true
+            },
+            "delta": "4",
+            "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+            "ignored_entries": 0,
+            "kind": "performance_budget",
+            "metric": "query.p95",
+            "min_repetitions": 3,
+            "ratio": "1.4",
+            "samples": [
+              "10",
+              "11",
+              "12",
+              "13",
+              "14"
+            ],
+            "samples_truncated": false,
+            "statistic": "p95",
+            "statistic_value": "14",
+            "statistics": {
+              "count": 5,
+              "max": "14",
+              "mean": "12",
+              "median": "12",
+              "min": "10",
+              "p95": "14",
+              "p99": "14"
+            },
+            "threshold": "1.5",
+            "unit": "ms"
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.performance.baseline_missing",
+          "predicate": {
+            "comparison": "baseline_max_ratio",
+            "metric": "query.p95",
+            "reason": "baseline_max_ratio requires baseline_artifact; a missing baseline cannot prove no regression",
+            "unit": "ms"
+          },
+          "state": "inconclusive"
+        },
+        {
+          "check_id": "check.performance.environment",
+          "predicate": {
+            "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+            "metric": "query.p95",
+            "reason": "measurements environment sha256:66adbe2e295c9bb7dc12907c998e8b3d016ba4fbeda33f6cf6f343fcbe61730c does not match the declared environment sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+            "unit": "ms"
+          },
+          "state": "inconclusive"
+        },
+        {
+          "check_id": "check.performance.fail",
+          "predicate": {
+            "artifacts": [
+              {
+                "digest": "sha256:f4a4a4ac5fa9fc941d541791c008196f3c65e93d05a5f6e334bc1169133ef416",
+                "media_type": "application/octet-stream",
+                "role": "measurements"
+              }
+            ],
+            "baseline": null,
+            "comparison": "max",
+            "coverage": {
+              "min_repetitions": 3,
+              "samples": 5,
+              "satisfied": true
+            },
+            "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+            "ignored_entries": 0,
+            "kind": "performance_budget",
+            "metric": "query.p95",
+            "min_repetitions": 3,
+            "samples": [
+              "10",
+              "11",
+              "12",
+              "13",
+              "14"
+            ],
+            "samples_truncated": false,
+            "statistic": "p95",
+            "statistic_value": "14",
+            "statistics": {
+              "count": 5,
+              "max": "14",
+              "mean": "12",
+              "median": "12",
+              "min": "10",
+              "p95": "14",
+              "p99": "14"
+            },
+            "threshold": "12",
+            "unit": "ms"
+          },
+          "state": "failed"
+        },
+        {
+          "check_id": "check.performance.pass",
+          "predicate": {
+            "artifacts": [
+              {
+                "digest": "sha256:f4a4a4ac5fa9fc941d541791c008196f3c65e93d05a5f6e334bc1169133ef416",
+                "media_type": "application/octet-stream",
+                "role": "measurements"
+              }
+            ],
+            "baseline": null,
+            "comparison": "max",
+            "coverage": {
+              "min_repetitions": 3,
+              "samples": 5,
+              "satisfied": true
+            },
+            "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+            "ignored_entries": 0,
+            "kind": "performance_budget",
+            "metric": "query.p95",
+            "min_repetitions": 3,
+            "samples": [
+              "10",
+              "11",
+              "12",
+              "13",
+              "14"
+            ],
+            "samples_truncated": false,
+            "statistic": "p95",
+            "statistic_value": "14",
+            "statistics": {
+              "count": 5,
+              "max": "14",
+              "mean": "12",
+              "median": "12",
+              "min": "10",
+              "p95": "14",
+              "p99": "14"
+            },
+            "threshold": "20",
+            "unit": "ms"
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.performance.short",
+          "predicate": {
+            "artifacts": [
+              {
+                "digest": "sha256:0de8eaee1afaf2ade67bb953620b1a49a26c912bfdc3e234c5cdccec0a7e71d0",
+                "media_type": "application/octet-stream",
+                "role": "measurements"
+              }
+            ],
+            "baseline": null,
+            "comparison": "max",
+            "coverage": {
+              "min_repetitions": 5,
+              "samples": 2,
+              "satisfied": false
+            },
+            "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+            "ignored_entries": 0,
+            "kind": "performance_budget",
+            "metric": "query.p95",
+            "min_repetitions": 5,
+            "reason": "the measurement has fewer repetitions than the frozen contract requires",
+            "samples": [
+              "10",
+              "11"
+            ],
+            "samples_truncated": false,
+            "statistic": "p95",
+            "statistic_value": "11",
+            "statistics": {
+              "count": 2,
+              "max": "11",
+              "mean": "10.5",
+              "median": "10.5",
+              "min": "10",
+              "p95": "11",
+              "p99": "11"
+            },
+            "threshold": "20",
+            "unit": "ms"
+          },
+          "state": "inconclusive"
+        }
+      ],
+      "environment_digest": "sha256:dda1242bf1090817094b50742c3c790dcf24fd1bb500626f2dc3fce2616cb990",
+      "optional_not_passed": [
+        {
+          "check_id": "check.numeric.fail",
+          "required": false,
+          "state": "failed"
+        },
+        {
+          "check_id": "check.numeric.shape",
+          "required": false,
+          "state": "failed"
+        },
+        {
+          "check_id": "check.numeric.units",
+          "required": false,
+          "state": "failed"
+        },
+        {
+          "check_id": "check.invariant.unknown",
+          "required": false,
+          "state": "unsupported"
+        },
+        {
+          "check_id": "check.invariant.fail",
+          "required": false,
+          "state": "failed"
+        },
+        {
+          "check_id": "check.performance.fail",
+          "required": false,
+          "state": "failed"
+        },
+        {
+          "check_id": "check.performance.baseline_missing",
+          "required": false,
+          "state": "inconclusive"
+        },
+        {
+          "check_id": "check.performance.environment",
+          "required": false,
+          "state": "inconclusive"
+        },
+        {
+          "check_id": "check.performance.short",
+          "required": false,
+          "state": "inconclusive"
+        }
+      ],
+      "required_not_passed": []
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/verification.rs",
+  "platform": "windows",
+  "project_id": "project.8f4388af550cb73a16253fc4068c5e2f",
+  "snapshot_id": "sha256:cc6cac563db2abc28fd760a2362627e64c23d5d16d71bda36e9de5380ee30965"
+}

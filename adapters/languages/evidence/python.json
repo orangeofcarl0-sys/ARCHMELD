@@ -1,0 +1,18 @@
+{
+  "controlled_apply": "pending:B020/B021",
+  "dynamic_dispatch_local_targets": [],
+  "generated_by": "cargo test -p archmeld-core --test language_packs",
+  "language": "python",
+  "patch_bytes": 253,
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "app.py",
+    "pkg/util.py"
+  ],
+  "runtime_linkage": "pending:B016",
+  "server": "pyright 1.1.408",
+  "snapshot_id": "sha256:489c0e389c8bcf05bd75f706e89c6fe7eda9078c4b11dc0963ab09770116fa4d"
+}

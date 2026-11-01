@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "case": "explicit_link",
+      "evidence_limitations": [
+        "1 spans/links have no explicit entity mapping"
+      ],
+      "evidence_scenario": {
+        "association": "explicit: existing scenario run with matching snapshot and build config",
+        "config_digest": "sha256:ab248b2ef25cd70b34ab3849f2102136ba684efc7fdd8b43a379c77fc9938b63",
+        "exit_code": 0,
+        "run_id": "run.link.ok",
+        "snapshot_id": "sha256:96e79a644522118cc76eabeb9c0e51109b91fff15cc1ca5b2467bdbd8ff02760",
+        "timed_out": false
+      },
+      "scenario_run_id": "run.link.ok",
+      "summary_scenario_run_id": "run.link.ok"
+    },
+    {
+      "case": "producer_declared",
+      "evidence_limitations": [
+        "1 spans/links have no explicit entity mapping",
+        "scenario_id producer.only is producer-declared and was not linked to a recorded scenario run"
+      ],
+      "evidence_scenario": {
+        "association": "producer_declared_unverified",
+        "reason": "no scenario_run_id was supplied; the declared run was not checked against scenario_runs",
+        "run_id": "producer.only"
+      },
+      "scenario_id": "producer.only",
+      "summary_scenario_run_id": null
+    }
+  ],
+  "generated_by": "crates/archmeld-core/tests/scenario_trace_link.rs",
+  "platform": "windows",
+  "schema_version": "1.0"
+}

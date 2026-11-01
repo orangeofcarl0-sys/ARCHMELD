@@ -1,0 +1,25 @@
+{
+  "build_verify": "pending:B022",
+  "cargo_check": {
+    "default": 0,
+    "fast": 0
+  },
+  "config_digest_default": "sha256:ce2dce89285b411296d30d775062fd911a2588ba1069c430afdee42b6fee1ea3",
+  "config_digest_fast": "sha256:dd1821f2fece316c221b4d9cbc6bb2cf81a2c8066507957f3701bc258efd4ecd",
+  "controlled_apply": "pending:B020/B021",
+  "function_pointer_resolved": false,
+  "language": "rust",
+  "macro_definition_contains_util_rs": true,
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "src/lib.rs",
+    "src/util.rs"
+  ],
+  "runtime_trace": "pending:B016",
+  "server": "rust-analyzer 1.94.1",
+  "snapshot_id": "sha256:1ef3822ddd88b4bcdb75aa46d2ef9c0bf654a4ddeef8d44316eca65e6b2c4df3",
+  "trait_definition": "null"
+}

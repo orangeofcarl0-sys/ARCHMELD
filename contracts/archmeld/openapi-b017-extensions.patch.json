@@ -1,0 +1,54 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-020-claims-and-candidate-architecture.md",
+  "changes": [
+    {
+      "method": "GET",
+      "path": "/v1/claims/{claim_id}",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/architectures/{architecture_id}",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/claims/{claim_id}/review",
+      "summary": "Append a claim revision with support or counterevidence; proposal-only claims cannot self-accept."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/investigations",
+      "summary": "Persist question, facts, hypotheses, experiments, conclusions and residual risks."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/investigations/{investigation_id}",
+      "parameters": [
+        {"name": "investigation_id", "in": "path", "required": true},
+        {"name": "project_id", "in": "query", "required": true}
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/architectures/{architecture_id}/review",
+      "summary": "Return candidate verification: unverified source refs, missing members, unresolved endpoints and ignored commands."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/architectures/codeboarding",
+      "summary": "Import a real CodeBoarding analysis.json as candidate-only architecture; commands remain data."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/capabilities",
+      "summary": "Report manual/offline availability and unconfigured model providers."
+    }
+  ]
+}

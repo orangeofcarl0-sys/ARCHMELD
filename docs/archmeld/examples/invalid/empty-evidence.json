@@ -1,0 +1,15 @@
+{
+  "id": "relation.call_candidate",
+  "project_id": "project.synthetic",
+  "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "config_digest": "sha256:958e014e550dd51c13e61c2656aa9f77ddf1e25c256d7cee5b485e35f0aa4b67",
+  "source_id": "symbol.main",
+  "target_id": "symbol.compute",
+  "kind": "static_call_candidate",
+  "basis": "syntax",
+  "evidence_ids": [],
+  "conditions": [
+    "Name-based syntax candidate only"
+  ],
+  "resolution": "candidate"
+}

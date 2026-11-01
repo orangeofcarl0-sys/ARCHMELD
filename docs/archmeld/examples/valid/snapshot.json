@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "project_id": "project.synthetic",
+  "created_at": "2026-10-30T00:00:00Z",
+  "kind": "disk",
+  "base_snapshot_id": null,
+  "git_commit": null,
+  "config_digest": "sha256:958e014e550dd51c13e61c2656aa9f77ddf1e25c256d7cee5b485e35f0aa4b67",
+  "environment_digest": "sha256:69e81dddf3fd3ba499ed032cbb24d9836e3d8118bbf6f07f4826ce0803428c3d",
+  "exclusions_digest": "sha256:8e93fb1291fcd1d522b7c10eb0f5dcd14587c5d838a4fcb68b0bb73e5dbbddfd",
+  "files": [
+    {
+      "path": "src/example.py",
+      "blob_digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413",
+      "size_bytes": 116,
+      "role": "source",
+      "executable": false,
+      "origin": "untracked"
+    }
+  ],
+  "coverage": {
+    "state": "complete",
+    "scope": "synthetic fixture manifest only, not execution coverage",
+    "expected_count": 1,
+    "observed_count": 1,
+    "omitted_count": 0,
+    "unresolved_count": 0,
+    "limitations": [
+      "Synthetic design example; no product execution"
+    ]
+  },
+  "stable": true
+}

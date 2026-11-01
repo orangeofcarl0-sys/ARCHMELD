@@ -1,0 +1,870 @@
+{
+  "acceptance": {
+    "AT038": {
+      "analysis_sha256": "sha256:1e4928f6ba3eaa2c48bd2c439325d178f57c353612b641550ed6bd332f2438fa",
+      "architecture_id": "arch.codeboarding.561df68808a8a141",
+      "ledger_entities_after": 0,
+      "ledger_entities_before": 0,
+      "ledger_relations_after": 0,
+      "ledger_relations_before": 0,
+      "provider": "CodeBoarding 0.15.3",
+      "provider_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+      "review": {
+        "blocked_by_declared_only_required_rules": [],
+        "candidate_only": true,
+        "certain_calls_added": 0,
+        "commands_executed": 0,
+        "commands_ignored": 1,
+        "components": 22,
+        "dependencies": 88,
+        "member_entities": {
+          "matched": 0,
+          "missing": []
+        },
+        "missing_claim_ids": [],
+        "missing_evidence": [],
+        "source_references": {
+          "details": [
+            {
+              "component_id": "cb.1",
+              "line_end": 1172,
+              "line_start": 286,
+              "path": "static_analyzer/__init__.py",
+              "qualified_name": "static_analyzer.__init__.StaticAnalyzer",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1",
+              "line_end": 357,
+              "line_start": 174,
+              "path": "static_analyzer/analysis_result.py",
+              "qualified_name": "static_analyzer.analysis_result.StaticAnalysisResults",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1",
+              "line_end": 103,
+              "line_start": 52,
+              "path": "static_analyzer/cfg/edge.py",
+              "qualified_name": "static_analyzer.cfg.edge.Edge",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1",
+              "line_end": 75,
+              "line_start": 16,
+              "path": "static_analyzer/node.py",
+              "qualified_name": "static_analyzer.node.Node",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1",
+              "line_end": 179,
+              "line_start": 64,
+              "path": "static_analyzer/scanner.py",
+              "qualified_name": "static_analyzer.scanner.ProjectScanner",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1",
+              "line_end": 273,
+              "line_start": 55,
+              "path": "static_analyzer/typescript_config_scanner.py",
+              "qualified_name": "static_analyzer.typescript_config_scanner.TypeScriptConfigScanner",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.1",
+              "line_end": 1172,
+              "line_start": 286,
+              "path": "static_analyzer/__init__.py",
+              "qualified_name": "static_analyzer.__init__.StaticAnalyzer",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.1",
+              "line_end": 516,
+              "line_start": 24,
+              "path": "static_analyzer/engine/language_adapter.py",
+              "qualified_name": "static_analyzer.engine.language_adapter.LanguageAdapter",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.1",
+              "line_end": 1074,
+              "line_start": 92,
+              "path": "static_analyzer/engine/lsp_client.py",
+              "qualified_name": "static_analyzer.engine.lsp_client.LSPClient",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.1",
+              "line_end": 395,
+              "line_start": 25,
+              "path": "static_analyzer/engine/call_graph_builder.py",
+              "qualified_name": "static_analyzer.engine.call_graph_builder.CallGraphBuilder",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.2",
+              "line_end": 179,
+              "line_start": 64,
+              "path": "static_analyzer/scanner.py",
+              "qualified_name": "static_analyzer.scanner.ProjectScanner",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.2",
+              "line_end": 273,
+              "line_start": 55,
+              "path": "static_analyzer/typescript_config_scanner.py",
+              "qualified_name": "static_analyzer.typescript_config_scanner.TypeScriptConfigScanner",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.2",
+              "line_end": 99,
+              "line_start": 51,
+              "path": "static_analyzer/external_calls.py",
+              "qualified_name": "static_analyzer.external_calls.link_external_call_sites",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.2",
+              "line_end": 235,
+              "line_start": 161,
+              "path": "static_analyzer/graph_definitions.py",
+              "qualified_name": "static_analyzer.graph_definitions.GraphIndex",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.2",
+              "line_end": 302,
+              "line_start": 81,
+              "path": "static_analyzer/analysis_cache.py",
+              "qualified_name": "static_analyzer.analysis_cache.StaticAnalysisCache",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.3",
+              "line_end": 418,
+              "line_start": 96,
+              "path": "static_analyzer/clustering/service.py",
+              "qualified_name": "static_analyzer.clustering.service.ClusteringService",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.3",
+              "line_end": 30,
+              "line_start": 12,
+              "path": "static_analyzer/clustering/models.py",
+              "qualified_name": "static_analyzer.clustering.models.ClusterResult",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.3",
+              "line_end": 207,
+              "line_start": 156,
+              "path": "static_analyzer/config.py",
+              "qualified_name": "static_analyzer.config.NodeType",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.3",
+              "line_end": 27,
+              "line_start": 10,
+              "path": "static_analyzer/config.py",
+              "qualified_name": "static_analyzer.config.Language",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.4",
+              "line_end": 232,
+              "line_start": 21,
+              "path": "static_analyzer/cfg/call_graph.py",
+              "qualified_name": "static_analyzer.cfg.call_graph.CallGraph",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.4",
+              "line_end": 103,
+              "line_start": 52,
+              "path": "static_analyzer/cfg/edge.py",
+              "qualified_name": "static_analyzer.cfg.edge.Edge",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.1.4",
+              "line_end": 357,
+              "line_start": 174,
+              "path": "static_analyzer/analysis_result.py",
+              "qualified_name": "static_analyzer.analysis_result.StaticAnalysisResults",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2",
+              "line_end": 88,
+              "line_start": 50,
+              "path": "diagram_analysis/cluster_relations.py",
+              "qualified_name": "diagram_analysis.cluster_relations.build_component_relations",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2",
+              "line_end": 1787,
+              "line_start": 571,
+              "path": "diagram_analysis/diagram_generator.py",
+              "qualified_name": "diagram_analysis.diagram_generator.DiagramGenerator",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2",
+              "line_end": 338,
+              "line_start": 34,
+              "path": "diagram_analysis/incremental_update.py",
+              "qualified_name": "diagram_analysis.incremental_update.IncrementalUpdater",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2",
+              "line_end": 37,
+              "line_start": 25,
+              "path": "diagram_analysis/run_context.py",
+              "qualified_name": "diagram_analysis.run_context.RunContext",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.1",
+              "line_end": 1787,
+              "line_start": 571,
+              "path": "diagram_analysis/diagram_generator.py",
+              "qualified_name": "diagram_analysis.diagram_generator.DiagramGenerator",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.1",
+              "line_end": 408,
+              "line_start": 32,
+              "path": "diagram_analysis/scope_assembly.py",
+              "qualified_name": "diagram_analysis.scope_assembly.ScopeAssembler",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.1",
+              "line_end": 338,
+              "line_start": 34,
+              "path": "diagram_analysis/incremental_update.py",
+              "qualified_name": "diagram_analysis.incremental_update.IncrementalUpdater",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.1",
+              "line_end": 212,
+              "line_start": 23,
+              "path": "diagram_analysis/file_coverage.py",
+              "qualified_name": "diagram_analysis.file_coverage.FileCoverage",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.2",
+              "line_end": 221,
+              "line_start": 170,
+              "path": "health/runner.py",
+              "qualified_name": "health.runner.run_health_checks",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.2",
+              "line_end": 66,
+              "line_start": 55,
+              "path": "health/config.py",
+              "qualified_name": "health.config.initialize_health_dir",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.2",
+              "line_end": 141,
+              "line_start": 97,
+              "path": "health/config.py",
+              "qualified_name": "health.config.load_health_config",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.2.2",
+              "line_end": 136,
+              "line_start": 123,
+              "path": "health/models.py",
+              "qualified_name": "health.models.HealthReport",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3",
+              "line_end": 353,
+              "line_start": 316,
+              "path": "agents/agent_responses.py",
+              "qualified_name": "agents.agent_responses.AnalysisInsights",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3",
+              "line_end": 128,
+              "line_start": 69,
+              "path": "agents/file_index_models.py",
+              "qualified_name": "agents.file_index_models.FileEntry",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3",
+              "line_end": 73,
+              "line_start": 51,
+              "path": "agents/llm_config.py",
+              "qualified_name": "agents.llm_config.configure_models",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3",
+              "line_end": 267,
+              "line_start": 182,
+              "path": "agents/scope_analysis_agent.py",
+              "qualified_name": "agents.scope_analysis_agent.ScopeAnalysisAgent",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3",
+              "line_end": 252,
+              "line_start": 46,
+              "path": "agents/tree_planner_agent.py",
+              "qualified_name": "agents.tree_planner_agent.TreePlannerAgent",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.1",
+              "line_end": 252,
+              "line_start": 46,
+              "path": "agents/tree_planner_agent.py",
+              "qualified_name": "agents.tree_planner_agent.TreePlannerAgent",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.1",
+              "line_end": 66,
+              "line_start": 13,
+              "path": "agents/planner_agent.py",
+              "qualified_name": "agents.planner_agent.should_expand_component",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.1",
+              "line_end": 95,
+              "line_start": 69,
+              "path": "agents/planner_agent.py",
+              "qualified_name": "agents.planner_agent.get_expandable_components",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.1",
+              "line_end": 27,
+              "line_start": 24,
+              "path": "agents/model_capabilities.py",
+              "qualified_name": "agents.model_capabilities.ContextWindow",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.1",
+              "line_end": 25,
+              "line_start": 11,
+              "path": "agents/relation_edges.py",
+              "qualified_name": "agents.relation_edges.append_or_merge_relation",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.2",
+              "line_end": 267,
+              "line_start": 182,
+              "path": "agents/scope_analysis_agent.py",
+              "qualified_name": "agents.scope_analysis_agent.ScopeAnalysisAgent",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.2",
+              "line_end": 353,
+              "line_start": 316,
+              "path": "agents/agent_responses.py",
+              "qualified_name": "agents.agent_responses.AnalysisInsights",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.2",
+              "line_end": 270,
+              "line_start": 163,
+              "path": "agents/agent_responses.py",
+              "qualified_name": "agents.agent_responses.Relation",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.2",
+              "line_end": 453,
+              "line_start": 439,
+              "path": "agents/llm_config.py",
+              "qualified_name": "agents.llm_config.get_current_agent_context_window",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.2",
+              "line_end": 183,
+              "line_start": 144,
+              "path": "agents/llm_errors.py",
+              "qualified_name": "agents.llm_errors.detect_auth_error",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.3",
+              "line_end": 20,
+              "line_start": 10,
+              "path": "agents/tools/base.py",
+              "qualified_name": "agents.tools.base.RepoContext",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.3",
+              "line_end": 75,
+              "line_start": 21,
+              "path": "agents/tools/read_file.py",
+              "qualified_name": "agents.tools.read_file.ReadFileTool",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.3",
+              "line_end": 55,
+              "line_start": 19,
+              "path": "agents/tools/get_method_calls.py",
+              "qualified_name": "agents.tools.get_method_calls.MethodCallsTool",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.4",
+              "line_end": 23,
+              "line_start": 16,
+              "path": "agents/prompts/__init__.py",
+              "qualified_name": "agents.prompts.__init__.get_tree_plan_prompts",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.4",
+              "line_end": 33,
+              "line_start": 26,
+              "path": "agents/prompts/__init__.py",
+              "qualified_name": "agents.prompts.__init__.get_scope_analysis_prompts",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.3.4",
+              "line_end": 27,
+              "line_start": 22,
+              "path": "agents/prompts/profiles.py",
+              "qualified_name": "agents.prompts.profiles.resolve_prompt_profile",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4",
+              "line_end": 44,
+              "line_start": 29,
+              "path": "codeboarding_cli/bootstrap.py",
+              "qualified_name": "codeboarding_cli.bootstrap.bootstrap_environment",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4",
+              "line_end": 79,
+              "line_start": 33,
+              "path": "codeboarding_cli/commands/incremental_analysis.py",
+              "qualified_name": "codeboarding_cli.commands.incremental_analysis.run_from_args",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4",
+              "line_end": 183,
+              "line_start": 87,
+              "path": "codeboarding_workflows/analysis.py",
+              "qualified_name": "codeboarding_workflows.analysis.run_partial",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4",
+              "line_end": 123,
+              "line_start": 44,
+              "path": "output_generators/markdown.py",
+              "qualified_name": "output_generators.markdown.generate_markdown",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4",
+              "line_end": 174,
+              "line_start": 137,
+              "path": "output_generators/rendering.py",
+              "qualified_name": "output_generators.rendering.render_docs",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.1",
+              "line_end": 137,
+              "line_start": 130,
+              "path": "codeboarding_cli/main.py",
+              "qualified_name": "codeboarding_cli.main.main",
+              "status": "unverified"
+            },
+            {
+              "component_id": "cb.4.1",
+              "line_end": 44,
+              "line_start": 29,
+              "path": "codeboarding_cli/bootstrap.py",
+              "qualified_name": "codeboarding_cli.bootstrap.bootstrap_environment",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.1",
+              "line_end": 26,
+              "line_start": 17,
+              "path": "codeboarding_cli/bootstrap.py",
+              "qualified_name": "codeboarding_cli.bootstrap.resolve_local_run_paths",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.1",
+              "line_end": 90,
+              "line_start": 84,
+              "path": "codeboarding_cli/commands/full_analysis.py",
+              "qualified_name": "codeboarding_cli.commands.full_analysis.run_from_args",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.1",
+              "line_end": 79,
+              "line_start": 33,
+              "path": "codeboarding_cli/commands/incremental_analysis.py",
+              "qualified_name": "codeboarding_cli.commands.incremental_analysis.run_from_args",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.1",
+              "line_end": 62,
+              "line_start": 36,
+              "path": "codeboarding_cli/render.py",
+              "qualified_name": "codeboarding_cli.render.run_from_args",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.2",
+              "line_end": 233,
+              "line_start": 177,
+              "path": "output_generators/rendering.py",
+              "qualified_name": "output_generators.rendering.render",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.2",
+              "line_end": 174,
+              "line_start": 137,
+              "path": "output_generators/rendering.py",
+              "qualified_name": "output_generators.rendering.render_docs",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.2",
+              "line_end": 160,
+              "line_start": 136,
+              "path": "output_generators/html.py",
+              "qualified_name": "output_generators.html.generate_html_file",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.2",
+              "line_end": 147,
+              "line_start": 126,
+              "path": "output_generators/markdown.py",
+              "qualified_name": "output_generators.markdown.generate_markdown_file",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.2",
+              "line_end": 190,
+              "line_start": 168,
+              "path": "output_generators/mdx.py",
+              "qualified_name": "output_generators.mdx.generate_mdx_file",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.2",
+              "line_end": 191,
+              "line_start": 166,
+              "path": "output_generators/sphinx.py",
+              "qualified_name": "output_generators.sphinx.generate_rst_file",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.3",
+              "line_end": 27,
+              "line_start": 14,
+              "path": "codeboarding_workflows/orchestration.py",
+              "qualified_name": "codeboarding_workflows.orchestration.run_analysis_pipeline",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.3",
+              "line_end": 84,
+              "line_start": 58,
+              "path": "codeboarding_workflows/analysis.py",
+              "qualified_name": "codeboarding_workflows.analysis.run_full",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.3",
+              "line_end": 225,
+              "line_start": 186,
+              "path": "codeboarding_workflows/analysis.py",
+              "qualified_name": "codeboarding_workflows.analysis.run_incremental",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.3",
+              "line_end": 183,
+              "line_start": 87,
+              "path": "codeboarding_workflows/analysis.py",
+              "qualified_name": "codeboarding_workflows.analysis.run_partial",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.3",
+              "line_end": 23,
+              "line_start": 22,
+              "path": "codeboarding_workflows/sources/local.py",
+              "qualified_name": "codeboarding_workflows.sources.local.local_source",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.4.3",
+              "line_end": 71,
+              "line_start": 32,
+              "path": "codeboarding_workflows/sources/remote.py",
+              "qualified_name": "codeboarding_workflows.sources.remote.remote_source",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9",
+              "line_end": 54,
+              "line_start": 52,
+              "path": "infra/clustering_ids.py",
+              "qualified_name": "infra.clustering_ids.is_self_or_descendant",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9",
+              "line_end": 729,
+              "line_start": 696,
+              "path": "infra/install.py",
+              "qualified_name": "infra.install.ensure_tools",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9",
+              "line_end": 71,
+              "line_start": 14,
+              "path": "infra/logging_config.py",
+              "qualified_name": "infra.logging_config.setup_logging",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9",
+              "line_end": 333,
+              "line_start": 160,
+              "path": "infra/repo_utils/ignore.py",
+              "qualified_name": "infra.repo_utils.ignore.RepoIgnoreManager",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9",
+              "line_end": 157,
+              "line_start": 145,
+              "path": "infra/user_config.py",
+              "qualified_name": "infra.user_config.UserConfig",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.1",
+              "line_end": 12,
+              "line_start": 8,
+              "path": "infra/monitoring/paths.py",
+              "qualified_name": "infra.monitoring.paths.get_monitoring_base_dir",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.1",
+              "line_end": 22,
+              "line_start": 15,
+              "path": "infra/monitoring/paths.py",
+              "qualified_name": "infra.monitoring.paths.get_monitoring_run_dir",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.2",
+              "line_end": 62,
+              "line_start": 57,
+              "path": "infra/utils.py",
+              "qualified_name": "infra.utils.get_project_root",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.2",
+              "line_end": 87,
+              "line_start": 81,
+              "path": "infra/utils.py",
+              "qualified_name": "infra.utils.get_config",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.2",
+              "line_end": 333,
+              "line_start": 160,
+              "path": "infra/repo_utils/ignore.py",
+              "qualified_name": "infra.repo_utils.ignore.RepoIgnoreManager",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.3",
+              "line_end": 780,
+              "line_start": 732,
+              "path": "infra/install.py",
+              "qualified_name": "infra.install.run_install",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.3",
+              "line_end": 191,
+              "line_start": 171,
+              "path": "infra/tool_registry/manifest.py",
+              "qualified_name": "infra.tool_registry.manifest.build_config",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.3",
+              "line_end": 259,
+              "line_start": 208,
+              "path": "infra/tool_registry/manifest.py",
+              "qualified_name": "infra.tool_registry.manifest.resolve_config",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.3",
+              "line_end": 361,
+              "line_start": 290,
+              "path": "infra/tool_registry/manifest.py",
+              "qualified_name": "infra.tool_registry.manifest.has_required_tools",
+              "status": "unverified"
+            },
+            {
+              "component_id": "cb.9.4",
+              "line_end": 157,
+              "line_start": 145,
+              "path": "infra/user_config.py",
+              "qualified_name": "infra.user_config.UserConfig",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.4",
+              "line_end": 210,
+              "line_start": 204,
+              "path": "infra/user_config.py",
+              "qualified_name": "infra.user_config.ensure_config_template",
+              "status": "resolved_source_only"
+            },
+            {
+              "component_id": "cb.9.4",
+              "line_end": 73,
+              "line_start": 69,
+              "path": "infra/vscode_constants.py",
+              "qualified_name": "infra.vscode_constants.find_runnable",
+              "status": "resolved_source_only"
+            }
+          ],
+          "resolved": 93,
+          "total": 95,
+          "unverified": 2
+        },
+        "state": "partial",
+        "unresolved_dependency_endpoints": []
+      },
+      "status": "passed",
+      "tampered_review_unresolved": [
+        {
+          "reason": "scans workspace and links external calls with",
+          "source_id": "cb.1.1",
+          "status": "unverified",
+          "target_id": "cb.999.9"
+        }
+      ]
+    },
+    "AT039": {
+      "conclusion": "claim.b017.wait accepted for the current design",
+      "hypothesis": "claim.b017.compute rejected with runtime counterevidence",
+      "investigation": "investigation.b017.wait",
+      "next_experiment": "measure lock hold time separately from queue wait",
+      "status": "passed"
+    },
+    "AT076": {
+      "provider_capabilities": {
+        "codeboarding_adapter": {
+          "executes_network": false,
+          "state": "available"
+        },
+        "manual_modeling": {
+          "requires_model": false,
+          "state": "available"
+        },
+        "model": {
+          "reason": "no model provider is configured; navigation, manual architecture and existing checks work offline",
+          "state": "unconfigured"
+        },
+        "model_output_policy": "claims and candidate architectures only; commands are stored as data and never executed"
+      },
+      "provider_commands_executed": 0,
+      "sentinel_created": false,
+      "status": "passed"
+    },
+    "architecture_review_actions": {
+      "accepted_status": "accepted",
+      "architecture_id": "arch.review.b017",
+      "final_revision": 3,
+      "idempotent_replay_revision": 3,
+      "ledger_relations_unchanged": 0,
+      "proposed_status": "candidate",
+      "rejected_status": "needs_review",
+      "reviews": [
+        {
+          "action": "accept",
+          "actor": {
+            "name": "operator",
+            "source": "local_api"
+          },
+          "created_at": 1793406774,
+          "reason": "candidate matches the observed entry point",
+          "revision": 2
+        },
+        {
+          "action": "reject",
+          "actor": {
+            "name": "operator",
+            "source": "local_api"
+          },
+          "created_at": 1793406774,
+          "reason": "ownership is not yet evidenced",
+          "revision": 3
+        }
+      ],
+      "source_digest_unchanged": true,
+      "stale_review_rejected": true
+    }
+  },
+  "config_digest": "sha256:b22140ef16459f623e9d1ca452478cac2dca497780e731e8feec6004f9993f5b",
+  "generated_by": "crates/archmeld-core/tests/interpretation.rs",
+  "snapshot_id": "sha256:771743c35f3bb1e43b31be817cd43d1ba7c337e8d443225c79e71665e772cb58"
+}

@@ -1,0 +1,105 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-024-independent-verification.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/verify",
+      "summary": "Execute the frozen contract checks against exactly the applied resulting snapshot. Missing, unsupported, inconclusive, timed-out or failing required checks never become passed."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/accept",
+      "summary": "Record accepted only for a verification whose required set all passed and whose resulting snapshot still matches the workspace."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/verifications/{verification_id}",
+      "added_parameters": [
+        {
+          "name": "project_id",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "$ref": "#/$defs/Id"
+          }
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/verifications",
+      "summary": "List verification summaries, optionally scoped to one ChangeSet.",
+      "added_parameters": [
+        {
+          "name": "project_id",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        {
+          "name": "changeset_id",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/$defs/Id"
+          }
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "snapshot_binding": "the ChangeSet resulting_snapshot_id; a staged or older snapshot is rejected",
+    "contract_binding": "frozen contract digest recorded on the ChangeSet",
+    "toolchain_binding": "toolchain_digest recorded on the ChangeSet and present in the CAS",
+    "check_states": [
+      "passed",
+      "failed",
+      "not_run",
+      "unsupported",
+      "inconclusive",
+      "cancelled",
+      "timed_out",
+      "error"
+    ],
+    "acceptance": "every required check passed, no missing/extra results, no snapshot drift",
+    "executor": "argv without shell, environment allowlist, bounded output, declared timeout, process-tree cleanup, optional per-check snapshot-copy sandbox",
+    "retry": "none; timed_out is final for that check"
+  },
+  "predicates": {
+    "exit_code": "expected_codes non-empty; actual exit code must be a member",
+    "test_report": "format junit|json, report_path, min_tests >= 1, failures+errors <= max_failures, command exit 0",
+    "file_digest": "path in the verified snapshot plus expected_digest",
+    "architecture_rules": "architecture_id, optional revision/rule_ids; partial static coverage is inconclusive, violations/blocked are failed",
+    "unsupported": [
+      "numeric_tolerance",
+      "invariant",
+      "performance_budget"
+    ]
+  },
+  "contract_extensions": {
+    "checks[].sandbox": {
+      "status": "pending_pack_revision",
+      "adr": "docs/adr/ADR-043-per-check-sandbox.md",
+      "modes": {
+        "workspace_copy": "materialize the selected files from the verified resulting snapshot into a ledger-owned copy; cwd and predicates stay inside it",
+        "workspace": "explicitly no isolation; recorded as isolated=false",
+        "container": "materialize the selected snapshot files, mount the copy at /workspace in a pinned Linux container with --network none, a read-only root and a 64 MiB /tmp tmpfs"
+      },
+      "fields": {
+        "mode": "workspace_copy | workspace",
+        "include": "non-empty for workspace_copy; relative POSIX file or directory prefixes",
+        "exclude": "relative POSIX prefixes; exclusion wins",
+        "image": "required for container; name@sha256:... or a local sha256:<id>, verified against the local image and never pulled",
+        "network": "optional for container; only \"none\" is accepted"
+      },
+      "validation": "rejects undeclared command checks, checker-only sandbox, workspace mode with include/exclude, workspace_copy without include, container without a digest-pinned image, non-\"none\" container network, and image/network fields on non-container modes",
+      "evidence": "docs/release-evidence/B022-sandbox.json; docs/release-evidence/B022-container-sandbox.json",
+      "limitation": "workspace_copy is a materialized allowlist; container is Docker/Linux-only and runs as the image default user; scenario execution uses the shared modes in ADR-051",
+      "required_for": "new contract proposals with a command check must declare workspace_copy or workspace; frozen legacy contracts without the field are recorded as declared=false"
+    }
+  }
+}

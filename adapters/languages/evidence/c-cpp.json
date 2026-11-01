@@ -1,0 +1,25 @@
+{
+  "build_verify": "pending:B022",
+  "compile_commands": [
+    "build-a/compile_commands.json",
+    "build-b/compile_commands.json"
+  ],
+  "config_digest_variant_a": "sha256:faa6530f9c4f167fa1e978d52e0c20fc0b55a23cc56785f4b30aaaa95925ca5e",
+  "config_digest_variant_b": "sha256:860346183d11e78abcb94057c73815f078d87d98edd19383a4ce2585c53a9bd4",
+  "controlled_apply": "pending:B020/B021",
+  "indirect_call_resolved": false,
+  "language": "c++",
+  "macro_definition_isa": "shape.h",
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "src/circle.cpp",
+    "src/main.cpp",
+    "src/shape.h"
+  ],
+  "runtime_trace": "pending:B016",
+  "server": "clangd 18.1.8",
+  "snapshot_id": "sha256:4cbc4c4c09a5b8db4f132fb51f0099a95c1e1cfd7a4787a02f3d417772e98fc2"
+}

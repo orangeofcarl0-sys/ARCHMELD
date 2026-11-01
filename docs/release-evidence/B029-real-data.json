@@ -1,0 +1,650 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/b029_real_data.py",
+  "platform": {
+    "system": "win32",
+    "python": "3.11.9"
+  },
+  "authorization": {
+    "basis": "the user replied 授权 to the B029 authorization request",
+    "scope": "read-only local processing of the named recorded file; no upload; raw data and derived tables stay outside the repository",
+    "recorded_at": "2026-11-01"
+  },
+  "source": {
+    "name": "<authorized private recorded file>",
+    "sha256": "sha256:2b7cda9a4ab9f7d8672c888c5c803b872a98125dbaec8194d24ce14db8de0201",
+    "bytes": 738737,
+    "rows": 342,
+    "selected_columns": [
+      "model.conditional_SD_mm",
+      "MC.all_output_SD_mm",
+      "model.bias_mm",
+      "MC.all_output_bias_mm"
+    ]
+  },
+  "extraction": {
+    "code": "tooling/b029_real_data.py",
+    "code_sha256": "sha256:2839f26175ee98f8bcabc95b9ec17da4b89429a9ec026516e47c6813e49b0558",
+    "artifacts": {
+      "sd_a.csv": {
+        "sha256": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+        "size": 6729
+      },
+      "sd_b.csv": {
+        "sha256": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+        "size": 6891
+      },
+      "units_a.json": {
+        "sha256": "sha256:53ed1b83334e4df266816e1e6469f515eee468e431196fa62ebc7d45c4b85cbf",
+        "size": 7802
+      },
+      "units_b.json": {
+        "sha256": "sha256:bf2921e86bec1ff32273520c75c3b257184ce294745d481f63298da1ab86cf31",
+        "size": 7806
+      },
+      "units_m.json": {
+        "sha256": "sha256:8740e8b425456c884a8fd97db9c2c1c9cad2f0f2953f0e5c85c77e465b424ec0",
+        "size": 7801
+      },
+      "units_custom.json": {
+        "sha256": "sha256:039b4bc1c561032759a66ace36c13f1eea1758ac0cb490ee196fc18823aae860",
+        "size": 7805
+      }
+    },
+    "note": "sd_a uses Python repr; sd_b uses .17g and is asserted to reparse to the same floats"
+  },
+  "checks": {
+    "statistical": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:131f21f8bb57e66105c8d570b675ee13153a3e2a6955bf37e4ca1286aa534e7d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+            "media_type": "text/csv",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+            "media_type": "text/csv",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "sd_b.csv",
+          "artifacts": [
+            {
+              "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+              "media_type": "text/csv",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+              "media_type": "text/csv",
+              "role": "actual"
+            }
+          ],
+          "columns": [
+            "value"
+          ],
+          "compared": 342,
+          "custom_units": [],
+          "expected_artifact": "sd_a.csv",
+          "failed_metrics": [],
+          "ignored_nan": 0,
+          "kind": "numeric_tolerance",
+          "metrics": [
+            {
+              "metric": "mean_abs_error",
+              "value": "0"
+            },
+            {
+              "metric": "rms_error",
+              "value": "0"
+            },
+            {
+              "metric": "max_abs_error",
+              "value": "0"
+            },
+            {
+              "metric": "p95_abs_error",
+              "value": "0"
+            },
+            {
+              "metric": "variance",
+              "value": "0"
+            },
+            {
+              "metric": "stddev",
+              "value": "0"
+            }
+          ],
+          "mismatch_count": 0,
+          "mode": "statistical",
+          "nonfinite_count": 0,
+          "nonfinite_policy": "reject",
+          "normalization": "sample",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "thresholds": [
+            {
+              "max": "0",
+              "metric": "max_abs_error"
+            },
+            {
+              "max": "0",
+              "metric": "mean_abs_error"
+            },
+            {
+              "max": "0",
+              "metric": "p95_abs_error"
+            },
+            {
+              "max": "0",
+              "metric": "rms_error"
+            }
+          ],
+          "unit_mode": "exact",
+          "units": [
+            null
+          ]
+        },
+        "state": "passed"
+      }
+    },
+    "statistical_sample": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical_sample.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:5ec085e2b9551aca0b25b629e71d11e3266e60ce63bc01d136a67580af05576f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+            "media_type": "text/csv",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+            "media_type": "text/csv",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "sd_b.csv",
+          "artifacts": [
+            {
+              "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+              "media_type": "text/csv",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+              "media_type": "text/csv",
+              "role": "actual"
+            }
+          ],
+          "columns": [
+            "value"
+          ],
+          "compared": 342,
+          "custom_units": [],
+          "expected_artifact": "sd_a.csv",
+          "failed_metrics": [],
+          "ignored_nan": 0,
+          "kind": "numeric_tolerance",
+          "metrics": [
+            {
+              "metric": "mean_abs_error",
+              "value": "0"
+            },
+            {
+              "metric": "rms_error",
+              "value": "0"
+            },
+            {
+              "metric": "max_abs_error",
+              "value": "0"
+            },
+            {
+              "metric": "p95_abs_error",
+              "value": "0"
+            },
+            {
+              "metric": "variance",
+              "value": "0"
+            },
+            {
+              "metric": "stddev",
+              "value": "0"
+            }
+          ],
+          "mismatch_count": 0,
+          "mode": "statistical",
+          "nonfinite_count": 0,
+          "nonfinite_policy": "reject",
+          "normalization": "sample",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "thresholds": [
+            {
+              "max": "0",
+              "metric": "stddev"
+            },
+            {
+              "max": "0",
+              "metric": "variance"
+            }
+          ],
+          "unit_mode": "exact",
+          "units": [
+            null
+          ]
+        },
+        "state": "passed"
+      }
+    },
+    "ulp": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\ulp.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:499a0080d055d20b70bb6bac6a67277d613526d8e416c820425f9564333e9caa",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+            "media_type": "text/csv",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+            "media_type": "text/csv",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "sd_b.csv",
+          "artifacts": [
+            {
+              "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+              "media_type": "text/csv",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+              "media_type": "text/csv",
+              "role": "actual"
+            }
+          ],
+          "columns": [
+            "value"
+          ],
+          "compared": 342,
+          "custom_units": [],
+          "expected_artifact": "sd_a.csv",
+          "ignored_nan": 0,
+          "kind": "numeric_tolerance",
+          "max_ulp_distance": "0",
+          "max_ulps": "0",
+          "mismatch_count": 0,
+          "mismatches": [],
+          "mismatches_truncated": false,
+          "mode": "ulp",
+          "nonfinite_count": 0,
+          "nonfinite_policy": "reject",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "unit_mode": "exact",
+          "units": [
+            null
+          ]
+        },
+        "state": "passed"
+      }
+    },
+    "matlab_eps": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\matlab_eps.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:ea0c33aec6edddd97bf10c3bd8c283c952cfd73fdad92de450ce57e2f11d7f4a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+            "media_type": "text/csv",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+            "media_type": "text/csv",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "sd_b.csv",
+          "artifacts": [
+            {
+              "digest": "sha256:a9256001fe5c1dfa859c7c4ccaf82765cd74a7d475c0fa279938904a0249c8a9",
+              "media_type": "text/csv",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:28ceeb6464109c4186785f938bbeb698a62308e334b47b59aeb4ae90c4b01bc1",
+              "media_type": "text/csv",
+              "role": "actual"
+            }
+          ],
+          "atol": "0",
+          "columns": [
+            "value"
+          ],
+          "compared": 342,
+          "custom_units": [],
+          "eps_multiplier": "0",
+          "expected_artifact": "sd_a.csv",
+          "ignored_nan": 0,
+          "kind": "numeric_tolerance",
+          "max_abs_error": "0",
+          "max_rel_error": "0",
+          "mismatch_count": 0,
+          "mismatches": [],
+          "mismatches_truncated": false,
+          "mode": "absolute_relative",
+          "nonfinite_count": 0,
+          "nonfinite_policy": "reject",
+          "rtol": "0",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "tolerance_model": "matlab_eps",
+          "unit_mode": "exact",
+          "units": [
+            null
+          ]
+        },
+        "state": "passed"
+      }
+    },
+    "dimension": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:0e2e96e9c817fe28b44bf3d69fa6e6d8e406801b25a13c318299a55ffc9d871c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:53ed1b83334e4df266816e1e6469f515eee468e431196fa62ebc7d45c4b85cbf",
+            "media_type": "application/json",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:bf2921e86bec1ff32273520c75c3b257184ce294745d481f63298da1ab86cf31",
+            "media_type": "application/json",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "units_b.json",
+          "artifacts": [
+            {
+              "digest": "sha256:53ed1b83334e4df266816e1e6469f515eee468e431196fa62ebc7d45c4b85cbf",
+              "media_type": "application/json",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:bf2921e86bec1ff32273520c75c3b257184ce294745d481f63298da1ab86cf31",
+              "media_type": "application/json",
+              "role": "actual"
+            }
+          ],
+          "atol": "0",
+          "columns": [
+            "sd"
+          ],
+          "compared": 342,
+          "custom_units": [],
+          "eps_multiplier": null,
+          "expected_artifact": "units_a.json",
+          "ignored_nan": 0,
+          "kind": "numeric_tolerance",
+          "max_abs_error": "0",
+          "max_rel_error": "0",
+          "mismatch_count": 0,
+          "mismatches": [],
+          "mismatches_truncated": false,
+          "mode": "absolute_relative",
+          "nonfinite_count": 0,
+          "nonfinite_policy": "reject",
+          "rtol": "0",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "tolerance_model": "atol_rtol",
+          "unit_mode": "dimension",
+          "units": [
+            "mm"
+          ]
+        },
+        "state": "passed"
+      }
+    },
+    "dimension_custom": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_custom.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:6b451e49c4e27210bdea3c17ffa94da41229f75c5bd8855f6994ee97a1b3067b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:039b4bc1c561032759a66ace36c13f1eea1758ac0cb490ee196fc18823aae860",
+            "media_type": "application/json",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:bf2921e86bec1ff32273520c75c3b257184ce294745d481f63298da1ab86cf31",
+            "media_type": "application/json",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "units_b.json",
+          "artifacts": [
+            {
+              "digest": "sha256:039b4bc1c561032759a66ace36c13f1eea1758ac0cb490ee196fc18823aae860",
+              "media_type": "application/json",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:bf2921e86bec1ff32273520c75c3b257184ce294745d481f63298da1ab86cf31",
+              "media_type": "application/json",
+              "role": "actual"
+            }
+          ],
+          "atol": "0",
+          "columns": [
+            "sd"
+          ],
+          "compared": 342,
+          "custom_units": [
+            "mm_rf"
+          ],
+          "eps_multiplier": null,
+          "expected_artifact": "units_custom.json",
+          "ignored_nan": 0,
+          "kind": "numeric_tolerance",
+          "max_abs_error": "0",
+          "max_rel_error": "0",
+          "mismatch_count": 0,
+          "mismatches": [],
+          "mismatches_truncated": false,
+          "mode": "absolute_relative",
+          "nonfinite_count": 0,
+          "nonfinite_policy": "reject",
+          "rtol": "0",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "tolerance_model": "atol_rtol",
+          "unit_mode": "dimension",
+          "units": [
+            "mm_rf"
+          ]
+        },
+        "state": "passed"
+      }
+    },
+    "dimension_negative_control": {
+      "argv": [
+        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "numeric-check",
+        "--state",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "--root",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "--predicate",
+        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_negative.json"
+      ],
+      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:f1998f5f72faa12e65cd032b3cc7f77397a21e7a4c5676fe95f1497f87f4e483",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "artifacts": [
+          {
+            "digest": "sha256:53ed1b83334e4df266816e1e6469f515eee468e431196fa62ebc7d45c4b85cbf",
+            "media_type": "application/json",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:8740e8b425456c884a8fd97db9c2c1c9cad2f0f2953f0e5c85c77e465b424ec0",
+            "media_type": "application/json",
+            "role": "actual"
+          }
+        ],
+        "detail": {
+          "actual_artifact": "units_m.json",
+          "artifacts": [
+            {
+              "digest": "sha256:53ed1b83334e4df266816e1e6469f515eee468e431196fa62ebc7d45c4b85cbf",
+              "media_type": "application/json",
+              "role": "expected"
+            },
+            {
+              "digest": "sha256:8740e8b425456c884a8fd97db9c2c1c9cad2f0f2953f0e5c85c77e465b424ec0",
+              "media_type": "application/json",
+              "role": "actual"
+            }
+          ],
+          "custom_units": [],
+          "expected_artifact": "units_a.json",
+          "kind": "numeric_tolerance",
+          "mode": "absolute_relative",
+          "reason": "unit dimension or scale mismatch (checked before numeric values)",
+          "semantics": "ieee754_elementwise",
+          "shape": [
+            342,
+            1
+          ],
+          "unit_mismatches": [
+            {
+              "actual_dimension": "m",
+              "actual_unit": "m",
+              "column": "sd",
+              "expected_dimension": "0.001*(m)",
+              "expected_unit": "mm"
+            }
+          ],
+          "unit_mode": "dimension"
+        },
+        "state": "failed"
+      }
+    }
+  },
+  "observed_difference": {
+    "gate": "none",
+    "reason": "private dataset identity and aggregate values are withheld from the public snapshot"
+  },
+  "limitations": [
+    "the positive checks prove extraction/serialization reproducibility on real recorded values, not scientific agreement between the model and Monte Carlo",
+    "dimensional analysis covers the declared SI table and refuses affine/logarithmic units",
+    "MATLAB semantics are explicitly unsupported and rejected by the predicate engine",
+    "the raw data was not copied into the repository or uploaded"
+  ]
+}

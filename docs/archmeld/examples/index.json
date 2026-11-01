@@ -1,0 +1,291 @@
+{
+  "classification": "synthetic_examples_only",
+  "valid": [
+    {
+      "path": "examples/valid/snapshot.json",
+      "schema_definition": "Snapshot",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/entity.json",
+      "schema_definition": "Entity",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/evidence.json",
+      "schema_definition": "Evidence",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/relation.json",
+      "schema_definition": "Relation",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/evidence-batch.json",
+      "schema_definition": "EvidenceBatch",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/claim.json",
+      "schema_definition": "Claim",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/scenario.json",
+      "schema_definition": "Scenario",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/runtime-run.json",
+      "schema_definition": "RuntimeRun",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/architecture.json",
+      "schema_definition": "Architecture",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/behavior-contract.json",
+      "schema_definition": "BehaviorContract",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/plan.json",
+      "schema_definition": "Plan",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/change-set.json",
+      "schema_definition": "ChangeSet",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/approval.json",
+      "schema_definition": "Approval",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/verification.json",
+      "schema_definition": "Verification",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/project-config.json",
+      "schema_definition": "ProjectConfig",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/job.json",
+      "schema_definition": "Job",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/event.json",
+      "schema_definition": "Event",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/context-pack.json",
+      "schema_definition": "ContextPack",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/report-manifest.json",
+      "schema_definition": "ReportManifest",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/adapter-capabilities.json",
+      "schema_definition": "AdapterCapabilities",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/instigator-message.json",
+      "schema_definition": "InstigatorMessage",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/error.json",
+      "schema_definition": "Error",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/expedition-config.json",
+      "schema_definition": "ProjectConfig",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/query-request.json",
+      "schema_definition": "QueryRequest",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/context-request.json",
+      "schema_definition": "ContextRequest",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/valid/change-proposal.json",
+      "schema_definition": "ChangeProposal",
+      "expected": "valid",
+      "classification": "synthetic_example"
+    }
+  ],
+  "invalid_schema": [
+    {
+      "path": "examples/invalid/path-traversal.json",
+      "schema_definition": "Entity",
+      "expected": "invalid_schema",
+      "reason": "RelativePath rejects traversal",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/model-as-resolved.json",
+      "schema_definition": "Relation",
+      "expected": "invalid_schema",
+      "reason": "Inferred model relation is not semantic resolution",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/syntax-as-observed.json",
+      "schema_definition": "Relation",
+      "expected": "invalid_schema",
+      "reason": "Observed calls require runtime evidence kind",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/nanoseconds-number.json",
+      "schema_definition": "RuntimeRun",
+      "expected": "invalid_schema",
+      "reason": "Time values must be decimal strings",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/accepted-with-not-run.json",
+      "schema_definition": "Verification",
+      "expected": "invalid_schema",
+      "reason": "Required not_run cannot be accepted",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/bound-without-identity.json",
+      "schema_definition": "RuntimeRun",
+      "expected": "invalid_schema",
+      "reason": "Bound runtime requires snapshot and scenario identities",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/empty-evidence.json",
+      "schema_definition": "Relation",
+      "expected": "invalid_schema",
+      "reason": "Relation cannot have empty supporting evidence",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/empty-change-scope.json",
+      "schema_definition": "ChangeSet",
+      "expected": "invalid_schema",
+      "reason": "Nonempty scope required",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/auto-telemetry.json",
+      "schema_definition": "ProjectConfig",
+      "expected": "invalid_schema",
+      "reason": "Default packaged configuration disallows telemetry",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/loss-without-explanation.json",
+      "schema_definition": "RuntimeRun",
+      "expected": "invalid_schema",
+      "reason": "Lossy import requires loss notes",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/unknown-status.json",
+      "schema_definition": "Job",
+      "expected": "invalid_schema",
+      "reason": "State must be explicit supported state",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/invalid/numeric-snapshot-id.json",
+      "schema_definition": "Entity",
+      "expected": "invalid_schema",
+      "reason": "Backend numeric identity is not snapshot digest",
+      "classification": "synthetic_example"
+    }
+  ],
+  "invalid_semantics": [
+    {
+      "path": "examples/semantic-invalid/anchor-end-before-start.json",
+      "schema_definition": "Entity",
+      "expected": "invalid_semantics",
+      "semantic_rule": "anchor_range",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/semantic-invalid/plan-self-cycle.json",
+      "schema_definition": "Plan",
+      "expected": "invalid_semantics",
+      "semantic_rule": "plan_acyclic",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/semantic-invalid/coverage-count-overflow.json",
+      "schema_definition": "Evidence",
+      "expected": "invalid_semantics",
+      "semantic_rule": "coverage_counts",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/semantic-invalid/wrong-contract-digest.json",
+      "schema_definition": "BehaviorContract",
+      "expected": "invalid_semantics",
+      "semantic_rule": "contract_digest",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/semantic-invalid/check-no-runner.json",
+      "schema_definition": "BehaviorContract",
+      "expected": "invalid_semantics",
+      "semantic_rule": "check_runner",
+      "classification": "synthetic_example"
+    },
+    {
+      "path": "examples/semantic-invalid/bad-delete-fields.json",
+      "schema_definition": "ChangeSet",
+      "expected": "invalid_semantics",
+      "semantic_rule": "write_operation",
+      "classification": "synthetic_example"
+    }
+  ]
+}

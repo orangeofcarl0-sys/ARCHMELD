@@ -1,0 +1,41 @@
+{
+  "captured_at": "2026-10-29T17:40:21.730931+00:00",
+  "hostname": "<local-host>",
+  "os": {
+    "system": "Windows",
+    "release": "10",
+    "version": "10.0.26200",
+    "machine": "AMD64"
+  },
+  "cpu_count": 24,
+  "tools": {
+    "rustc_default": "<error TimeoutExpired(['rustc', '-vV'], 20)>",
+    "rustc_pinned_gnu": "rustc 1.94.1 (e408947bf 2026-03-25)",
+    "cargo_default": "<error TimeoutExpired(['cargo', '--version'], 20)>",
+    "cargo_pinned_gnu": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+    "git": "git version 2.53.0.windows.2",
+    "node": "v24.14.1",
+    "npm": "<error FileNotFoundError(2, '系统找不到指定的文件。', None, 2, None)>",
+    "python": "Python 3.11.9",
+    "cmake": "cmake version 3.29.2",
+    "ninja": "1.12.0",
+    "gcc": "gcc (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+    "gxx": "g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+    "perl": "This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-msys-thread-multi",
+    "libclang_path": "F:\\Codex_Work_Space\\_archmeld_tools\\pylibclang\\clang\native",
+    "libclang": "File \"<string>\", line 1"
+  },
+  "absent": {
+    "msvc_linker": true,
+    "windows_sdk": true,
+    "system_llvm": true,
+    "clang_cl": true
+  },
+  "notes": [
+    "MSVC default toolchain cannot link; GNU host of the same pinned 1.94.1 is used.",
+    "libclang 18.1.1 from PyPI package 'libclang' extracted outside the repo."
+  ],
+  "network": {
+    "github_ls_remote_head": "590c2ca7dd7b37bd1d41caf45fac535b6522f969"
+  }
+}

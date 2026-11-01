@@ -1,0 +1,106 @@
+{
+  "acceptance": {
+    "AT055": {
+      "budget_enforced": true,
+      "cooldown_enforced": true,
+      "default_disabled": true,
+      "delivery": {
+        "blocking": false,
+        "delivered": [
+          {
+            "expires_at": 9999999999,
+            "message_id": "nudge.50ddac7004d95535dd7e68a9cf9924b3",
+            "reason": "experiment",
+            "scope_ref": "job.1793403201.2",
+            "task_id": "job.1793403201.2",
+            "task_revision": 2
+          }
+        ],
+        "discarded": [],
+        "enabled": true,
+        "waited_for_approval": false
+      },
+      "expired_discarded": true,
+      "final_status": {
+        "allowed_decisions": [
+          "NUDGE",
+          "SILENT"
+        ],
+        "cooldown_seconds": 0,
+        "enabled": false,
+        "max_nudges_per_task": 3,
+        "may_block_delivery": false,
+        "may_change_task_state": false,
+        "may_create_tasks": false,
+        "messages": [
+          {
+            "created_at": 1793403201,
+            "decision": "NUDGE",
+            "delivered_at": null,
+            "discard_reason": "task_finished",
+            "expires_at": 9999999999,
+            "message_id": "nudge.fe2f58fb5462c609ad58c812affe179e",
+            "reason": "depth",
+            "scope_ref": "job.1793403201.1",
+            "state": "discarded",
+            "task_id": "job.1793403201.1",
+            "task_revision": 2
+          },
+          {
+            "created_at": 1793403201,
+            "decision": "NUDGE",
+            "delivered_at": 1793403201,
+            "discard_reason": null,
+            "expires_at": 9999999999,
+            "message_id": "nudge.50ddac7004d95535dd7e68a9cf9924b3",
+            "reason": "experiment",
+            "scope_ref": "job.1793403201.2",
+            "state": "delivered",
+            "task_id": "job.1793403201.2",
+            "task_revision": 2
+          }
+        ],
+        "project_id": "project.b024"
+      },
+      "job_count": 3,
+      "new_tasks_created": 0,
+      "nudge": {
+        "blocking": false,
+        "decision": "NUDGE",
+        "expires_at": 9999999999,
+        "may_change_task_state": false,
+        "may_create_tasks": false,
+        "message_id": "nudge.fe2f58fb5462c609ad58c812affe179e",
+        "reason": "depth",
+        "scope_ref": "job.1793403201.1",
+        "state": "pending",
+        "task_id": "job.1793403201.1",
+        "task_revision": 2
+      },
+      "nudge_events": [
+        {
+          "event_id": "event.239c1c3ccc185054e9f512d62e374a87",
+          "job_id": null,
+          "payload": {
+            "existing_scope_ref": "job.1793403201.2",
+            "expires_at": 9999999999,
+            "message_id": "nudge.50ddac7004d95535dd7e68a9cf9924b3",
+            "reason": "experiment",
+            "task_id": "job.1793403201.2",
+            "task_revision": 2
+          },
+          "project_id": "project.b024",
+          "sequence": "5",
+          "snapshot_id": null,
+          "timestamp": "2026-10-30T23:33:21Z",
+          "type": "instigator.nudge"
+        }
+      ],
+      "stale_revision_discarded": true,
+      "status": "passed",
+      "task_state_unchanged_by_nudge": true
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/instigator.rs",
+  "platform": "windows"
+}

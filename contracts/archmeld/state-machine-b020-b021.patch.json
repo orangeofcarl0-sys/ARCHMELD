@@ -1,0 +1,27 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-023-staging-and-journaled-apply.md",
+  "base": "docs/archmeld/contracts/state-machines.json",
+  "additions": [
+    {
+      "from": "approved",
+      "event": "reject",
+      "to": "rejected",
+      "guard": "server_authorized_and_preconditions_checked",
+      "reason": "a reviewer may reject a plan-scope-approved ChangeSet before preparation"
+    },
+    {
+      "from": "prepared",
+      "event": "reject",
+      "to": "rejected",
+      "guard": "server_authorized_and_preconditions_checked",
+      "reason": "a reviewer may reject the exact prepared change instead of applying it"
+    }
+  ],
+  "unchanged": {
+    "interrupted_apply": "applying -> failed (apply_interrupted) -> recovering -> recovered|conflicted",
+    "restage": "prepared -> stale -> draft -> approved -> preparing -> prepared",
+    "whole_tree_reset": "not part of any transition"
+  }
+}

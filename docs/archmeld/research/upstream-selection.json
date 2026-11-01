@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "checked_on": "2026-10-30",
+  "not_a_complete_toolchain_lock": true,
+  "primary": {
+    "id": "codegraph",
+    "repository": "https://github.com/codegraph-ai/CodeGraph.git",
+    "commit": "590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+    "observed_version": "0.21.0",
+    "license_observed": "Apache-2.0",
+    "reuse_mode": "thin_fork",
+    "verification": "remote_source_inspected_not_built",
+    "inspected_files": [
+      {
+        "path": "Cargo.toml",
+        "git_blob_sha": "4ced4bed7c386072f6ed8cc05a832f74f4698d85"
+      },
+      {
+        "path": "crates/codegraph/src/lib.rs",
+        "git_blob_sha": "5f269a3ebcab5f75e46fb9fae2cb0de518e11271"
+      },
+      {
+        "path": "crates/codegraph/src/export/json.rs",
+        "git_blob_sha": "d59332b7bbbf315da9d0525d63c857f62607da39"
+      },
+      {
+        "path": "vscode/package.json",
+        "git_blob_sha": "03c8d15e2b4234393fcb9b23465951e6d2d3969a"
+      }
+    ]
+  },
+  "architecture_candidate_provider": {
+    "id": "codeboarding",
+    "repository": "https://github.com/CodeBoarding/CodeBoarding.git",
+    "commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+    "license_observed": "MIT_engine_cli_only",
+    "reuse_mode": "isolated_process_adapter",
+    "verification": "remote_metadata_and_docs_not_built"
+  },
+  "resolution_policy": {
+    "local_task": "B001",
+    "require_exact_version": true,
+    "require_artifact_sha256": true,
+    "allow_runtime_latest": false,
+    "license_check_per_artifact": true,
+    "unresolved_dependencies_block_release": true
+  },
+  "needs_local_resolution": [
+    {
+      "id": "rust-toolchain",
+      "purpose": "遵循上游 rust-toolchain.toml 并记录平台安装身份",
+      "source_id": "SRC-CG-PIN",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "node",
+      "purpose": "扩展与 TS 工具的 Node 24 系列精确版本",
+      "source_id": "SRC-SCIP-TS",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "python",
+      "purpose": "独立 Python 3.12 环境与 wheels",
+      "source_id": "SRC-CB",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "scip-protocol",
+      "purpose": "生成符号数据绑定",
+      "source_id": "SRC-SCIP",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "scip-language-packs",
+      "purpose": "按七语言组配置及许可分别锁定",
+      "source_id": "SRC-SCIP-INDEXERS",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "language-servers",
+      "purpose": "clangd/Pyright/TS/JDT/Roslyn/gopls/rust-analyzer",
+      "source_id": "SRC-VSC-LANGUAGE",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "viztracer",
+      "purpose": "Python 实际采集",
+      "source_id": "SRC-VIZ",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "tracy",
+      "purpose": "原生采集/查看/摘要",
+      "source_id": "SRC-TRACY",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "perfetto",
+      "purpose": "本地 UI 与 trace processor 同版本",
+      "source_id": "SRC-PERFETTO",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "otel",
+      "purpose": "按目标语言的现成 SDK 与 OTLP 导出",
+      "source_id": "SRC-OTEL",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "libcst",
+      "purpose": "Python 结构变换",
+      "source_id": "SRC-LIBCST",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "ast-grep",
+      "purpose": "有限模式变换",
+      "source_id": "SRC-ASTGREP",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "mcp-sdk",
+      "purpose": "与客户端协商的 SDK 版本",
+      "source_id": "SRC-MCP",
+      "status": "needs_local_resolution"
+    },
+    {
+      "id": "cytoscape-js",
+      "purpose": "图交互：官方源码/包许可在本地记录",
+      "source_id": "SRC-CYTOSCAPE",
+      "status": "needs_local_resolution"
+    }
+  ]
+}

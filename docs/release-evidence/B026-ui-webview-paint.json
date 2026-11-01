@@ -1,0 +1,328 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/b026_webview_paint_evidence.py",
+  "generated_at": "2026-11-01T03:27:11+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9",
+    "code": {
+      "argv": [
+        "D:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "--version"
+      ],
+      "exit": null,
+      "error": "Command '['D:\\\\Program Files\\\\Microsoft VS Code\\\\Code.exe', '--version']' timed out after 30 seconds"
+    },
+    "node": {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "exit": 0,
+      "first_lines": [
+        "v24.14.1"
+      ]
+    }
+  },
+  "activator": "code --extensionDevelopmentPath --extensionTestsPath --disable-extensions --disable-workspace-trust --skip-welcome --skip-release-notes --user-data-dir=<fresh> --remote-debugging-port=<port> --wait <fixture>",
+  "harness": "archmeld-vscode/test-ui/runTests.js",
+  "instrumentation": {
+    "paint": "inline nonce script inside the graph webview posts paintReport/renderReport over the VS Code message channel",
+    "cdp_document": "CDP Runtime.evaluate inside the nested vscode-webview:// document reads its performance paint timeline and a double-rAF interval",
+    "compositor": "CDP Page.startScreencast on the workbench page while only the webview document is invalidated; presentation timestamps are recorded",
+    "diagnostics_gate": "ARCHMELD_PAINT_PROBE=1 registers archmeld.diagnostics.paintReport/paintProbe only for the harness"
+  },
+  "samples": [
+    {
+      "sample": 1,
+      "exit_code": 0,
+      "status": "passed",
+      "result": "docs/evidence/ui-result-b026-paint-1.json",
+      "result_sha256": "sha256:d21f939eeb8a59b6b0ef359ab65fc31c7de4bcc469a101363b8558cc00a36db1",
+      "screenshot": "docs/evidence/b026-workbench-paint-1.png",
+      "screenshot_sha256": "sha256:57c99f07575174e5ee08e440ba98f1dc069edb515cbe270a74b213c19899fd0d",
+      "screenshot_size": 108829,
+      "log": "baseline/logs/b026-ui-paint-1.log",
+      "log_sha256": "sha256:061368c39a192101d7314a419502ab4de079d10720224e393e34335debbe8450",
+      "open_graph_command_ms": 147,
+      "panel_ready_ms": 350,
+      "webview_frame_url": "vscode-webview://1jrokd09keo8djudn4ro7uj84hgjh76f4f7nk4msjcsm8l5iefoc/index.html?id=01c893f8-3cb8-4075-8ad1-6c3ff74f4abf&parentId=1&origin=82637116-1015-42f6-b555-553721728587&swVersion=6&extensionId=archmeld.archmeld-workbench&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app",
+      "webview_probe_accessible": true,
+      "webview_probe_time_origin_ms": 1793474613672.1,
+      "webview_probe_node_count": 0,
+      "webview_probe_cytoscape_container": true,
+      "webview_probe_header_text": "ARCHMELD · file",
+      "webview_probe_paint_entries": [
+        {
+          "name": "first-paint",
+          "start_ms": 512
+        },
+        {
+          "name": "first-contentful-paint",
+          "start_ms": 512
+        }
+      ],
+      "webview_first_contentful_paint_ms": 512,
+      "webview_largest_contentful_paint_ms": 512,
+      "webview_probe_double_raf_ms": 5.600000000000364,
+      "webview_report_double_raf_ms": 5.600000000000023,
+      "webview_probe_roundtrips_ms": [
+        10.6152,
+        8.7406,
+        9.4886
+      ],
+      "webview_probe_protocol_elapsed_ms": [
+        8,
+        6.5999999940395355,
+        7.4000000059604645
+      ],
+      "paint_report_phases": [
+        "interactive",
+        "load",
+        "settled"
+      ],
+      "render_reports": [
+        {
+          "received_epoch_ms": 1793474613965,
+          "renderer": "cytoscape",
+          "render_ms": 274.6000000089407,
+          "node_count": 2,
+          "edge_count": 1
+        }
+      ],
+      "webview_frame": {
+        "frame_count": 6,
+        "first_frame_after_trigger_ms": 18.277,
+        "timestamp_scale": "epoch_ms",
+        "intervals_ms": [
+          61.712,
+          248.397,
+          289.127,
+          215.175,
+          312.929
+        ],
+        "interval_p95_ms": 312.929,
+        "scope": "workbench page screencast while only the webview document mutated (includes workbench compositing)"
+      },
+      "frame_scope": "requestAnimationFrame double-frame interval and compositor screencast presentation timestamps; not GPU execution time",
+      "budget_failures": [],
+      "measurement_limitations": [],
+      "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+      "probe_count": 3
+    },
+    {
+      "sample": 2,
+      "exit_code": 0,
+      "status": "passed",
+      "result": "docs/evidence/ui-result-b026-paint-2.json",
+      "result_sha256": "sha256:9c711fe4a596cee87b8b17f12d0a36966ae57e65f863ce92fd0eea67aefdfb7f",
+      "screenshot": "docs/evidence/b026-workbench-paint-2.png",
+      "screenshot_sha256": "sha256:cb1927780f0afdd8de35321d199e8a3e2047194215fbfc5314247d7882ab6c67",
+      "screenshot_size": 108332,
+      "log": "baseline/logs/b026-ui-paint-2.log",
+      "log_sha256": "sha256:7a9ff742972e6af3cf826bfb83d2fca3eddba52c1589419ceed60f6e68b03dff",
+      "open_graph_command_ms": 132,
+      "panel_ready_ms": 337,
+      "webview_frame_url": "vscode-webview://1osj9fro90psk0549o4qh768vea0p6fkjo1oj285b50b394ra3ou/index.html?id=68e7e8c3-6124-4fb5-92f4-b730e7a2f957&parentId=1&origin=ee55c71d-2ea2-4e2e-9c42-92966f7d7efd&swVersion=6&extensionId=archmeld.archmeld-workbench&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app",
+      "webview_probe_accessible": true,
+      "webview_probe_time_origin_ms": 1793474663163.5,
+      "webview_probe_node_count": 0,
+      "webview_probe_cytoscape_container": true,
+      "webview_probe_header_text": "ARCHMELD · file",
+      "webview_probe_paint_entries": [
+        {
+          "name": "first-paint",
+          "start_ms": 512
+        },
+        {
+          "name": "first-contentful-paint",
+          "start_ms": 512
+        }
+      ],
+      "webview_first_contentful_paint_ms": 512,
+      "webview_largest_contentful_paint_ms": 512,
+      "webview_probe_double_raf_ms": 5.600000000000364,
+      "webview_report_double_raf_ms": 33.30000000000001,
+      "webview_probe_roundtrips_ms": [
+        10.4416,
+        9.3381,
+        10.4276
+      ],
+      "webview_probe_protocol_elapsed_ms": [
+        7.0999999940395355,
+        6.5999999940395355,
+        7.9000000059604645
+      ],
+      "paint_report_phases": [
+        "interactive",
+        "load",
+        "settled"
+      ],
+      "render_reports": [
+        {
+          "received_epoch_ms": 1793474663313,
+          "renderer": "cytoscape",
+          "render_ms": 148,
+          "node_count": 2,
+          "edge_count": 1
+        }
+      ],
+      "webview_frame": {
+        "frame_count": 3,
+        "first_frame_after_trigger_ms": 21.954,
+        "timestamp_scale": "epoch_ms",
+        "intervals_ms": [
+          336.039,
+          502.615
+        ],
+        "interval_p95_ms": 502.615,
+        "scope": "workbench page screencast while only the webview document mutated (includes workbench compositing)"
+      },
+      "frame_scope": "requestAnimationFrame double-frame interval and compositor screencast presentation timestamps; not GPU execution time",
+      "budget_failures": [],
+      "measurement_limitations": [],
+      "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+      "probe_count": 3
+    },
+    {
+      "sample": 3,
+      "exit_code": 0,
+      "status": "passed",
+      "result": "docs/evidence/ui-result-b026-paint-3.json",
+      "result_sha256": "sha256:92bb44176affbaccf91744da6608133f46779defef9d27fd0e3ae1182d7955ca",
+      "screenshot": "docs/evidence/b026-workbench-paint-3.png",
+      "screenshot_sha256": "sha256:57c99f07575174e5ee08e440ba98f1dc069edb515cbe270a74b213c19899fd0d",
+      "screenshot_size": 108829,
+      "log": "baseline/logs/b026-ui-paint-3.log",
+      "log_sha256": "sha256:41c993ca1fb2e339feed9b162614df27546538cfd935cab4733e13cadd34f268",
+      "open_graph_command_ms": 154,
+      "panel_ready_ms": 362,
+      "webview_frame_url": "vscode-webview://1lv39knn6ikmg6044l4ss4u61rbnt2ppflkcf4lm7svctarg61e8/index.html?id=e60526bb-5844-4f29-ab76-f1373242d35f&parentId=1&origin=9c8c471d-a6c9-485e-a716-39041d715da8&swVersion=6&extensionId=archmeld.archmeld-workbench&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app",
+      "webview_probe_accessible": true,
+      "webview_probe_time_origin_ms": 1793474716615,
+      "webview_probe_node_count": 0,
+      "webview_probe_cytoscape_container": true,
+      "webview_probe_header_text": "ARCHMELD · file",
+      "webview_probe_paint_entries": [
+        {
+          "name": "first-paint",
+          "start_ms": 400
+        },
+        {
+          "name": "first-contentful-paint",
+          "start_ms": 400
+        }
+      ],
+      "webview_first_contentful_paint_ms": 400,
+      "webview_largest_contentful_paint_ms": 400,
+      "webview_probe_double_raf_ms": 5.5,
+      "webview_report_double_raf_ms": 5.699999999999989,
+      "webview_probe_roundtrips_ms": [
+        9.9397,
+        13.425,
+        10.8853
+      ],
+      "webview_probe_protocol_elapsed_ms": [
+        7.200000002980232,
+        10.700000002980232,
+        8.700000002980232
+      ],
+      "paint_report_phases": [
+        "interactive",
+        "load",
+        "settled"
+      ],
+      "render_reports": [
+        {
+          "received_epoch_ms": 1793474716776,
+          "renderer": "cytoscape",
+          "render_ms": 152.69999998807907,
+          "node_count": 2,
+          "edge_count": 1
+        }
+      ],
+      "webview_frame": {
+        "frame_count": 7,
+        "first_frame_after_trigger_ms": 21.726,
+        "timestamp_scale": "epoch_ms",
+        "intervals_ms": [
+          57.915,
+          259.263,
+          296.746,
+          187.569,
+          11.702,
+          303.62
+        ],
+        "interval_p95_ms": 303.62,
+        "scope": "workbench page screencast while only the webview document mutated (includes workbench compositing)"
+      },
+      "frame_scope": "requestAnimationFrame double-frame interval and compositor screencast presentation timestamps; not GPU execution time",
+      "budget_failures": [],
+      "measurement_limitations": [],
+      "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+      "probe_count": 3
+    }
+  ],
+  "aggregate": {
+    "open_graph_command_ms": {
+      "min": 132,
+      "median": 147,
+      "max": 154,
+      "count": 3
+    },
+    "panel_ready_ms": {
+      "min": 337,
+      "median": 350,
+      "max": 362,
+      "count": 3
+    },
+    "webview_first_contentful_paint_ms": {
+      "min": 400,
+      "median": 512,
+      "max": 512,
+      "count": 3
+    },
+    "webview_largest_contentful_paint_ms": {
+      "min": 400,
+      "median": 512,
+      "max": 512,
+      "count": 3
+    },
+    "webview_probe_double_raf_ms": {
+      "min": 5.5,
+      "median": 5.600000000000364,
+      "max": 5.600000000000364,
+      "count": 3
+    },
+    "webview_probe_roundtrip_ms": {
+      "min": 8.7406,
+      "median": 10.4276,
+      "max": 13.425,
+      "count": 9
+    },
+    "webview_first_frame_after_trigger_ms": {
+      "min": 18.277,
+      "median": 21.726,
+      "max": 21.954,
+      "count": 3
+    }
+  },
+  "budgets": {
+    "open_graph_command_ms": 10000,
+    "panel_ready_ms": 20000,
+    "webview_first_contentful_paint_ms": 5000,
+    "webview_probe_roundtrip_ms": 2000,
+    "webview_double_raf_ms": 1000,
+    "webview_first_frame_after_trigger_ms": 500
+  },
+  "scope": {
+    "paint": "dedicated vscode-webview:// document performance timeline",
+    "frame": "requestAnimationFrame BeginFrame cadence and compositor screencast presentation timestamps",
+    "not_measured": "GPU execution time, shader cost and display scan-out latency are not measured; screencast intervals include capture/encode throttling and are reported without a gate",
+    "webview_geometry": "Cytoscape renders to canvas, so DOM node counts are zero; the header text and #cy container identify the graph document"
+  },
+  "failures": [],
+  "status": "passed"
+}

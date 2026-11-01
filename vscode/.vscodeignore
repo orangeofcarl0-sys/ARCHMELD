@@ -1,0 +1,64 @@
+# Include only what the extension needs:
+#   package.json, README.md, CHANGELOG.md, LICENSE
+#   out/extension.js (compiled TS)
+#   images/* (icons)
+
+# The engine is fetched at first use, not bundled - see src/engineDownload.ts.
+# Any binary left in bin/ from a local build must not reach the marketplace.
+bin/**
+
+# Exclude everything else
+**/.git/**
+**/.github/**
+**/.gitignore
+**/.gitattributes
+**/.vscode/**
+**/.cargo/**
+**/.claude/**
+**/.overstory/**
+**/.smelt/**
+**/.stellarion/**
+**/.mcp.json
+
+# Rust source and build
+server/**
+codegraph-memory/**
+Cargo.toml
+Cargo.lock
+target/**
+prebuilt/**
+
+# TypeScript source
+src/**
+tsconfig.json
+esbuild.js
+vitest.config.ts
+.eslintrc*
+tests/**
+
+# Dev/build files
+scripts/**
+docs/**
+mcp-package/**
+node_modules/**
+
+# Documentation/dev files not needed in extension
+BUILD.md
+PROGRESS.md
+TODO.md
+test_scenarios.md
+test_results_*.md
+log.md
+vsforge.config.json
+
+# Package artifacts
+*.vsix
+*.tgz
+examples/
+
+# Build-time env (PostHog key + similar) — esbuild bakes values into
+# extension.js via --define, so the runtime never reads the .env file.
+# Shipping it would look like a secret leak even though the PostHog
+# ingestion key is public-safe by design.
+.env
+.env.*

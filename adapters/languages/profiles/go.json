@@ -1,0 +1,41 @@
+{
+  "id": "go",
+  "languages": [
+    "go"
+  ],
+  "status": "partial",
+  "fixture": "fixtures/go",
+  "tools": {
+    "installed": [
+      {
+        "name": "go",
+        "version": "1.27.3",
+        "path": "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe"
+      },
+      {
+        "name": "gopls",
+        "version": "0.20.0",
+        "path": "F:/Codex_Work_Space/_archmeld_tools/go/bin/gopls.exe"
+      }
+    ]
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified_by_test",
+    "bounded_refactor": "verified_by_test",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/go.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "interface/function-pointer calls remain unresolved, not fabricated",
+    "goroutine/channel runtime trace pending B016"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

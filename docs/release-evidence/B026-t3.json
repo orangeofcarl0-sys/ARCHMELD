@@ -1,0 +1,59 @@
+{
+  "bounded_timeline_series": 2,
+  "generated_by": "crates/archmeld-core/tests/t3_stress.rs",
+  "import": {
+    "artifact_budget": 200000000,
+    "artifact_size": 81728764,
+    "budget_ms": 300000,
+    "db_budget": 2000000000,
+    "db_size": 169086976,
+    "elapsed_ms": 65930
+  },
+  "limitations": [
+    "synthetic stress data per S16; business correctness is covered by real project fixtures",
+    "counters are process-scope, so this trace creates no observed relations",
+    "budgets are local wall-clock/size ceilings, not cross-machine latency guarantees"
+  ],
+  "platform": {
+    "arch": "x86_64",
+    "os": "windows"
+  },
+  "schema_version": "1.0",
+  "summary": {
+    "artifact_digest": "sha256:a199932a8df79e54dd4f9ad3ab3be3c64520c242b695dba02b401cebef4be6b8",
+    "artifact_size": 81728764,
+    "bound": true,
+    "capture": {
+      "tool": "t3-stress",
+      "version": "1"
+    },
+    "counter_count": 9,
+    "event_count": 1000000,
+    "lossy": false,
+    "metric_count": 9,
+    "run_id": "run.t3.trace",
+    "sample_count": 900000,
+    "span_count": 100000,
+    "state_count": 0,
+    "state_interval_count": 0
+  },
+  "trace": {
+    "counters": 9,
+    "events": 1000000,
+    "path": "target/b026-t3/t3-trace.json",
+    "samples": 900000,
+    "sha256": "sha256:a671926cd92fc7a62072f38d0af642ef24776f273e16bf7f6f20f69c8f5025c9",
+    "size": 81728764,
+    "spans": 100000
+  },
+  "full_regression": {
+    "command": "b026-full-regression",
+    "exit_code": 0,
+    "sections": 59,
+    "passed": 133,
+    "failed": 0,
+    "ignored": 0,
+    "log": "baseline/logs/b026-full-regression-2.log",
+    "log_sha256": "sha256:8f2bdc77e6ddbf5a12d5a77875bf502ed4955fb2c1c2f79319c67569ef1505ab"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "approval.synthetic",
+  "project_id": "project.synthetic",
+  "target_digest": "sha256:6e2eadadce3c79991d1c72c15532baa128f88b22028755b2b32e3ff748afe3d9",
+  "actor": "synthetic-human-example-not-a-live-approval",
+  "decision": "approve",
+  "capabilities": [
+    "apply_changeset"
+  ],
+  "expires_at": "2026-10-30T01:00:00Z",
+  "recorded_at": "2026-10-30T00:00:00Z",
+  "target_kind": "prepared_change",
+  "target_id": "change.demo"
+}

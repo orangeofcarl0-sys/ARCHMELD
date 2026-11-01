@@ -1,0 +1,53 @@
+{
+  "acceptance": {
+    "AT046": {
+      "final_state": "failed",
+      "lease_takeover": "old fencing token refused, no file written",
+      "read_set_external_edit": "stale, unchanged",
+      "target_external_edit": "stale, unchanged"
+    },
+    "AT047": {
+      "changeset_state": "recovered",
+      "detected_state": "applying with a durable journal",
+      "fault": "injected after the second file replacement",
+      "full_reset_used": false,
+      "mid_apply_files": {
+        "src/a.py": "postimage",
+        "src/b.py": "preimage",
+        "src/new.py": "postimage"
+      },
+      "recovery": "journal-driven, all owned writes restored",
+      "resulting_snapshot_id": "sha256:ef709519e4d8385f153c2f1e6b6a981eb5c8d5eaa895e6b78183b4516ab0bf8b",
+      "unrelated_user_file_preserved": true
+    },
+    "AT048": {
+      "changeset_state": "conflicted",
+      "other_file_restored": "src/b.py -> preimage",
+      "resulting_snapshot_id": "sha256:8b1e3ad67359df013245b58cf2c4ca6fdcdd40ae4cade6884bf48169de12c0c9",
+      "state": "conflicted",
+      "updated_file": "src/a.py",
+      "user_edit_preserved": true,
+      "user_version_artifact": "sha256:3e3f6bac7d15e706d940596dc154b19e85d54bcbe180d8083dabb04628cb4bee"
+    },
+    "AT049": {
+      "attack": "target parent replaced by a junction/symlink after preparation",
+      "linked_path_supported": true,
+      "outside_file_unchanged": true,
+      "outside_victim_digest": "sha256:29742709054c8b814aa77d31e6e3508a576020060b003c2692908025637b12d4",
+      "platform": "windows"
+    },
+    "AT078": {
+      "case_only_move_applied": true,
+      "case_only_move_recovered": true,
+      "changeset_state": "conflicted",
+      "move_to_existing_target": "rejected during preparation",
+      "recovery_state": "conflicted",
+      "resulting_snapshot_id": "sha256:e5aab6457ba1c551addb8ea713f1be7e94eebbaa08f3f86bab3d40049b3a936f",
+      "user_edited_new_file_preserved": true
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/apply_recovery.rs",
+  "platform": "windows",
+  "project_id": "project.335c0d5436ed45e7a8b49d4ba95f840a",
+  "snapshot_id": "sha256:276e9ef12da4177f2acab28531c6bcb634680454a2765e379763a3e7c277efeb"
+}

@@ -1,0 +1,161 @@
+{
+  "cases": [
+    {
+      "case": "container_success",
+      "exit_code": 0,
+      "sandbox": {
+        "bytes": 18,
+        "container": {
+          "image": "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+          "image_id": "sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+          "name": "archmeld-89f491ee1bcbae7f-run.container",
+          "platform": "linux/amd64",
+          "removed": true,
+          "repo_digests": [
+            "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3"
+          ],
+          "workdir": "/workspace/src"
+        },
+        "container_name": "archmeld-89f491ee1bcbae7f-run.container",
+        "declared": true,
+        "enforcement": "oci_container",
+        "exclude": [],
+        "exec_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--name",
+          "archmeld-89f491ee1bcbae7f-run.container",
+          "--network",
+          "none",
+          "--read-only",
+          "--tmpfs",
+          "/tmp:rw,size=64m",
+          "--security-opt",
+          "no-new-privileges",
+          "-e",
+          "SCENARIO_TOKEN=<redacted>",
+          "-v",
+          "<local-user>\\AppData\\Local\\Temp\\.tmpHgPtOs\\state\\scenario-sandboxes\\project.scenario.sandbox\\run.container:/workspace",
+          "--workdir",
+          "/workspace/src",
+          "--pull",
+          "never",
+          "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+          "sh",
+          "-c",
+          "set -e\ntest -f app.py\ngrep -q snapshot app.py\ntest ! -e live_only.txt\ntest ! -e ../config/secret.txt\ntest ${#SCENARIO_TOKEN} -eq 14\necho tmp > /tmp/t\necho out > /workspace/out.txt\nif echo x > /root/x 2>/dev/null; then exit 7; fi\nif grep -q eth0 /proc/net/dev; then exit 8; fi\necho scenario-container-ok\n"
+        ],
+        "file_count": 1,
+        "image": "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+        "image_id": "sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+        "include": [
+          "src/app.py"
+        ],
+        "isolated": true,
+        "limitations": [
+          "Docker/Linux containers only; the host must provide a local pinned image (no pull)",
+          "the process runs as the image default user and can write the bind-mounted snapshot copy",
+          "the container is removed by name after the run, including timeout and cancellation",
+          "container processes are not visible to the host process audit; the docker client is audited"
+        ],
+        "manifest_digest": "sha256:f47e1674937fd3aed711743724f1e7148a0d42f411382410e2e43f80d2a6d5b3",
+        "mode": "container",
+        "network": "none",
+        "platform": "linux/amd64",
+        "read_only": true,
+        "repo_digests": [
+          "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3"
+        ],
+        "retained": false,
+        "root": "<local-user>\\AppData\\Local\\Temp\\.tmpHgPtOs\\state\\scenario-sandboxes\\project.scenario.sandbox\\run.container",
+        "snapshot_id": "sha256:14f74752b52ff511f8c281d24d8cbf0e67e08e4b7d0160db995cfddee989fe13",
+        "source": "resulting_snapshot",
+        "tmpfs": "/tmp:rw,size=64m",
+        "workdir": "/workspace/src"
+      },
+      "state": "succeeded",
+      "stdout_digest": "sha256:28c929e967fc207676cdc0b308881f8efec00c5e7eae81146fbab849d4b9125d",
+      "workspace_app_after": "MARK = 'live'\n",
+      "workspace_out_present": false
+    },
+    {
+      "case": "container_timeout",
+      "retained_copy_present": true,
+      "sandbox": {
+        "bytes": 18,
+        "container": {
+          "image": "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+          "image_id": "sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+          "name": "archmeld-476c978e65880033-run.container.timeout",
+          "platform": "linux/amd64",
+          "removed": true,
+          "repo_digests": [
+            "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3"
+          ],
+          "workdir": "/workspace"
+        },
+        "container_name": "archmeld-476c978e65880033-run.container.timeout",
+        "declared": true,
+        "enforcement": "oci_container",
+        "exclude": [],
+        "exec_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--name",
+          "archmeld-476c978e65880033-run.container.timeout",
+          "--network",
+          "none",
+          "--read-only",
+          "--tmpfs",
+          "/tmp:rw,size=64m",
+          "--security-opt",
+          "no-new-privileges",
+          "-v",
+          "<local-user>\\AppData\\Local\\Temp\\.tmpCtCaza\\state\\scenario-sandboxes\\project.scenario.sandbox\\run.container.timeout:/workspace",
+          "--workdir",
+          "/workspace",
+          "--pull",
+          "never",
+          "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+          "sh",
+          "-c",
+          "sleep 30"
+        ],
+        "file_count": 1,
+        "image": "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+        "image_id": "sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3",
+        "include": [
+          "src/app.py"
+        ],
+        "isolated": true,
+        "limitations": [
+          "Docker/Linux containers only; the host must provide a local pinned image (no pull)",
+          "the process runs as the image default user and can write the bind-mounted snapshot copy",
+          "the container is removed by name after the run, including timeout and cancellation",
+          "container processes are not visible to the host process audit; the docker client is audited"
+        ],
+        "manifest_digest": "sha256:f47e1674937fd3aed711743724f1e7148a0d42f411382410e2e43f80d2a6d5b3",
+        "mode": "container",
+        "network": "none",
+        "platform": "linux/amd64",
+        "read_only": true,
+        "repo_digests": [
+          "debian@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3"
+        ],
+        "retained": true,
+        "root": "<local-user>\\AppData\\Local\\Temp\\.tmpCtCaza\\state\\scenario-sandboxes\\project.scenario.sandbox\\run.container.timeout",
+        "snapshot_id": "sha256:14f74752b52ff511f8c281d24d8cbf0e67e08e4b7d0160db995cfddee989fe13",
+        "source": "resulting_snapshot",
+        "tmpfs": "/tmp:rw,size=64m",
+        "workdir": "/workspace"
+      },
+      "state": "timed_out",
+      "timed_out": true
+    }
+  ],
+  "generated_by": "crates/archmeld-core/tests/scenario_sandbox.rs",
+  "platform": "windows",
+  "schema_version": "1.0"
+}

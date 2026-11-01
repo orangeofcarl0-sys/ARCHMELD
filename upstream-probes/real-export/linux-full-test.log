@@ -1,0 +1,185 @@
+ Downloading crates ...
+  Downloaded anes v0.1.6
+  Downloaded is-terminal v0.4.17
+  Downloaded ciborium-ll v0.2.2
+  Downloaded plotters-svg v0.3.7
+  Downloaded criterion-plot v0.5.0
+  Downloaded cast v0.3.0
+  Downloaded ciborium-io v0.2.2
+  Downloaded ciborium v0.2.2
+  Downloaded plotters-backend v0.3.7
+  Downloaded fastrand v2.3.0
+  Downloaded tinytemplate v1.2.1
+  Downloaded tempfile v3.27.0
+  Downloaded oorandom v11.1.5
+  Downloaded criterion v0.5.1
+  Downloaded itertools v0.10.5
+  Downloaded plotters v0.3.7
+   Compiling codegraph v0.2.0 (/work/crates/codegraph)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 23s
+     Running unittests src/lib.rs (/target/debug/deps/codegraph-c96815511c8cb342)
+
+running 58 tests
+test error::tests::test_invalid_operation_error ... ok
+test error::tests::test_node_not_found_error ... ok
+test error::tests::test_property_not_found_error ... ok
+test error::tests::test_storage_error ... ok
+test export::csv::tests::test_escape_csv ... ok
+test export::dot::tests::test_escape_dot_label ... ok
+test export::json::tests::test_properties_to_json ... ok
+test export::ndjson::tests::export_includes_sparse_ids ... ok
+test export::triples::tests::test_escape_quotes ... ok
+test export::triples::tests::test_format_triple_object ... ok
+test graph::algorithms::tests::test_bfs_simple_chain ... ok
+test graph::algorithms::tests::test_dfs_simple_chain ... ok
+test graph::codegraph::persist_tests::persist_to_deletes_orphaned_node_keys ... ok
+test graph::property::tests::test_get_int_parses_string_values ... ok
+test graph::property::tests::test_get_string_list_compat ... ok
+test graph::property::tests::test_property_map_builder ... ok
+test graph::property::tests::test_property_map_insert ... ok
+test graph::property::tests::test_property_map_lists ... ok
+test graph::property::tests::test_property_map_remove ... ok
+test graph::property::tests::test_property_map_type_safety ... ok
+test graph::property::tests::test_property_value_conversions ... ok
+test storage::memory::tests::test_clear ... ok
+test storage::memory::tests::test_delete ... ok
+test storage::memory::tests::test_delete_nonexistent_key ... ok
+test storage::memory::tests::test_exists ... ok
+test storage::memory::tests::test_flush_is_noop ... ok
+test storage::memory::tests::test_get_nonexistent_key ... ok
+test storage::memory::tests::test_new_backend_is_empty ... ok
+test storage::memory::tests::test_put_and_get ... ok
+test storage::memory::tests::test_scan_prefix ... ok
+test storage::memory::tests::test_write_batch_mixed_operations ... ok
+test storage::memory::tests::test_write_batch_puts ... ok
+test storage::namespaced::tests::test_delete ... ok
+test storage::namespaced::tests::test_keys_are_namespaced_in_inner ... ok
+test storage::namespaced::tests::test_namespace_isolation ... ok
+test storage::namespaced::tests::test_namespace_string ... ok
+test storage::namespaced::tests::test_put_and_get ... ok
+test storage::namespaced::tests::test_scan_prefix_keys_scoped_and_stripped ... ok
+test storage::namespaced::tests::test_scan_prefix_scoped ... ok
+test storage::namespaced::tests::test_write_batch ... ok
+test storage::rocksdb_backend::tests::test_exists ... ok
+test storage::rocksdb_backend::tests::test_delete ... ok
+test storage::rocksdb_backend::tests::test_get_nonexistent_key ... ok
+test storage::rocksdb_backend::tests::test_open_creates_database ... ok
+test storage::rocksdb_backend::tests::test_open_reports_a_held_database_as_locked ... ok
+test storage::rocksdb_backend::tests::test_scan_prefix ... ok
+test storage::rocksdb_backend::tests::test_put_and_get ... ok
+test storage::rocksdb_backend::tests::test_flush ... ok
+test storage::tests::test_trait_object_safe ... ok
+test storage::rocksdb_backend::tests::test_leftover_lock_file_does_not_block_open ... ok
+test storage::rocksdb_backend::tests::test_persistence_across_reopens ... ok
+test storage::rocksdb_backend::tests::test_secondary_reads_primary_writes_after_catch_up ... ok
+test storage::rocksdb_backend::tests::test_write_batch_mixed_operations ... ok
+test storage::rocksdb_backend::tests::test_write_batch_puts ... ok
+test storage::rocksdb_backend::tests::test_waiting_open_gives_up_after_max_wait_and_keeps_the_lock_file ... ok
+test storage::rocksdb_backend::tests::test_waiting_open_hooks_bracket_every_refused_attempt ... ok
+test storage::rocksdb_backend::tests::test_waiting_open_succeeds_once_the_holder_releases ... ok
+test storage::rocksdb_backend::tests::test_waiting_open_hooks_leave_a_successful_attempt_armed ... ok
+
+test result: ok. 58 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.67s
+
+     Running tests/archmeld_probes.rs (/target/debug/deps/archmeld_probes-f337f0ed55b90b5b)
+
+running 5 tests
+test export_ndjson_v1_matches_real_iterators ... ok
+test probe_sparse_edges_after_delete_and_reinsert ... ok
+test probe_sparse_ids_after_delete_and_reinsert ... ok
+test probe_sparse_ids_survive_persistence ... ok
+test probe_cache_directories_are_not_shared ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+     Running tests/tests.rs (/target/debug/deps/tests-3db78c2f62a11db0)
+
+running 73 tests
+test integration::large_graph_test::test_large_graph_100k_nodes_500k_edges ... ignored
+test integration::memory_backend_test::test_memory_backend_clear ... ok
+test integration::memory_backend_test::test_memory_backend_in_memory_only ... ok
+test unit::algorithms_test::test_actual_circular_imports ... ok
+test unit::algorithms_test::test_bfs_handles_cycles ... ok
+test unit::algorithms_test::test_bfs_traversal_with_max_depth ... ok
+test unit::algorithms_test::test_call_chain ... ok
+test unit::algorithms_test::test_circular_deps ... ok
+test unit::algorithms_test::test_dfs_traversal ... ok
+test unit::algorithms_test::test_find_all_paths ... ok
+test unit::algorithms_test::test_tarjans_scc_cycle_detection ... ok
+test unit::algorithms_test::test_transitive_dependencies ... ok
+test unit::algorithms_test::test_transitive_dependents ... ok
+test unit::edge_test::test_edge_creation_with_properties ... ok
+test unit::edge_test::test_edge_set_property ... ok
+test integration::large_graph_test::test_medium_graph_10k_nodes ... ok
+test unit::export_test::test_export_csv_edges ... ok
+test unit::export_test::test_export_csv_convenience ... ok
+test unit::export_test::test_export_dot_styled ... ok
+test unit::export_test::test_export_dot_validity ... ok
+test unit::export_test::test_export_csv_nodes ... ok
+test unit::graph_ops_test::test_add_edge_with_missing_nodes ... ok
+test unit::graph_ops_test::test_add_edge_with_validation ... ok
+test unit::graph_ops_test::test_add_node ... ok
+test unit::graph_ops_test::test_batch_add_edges ... ok
+test unit::graph_ops_test::test_batch_add_nodes ... ok
+test unit::graph_ops_test::test_delete_node_cascades_to_edges ... ok
+test unit::graph_ops_test::test_get_neighbors_both_directions ... ok
+test unit::graph_ops_test::test_get_neighbors_by_edge_type_deduplicates_parallel_edges ... ok
+test unit::graph_ops_test::test_get_neighbors_by_edge_type_filters_other_relations ... ok
+test unit::graph_ops_test::test_get_neighbors_incoming ... ok
+test unit::graph_ops_test::test_get_neighbors_outgoing ... ok
+test unit::graph_ops_test::test_get_node_and_get_node_mut ... ok
+test integration::crash_recovery_test::test_crash_recovery_with_batch_operations ... ok
+test unit::graph_ops_test::test_get_nonexistent_node ... ok
+test unit::helpers_test::test_add_call ... ok
+test unit::helpers_test::test_add_class ... ok
+test integration::crash_recovery_test::test_crash_recovery_with_wal ... ok
+test unit::helpers_test::test_add_file ... ok
+test unit::helpers_test::test_add_function ... ok
+test unit::helpers_test::test_add_import ... ok
+test integration::rocksdb_backend_test::test_rocksdb_persistence ... ok
+test unit::helpers_test::test_add_method ... ok
+test unit::helpers_test::test_add_module ... ok
+test unit::helpers_test::test_get_callees ... ok
+test unit::helpers_test::test_get_callers ... ok
+test unit::helpers_test::test_get_file_dependencies ... ok
+test unit::helpers_test::test_get_file_dependents ... ok
+test unit::helpers_test::test_get_functions_in_file ... ok
+test unit::node_test::test_node_creation_with_properties ... ok
+test unit::export_test::test_export_json_d3_compatibility ... ok
+test unit::node_test::test_node_get_property_missing ... ok
+test unit::node_test::test_node_set_property ... ok
+test unit::property_test::test_property_map_builder ... ok
+test unit::property_test::test_property_map_insert_and_remove ... ok
+test unit::property_test::test_property_map_lists ... ok
+test unit::property_test::test_property_map_type_safe_getters ... ok
+test unit::query_builder_test::test_query_builder_chaining_multiple_filters ... ok
+test unit::export_test::test_export_triples_rdf_format ... ok
+test unit::query_builder_test::test_query_builder_count_and_exists ... ok
+test unit::export_test::test_export_json_filtered ... ok
+test integration::rocksdb_backend_test::test_rocksdb_counter_persistence ... ok
+test unit::query_builder_test::test_query_builder_custom_predicate ... ok
+test unit::query_builder_test::test_query_builder_file_pattern_filter ... ok
+test integration::crash_recovery_test::test_partial_transaction_recovery ... ok
+test unit::query_builder_test::test_query_builder_in_file_filter ... ok
+test unit::query_builder_test::test_query_builder_limit ... ok
+test unit::query_builder_test::test_query_builder_name_contains_filter ... ok
+test unit::query_builder_test::test_query_builder_node_type_filter ... ok
+test integration::rocksdb_backend_test::test_rocksdb_delete_and_reopen ... ok
+test unit::query_builder_test::test_query_builder_property_filter ... ok
+test unit::query_builder_test::test_query_builder_performance_10k_nodes ... ok
+test unit::export_test::test_size_limit_warnings ... ok
+
+test result: ok. 72 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 2.56s
+
+   Doc-tests codegraph
+
+running 6 tests
+test crates/codegraph/src/graph/codegraph.rs - graph::codegraph::CodeGraph::open (line 63) - compile ... ok
+test crates/codegraph/src/lib.rs - (line 34) - compile ... ok
+test crates/codegraph/src/graph/codegraph.rs - graph::codegraph::CodeGraph::query (line 607) ... ok
+test crates/codegraph/src/query.rs - query::QueryBuilder (line 21) ... ok
+test crates/codegraph/src/query.rs - query::QueryBuilder<'a>::custom (line 168) ... ok
+test crates/codegraph/src/query.rs - query::QueryBuilder<'a>::node_type (line 59) ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+

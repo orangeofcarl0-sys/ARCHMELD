@@ -1,0 +1,34 @@
+{
+  "id": "javascript",
+  "languages": [
+    "javascript"
+  ],
+  "fixture": "fixtures/javascript",
+  "tools": {
+    "lsp": {
+      "name": "typescript-language-server",
+      "version": "4.3.4"
+    },
+    "typescript": "5.8.3"
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified",
+    "bounded_refactor": "verified_apply:B030",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/javascript.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "rename is preview-only; writing files is B020/B021",
+    "dynamic obj[key]() is not promoted to a project call target",
+    "build verification and a JavaScript runtime scenario remain future work"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "id": "contract.demo",
+  "project_id": "project.synthetic",
+  "revision": 1,
+  "kind": "structural_refactor",
+  "invariants": [
+    "For the specified test inputs, numerical output must remain unchanged"
+  ],
+  "allowed_changes": [
+    "Rename an internal function and all its known uses"
+  ],
+  "known_defects": [],
+  "checks": [
+    {
+      "id": "check.behavior",
+      "kind": "behavior",
+      "required": true,
+      "description": "Synthetic specification of a future test, not executed",
+      "command": null,
+      "checker_id": null,
+      "predicate": {
+        "kind": "test_report",
+        "parameters": {
+          "format": "junit",
+          "artifact_role": "test_output",
+          "min_tests": 1,
+          "max_failures": 0
+        }
+      },
+      "input_artifacts": [
+        "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413"
+      ]
+    }
+  ],
+  "digest": "sha256:3c018d678a0656e214c4ae1345182f56854289c8a3f2a8d20924044cb3d12bf3",
+  "frozen": true
+}

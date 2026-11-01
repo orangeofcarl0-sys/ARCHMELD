@@ -1,0 +1,32 @@
+{
+  "acceptance": {
+    "AT042": {
+      "changesets_table_present": false,
+      "dependency_cycle": "rejected",
+      "source_unchanged": true,
+      "status": "passed",
+      "unknown_check_id": "rejected",
+      "unknown_step_dependency": "rejected"
+    },
+    "AT043": {
+      "contract_digest_v1": "sha256:3bdfad9c7defbc46e78cc597a6db2db384b803e379f1f0c8f2f9d76793757e84",
+      "contract_digest_v2": "sha256:93e6a7e0d860fa724f807f385ac8e242b5cc52fe3c2834d4b74936606b6b2b9c",
+      "new_digest_old_plan_rejected": true,
+      "old_approval_rejected": true,
+      "old_plan_status": "stale",
+      "status": "passed"
+    },
+    "AT072": {
+      "implementations": [
+        "rust hash.rs",
+        "python docs/archmeld/tooling/check_pack.py",
+        "archmeld-vscode/src/canonical.js"
+      ],
+      "status": "passed",
+      "vectors": "docs/archmeld/examples/hash-vectors.json"
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/plan_contract.rs",
+  "snapshot_id": "sha256:f1df6ead29a32bbc708bf58dc4af2e15796589127963ada23e770abe286e94e6",
+  "source_digest": "sha256:0c2863d70c1f0e4d3682a1608c1e161ec2fad5bc4d911fc69e314677ca080149"
+}

@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual evidence after real VS Code extension-host runs",
+  "generated_at": "2026-11-01T01:58:08+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "activator": "code --extensionDevelopmentPath=<repo>/archmeld-vscode --extensionTestsPath=<repo>/archmeld-vscode/test-ui/runTests.js --disable-extensions --disable-workspace-trust --skip-welcome --skip-release-notes --user-data-dir=<temp profile> --remote-debugging-port=<port> --wait archmeld-vscode/test-ui/fixture",
+  "harness": "archmeld-vscode/test-ui/runTests.js",
+  "samples": [
+    {
+      "sample": 1,
+      "result": "docs/evidence/ui-result-b026-clean.json",
+      "result_sha256": "sha256:1196bdb60c550b9ce17fbe5c4df32c937b5daff263c892c177b460776cb84b54",
+      "screenshot": "docs/evidence/b026-workbench-clean.png",
+      "screenshot_sha256": "sha256:57c99f07575174e5ee08e440ba98f1dc069edb515cbe270a74b213c19899fd0d",
+      "screenshot_size": 108829,
+      "log": "baseline/logs/b026-ui-host-clean.log",
+      "log_sha256": "sha256:a1b534a3e3593a4ce9f1865d0d3c39ecf27371fe19587ebf450508799c9437d9",
+      "open_graph_command_ms": 89,
+      "panel_ready_ms": 305,
+      "status": "passed",
+      "capture_method": "cdp",
+      "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
+      "active_tab": "ARCHMELD Graph",
+      "capture_target_metrics_scope": "CDP capture target (page target); not a dedicated webview paint trace",
+      "task_duration_s": 3.8e-05
+    },
+    {
+      "sample": 2,
+      "result": "docs/evidence/ui-result-b026-clean-2.json",
+      "result_sha256": "sha256:df85b7cd70c6fbe91cdd24ac095b910d0765145e70c7598f1ed561ff9d8b2982",
+      "screenshot": "docs/evidence/b026-workbench-clean-2.png",
+      "screenshot_sha256": "sha256:16ffb812dd6fba5df1a3f15c9806c86935be29cfcf5aa5363efebc63059f4a6e",
+      "screenshot_size": 113789,
+      "log": "baseline/logs/b026-ui-host-clean-2.log",
+      "log_sha256": "sha256:6150a5efd4a2fa99aa9f904b45eb76af5c53c4aec31720a7e791ea281e943baa",
+      "open_graph_command_ms": 76,
+      "panel_ready_ms": 279,
+      "status": "passed",
+      "capture_method": "cdp",
+      "capture_target": "page:[\u6269\u5c55\u5f00\u53d1\u5bbf\u4e3b] ARCHMELD Graph - fixture - Visual Studio Code",
+      "active_tab": "ARCHMELD Graph",
+      "capture_target_metrics_scope": "CDP capture target (page target); not a dedicated webview paint trace",
+      "task_duration_s": 0.000731
+    },
+    {
+      "sample": 3,
+      "result": "docs/evidence/ui-result-b026-clean-3.json",
+      "result_sha256": "sha256:6aef21c284b9013ed35a893acfe5b15394d1ca0d7a66ebb4fda89d768b23456a",
+      "screenshot": "docs/evidence/b026-workbench-clean-3.png",
+      "screenshot_sha256": "sha256:16ffb812dd6fba5df1a3f15c9806c86935be29cfcf5aa5363efebc63059f4a6e",
+      "screenshot_size": 113789,
+      "log": "baseline/logs/b026-ui-host-clean-3.log",
+      "log_sha256": "sha256:e1ca1a2fcd69b1d0be50d0d1731d0e3c47c0a49fccda2562cf1d9801493c1980",
+      "open_graph_command_ms": 67,
+      "panel_ready_ms": 269,
+      "status": "passed",
+      "capture_method": "cdp",
+      "capture_target": "page:[\u6269\u5c55\u5f00\u53d1\u5bbf\u4e3b] ARCHMELD Graph - fixture - Visual Studio Code",
+      "active_tab": "ARCHMELD Graph",
+      "capture_target_metrics_scope": "CDP capture target (page target); not a dedicated webview paint trace",
+      "task_duration_s": 4.1e-05
+    }
+  ],
+  "aggregate": {
+    "open_graph_command_ms": {
+      "min": 67,
+      "median": 76,
+      "max": 89
+    },
+    "panel_ready_ms": {
+      "min": 269,
+      "median": 279,
+      "max": 305
+    }
+  },
+  "budgets": {
+    "open_graph_command_ms": 2000,
+    "panel_ready_ms": 5000,
+    "screenshot_min_bytes": 10000,
+    "capture_method": "cdp",
+    "status": "passed"
+  },
+  "visual_check": "Three screenshots were inspected: each shows the ARCHMELD Graph tab with file/role/runtime tabs, two rendered nodes, a dashed candidate edge, the historical-snapshot note and coverage status. First-run modal screenshots were discarded and are not part of these samples.",
+  "scope": [
+    "host-level command latency and tab availability through the real VS Code extension host",
+    "rendered frame captured through CDP from the extension host page target",
+    "capture-target metrics are page-scope, not a dedicated webview paint trace"
+  ],
+  "limitations": [
+    "the profile is warm after the first sample; cold first-run onboarding is dismissed by the harness and its samples are not counted",
+    "no GPU frame timing or webview-specific paint trace is claimed",
+    "timings are local wall-clock samples on this machine, not cross-machine guarantees"
+  ],
+  "extension_unit_tests": {
+    "command": "b026-extension-tests",
+    "exit_code": 0,
+    "passed": 28,
+    "failed": 0,
+    "log": "baseline/logs/b026-extension-tests.log",
+    "log_sha256": "sha256:edd3e45b7f64a07d2b4d81ba3e5a3f91f6471a548a1eb4850194a9b19e935d3c"
+  }
+}

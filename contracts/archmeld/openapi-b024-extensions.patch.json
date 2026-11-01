@@ -1,0 +1,40 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-026-async-instigator.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/instigator/configure",
+      "summary": "Enable/disable the optional Instigator and set cooldown and per-task nudge budget. Disabled is the default."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/instigator/nudge",
+      "summary": "Propose NUDGE or SILENT for an existing task revision and scope. Never changes task state, creates tasks or waits for approval."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/instigator/deliver",
+      "summary": "Deliver due pending nudges; stale revision, expired, finished-task and disabled cases are discarded without waking the task."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/instigator",
+      "summary": "Inspect the Instigator policy and recent message audit.",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    }
+  ],
+  "invariants": {
+    "decisions": ["NUDGE", "SILENT"],
+    "may_create_tasks": false,
+    "may_change_task_state": false,
+    "may_approve": false,
+    "may_block_delivery": false,
+    "waits_for_approval": false,
+    "stale_or_expired": "discard",
+    "event": "instigator.nudge only on delivery of a still-valid message"
+  }
+}

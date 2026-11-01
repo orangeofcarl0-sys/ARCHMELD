@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual evidence after the real CLI run and core comparison test",
+  "generated_at": "2026-11-01T05:52:22+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "tool": {
+    "name": "trace_processor_shell",
+    "path": "F:/Codex_Work_Space/_archmeld_tools/perfetto/windows-amd64/trace_processor_shell.exe",
+    "version": "Perfetto v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)",
+    "sha256": "sha256:3acc5aca1c764541033a82ba3bb0a47524b5c3c0aa194eea8d9a7b0cdb346bdc",
+    "archive": "https://github.com/google/perfetto/releases/download/v59.1/windows-amd64.zip"
+  },
+  "fixture": {
+    "trace": "adapters/traces/fixtures/perfetto-counter-state.pftrace",
+    "trace_sha256": "sha256:2db061e83ea81df992e16c912c4f9ba02cfc0c09689e0de6e799824054b3b3a4",
+    "slice_rows": 2,
+    "counter_rows": 4
+  },
+  "import": {
+    "run_id": "run.tp.evidence",
+    "bound": false,
+    "span_count": 2,
+    "metric_count": 1,
+    "counter_samples": 4,
+    "counter_values": [
+      0.0,
+      3.0,
+      1.0,
+      0.0
+    ],
+    "spans": [
+      {
+        "name": "stage.queue",
+        "start_ns": "99579362228500",
+        "end_ns": "99579469010400",
+        "parent_span_id": null
+      },
+      {
+        "name": "stage.compute",
+        "start_ns": "99579406554800",
+        "end_ns": "99579438173900",
+        "parent_span_id": "slice.1"
+      }
+    ],
+    "result": "docs/evidence/b016-trace-processor-result.json",
+    "result_sha256": "sha256:6811769383396dc298ebf2147efd5040d0fd8ca942f6a46e6437f510d1031174",
+    "command": "#b016-trace-processor-cli"
+  },
+  "comparison": {
+    "in_process_decoder": "same two slice names and four counter samples on the pinned fixture (perfetto_trace_processor test)",
+    "test": "crates/archmeld-core/tests/perfetto_trace_processor.rs",
+    "cli_test": "crates/archmeld-api/tests/trace_import_cli.rs"
+  },
+  "scope": {
+    "imported": "slices -> spans (parent from track/depth), counter tracks -> counter series",
+    "not_imported": [
+      "state intervals",
+      "flow/flow events",
+      "args/debug annotations",
+      "process/thread names"
+    ],
+    "limitation": "trace processor stdout is captured with the 4 MiB command cap; larger results fail explicitly instead of importing truncated CSV"
+  },
+  "status": "passed"
+}

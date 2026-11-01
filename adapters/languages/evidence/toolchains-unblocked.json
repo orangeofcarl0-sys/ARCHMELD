@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-10-30T20:11:33.029714+00:00",
+  "status": "toolchains_installed",
+  "checks": [
+    {
+      "command": [
+        "F:/Codex_Work_Space/_archmeld_tools/jdk21/jdk-21.0.13+9/bin/java.exe",
+        "-version"
+      ],
+      "exit": 0,
+      "output": "openjdk version \"21.0.13\" 2026-10-20 LTS\nOpenJDK Runtime Environment Temurin-21.0.13+9 (build 21.0.13+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.13+9 (build 21.0.13+9-LTS, mixed mode, sharing)\n"
+    },
+    {
+      "command": [
+        "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
+        "-version"
+      ],
+      "exit": 0,
+      "output": "openjdk version \"25.0.5\" 2026-10-20 LTS\nOpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, sharing)\n",
+      "note": "pinned for jdtls 1.64, which requires JavaSE 25; JDK 21 is retained but insufficient"
+    },
+    {
+      "command": [
+        "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+        "--list-sdks"
+      ],
+      "exit": 0,
+      "output": "8.0.427 [F:\\Codex_Work_Space\\_archmeld_tools\\dotnet8\\sdk]\n"
+    },
+    {
+      "command": [
+        "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+        "tool",
+        "list",
+        "--tool-path",
+        "F:/Codex_Work_Space/_archmeld_tools/csharp-tools"
+      ],
+      "exit": 0,
+      "output": "包 ID           版本          命令       \n------------------------------------\ncsharp-ls      0.14.0      csharp-ls\n"
+    },
+    {
+      "command": [
+        "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+        "version"
+      ],
+      "exit": 0,
+      "output": "go version go1.27.3 windows/amd64\n"
+    },
+    {
+      "command": [
+        "F:/Codex_Work_Space/_archmeld_tools/go/bin/gopls.exe",
+        "version"
+      ],
+      "exit": 0,
+      "output": "golang.org/x/tools/gopls v0.20.0\n"
+    },
+    {
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "Get-ChildItem F:/Codex_Work_Space/_archmeld_tools/jdtls/plugins/org.eclipse.equinox.launcher_*.jar | Select-Object -First 1 -ExpandProperty Name"
+      ],
+      "exit": 0,
+      "output": "org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar\n"
+    }
+  ],
+  "note": "Toolchains are present. Java semantics are verified in evidence/java.json; build verification and runtime scenarios remain future work."
+}

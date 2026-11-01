@@ -1,0 +1,42 @@
+{
+  "matrix_version": "1.0",
+  "targets": [
+    {
+      "id": "windows-x64-gnu",
+      "os": "Windows 11 x64",
+      "toolchain": "1.94.1-x86_64-pc-windows-gnu",
+      "status": "partial",
+      "evidence": {
+        "build": "passed (codegraph-server built with --locked)",
+        "in_memory_tests": "passed (codegraph --lib --no-default-features: 40 tests)",
+        "default_backend_tests": "failed: storage::rocksdb_backend::tests::test_delete crashes with STATUS_ACCESS_VIOLATION (0xC0000005)",
+        "state_root_isolation": "passed: codegraph-server --info --archmeld-state-root writes no ~/.codegraph (tests/archmeld_state_root.rs)",
+        "cause": "RocksDB win32 port is MSVC-targeted; the MinGW runtime is not supported by upstream"
+      },
+      "usage": "core/SQLite/parsers and memory-backend probes; not the persistent graph backend"
+    },
+    {
+      "id": "linux-x64-bookworm-container",
+      "os": "Debian bookworm (rust:1.94.1-bookworm container)",
+      "toolchain": "1.94.1-x86_64-unknown-linux-gnu",
+      "status": "passed",
+      "evidence": {
+        "command": "cargo test -p codegraph --locked",
+        "result": "58 lib + 5 probes + 72 integration + 6 doctests = 141 passed, 1 ignored, 0 failed",
+        "network": "graph-only export under strace: 0 AF_INET sockets; one AF_UNIX socketpair (runtime)",
+        "state_root": "--archmeld-state-root holds graph.db, projects/<slug>/index_state.json and last-phase markers; ~/.codegraph absent"
+      },
+      "note": "Linux baseline is Debian 12, not the R1 target Ubuntu 24.04; Ubuntu-native run remains to be executed."
+    },
+    {
+      "id": "windows-x64-msvc",
+      "os": "Windows 11 x64",
+      "toolchain": "1.94.1-x86_64-pc-windows-msvc",
+      "status": "unavailable",
+      "evidence": {
+        "cause": "Visual Studio Build Tools and Windows SDK are not installed on this machine"
+      },
+      "note": "Required before Windows-native RocksDB or product delivery; installing it is a separate authorization step."
+    }
+  ]
+}

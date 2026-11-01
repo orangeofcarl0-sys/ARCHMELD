@@ -1,0 +1,966 @@
+{
+  "version": "1.0",
+  "status": "specification_only",
+  "requirements": [
+    {
+      "id": "R001",
+      "title": "固定底座与诚实基线",
+      "level": "MUST",
+      "statement": "HEAD 与指定 SHA 相同；版本、平台和失败日志可复核；无未运行测试被标为通过",
+      "spec_id": "S04",
+      "acceptance_tests": [
+        "AT001"
+      ],
+      "owner_task": "B000",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R002",
+      "title": "不覆盖已有工程",
+      "level": "MUST",
+      "statement": "拒绝覆盖；原文件字节不变；不运行 reset/clean",
+      "spec_id": "S15",
+      "acceptance_tests": [
+        "AT002"
+      ],
+      "owner_task": "B000",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R003",
+      "title": "锁定与许可证",
+      "level": "MUST",
+      "statement": "记录版本/来源/hash/平台/许可证；无 latest 或空 checksum 被标为 verified",
+      "spec_id": "S15",
+      "acceptance_tests": [
+        "AT003"
+      ],
+      "owner_task": "B001",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R004",
+      "title": "稀疏图编号完整性",
+      "level": "MUST",
+      "statement": "无缺项；若上游导出不足则适配器用真实迭代；输出数量不能掩盖遗漏",
+      "spec_id": "S04",
+      "acceptance_tests": [
+        "AT004"
+      ],
+      "owner_task": "B002",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R005",
+      "title": "后端缓存隔离",
+      "level": "MUST",
+      "statement": "缓存隔离到 project/snapshot/config/tool；不混入其他项目或版本",
+      "spec_id": "S04",
+      "acceptance_tests": [
+        "AT005"
+      ],
+      "owner_task": "B002",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R006",
+      "title": "上游默认网络探测",
+      "level": "MUST",
+      "statement": "无需下载模型；不发送遥测；任何触网被记录为失败而非静默重试",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT006"
+      ],
+      "owner_task": "B002",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R007",
+      "title": "证据事务完整性",
+      "level": "MUST",
+      "statement": "只出现整批提交或未提交；不存在悬空关系；重试幂等",
+      "spec_id": "S03",
+      "acceptance_tests": [
+        "AT007"
+      ],
+      "owner_task": "B003",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R008",
+      "title": "拒绝伪造事实",
+      "level": "MUST",
+      "statement": "拒绝该无效数据；候选解释可另存；不得升级为语义事实",
+      "spec_id": "S03",
+      "acceptance_tests": [
+        "AT008"
+      ],
+      "owner_task": "B003",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R009",
+      "title": "脏工作区快照",
+      "level": "MUST",
+      "statement": "内容哈希覆盖实际磁盘字节；git commit 不代表全部；不改工作区",
+      "spec_id": "S02",
+      "acceptance_tests": [
+        "AT009"
+      ],
+      "owner_task": "B004",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R010",
+      "title": "构建变体区分",
+      "level": "MUST",
+      "statement": "config_digest 和关系作用域不同；不能合并为无条件调用图",
+      "spec_id": "S02",
+      "acceptance_tests": [
+        "AT010"
+      ],
+      "owner_task": "B004",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R011",
+      "title": "中文与位置编码",
+      "level": "MUST",
+      "statement": "UTF8 字节半开区间准确；旧文件保存原字节；无偏一或代理项错位",
+      "spec_id": "S02",
+      "acceptance_tests": [
+        "AT011"
+      ],
+      "owner_task": "B004",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R012",
+      "title": "快照捕获竞争",
+      "level": "MUST",
+      "statement": "重读或标记 unstable；不得发布混合内容为稳定快照",
+      "spec_id": "S02",
+      "acceptance_tests": [
+        "AT012"
+      ],
+      "owner_task": "B004",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R013",
+      "title": "分批桥接协议",
+      "level": "MUST",
+      "statement": "同序同内容幂等；不同内容冲突；缺批不完整；未解析可见",
+      "spec_id": "S04",
+      "acceptance_tests": [
+        "AT013"
+      ],
+      "owner_task": "B005",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R014",
+      "title": "后端 ID 不当全局身份",
+      "level": "MUST",
+      "statement": "backend ID 仅局部；核心身份/跨版本关联不靠递增编号",
+      "spec_id": "S04",
+      "acceptance_tests": [
+        "AT014"
+      ],
+      "owner_task": "B005",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R015",
+      "title": "有限图查询",
+      "level": "MUST",
+      "statement": "有界终止；标明截断和覆盖；分页绑定同一快照",
+      "spec_id": "S11",
+      "acceptance_tests": [
+        "AT015"
+      ],
+      "owner_task": "B006",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R016",
+      "title": "历史源码导航",
+      "level": "MUST",
+      "statement": "显示旧快照原始内容；不无提示跳当前行",
+      "spec_id": "S02",
+      "acceptance_tests": [
+        "AT016"
+      ],
+      "owner_task": "B006",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R017",
+      "title": "代码图谱双向联动",
+      "level": "MUST",
+      "statement": "双方定位一致；边有来源/版本/性质；未知边不伪装确定",
+      "spec_id": "S08",
+      "acceptance_tests": [
+        "AT017"
+      ],
+      "owner_task": "B007",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R018",
+      "title": "图不是装饰",
+      "level": "MUST",
+      "statement": "同一实体可多投影；布局稳定；不强制错误父子树；可回退导航",
+      "spec_id": "S08",
+      "acceptance_tests": [
+        "AT018"
+      ],
+      "owner_task": "B007",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R019",
+      "title": "一次性模式不污染",
+      "level": "MUST",
+      "statement": "未批准前项目字节及 Git 状态不变；缓存位于外部；模型无调用也可用",
+      "spec_id": "S01",
+      "acceptance_tests": [
+        "AT019"
+      ],
+      "owner_task": "B008",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R020",
+      "title": "持久项目连续性",
+      "level": "MUST",
+      "statement": "重新定位后 project_id 与历史保留；路径不是唯一身份",
+      "spec_id": "S01",
+      "acceptance_tests": [
+        "AT020"
+      ],
+      "owner_task": "B008",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R021",
+      "title": "语义引用不冒充调用",
+      "level": "MUST",
+      "statement": "定义引用准确；单纯 reference 不直接产生 resolved_call；保留配置与范围",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT021"
+      ],
+      "owner_task": "B009",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R022",
+      "title": "SCIP 编码与外部符号",
+      "level": "MUST",
+      "statement": "作用域正确；外部依赖无假源码 anchor；重复符号不合并",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT022"
+      ],
+      "owner_task": "B009",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R023",
+      "title": "原生重构预览",
+      "level": "MUST",
+      "statement": "转换位置准确；scope 外改动拒绝；executeCommand 不自动执行",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT023"
+      ],
+      "owner_task": "B010",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R024",
+      "title": "语言服务器执行权限",
+      "level": "MUST",
+      "statement": "只读解析可进行；有执行风险时需权限；不自动安装和运行",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT024"
+      ],
+      "owner_task": "B010",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R025",
+      "title": "Python 完整语言包",
+      "level": "MUST",
+      "statement": "确定引用正确；动态目标保留未知；Trace 映射；重构测试通过并可恢复",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT025"
+      ],
+      "owner_task": "B011",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R026",
+      "title": "JS/TS 完整语言包",
+      "level": "MUST",
+      "statement": "TS 和 JS 分别记录能力；动态边不假定；无伪造 trace",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT026"
+      ],
+      "owner_task": "B011",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R027",
+      "title": "C/C++ 完整语言包",
+      "level": "MUST",
+      "statement": "配置精确；间接调用候选可见；trace 有 build identity；重构结果可复核",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT027"
+      ],
+      "owner_task": "B012",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R028",
+      "title": "Windows 原生工具边界",
+      "level": "MUST",
+      "statement": "使用已验证 clangd 路径或显式配置 worker；不假称 WSL 可构建原生工程",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT028"
+      ],
+      "owner_task": "B012",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R029",
+      "title": "Java 完整语言包",
+      "level": "MUST",
+      "statement": "重载引用正确；反射不猜；运行映射和测试真实有效",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT029"
+      ],
+      "owner_task": "B013",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R030",
+      "title": "C# 完整语言包",
+      "level": "MUST",
+      "statement": "生成代码来源和不可写边界清楚；委托候选不等于实际调用",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT030"
+      ],
+      "owner_task": "B013",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R031",
+      "title": "Go 完整语言包",
+      "level": "MUST",
+      "statement": "阻塞/调度与函数耗时不混淆；接口候选可解释",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT031"
+      ],
+      "owner_task": "B014",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R032",
+      "title": "Rust 完整语言包",
+      "level": "MUST",
+      "statement": "构建变体区分；宏映射局限可见；编译测试及恢复有效",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT032"
+      ],
+      "owner_task": "B014",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R033",
+      "title": "大整数时间精度",
+      "level": "MUST",
+      "statement": "整数时间以字符串存储；相邻纳秒不丢失；单位明确",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT033"
+      ],
+      "owner_task": "B015",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R034",
+      "title": "不绑定错误 Trace",
+      "level": "MUST",
+      "statement": "保持 unbound 或拒绝；不因文件同名自动关联当前源码",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT034"
+      ],
+      "owner_task": "B015",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R035",
+      "title": "有损格式可追溯",
+      "level": "MUST",
+      "statement": "保留原文件；lossy/loss_notes 明确；不伪造缺失事件",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT035"
+      ],
+      "owner_task": "B015",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R036",
+      "title": "真实异步因果",
+      "level": "MUST",
+      "statement": "用明确 ID 建因果；只时间相邻不连 causal edge；缺失关联可见",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT036"
+      ],
+      "owner_task": "B016",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R037",
+      "title": "采集开销与取消",
+      "level": "MUST",
+      "statement": "开销记录 measured 或 unknown；取消清理子进程且不标完整",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT037"
+      ],
+      "owner_task": "B016",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R038",
+      "title": "架构候选与事实隔离",
+      "level": "MUST",
+      "statement": "仅 candidate/claim；源码证据缺失显示未证；不新增确定调用",
+      "spec_id": "S07",
+      "acceptance_tests": [
+        "AT038"
+      ],
+      "owner_task": "B017",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R039",
+      "title": "反例驱动调查",
+      "level": "MUST",
+      "statement": "保存被推翻解释与反例；依据等待机制提出后续实验，不继续固化旧猜测",
+      "spec_id": "S07",
+      "acceptance_tests": [
+        "AT039"
+      ],
+      "owner_task": "B017",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R040",
+      "title": "目标图不直接改源码",
+      "level": "MUST",
+      "statement": "生成约束/计划候选；当前源码不变；显示受影响路径",
+      "spec_id": "S07",
+      "acceptance_tests": [
+        "AT040"
+      ],
+      "owner_task": "B018",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R041",
+      "title": "可执行架构约束",
+      "level": "MUST",
+      "statement": "捕获直接/声明范围内间接违规；无覆盖不能通过；人工意图不当可执行检查",
+      "spec_id": "S10",
+      "acceptance_tests": [
+        "AT041"
+      ],
+      "owner_task": "B018",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R042",
+      "title": "计划依赖和范围",
+      "level": "MUST",
+      "statement": "明确拒绝；无可执行 ChangeSet；不静默丢步骤",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT042"
+      ],
+      "owner_task": "B019",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R043",
+      "title": "冻结验收契约",
+      "level": "MUST",
+      "statement": "contract_digest 改变；原批准失效；需单独审阅",
+      "spec_id": "S10",
+      "acceptance_tests": [
+        "AT043"
+      ],
+      "owner_task": "B019",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R044",
+      "title": "暂存优先与范围",
+      "level": "MUST",
+      "statement": "原仓库不变；补丁仅授权路径；前后原字节完整保存",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT044"
+      ],
+      "owner_task": "B020",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R045",
+      "title": "双层审批",
+      "level": "MUST",
+      "statement": "无 prepared_digest 对应批准拒绝；任何 patch 改变使批准失效",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT045"
+      ],
+      "owner_task": "B020",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R046",
+      "title": "乐观并发与前置读取集",
+      "level": "MUST",
+      "statement": "变更 stale/conflicted；不覆盖外部改动；旧租约无写权限",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT046"
+      ],
+      "owner_task": "B021",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R047",
+      "title": "崩溃可恢复",
+      "level": "MUST",
+      "statement": "检测非原子中间状态；依据 journal 恢复自己修改；不调用全仓 reset",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT047"
+      ],
+      "owner_task": "B021",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R048",
+      "title": "恢复保留后续修改",
+      "level": "MUST",
+      "statement": "该文件保留用户修改并报 conflict；其他无冲突文件按计划恢复",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT048"
+      ],
+      "owner_task": "B021",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R049",
+      "title": "路径穿越和链接竞态",
+      "level": "MUST",
+      "statement": "拒绝越界；真实仓库外文件不变；Windows/Linux 分别运行",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT049"
+      ],
+      "owner_task": "B021",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R050",
+      "title": "验证缺项不可通过",
+      "level": "MUST",
+      "statement": "not_run/unsupported/inconclusive 不算 passed；accepted 必须与冻结集合一致",
+      "spec_id": "S10",
+      "acceptance_tests": [
+        "AT050"
+      ],
+      "owner_task": "B022",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R051",
+      "title": "验收版本一致",
+      "level": "MUST",
+      "statement": "拒绝旧 snapshot 结果；必要复验绑定真实 applied snapshot",
+      "spec_id": "S10",
+      "acceptance_tests": [
+        "AT051"
+      ],
+      "owner_task": "B022",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R052",
+      "title": "执行超时与资源",
+      "level": "MUST",
+      "statement": "超时明确 timed_out；清理进程；不无限重试；非通过",
+      "spec_id": "S10",
+      "acceptance_tests": [
+        "AT052"
+      ],
+      "owner_task": "B022",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R053",
+      "title": "MCP 统一权限",
+      "level": "MUST",
+      "statement": "无批准工具；写操作被同一 core 拒绝；无任意路径透传",
+      "spec_id": "S11",
+      "acceptance_tests": [
+        "AT053"
+      ],
+      "owner_task": "B023",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R054",
+      "title": "上下文可追溯截断",
+      "level": "MUST",
+      "statement": "包含版本/证据引用/未知；截断明示；保留关键反例或列为遗漏；不伪装完整",
+      "spec_id": "S12",
+      "acceptance_tests": [
+        "AT054"
+      ],
+      "owner_task": "B023",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R055",
+      "title": "Instigator 不阻塞",
+      "level": "MUST",
+      "statement": "不等待批准；旧 revision/过期 NUDGE 丢弃；不得创建新目标",
+      "spec_id": "S12",
+      "acceptance_tests": [
+        "AT055"
+      ],
+      "owner_task": "B024",
+      "release_scope": "R1_when_instigator_enabled"
+    },
+    {
+      "id": "R056",
+      "title": "增量失效与持久恢复",
+      "level": "MUST",
+      "statement": "受影响结果标 stale/needs_review；旧快照仍可查；决策不丢",
+      "spec_id": "S14",
+      "acceptance_tests": [
+        "AT056"
+      ],
+      "owner_task": "B025",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R057",
+      "title": "保留策略不破坏证据",
+      "level": "MUST",
+      "statement": "被引用内容保留；未引用缓存可清理；损坏文件报错不可冒充正常",
+      "spec_id": "S14",
+      "acceptance_tests": [
+        "AT057"
+      ],
+      "owner_task": "B025",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R058",
+      "title": "可测的性能预算",
+      "level": "MUST",
+      "statement": "报告真实样本/分位数/覆盖；未达标不删问题数据；阈值不自改",
+      "spec_id": "S16",
+      "acceptance_tests": [
+        "AT058"
+      ],
+      "owner_task": "B026",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R059",
+      "title": "离线可复查报告",
+      "level": "MUST",
+      "statement": "无 CDN；图/源码引用与局限清楚；敏感原件默认排除；所有附件校验",
+      "spec_id": "S01",
+      "acceptance_tests": [
+        "AT059"
+      ],
+      "owner_task": "B027",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R060",
+      "title": "Expedition 提升 Manager",
+      "level": "MUST",
+      "statement": "复制/迁移原 ID 和真实证据；不以模型重写代替迁移；不丢记录",
+      "spec_id": "S14",
+      "acceptance_tests": [
+        "AT060"
+      ],
+      "owner_task": "B027",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R061",
+      "title": "仓库提示注入与外传",
+      "level": "MUST",
+      "statement": "内容保持 untrusted；禁止外传和越权执行；策略由权限层实施",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT061"
+      ],
+      "owner_task": "B028",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R062",
+      "title": "本地服务隔离",
+      "level": "MUST",
+      "statement": "拒绝；仅回环监听；Webview 无远端脚本；token 不进 URL/日志",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT062"
+      ],
+      "owner_task": "B028",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R063",
+      "title": "外部 Agent 直写透明性",
+      "level": "MUST",
+      "statement": "标明 externally_writable；侦测失效，不宣称完全隔离；校验挡住旧 patch",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT063"
+      ],
+      "owner_task": "B028",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R064",
+      "title": "数值域重构验证",
+      "level": "MUST",
+      "statement": "单位/shape先验证；冻结容差；动态响应与边界均检查；不只看最终RMS",
+      "spec_id": "S17",
+      "acceptance_tests": [
+        "AT064"
+      ],
+      "owner_task": "B029",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R065",
+      "title": "不盲目类化",
+      "level": "MUST",
+      "statement": "保留不重构合法结论；无法举证的抽象收益不计完成",
+      "spec_id": "S17",
+      "acceptance_tests": [
+        "AT065"
+      ],
+      "owner_task": "B029",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R066",
+      "title": "端到端真实闭环",
+      "level": "MUST",
+      "statement": "源码/运行/架构/变更/验证全链可追溯；不能用合成示例冒充实际运行",
+      "spec_id": "S18",
+      "acceptance_tests": [
+        "AT066"
+      ],
+      "owner_task": "B030",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R067",
+      "title": "全语言发布门禁",
+      "level": "MUST",
+      "statement": "全部已声明必需项有真实结果；未完成语言阻止R1命名",
+      "spec_id": "S05",
+      "acceptance_tests": [
+        "AT067"
+      ],
+      "owner_task": "B030",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R068",
+      "title": "离线双平台交付",
+      "level": "MUST",
+      "statement": "可复现；可无模型使用；升级备份/失败恢复；卸载不删用户工程",
+      "spec_id": "S15",
+      "acceptance_tests": [
+        "AT068"
+      ],
+      "owner_task": "B031",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R069",
+      "title": "不虚报平台与版本",
+      "level": "MUST",
+      "statement": "清楚列未验证/不支持；artifact 使用精确版本与hash；不存在“全部支持”虚报",
+      "spec_id": "S15",
+      "acceptance_tests": [
+        "AT069"
+      ],
+      "owner_task": "B031",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R070",
+      "title": "可恢复的Agent接力",
+      "level": "MUST",
+      "statement": "识别当前提交/实际结果/下一任务；不重复海选；不把未完成标完成",
+      "spec_id": "S12",
+      "acceptance_tests": [
+        "AT070"
+      ],
+      "owner_task": "B032",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R071",
+      "title": "跨对象身份一致",
+      "level": "MUST",
+      "statement": "语义校验拒绝；事务无残留；schema通过不是事实可信",
+      "spec_id": "S19",
+      "acceptance_tests": [
+        "AT071"
+      ],
+      "owner_task": "B003",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R072",
+      "title": "规范化摘要一致",
+      "level": "MUST",
+      "statement": "摘要完全一致；重复键、float、孤立代理项拒绝；blob不归一化CRLF",
+      "spec_id": "S19",
+      "acceptance_tests": [
+        "AT072"
+      ],
+      "owner_task": "B019",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R073",
+      "title": "事件重连与幂等",
+      "level": "MUST",
+      "statement": "不重复应用变更；同key不同内容冲突；旧游标明确resync_required",
+      "spec_id": "S11",
+      "acceptance_tests": [
+        "AT073"
+      ],
+      "owner_task": "B006",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R074",
+      "title": "多时钟不伪造顺序",
+      "level": "MUST",
+      "statement": "保留clock/uncertainty；无证据不宣称全序；跨界关联强度可见",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT074"
+      ],
+      "owner_task": "B016",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R075",
+      "title": "无覆盖规则不装通过",
+      "level": "MUST",
+      "statement": "declared_only显示；禁止required验收通过，提示实现检查器或显式重新定义契约",
+      "spec_id": "S07",
+      "acceptance_tests": [
+        "AT075"
+      ],
+      "owner_task": "B018",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R076",
+      "title": "模型可选且输出不执行",
+      "level": "MUST",
+      "statement": "核心可用；模型增强显示未配置；模型输出命令仅数据不得自动执行",
+      "spec_id": "S13",
+      "acceptance_tests": [
+        "AT076"
+      ],
+      "owner_task": "B017",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R077",
+      "title": "薄分叉升级边界",
+      "level": "MUST",
+      "statement": "适配器契约测试发现差异；保留upstream署名NOTICE；不静默换版本",
+      "spec_id": "S15",
+      "acceptance_tests": [
+        "AT077"
+      ],
+      "owner_task": "B031",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R078",
+      "title": "大小写重命名及新建删除",
+      "level": "MUST",
+      "statement": "case-only move可恢复；目标已存在拒绝；不会删除后来被用户改过的新文件",
+      "spec_id": "S09",
+      "acceptance_tests": [
+        "AT078"
+      ],
+      "owner_task": "B021",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R079",
+      "title": "异常输入资源限制",
+      "level": "MUST",
+      "statement": "有界内存/体积/深度；清理临时文件；原始artifact可诊断；不崩溃主服务",
+      "spec_id": "S06",
+      "acceptance_tests": [
+        "AT079"
+      ],
+      "owner_task": "B015",
+      "release_scope": "R1"
+    },
+    {
+      "id": "R080",
+      "title": "双模式默认行为",
+      "level": "MUST",
+      "statement": "两模式均不自动测试/安装/上传；Expedition关闭无孤儿进程",
+      "spec_id": "S01",
+      "acceptance_tests": [
+        "AT080"
+      ],
+      "owner_task": "B008",
+      "release_scope": "R1"
+    }
+  ]
+}

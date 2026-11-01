@@ -1,0 +1,54 @@
+{
+  "algorithm": "AM-C14N-1",
+  "vectors": [
+    {
+      "input": {
+        "z": 1,
+        "a": "中文😀"
+      },
+      "canonical_utf8": "{\"a\":\"中文😀\",\"z\":1}",
+      "digest": "sha256:8fbd973f9e57bb947d29ee5cf71a58798b1432a2cc175f609ac4776b58425e42"
+    },
+    {
+      "input": {
+        "b": true,
+        "a": [
+          null,
+          "line\r\n",
+          "\u0001",
+          -3
+        ]
+      },
+      "canonical_utf8": "{\"a\":[null,\"line\\r\\n\",\"\\u0001\",-3],\"b\":true}",
+      "digest": "sha256:2b45fd8625c35a11dfcc7227852b4a368cd77eea46963036dc9ede93cad48c12"
+    },
+    {
+      "input": {
+        "path": "src/例子.py",
+        "time_ns": "9007199254740993"
+      },
+      "canonical_utf8": "{\"path\":\"src/例子.py\",\"time_ns\":\"9007199254740993\"}",
+      "digest": "sha256:f118b3a6d414f7863e8e43889fad6586b687426110e33a6e2a2360b5ae482c41"
+    }
+  ],
+  "reject_cases": [
+    {
+      "name": "float",
+      "input": 1.5
+    },
+    {
+      "name": "integer_over_safe_range",
+      "input": 9007199254740992
+    }
+  ],
+  "blob_vectors": [
+    {
+      "path": "examples/assets/source-before.py.txt",
+      "digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413"
+    },
+    {
+      "path": "examples/assets/source-after.py.txt",
+      "digest": "sha256:ca375a3ffe93734b38c7b0a22febf3fd8e06f7f0289b0a0cecc5132c137acab8"
+    }
+  ]
+}

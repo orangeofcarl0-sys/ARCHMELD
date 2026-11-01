@@ -1,0 +1,44 @@
+target/
+target-linux/
+*.db
+__pycache__/
+*.pyc
+.env
+.venv/
+node_modules/
+dist/
+.claude/
+.smelt/
+.stellarion/
+.overstory/
+.DS_Store
+
+# Built binaries and packages
+vscode/bin/
+vscode/out/
+vscode/*.vsix
+vscode/CHANGELOG.md
+mcp-package/bin/codegraph-server-*
+mcp-package/bin/onnxruntime.dll
+mcp-package/*.tgz
+
+# Internal docs (not public)
+competitive-analysis.md
+scripts/telemetry-summary.sh
+TODO.md
+TODO_*.md
+.mcp.json
+
+# ARCHMELD evidence ledger state (regenerable; records are in baseline/commands.ndjson)
+upstream-probes/state-real*/
+upstream-probes/state-*/
+_archmeld_state/
+baseline/logs/
+
+# regenerable per-task ledgers anywhere under probes
+upstream-probes/**/state-*/
+
+# generated UI automation state
+docs/evidence/ui-state/
+docs/evidence/ui-trace-state/
+docs/evidence/ui-export.ndjson

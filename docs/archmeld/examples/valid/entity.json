@@ -1,0 +1,27 @@
+{
+  "id": "symbol.compute",
+  "project_id": "project.synthetic",
+  "snapshot_id": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b",
+  "config_digest": "sha256:958e014e550dd51c13e61c2656aa9f77ddf1e25c256d7cee5b485e35f0aa4b67",
+  "kind": "symbol",
+  "language": "python",
+  "qualified_name": "example.compute",
+  "anchors": [
+    {
+      "path": "src/example.py",
+      "blob_digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413",
+      "precision": "bytes",
+      "byte_start": 43,
+      "byte_end": 76,
+      "encoding": "utf-8"
+    }
+  ],
+  "external": false,
+  "backend_refs": [
+    {
+      "adapter_id": "synthetic",
+      "run_id": "run.syntax",
+      "backend_id": "7"
+    }
+  ]
+}

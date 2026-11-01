@@ -1,0 +1,308 @@
+{
+  "acceptance": {
+    "AT036": {
+      "causal_report": {
+        "bound": true,
+        "causal_edges": 1,
+        "clock_domains": [
+          {
+            "calibrated": false,
+            "clock_id": "clock-parent",
+            "kind": "monotonic",
+            "origin_ns": "0",
+            "uncertainty_ns": "500000000",
+            "unit": "ns",
+            "wall_clock": false
+          },
+          {
+            "calibrated": false,
+            "clock_id": "clock-child",
+            "kind": "monotonic",
+            "origin_ns": "0",
+            "uncertainty_ns": "500000000",
+            "unit": "ns",
+            "wall_clock": false
+          }
+        ],
+        "correlation_links": 1,
+        "link_count": 1,
+        "mapped_entities": 3,
+        "mapped_spans": 3,
+        "mapping_conflicts": 0,
+        "missing_association": [],
+        "state": "complete",
+        "unknown_entity": 0,
+        "unknown_probe": 0,
+        "unmapped_links": 0,
+        "unmapped_spans": 0
+      },
+      "correlation_id": "order-42",
+      "observed_relation": {
+        "basis": "runtime",
+        "conditions": [
+          "runtime-run:run.b016.async",
+          "causal-basis:explicit-communicates_with",
+          "resolution:observed-at-runtime",
+          "cross-clock:explicit-link; no total order claimed",
+          "observation-count:1",
+          "correlation-id:order-42",
+          "span:producer->consumer"
+        ],
+        "config_digest": "sha256:7e2de9d6a2c8e7693a48e1c37270c167f68a6ce5f2a90a0b512b95594e1518c2",
+        "evidence_ids": [
+          "evidence.runtime.run.b016.async"
+        ],
+        "id": "rel.b3120c34be3966c44acb3b5f6a4a39c27874d5bc36530713db2eb5a50a40f9f3",
+        "kind": "communicates_with",
+        "project_id": "project.b016",
+        "resolution": "observed",
+        "snapshot_id": "sha256:8a0f3b1112532ec0e856dfae99c06f2445450f7439a8a57714b21afc461c8898",
+        "source_id": "syn.5819c09fd4d790775353908274948cb6f910fc0871ee251a00559811e3f9b651",
+        "target_id": "syn.c3b999cfb14a0dc4ca61e68a869143b58067a665e967d4cb7c9fc092a0651058"
+      },
+      "real_execution": "two OS processes exchanged one message over stdin/stdout",
+      "status": "passed",
+      "time_adjacent_without_id": "helper span has no relation"
+    },
+    "AT037": {
+      "cancel_manifest": {
+        "argv": [
+          "python",
+          "-c",
+          "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); time.sleep(60)"
+        ],
+        "cancelled": true,
+        "completion": "cancelled",
+        "config_digest": "sha256:7e2de9d6a2c8e7693a48e1c37270c167f68a6ce5f2a90a0b512b95594e1518c2",
+        "coverage": {
+          "limitations": [
+            "completion=cancelled"
+          ],
+          "scope": "scenario process exit, output capture and process-tree audit",
+          "state": "partial"
+        },
+        "cwd": "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run",
+        "env_names": [
+          "PATH",
+          "PATHEXT",
+          "SYSTEMROOT",
+          "SYSTEMDRIVE",
+          "WINDIR",
+          "TEMP",
+          "TMP",
+          "HOME",
+          "USERPROFILE",
+          "APPDATA",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS"
+        ],
+        "exit_code": 1,
+        "finished_ms": 1793396003344,
+        "grant_id": "b016-cancel",
+        "grant_reason": "user requested cancellation audit",
+        "overhead": {
+          "reason": "the scenario runner does not instrument the target; compare with a capture-enabled run before claiming a cost",
+          "state": "unknown",
+          "wall_ms": 5119
+        },
+        "pid": 42856,
+        "process_audit": {
+          "cleanup": [
+            {
+              "method": "taskkill /T /F",
+              "pid": 42856,
+              "result": "terminated"
+            }
+          ],
+          "error": null,
+          "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+          "observed": 1,
+          "processes": [
+            {
+              "first_seen_ms": 1178,
+              "name": "python.exe",
+              "parent_pid": 42856,
+              "pid": 33428
+            }
+          ],
+          "state": "complete",
+          "survivors": [],
+          "tool": "powershell Get-CimInstance Win32_Process"
+        },
+        "project_id": "project.b016",
+        "run_id": "run.b016.cancel",
+        "snapshot_id": "sha256:8a0f3b1112532ec0e856dfae99c06f2445450f7439a8a57714b21afc461c8898",
+        "started_ms": 1793395998224,
+        "stderr": {
+          "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0,
+          "truncated": false
+        },
+        "stdout": {
+          "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0,
+          "truncated": false
+        },
+        "timed_out": false
+      },
+      "normal_manifest": {
+        "argv": [
+          "python",
+          "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\repo\\producer.py",
+          "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run\\trace.json",
+          "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\repo\\consumer_worker.py"
+        ],
+        "cancelled": false,
+        "completion": "succeeded",
+        "config_digest": "sha256:7e2de9d6a2c8e7693a48e1c37270c167f68a6ce5f2a90a0b512b95594e1518c2",
+        "coverage": {
+          "limitations": [],
+          "scope": "scenario process exit, output capture and process-tree audit",
+          "state": "complete"
+        },
+        "cwd": "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run",
+        "env_names": [
+          "PATH",
+          "PATHEXT",
+          "SYSTEMROOT",
+          "SYSTEMDRIVE",
+          "WINDIR",
+          "TEMP",
+          "TMP",
+          "HOME",
+          "USERPROFILE",
+          "APPDATA",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS"
+        ],
+        "exit_code": 0,
+        "finished_ms": 1793395998205,
+        "grant_id": "b016-async",
+        "grant_reason": "user requested real scenario execution",
+        "overhead": {
+          "reason": "the scenario runner does not instrument the target; compare with a capture-enabled run before claiming a cost",
+          "state": "unknown",
+          "wall_ms": 2358
+        },
+        "pid": 8868,
+        "process_audit": {
+          "cleanup": [],
+          "error": null,
+          "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+          "observed": 0,
+          "processes": [],
+          "state": "complete",
+          "survivors": [],
+          "tool": "powershell Get-CimInstance Win32_Process"
+        },
+        "project_id": "project.b016",
+        "run_id": "run.b016.async",
+        "snapshot_id": "sha256:8a0f3b1112532ec0e856dfae99c06f2445450f7439a8a57714b21afc461c8898",
+        "started_ms": 1793395995846,
+        "stderr": {
+          "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0,
+          "truncated": false
+        },
+        "stdout": {
+          "digest": "sha256:88e514bece403547deaab4be547b902f009e02c18e942b76f945ad06da0b7e7c",
+          "size": 67,
+          "truncated": false
+        },
+        "timed_out": false
+      },
+      "overhead": "unknown (scenario runner does not instrument the target)",
+      "status": "passed"
+    },
+    "AT074": {
+      "clock": {
+        "domains": [
+          {
+            "calibrated": false,
+            "clock_id": "clock-parent",
+            "kind": "monotonic",
+            "origin_ns": "0",
+            "uncertainty_ns": "500000000",
+            "unit": "ns",
+            "wall_clock": false
+          },
+          {
+            "calibrated": false,
+            "clock_id": "clock-child",
+            "kind": "monotonic",
+            "origin_ns": "0",
+            "uncertainty_ns": "500000000",
+            "unit": "ns",
+            "wall_clock": false
+          }
+        ],
+        "kind": "monotonic",
+        "ordering": "declared-clock-domain-then-local-time; no cross-domain total order",
+        "origin_ns": "0",
+        "total_order": false,
+        "unit": "ns"
+      },
+      "link": {
+        "attributes": {
+          "channel": "stdin-pipe"
+        },
+        "clock_uncertainty_ns": "1000000000",
+        "correlation_id": "order-42",
+        "cross_clock": true,
+        "kind": "message",
+        "link_id": "link.message.order-42",
+        "source_clock_id": "clock-parent",
+        "source_span_id": "producer",
+        "strength": "explicit-correlation-id",
+        "target_clock_id": "clock-child",
+        "target_span_id": "consumer"
+      },
+      "no_total_order": true,
+      "status": "passed",
+      "uncertainty_basis": "declared bounds; not measured against a shared clock"
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/causal_scenario.rs",
+  "project_id": "project.b016",
+  "runtime_evidence": {
+    "artifact_digest": "sha256:62a7711b0c3ceeb6d6e8121d95674de2401a55a20ca5681c044a95024ebc6b47",
+    "config_digest": "sha256:7e2de9d6a2c8e7693a48e1c37270c167f68a6ce5f2a90a0b512b95594e1518c2",
+    "coverage": {
+      "expected_count": 3,
+      "limitations": [],
+      "observed_count": 3,
+      "omitted_count": 0,
+      "scope": "normalized trace spans and explicit causal links",
+      "state": "complete",
+      "unresolved_count": 0
+    },
+    "freshness": "current",
+    "id": "evidence.runtime.run.b016.async",
+    "kind": "runtime",
+    "locator": "runtime:run.b016.async",
+    "producer": {
+      "name": "python-pipeline-probe",
+      "run_id": "run.b016.async",
+      "source_ref": "archmeld-trace-v1",
+      "version": "1"
+    },
+    "project_id": "project.b016",
+    "runtime_run_id": "run.b016.async",
+    "scenario_id": "scenario.b016.async",
+    "snapshot_id": "sha256:8a0f3b1112532ec0e856dfae99c06f2445450f7439a8a57714b21afc461c8898",
+    "source_anchor": null
+  },
+  "snapshot": {
+    "config_digest": "sha256:7e2de9d6a2c8e7693a48e1c37270c167f68a6ce5f2a90a0b512b95594e1518c2",
+    "snapshot_id": "sha256:8a0f3b1112532ec0e856dfae99c06f2445450f7439a8a57714b21afc461c8898"
+  },
+  "timeline_window": {
+    "expected_count": 3,
+    "limitations": [],
+    "observed_count": 3,
+    "omitted_count": 0,
+    "scope": "runtime run spans in the requested window",
+    "state": "complete",
+    "unresolved_count": 0
+  }
+}

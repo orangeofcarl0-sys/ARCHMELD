@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-10-30T20:03:45.282144+00:00",
+  "status": "BLOCKED_EXTERNAL",
+  "language": "go",
+  "checks": [
+    {
+      "command": "go version",
+      "exit": 1,
+      "stdout": "",
+      "stderr": null
+    }
+  ],
+  "summary": "No Go toolchain or gopls is installed; interface/goroutine/channel evidence cannot be produced.",
+  "required_to_unblock": [
+    "Go toolchain",
+    "gopls",
+    "scip-go"
+  ],
+  "acceptance": "AT031 remains not_run; no synthetic substitute."
+}

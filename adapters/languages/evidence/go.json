@@ -1,0 +1,233 @@
+{
+  "build_verification": {
+    "argv": {
+      "baseline_build": [
+        "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+        "build",
+        "-o",
+        "baseline.exe",
+        "."
+      ],
+      "binary_run": [
+        "<local-user>\\AppData\\Local\\Temp\\.tmpSb1Sln\\build\\renamed.exe"
+      ],
+      "go_test": [
+        "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+        "test",
+        "./..."
+      ],
+      "renamed_build": [
+        "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+        "build",
+        "-o",
+        "renamed.exe",
+        "."
+      ]
+    },
+    "baseline_build": {
+      "artifact": "sha256:277ff2801d1c44952065a1e1f21ab16a73d71c9a44907a7e8f95f60579b13762",
+      "env_names": [
+        "PATH",
+        "PATHEXT",
+        "SYSTEMROOT",
+        "SYSTEMDRIVE",
+        "WINDIR",
+        "TEMP",
+        "TMP",
+        "HOME",
+        "USERPROFILE",
+        "APPDATA",
+        "LOCALAPPDATA",
+        "NUMBER_OF_PROCESSORS",
+        "GOROOT",
+        "GOPATH",
+        "GOMODCACHE",
+        "GOCACHE",
+        "GOTOOLCHAIN",
+        "CGO_ENABLED",
+        "PATH"
+      ],
+      "exit_code": 0,
+      "process_audit": {
+        "cleanup": [],
+        "error": null,
+        "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+        "observed": 2,
+        "processes": [
+          {
+            "first_seen_ms": 3607,
+            "name": "asm.exe",
+            "parent_pid": 49792,
+            "pid": 27708
+          },
+          {
+            "first_seen_ms": 1846,
+            "name": "compile.exe",
+            "parent_pid": 49792,
+            "pid": 28072
+          }
+        ],
+        "state": "complete",
+        "survivors": [],
+        "tool": "powershell Get-CimInstance Win32_Process"
+      },
+      "stderr": "",
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "wall_ms": 8113
+    },
+    "binary_run": {
+      "artifact": null,
+      "env_names": [
+        "PATH",
+        "PATHEXT",
+        "SYSTEMROOT",
+        "SYSTEMDRIVE",
+        "WINDIR",
+        "TEMP",
+        "TMP",
+        "HOME",
+        "USERPROFILE",
+        "APPDATA",
+        "LOCALAPPDATA",
+        "NUMBER_OF_PROCESSORS",
+        "GOROOT",
+        "GOPATH",
+        "GOMODCACHE",
+        "GOCACHE",
+        "GOTOOLCHAIN",
+        "CGO_ENABLED",
+        "PATH"
+      ],
+      "exit_code": 0,
+      "process_audit": {
+        "cleanup": [],
+        "error": null,
+        "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+        "observed": 0,
+        "processes": [],
+        "state": "complete",
+        "survivors": [],
+        "tool": "powershell Get-CimInstance Win32_Process"
+      },
+      "stderr": "",
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "2 4 6\n",
+      "stdout_digest": "sha256:0e60e83c810f5a61560d0f86c2e250db87bb98d0adb500dac7fb1f58cfd842d5",
+      "timed_out": false,
+      "wall_ms": 1299
+    },
+    "cwd": "<local-user>\\AppData\\Local\\Temp\\.tmpSb1Sln\\build",
+    "go_test": {
+      "artifact": null,
+      "env_names": [
+        "PATH",
+        "PATHEXT",
+        "SYSTEMROOT",
+        "SYSTEMDRIVE",
+        "WINDIR",
+        "TEMP",
+        "TMP",
+        "HOME",
+        "USERPROFILE",
+        "APPDATA",
+        "LOCALAPPDATA",
+        "NUMBER_OF_PROCESSORS",
+        "GOROOT",
+        "GOPATH",
+        "GOMODCACHE",
+        "GOCACHE",
+        "GOTOOLCHAIN",
+        "CGO_ENABLED",
+        "PATH"
+      ],
+      "exit_code": 0,
+      "process_audit": {
+        "cleanup": [],
+        "error": null,
+        "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+        "observed": 1,
+        "processes": [
+          {
+            "first_seen_ms": 1745,
+            "name": "vet.exe",
+            "parent_pid": 48944,
+            "pid": 45512
+          }
+        ],
+        "state": "complete",
+        "survivors": [],
+        "tool": "powershell Get-CimInstance Win32_Process"
+      },
+      "stderr": "",
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "?   \texample.com/langpack\t[no test files]\n?   \texample.com/langpack/other\t[no test files]\n?   \texample.com/langpack/util\t[no test files]\n",
+      "stdout_digest": "sha256:fa2be54549ed07d8be84eccad87a7907a6c3b1b445214252c4a53b2c5ec5ded8",
+      "timed_out": false,
+      "wall_ms": 2842
+    },
+    "go_version": "go1.27.3 windows/amd64",
+    "renamed_build": {
+      "artifact": "sha256:022990e2690db64c2d0bb5d573cc816dc6937a519e5415e7e8adb1d60d9479d6",
+      "env_names": [
+        "PATH",
+        "PATHEXT",
+        "SYSTEMROOT",
+        "SYSTEMDRIVE",
+        "WINDIR",
+        "TEMP",
+        "TMP",
+        "HOME",
+        "USERPROFILE",
+        "APPDATA",
+        "LOCALAPPDATA",
+        "NUMBER_OF_PROCESSORS",
+        "GOROOT",
+        "GOPATH",
+        "GOMODCACHE",
+        "GOCACHE",
+        "GOTOOLCHAIN",
+        "CGO_ENABLED",
+        "PATH"
+      ],
+      "exit_code": 0,
+      "process_audit": {
+        "cleanup": [],
+        "error": null,
+        "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+        "observed": 0,
+        "processes": [],
+        "state": "complete",
+        "survivors": [],
+        "tool": "powershell Get-CimInstance Win32_Process"
+      },
+      "stderr": "",
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "wall_ms": 2753
+    },
+    "renamed_paths": [
+      "util/util.go",
+      "main.go"
+    ],
+    "runtime_stdout": "2 4 6",
+    "untouched_path": "other/other.go"
+  },
+  "indirect_resolved": false,
+  "language": "go",
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "main.go",
+    "util/util.go"
+  ],
+  "runtime_trace": "pending:B016",
+  "server": "gopls 0.20.0",
+  "snapshot_id": "sha256:2dcedb70a6a8e69a22e5da6064bf1450276c1a59d92d83700b81511f12a3df70"
+}

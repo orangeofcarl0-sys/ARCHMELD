@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://archmeld.invalid/contracts/1.0/evidence-batch.schema.json",
+  "title": "EvidenceBatch",
+  "$ref": "https://archmeld.invalid/contracts/1.0/archmeld.schema.json#/$defs/EvidenceBatch"
+}

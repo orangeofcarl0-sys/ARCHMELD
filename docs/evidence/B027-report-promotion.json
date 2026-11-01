@@ -1,0 +1,171 @@
+{
+  "acceptance": {
+    "AT059": {
+      "bundle": {
+        "absolute_workspace_path_absent": true,
+        "bundle_digest": "sha256:ad7d45fb2ba1fef94785a00e53b0fafd809ce940eda070ef12a8bcef9e1f96a0",
+        "evidence_entries": 1,
+        "external_urls": 0,
+        "failed_check_state": "failed",
+        "files": [
+          {
+            "digest": "sha256:def6a94924c08c17530ef0077dfeeeeaa0534fdf8a8ce76393a7c527b4135a00",
+            "media_type": "application/json",
+            "path": "evidence/index.json",
+            "size": 931
+          },
+          {
+            "digest": "sha256:ff31ba2c606857abec24234aa773baa0a9d98104b7b432975539fd886ec204d6",
+            "media_type": "application/json",
+            "path": "model.json",
+            "size": 1792
+          },
+          {
+            "digest": "sha256:fff857c01e4af82da39d54f973d88c97aacbce1fdad1e86b3922522ce40b547e",
+            "media_type": "text/html",
+            "path": "report.html",
+            "size": 4826
+          },
+          {
+            "digest": "sha256:e4b5b38cfcc60503a580fd72c27502347cf4c8d7a901a60ef9d833577510162d",
+            "media_type": "application/json",
+            "path": "report.json",
+            "size": 15201
+          }
+        ],
+        "offline": true,
+        "raw_traces_included": false,
+        "report_id": "report.7de4ad9d37c03c1e",
+        "scripts": 0,
+        "source_included": false,
+        "source_marker_absent": true,
+        "tamper_detected": "storage: bundle file report.html does not match its manifest digest",
+        "unknowns": [
+          {
+            "claim_id": "claim.report.b027",
+            "question": "does cancellation release every child process?",
+            "source": "claim"
+          }
+        ],
+        "verified_files": 4
+      },
+      "evidence_id": "evidence.report.b027",
+      "http_route": {
+        "files": [
+          {
+            "digest": "sha256:0340714ff30c84ce87e6b96f568533d92471abc31abb55d30dd7a7eb7dd2b018",
+            "kind": "report",
+            "media_type": "application/json",
+            "path": "evidence/index.json",
+            "size": 225
+          },
+          {
+            "digest": "sha256:30cd142ad3484cab7e3f8d5455f0ce562f73fb351ffe00212f2a51f2b1fed6fe",
+            "kind": "report",
+            "media_type": "application/json",
+            "path": "model.json",
+            "size": 962
+          },
+          {
+            "digest": "sha256:d620be4acf098d79f5d337c7475cc129eef8a835be0e7c0617a659aa6834452a",
+            "kind": "report",
+            "media_type": "text/html",
+            "path": "report.html",
+            "size": 4834
+          },
+          {
+            "digest": "sha256:3235643101caec21e69d9361fff75b9806ca80a065b289dfda5e6d29b25fe9ee",
+            "kind": "report",
+            "media_type": "application/json",
+            "path": "report.json",
+            "size": 3090
+          }
+        ],
+        "output_name": "review-b027",
+        "output_owned_by_server": true,
+        "risk_level": "high",
+        "route": "POST /v1/reports",
+        "source_directory_created": true,
+        "source_inclusion_status": 200,
+        "source_state": "included",
+        "status": "passed",
+        "trace_request_without_runs_state": "none",
+        "unsafe_name_status": 400
+      },
+      "offline_browser": {
+        "dom_contains_title": true,
+        "exit_code": 0,
+        "network": "host resolver maps every host to ~NOTFOUND",
+        "state": "passed",
+        "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_digest": "sha256:554dcd2b69468f765c93002a45cb53e44cc8f0dfb15f716e9360c101b373c00d",
+        "tool": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+      },
+      "snapshot_id": "sha256:f1bc94fd6a404ed57130b7e9eb78da1fce7dbbfc2c2feb02435323148142279c",
+      "status": "passed",
+      "verification_id": "verification.846f5a328450254fcfa4ddf1dc69221f"
+    },
+    "AT060": {
+      "broken_claim_still_readable": true,
+      "broken_evidence_id": "evidence.report.b027",
+      "broken_project_mode": "expedition",
+      "broken_promotion_error": "conflict: object_validation_failed: promotion refused; missing=1, hash_mismatches=0, database_problems=0",
+      "claim_preserved": true,
+      "contract_preserved": true,
+      "counts_after": {
+        "architectures": 1,
+        "changesets": 4,
+        "claims": 2,
+        "contracts": 1,
+        "entities": 1,
+        "evidence": 1,
+        "files": 5,
+        "plans": 2,
+        "relations": 0,
+        "snapshots": 1,
+        "verifications": 0
+      },
+      "counts_before": {
+        "architectures": 1,
+        "changesets": 4,
+        "claims": 2,
+        "contracts": 1,
+        "entities": 1,
+        "evidence": 1,
+        "files": 5,
+        "plans": 2,
+        "relations": 0,
+        "snapshots": 1,
+        "verifications": 0
+      },
+      "identity_preserved": true,
+      "mode_after": "manager",
+      "mode_before": "expedition",
+      "model_calls": 0,
+      "object_validation": {
+        "checked_objects": 9,
+        "database_problems": [],
+        "hash_mismatches": [],
+        "missing": [],
+        "store_root": "<local-user>\\AppData\\Local\\Temp\\.tmper6wWi\\state"
+      },
+      "plan_status": "approved",
+      "project_id": "project.25a2d036bd1995379ce8dc4888917ef1",
+      "records_rewritten": 0,
+      "sessions": [
+        {
+          "mode": "expedition",
+          "state": "promoted"
+        },
+        {
+          "mode": "manager",
+          "state": "open"
+        }
+      ],
+      "snapshot_preserved": true,
+      "status": "passed"
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/offline_report.rs",
+  "platform": "windows"
+}

@@ -1,0 +1,45 @@
+{
+  "id": "c-cpp",
+  "languages": [
+    "c",
+    "cpp"
+  ],
+  "fixture": "fixtures/c-cpp",
+  "tools": {
+    "lsp": {
+      "name": "clangd",
+      "version": "18.1.8",
+      "platform": "windows-msvc",
+      "sha256": "234f15c35893306321504603db20a645f062578ffb6bfe98c09a89f9efb2defe",
+      "path": "F:/Codex_Work_Space/_archmeld_tools/llvm18/bin/clangd.exe"
+    },
+    "compile_db": [
+      "build-a/compile_commands.json",
+      "build-b/compile_commands.json"
+    ],
+    "scip": {
+      "name": "scip-clang",
+      "status": "no_windows_binary; use_wsl_worker"
+    }
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified_by_test",
+    "bounded_refactor": "verified_by_test",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/c-cpp.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "two build variants must use separate compile databases and config digests",
+    "indirect calls (function pointers, virtual dispatch targets) remain unresolved rather than fabricated",
+    "Windows clangd is used natively; scip-clang has no official Windows binary"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

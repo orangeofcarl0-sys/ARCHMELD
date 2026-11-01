@@ -1,0 +1,21 @@
+{
+  "classification": "synthetic_example",
+  "artifacts": [
+    {
+      "digest": "sha256:7594a8b29d2ab0c109c276a6d390fb2509c6cf761e97bc3124bc0f54f86dc413",
+      "path": "examples/assets/source-before.py.txt"
+    },
+    {
+      "digest": "sha256:ca375a3ffe93734b38c7b0a22febf3fd8e06f7f0289b0a0cecc5132c137acab8",
+      "path": "examples/assets/source-after.py.txt"
+    },
+    {
+      "digest": "sha256:9d785104e5e80eb1ae018bfad253f7d817628e1e6a4d0ac098eec6be31253881",
+      "path": "examples/assets/synthetic-trace.json"
+    },
+    {
+      "digest": "sha256:aae16823aaab0208e7d9d1373406ed02066c1fb068d7e9eb48597161a2be9fd3",
+      "path": "examples/assets/synthetic-report.html"
+    }
+  ]
+}

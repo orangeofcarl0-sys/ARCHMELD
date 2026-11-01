@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "id": "report.demo",
+  "project_id": "project.synthetic",
+  "snapshot_ids": [
+    "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b"
+  ],
+  "created_at": "2026-10-30T00:00:00Z",
+  "classification": "synthetic_example",
+  "source_included": false,
+  "raw_traces_included": false,
+  "entries": [
+    {
+      "path": "index.html",
+      "digest": "sha256:aae16823aaab0208e7d9d1373406ed02066c1fb068d7e9eb48597161a2be9fd3",
+      "size_bytes": 111,
+      "media_type": "text/html",
+      "role": "report"
+    }
+  ],
+  "limitations": [
+    "Synthetic contract example; no product implementation is implied"
+  ]
+}

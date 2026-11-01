@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual evidence after the real remote run",
+  "generated_at": "2026-11-01T06:15:48+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "binary": {
+    "path": "target-linux/release/archmeld-serve",
+    "sha256": "sha256:6bff5f10487afeaad881b78ecf35a8632fd0fdd59380041c87c0ff23732af68b",
+    "build": "docker rust:1.94.1-bookworm; cargo build --release -p archmeld-api --bin archmeld --bin archmeld-serve"
+  },
+  "remote": {
+    "host": "<authorized-remote-host>",
+    "port": 2222,
+    "user": "<authorized-user>",
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "python": "3.12.3",
+    "working_dir": "/tmp/archmeld-b028"
+  },
+  "checks": {
+    "announcement": {
+      "contract_version": "1.0",
+      "endpoint": null,
+      "socket_mode": "0600",
+      "token": "test-token",
+      "unix_socket": "/tmp/archmeld-b028/archmeld.sock",
+      "workspaces": {}
+    },
+    "socket_mode": "0o600",
+    "no_auth_status": "HTTP/1.1 403 Forbidden",
+    "wrong_token_status": "HTTP/1.1 403 Forbidden",
+    "allowed_status": "HTTP/1.1 400 Bad Request",
+    "stale_socket_exit": 1,
+    "stale_socket_stderr": "refusing to replace existing socket /tmp/archmeld-b028/archmeld.sock; remove it first"
+  },
+  "scope": {
+    "implemented": "axum served over tokio UnixListener; socket chmod 0600 and verified; same bearer-token middleware; existing path refused",
+    "not_implemented": [
+      "Windows named pipe",
+      "OS/container-level isolation",
+      "token ACL beyond the bearer header"
+    ]
+  },
+  "commands": [
+    "#b028-unix-socket-linux-build",
+    "#b028-unix-socket-windows-test",
+    "#b028-unix-socket-remote"
+  ],
+  "status": "passed"
+}

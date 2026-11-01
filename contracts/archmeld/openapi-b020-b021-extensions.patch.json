@@ -1,0 +1,87 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-023-staging-and-journaled-apply.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/changesets",
+      "summary": "Create a draft ChangeSet bound to an approved plan step; records scope only and creates no staging directory."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/prepare",
+      "summary": "Materialize or rescan the staging tree, record preimages/postimages and publish a prepared revision with an S19 prepared_digest."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/changesets/{changeset_id}",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/changesets",
+      "summary": "List latest ChangeSet revisions, optionally filtered by effective state.",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}},
+        {"name": "state", "in": "query", "required": false, "schema": {"type": "string"}}
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/changesets/{changeset_id}/diff",
+      "summary": "Reviewable before/after previews read from CAS blobs; previews are explicitly truncated and never authoritative.",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}},
+        {"name": "max_bytes", "in": "query", "required": false, "schema": {"type": "integer"}}
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/approve",
+      "summary": "Append a prepared_change approval bound to the exact prepared_digest. Plan-scope approval alone never authorizes apply."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/apply",
+      "summary": "Acquire the project lease, recheck every preimage, write the durable journal, replace files one by one and capture the resulting snapshot. State becomes applied, not accepted."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/recover",
+      "summary": "Restore only this ChangeSet's journaled writes in reverse order; differing user content is preserved as a conflict and a CAS artifact."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/changesets/{changeset_id}/reject",
+      "summary": "Append a rejected revision from draft, approved or prepared."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{project_id}/lease",
+      "summary": "Inspect the current writer lease owner, fencing token and expiry."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{project_id}/interrupted",
+      "summary": "Report ChangeSets whose latest state or journal indicates an interrupted apply."
+    }
+  ],
+  "prepared_digest_preimage": "AM-C14N-1({version,project_id,plan_id,plan_revision,step_id,base_snapshot_id,contract_digest,allowed_paths(sorted),read_set(sorted),operations(execution order),toolchain_digest,staging_verification_ids(sorted)})",
+  "apply_requirements": {
+    "state": "prepared",
+    "plan_status": "approved",
+    "contract_digest": "current",
+    "approval_target_kind": "prepared_change",
+    "approval_target_digest": "prepared_digest",
+    "lease": "owner token + monotonically increasing fencing token"
+  },
+  "recovery_requirements": {
+    "journal": "durable apply_journal written before the first replacement",
+    "interrupted_state": "applying -> failed -> recovering",
+    "conflict_rule": "restore only when current bytes equal the postimage; preserve differing content",
+    "whole_tree_reset": "forbidden"
+  }
+}

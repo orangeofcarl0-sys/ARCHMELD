@@ -1,0 +1,66 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-032-offline-report-and-promotion.md; docs/adr/ADR-052-report-opt-in-viewer-migration.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/reports",
+      "summary": "Export one explicit snapshot as an offline bundle under the server-owned state/exports directory. The caller supplies a safe output_name. Source and raw-trace bytes are included only with explicit include_source/include_raw_traces opt-in and the manifest then marks the bundle sensitive."
+    }
+  ],
+  "report_bundle": {
+    "files": [
+      "report.html",
+      "report.json",
+      "model.json",
+      "evidence/index.json",
+      "source/<snapshot path> (opt-in)",
+      "traces/sha256/<digest>.<ext> (opt-in)"
+    ],
+    "manifest": "manifest.json with per-file sha256/size/media_type/kind, optional source_path/owners, source_state, raw_trace_state, risk_level and bundle_digest",
+    "offline": true,
+    "scripts": 0,
+    "external_urls": 0,
+    "source_states": ["excluded", "none", "included", "partial"],
+    "source_budget_bytes": 67108864,
+    "raw_trace_budget_bytes": 268435456,
+    "secrets_included": "no source or trace bytes, or 'unknown: no secret scanner ran'",
+    "risk_labels": "present when source or trace bytes are included; the HTML banner says the bundle is sensitive",
+    "bounded_graph": "omissions are explicit with counts and reasons",
+    "viewer": {
+      "kind": "inline_svg_anchor_navigation",
+      "max_nodes": 240,
+      "max_edges": 480,
+      "interaction": "anchor links to entity detail cards and CSS :target highlighting",
+      "scripts": 0,
+      "external_urls": 0
+    },
+    "existing_destination": "rejected, never overwritten"
+  },
+  "ledger_migration": {
+    "command": "archmeld ledger-migrate --from <state> --to <state> --reason <text>",
+    "mode": "copy_entire_ledger",
+    "merge": false,
+    "target": "must not exist; an existing or populated target is refused",
+    "source": "opened read-only and left untouched",
+    "verification": [
+      "source and target sqlite integrity_check = ok",
+      "target foreign_key_check has zero violations",
+      "schema versions and all table row counts match",
+      "every CAS object is rehashed on read and after write",
+      "every artifacts.digest is present in the copied CAS"
+    ],
+    "receipt": "migration.json beside the copied state.sqlite3",
+    "not_copied": ["exports", "verify-sandboxes", "scenario-sandboxes", "other transient state"],
+    "failure": "the partial target directory is removed"
+  },
+  "promotion": {
+    "preconditions": ["database integrity", "every referenced CAS object exists and hashes correctly"],
+    "transaction": "session marked promoted, project mode changed, manager session created",
+    "preserved": ["project id", "snapshots", "entities", "relations", "evidence", "claims", "architectures", "contracts", "approved plans", "ChangeSets", "verifications"],
+    "records_rewritten": 0,
+    "model_calls": 0,
+    "failure": "no mode change; source session and records remain readable"
+  }
+}

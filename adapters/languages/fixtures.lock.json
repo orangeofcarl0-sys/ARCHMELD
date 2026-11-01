@@ -1,0 +1,216 @@
+{
+  "schema_version": "1.0",
+  "description": "Pinned medium real-project samples for the seven language groups (S16 T1). Paths are outside the repository so third-party source is not vendored; archives are verified by SHA-256 and re-fetched only by an explicit tooling command.",
+  "minimum_source_files": 30,
+  "groups": {
+    "c_cpp": {
+      "language": "C",
+      "sample": "lua",
+      "version": "5.4.7",
+      "license": "MIT",
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7",
+      "source_url": "https://github.com/lua/lua/tree/v5.4.7",
+      "archive": {
+        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/5.4.7.tar.gz",
+        "url": "https://codeload.github.com/lua/lua/tar.gz/refs/tags/v5.4.7",
+        "sha256": "5c39111b3fc4c1c9e56671008955a1730f54a15b95e1f1bd0752b868b929d8e3"
+      },
+      "source_extension": "c",
+      "minimum_source_files": 30,
+      "build": {
+        "kind": "gcc_link",
+        "cwd": "{temp}",
+        "argv": [
+          "D:/Strawberry/c/bin/gcc.exe",
+          "-O2"
+        ],
+        "smoke": {
+          "argv": [
+            "{out}/lua.exe",
+            "-e",
+            "print(2+2)"
+          ],
+          "expect_stdout": "4"
+        },
+        "limitations": [
+          "Windows GNU build; Lua's readline/termcap integration is not compiled"
+        ]
+      }
+    },
+    "python": {
+      "language": "Python",
+      "sample": "cpython-asyncio",
+      "version": "3.11.9",
+      "license": "PSF-2.0",
+      "source_path": "<local-user>/AppData/Local/Programs/Python/Python311/Lib/asyncio",
+      "source_url": "https://github.com/python/cpython/tree/v3.11.9/Lib/asyncio",
+      "archive": null,
+      "source_extension": "py",
+      "minimum_source_files": 30,
+      "build": {
+        "kind": "python_compileall",
+        "copy_to_temp": true,
+        "argv": [
+          "python",
+          "-m",
+          "compileall",
+          "-q",
+          "."
+        ],
+        "smoke": {
+          "argv": [
+            "python",
+            "-c",
+            "import asyncio; print(asyncio.__name__)"
+          ],
+          "expect_stdout": "asyncio",
+          "env": {
+            "PYTHONPATH": "."
+          }
+        },
+        "limitations": [
+          "sample is the stdlib package shipped with the pinned Windows CPython build"
+        ]
+      }
+    },
+    "javascript_typescript": {
+      "language": "JavaScript",
+      "sample": "npm",
+      "version": "npm bundled with Node 24.14.1",
+      "license": "Artistic-2.0",
+      "source_path": "C:/Program Files/nodejs/node_modules/npm/lib",
+      "source_url": "https://github.com/npm/cli",
+      "archive": null,
+      "source_extension": "js",
+      "minimum_source_files": 100,
+      "build": {
+        "kind": "node_parse",
+        "argv": [
+          "node",
+          "{script}",
+          "{source}"
+        ],
+        "limitations": [
+          "JavaScript is parsed, not bundled; there is no compile step in the sample",
+          "TypeScript capability is verified on the golden fixture, not by this JavaScript sample"
+        ]
+      }
+    },
+    "java": {
+      "language": "Java",
+      "sample": "openjdk-java.util.concurrent",
+      "version": "Temurin JDK 25.0.5+8",
+      "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/jdk-src/java.base/java/util/concurrent",
+      "source_url": "https://github.com/adoptium/temurin25-binaries/releases/tag/jdk-25.0.5%2B8",
+      "archive": {
+        "path": "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/lib/src.zip",
+        "url": "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_windows_hotspot_25.0.5_8.zip",
+        "sha256": "726ad631e289979e88688dc53ca8b4486f2296001525011313a548c8e55a3840",
+        "extract": "java.base/java/util/concurrent/"
+      },
+      "source_extension": "java",
+      "minimum_source_files": 60,
+      "build": {
+        "kind": "javac_patch_module",
+        "argv": [
+          "{javac}",
+          "--patch-module",
+          "java.base={patch_root}",
+          "-d",
+          "{out}"
+        ],
+        "limitations": [
+          "compiled with --patch-module java.base; no JDK image is produced"
+        ]
+      }
+    },
+    "csharp": {
+      "language": "C#",
+      "sample": "newtonsoft-json",
+      "version": "13.0.3",
+      "license": "MIT",
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3/Src/Newtonsoft.Json",
+      "source_url": "https://github.com/JamesNK/Newtonsoft.Json/tree/13.0.3",
+      "archive": {
+        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/newtonsoft.tar.gz",
+        "url": "https://codeload.github.com/JamesNK/Newtonsoft.Json/tar.gz/refs/tags/13.0.3",
+        "sha256": "3dc1eeeb8f781122e0713481bad993329c669feb9928cc4ec86e0ab24d9eff9e"
+      },
+      "source_extension": "cs",
+      "minimum_source_files": 200,
+      "build": {
+        "kind": "dotnet_build",
+        "cwd": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3",
+        "argv": [
+          "{dotnet}",
+          "build",
+          "Src/Newtonsoft.Json/Newtonsoft.Json.csproj",
+          "-f",
+          "netstandard2.0",
+          "-nologo",
+          "-v:q"
+        ],
+        "env": {
+          "NUGET_PACKAGES": "F:/Codex_Work_Space/_archmeld_tools/fixtures/nuget-packages"
+        },
+        "limitations": [
+          "NuGet restore may require network on a new machine; package versions are resolved by the pinned project"
+        ]
+      }
+    },
+    "go": {
+      "language": "Go",
+      "sample": "go-stdlib-net-http",
+      "version": "go1.27.3",
+      "license": "BSD-3-Clause",
+      "source_path": "F:/Codex_Work_Space/_archmeld_tools/go/go/src/net/http",
+      "source_url": "https://github.com/golang/go/tree/go1.27.3/src/net/http",
+      "archive": null,
+      "source_extension": "go",
+      "minimum_source_files": 150,
+      "build": {
+        "kind": "go_test",
+        "cwd": "{temp}",
+        "argv": [
+          "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+          "test",
+          "net/http",
+          "-run",
+          "TestStatusText"
+        ],
+        "limitations": [
+          "standard-library package, not a standalone module"
+        ]
+      }
+    },
+    "rust": {
+      "language": "Rust",
+      "sample": "codegraph-core",
+      "version": "workspace pinned at the ARCHMELD checkout",
+      "license": "Apache-2.0",
+      "source_path": "crates/codegraph",
+      "source_url": "upstream CodeGraph 590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+      "archive": null,
+      "source_extension": "rs",
+      "minimum_source_files": 40,
+      "build": {
+        "kind": "cargo_check",
+        "cwd": "repo",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "codegraph",
+          "--no-default-features",
+          "--offline",
+          "--target-dir",
+          "{target}"
+        ],
+        "limitations": [
+          "checked without the rocksdb-backend feature in an isolated target directory; the default-feature build is covered by workspace tests"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,607 @@
+{
+  "acceptance": {
+    "AT056": {
+      "backup": {
+        "backup_id": "backup.e3b17d5cbe0cf9b9c1c1f17554f4f457",
+        "database_digest": "sha256:2e96379bb7af0aa68dac2fe7596d9d4de094304d6f4f2e164b5924ad95ea3b4b",
+        "directory": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\backup",
+        "manifest_digest": "sha256:ba818fa4e248f8494e5ab85226d22dc8a2982c391ca5ab277503efc3c1a07edf",
+        "object_count": 9,
+        "verified": true
+      },
+      "base_snapshot_id": "sha256:b6c7c6e49f97c2b174eaab6a6201a3bcc4b6a3f2040e69df649938dc4d3445b8",
+      "claim_decision_preserved": "claim.b025.interface",
+      "drift": {
+        "added": [],
+        "affected_architectures": [],
+        "affected_claims": [
+          {
+            "claim_id": "claim.b025.interface",
+            "reason": "scope overlaps changed paths",
+            "scope": "src/a.py",
+            "status": "accepted"
+          }
+        ],
+        "affected_entities": [
+          {
+            "entity_id": "syn.322d1a923e5e7ec10a825d14fbb46232140c5d250ee7f3ceb694e0650dba7e66",
+            "kind": "symbol",
+            "qualified_name": "src/a.py::a"
+          }
+        ],
+        "affected_relations": [
+          {
+            "kind": "static_call_candidate",
+            "relation_id": "rel.609a7c0f6d0e1b1315c02cbaddc05953334b027105405fccfa035fd6b6f6fb13",
+            "resolution": "candidate",
+            "source_id": "syn.322d1a923e5e7ec10a825d14fbb46232140c5d250ee7f3ceb694e0650dba7e66",
+            "target_id": "syn.8ea446c0dc08b666d54513c6ba07fe5b333901d20aa9d6334433e025f5e6b318"
+          }
+        ],
+        "base_snapshot_id": "sha256:b6c7c6e49f97c2b174eaab6a6201a3bcc4b6a3f2040e69df649938dc4d3445b8",
+        "changed": [
+          {
+            "base_digest": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
+            "current_digest": "sha256:45d014bf8d6fae3d896a5ce5297c316e4f95007165026356a79a4babaedf106d",
+            "path": "src/a.py",
+            "state": "changed"
+          }
+        ],
+        "coverage": {
+          "limitations": [
+            "files added outside the captured snapshot policy are listed as added"
+          ],
+          "scope": "listed base-snapshot files versus the current workspace",
+          "state": "complete"
+        },
+        "deleted": [],
+        "history_mutation": "none",
+        "needs_review": true,
+        "new_snapshot_id": null,
+        "project_id": "project.402689a71c1c42287f53b0538ef7ad46",
+        "schema_version": "1.0",
+        "source_mutation": "none",
+        "stale_changesets": [],
+        "stale_plans": [
+          {
+            "contract_digest": "sha256:a3a278180303ac99ce22199588bda12e09fa8c01c16cab7d08bdf0896d97cac9",
+            "plan_id": "plan.b025.drift",
+            "reason": "base snapshot drifted",
+            "revision": 2,
+            "status": "needs_review"
+          }
+        ],
+        "state": "changed"
+      },
+      "gc": {
+        "candidate_count": 3,
+        "candidates": [
+          {
+            "digest": "sha256:1dc7b9b786d49365822c286d86f26c64eb5506e29c4cc2ce5173facf2834bac9",
+            "path": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\1d\\c7b9b786d49365822c286d86f26c64eb5506e29c4cc2ce5173facf2834bac9",
+            "size": 18
+          },
+          {
+            "digest": "sha256:565719cac11d401235bbfe0b2ef828e1232155306d49ebb9bf0eb14e766089e3",
+            "path": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\56\\5719cac11d401235bbfe0b2ef828e1232155306d49ebb9bf0eb14e766089e3",
+            "size": 34
+          },
+          {
+            "digest": "sha256:d8e946d6f81a9f7ea6ff161c33a89d1481b312735d1b97ed03181afffbfde2c7",
+            "path": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\d8\\e946d6f81a9f7ea6ff161c33a89d1481b312735d1b97ed03181afffbfde2c7",
+            "size": 29
+          }
+        ],
+        "deleted_count": 3,
+        "dry_run": false,
+        "owned_root": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state",
+        "pinned_objects": 0,
+        "referenced_objects": 12,
+        "whole_tree_reset": false
+      },
+      "new_snapshot_id": "sha256:1a5dd99d593e7f954677ea04ccbb2fe6ab04bb8722b800546e2157624ff2cb23",
+      "old_snapshot_entity_still_queryable": "syn.322d1a923e5e7ec10a825d14fbb46232140c5d250ee7f3ceb694e0650dba7e66",
+      "project_id": "project.402689a71c1c42287f53b0538ef7ad46",
+      "recorded_report_id": "drift.cb61624d9778933b1d07d6046ae69f78",
+      "reopened_ledger": true,
+      "status": "passed"
+    },
+    "AT057": {
+      "fixture": "project.c07b0e852a5fd4a19939871a1279d261",
+      "retention": {
+        "dry_run": {
+          "candidate_count": 1,
+          "candidates": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406594,
+              "manifest_artifact": "sha256:a7a50b9a8d7e1729e7de6ce71c41a6fc9aeaa63b8e65c8558b3da46bae10ab15",
+              "snapshot_id": "sha256:40411492963647901c49431e773b40a13fba099ce3418d457e0290b514aee9a4"
+            }
+          ],
+          "deleted": [],
+          "deleted_count": 0,
+          "dry_run": true,
+          "event_log_pruned": false,
+          "keep_snapshots": 2,
+          "kept": [
+            {
+              "created_at": 1793406597,
+              "manifest_artifact": "sha256:0eb11b0f132b4155d4111e8f12d7a7784f728ce644e85937922787e6c6391f51",
+              "reason": "within_keep_count",
+              "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+            },
+            {
+              "created_at": 1793406595,
+              "manifest_artifact": "sha256:fea28d40d373b1c9986c18111d632dc099c8b2358dda2bcd220b57097b23e2ff",
+              "reason": "within_keep_count",
+              "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+            }
+          ],
+          "kept_count": 2,
+          "mode": "manual",
+          "project_id": "project.c07b0e852a5fd4a19939871a1279d261",
+          "retained": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406593,
+              "manifest_artifact": "sha256:e80782c71f051f12e02ccd59b862662387e16f1f9402fb32eb5c97ad4aa9e60d",
+              "reasons": [
+                "architecture"
+              ],
+              "snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072"
+            }
+          ],
+          "snapshot_count": 4,
+          "whole_tree_reset": false
+        },
+        "initial_snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072",
+        "kept_latest_two": [
+          "sha256:2db4e651174919fcbf02e6a6bae8a0d1be1e36ba7c1e495813b64d3138aa202c",
+          "sha256:f718c2db33e1dca736f5f596733bc0d635360eee44b004e15e221b6b4515e95a"
+        ],
+        "manual_delete": {
+          "candidate_count": 1,
+          "candidates": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406594,
+              "manifest_artifact": "sha256:a7a50b9a8d7e1729e7de6ce71c41a6fc9aeaa63b8e65c8558b3da46bae10ab15",
+              "snapshot_id": "sha256:40411492963647901c49431e773b40a13fba099ce3418d457e0290b514aee9a4"
+            }
+          ],
+          "deleted": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "snapshot_id": "sha256:40411492963647901c49431e773b40a13fba099ce3418d457e0290b514aee9a4"
+            }
+          ],
+          "deleted_count": 1,
+          "dry_run": false,
+          "event_log_pruned": false,
+          "keep_snapshots": 2,
+          "kept": [
+            {
+              "created_at": 1793406597,
+              "manifest_artifact": "sha256:0eb11b0f132b4155d4111e8f12d7a7784f728ce644e85937922787e6c6391f51",
+              "reason": "within_keep_count",
+              "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+            },
+            {
+              "created_at": 1793406595,
+              "manifest_artifact": "sha256:fea28d40d373b1c9986c18111d632dc099c8b2358dda2bcd220b57097b23e2ff",
+              "reason": "within_keep_count",
+              "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+            }
+          ],
+          "kept_count": 2,
+          "mode": "manual",
+          "project_id": "project.c07b0e852a5fd4a19939871a1279d261",
+          "retained": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406593,
+              "manifest_artifact": "sha256:e80782c71f051f12e02ccd59b862662387e16f1f9402fb32eb5c97ad4aa9e60d",
+              "reasons": [
+                "architecture"
+              ],
+              "snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072"
+            }
+          ],
+          "snapshot_count": 4,
+          "whole_tree_reset": false
+        },
+        "pinned_auto_run": {
+          "candidate_count": 2,
+          "candidates": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406597,
+              "manifest_artifact": "sha256:0eb11b0f132b4155d4111e8f12d7a7784f728ce644e85937922787e6c6391f51",
+              "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+            },
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406595,
+              "manifest_artifact": "sha256:fea28d40d373b1c9986c18111d632dc099c8b2358dda2bcd220b57097b23e2ff",
+              "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+            }
+          ],
+          "deleted": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+            },
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+            }
+          ],
+          "deleted_count": 2,
+          "dry_run": false,
+          "event_log_pruned": false,
+          "keep_snapshots": 2,
+          "kept": [
+            {
+              "created_at": 1793406599,
+              "manifest_artifact": "sha256:f16c1c5b3aca29cfc7e0557103f951957516f567f6c62a35e0309e5d8ff06666",
+              "reason": "within_keep_count",
+              "snapshot_id": "sha256:2db4e651174919fcbf02e6a6bae8a0d1be1e36ba7c1e495813b64d3138aa202c"
+            },
+            {
+              "created_at": 1793406598,
+              "manifest_artifact": "sha256:fab19eaf1a8dc7af9d55177fb25b6500e7f143733c4e8c841fe99487c22a9929",
+              "reason": "within_keep_count",
+              "snapshot_id": "sha256:f718c2db33e1dca736f5f596733bc0d635360eee44b004e15e221b6b4515e95a"
+            }
+          ],
+          "kept_count": 2,
+          "mode": "automatic",
+          "project_id": "project.c07b0e852a5fd4a19939871a1279d261",
+          "retained": [
+            {
+              "counts": {
+                "diagnostics": 0,
+                "entities": 0,
+                "evidence": 0,
+                "files": 5,
+                "generations": 0,
+                "relations": 0,
+                "run_batches": 0
+              },
+              "created_at": 1793406593,
+              "manifest_artifact": "sha256:e80782c71f051f12e02ccd59b862662387e16f1f9402fb32eb5c97ad4aa9e60d",
+              "reasons": [
+                "architecture"
+              ],
+              "snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072"
+            }
+          ],
+          "snapshot_count": 5,
+          "whole_tree_reset": false
+        },
+        "project_id": "project.c07b0e852a5fd4a19939871a1279d261",
+        "runs": [
+          {
+            "candidate_count": 2,
+            "created_at": 1793406599,
+            "deleted_count": 2,
+            "details": {
+              "candidates": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406597,
+                  "manifest_artifact": "sha256:0eb11b0f132b4155d4111e8f12d7a7784f728ce644e85937922787e6c6391f51",
+                  "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+                },
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406595,
+                  "manifest_artifact": "sha256:fea28d40d373b1c9986c18111d632dc099c8b2358dda2bcd220b57097b23e2ff",
+                  "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+                }
+              ],
+              "deleted": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+                },
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+                }
+              ],
+              "event_log_pruned": false,
+              "kept": [
+                {
+                  "created_at": 1793406599,
+                  "manifest_artifact": "sha256:f16c1c5b3aca29cfc7e0557103f951957516f567f6c62a35e0309e5d8ff06666",
+                  "reason": "within_keep_count",
+                  "snapshot_id": "sha256:2db4e651174919fcbf02e6a6bae8a0d1be1e36ba7c1e495813b64d3138aa202c"
+                },
+                {
+                  "created_at": 1793406598,
+                  "manifest_artifact": "sha256:fab19eaf1a8dc7af9d55177fb25b6500e7f143733c4e8c841fe99487c22a9929",
+                  "reason": "within_keep_count",
+                  "snapshot_id": "sha256:f718c2db33e1dca736f5f596733bc0d635360eee44b004e15e221b6b4515e95a"
+                }
+              ],
+              "note": "events are notifications; they are pruned through the separate event-retention watermark",
+              "retained": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406593,
+                  "manifest_artifact": "sha256:e80782c71f051f12e02ccd59b862662387e16f1f9402fb32eb5c97ad4aa9e60d",
+                  "reasons": [
+                    "architecture"
+                  ],
+                  "snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072"
+                }
+              ]
+            },
+            "keep_snapshots": 2,
+            "kept_count": 2,
+            "mode": "automatic",
+            "run_id": "retention.dbdb81a02a38cf9ee110b6b267e357c8"
+          },
+          {
+            "candidate_count": 0,
+            "created_at": 1793406598,
+            "deleted_count": 0,
+            "details": {
+              "candidates": [],
+              "deleted": [],
+              "event_log_pruned": false,
+              "kept": [
+                {
+                  "created_at": 1793406598,
+                  "manifest_artifact": "sha256:fab19eaf1a8dc7af9d55177fb25b6500e7f143733c4e8c841fe99487c22a9929",
+                  "reason": "within_keep_count",
+                  "snapshot_id": "sha256:f718c2db33e1dca736f5f596733bc0d635360eee44b004e15e221b6b4515e95a"
+                },
+                {
+                  "created_at": 1793406597,
+                  "manifest_artifact": "sha256:0eb11b0f132b4155d4111e8f12d7a7784f728ce644e85937922787e6c6391f51",
+                  "reason": "within_keep_count",
+                  "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+                }
+              ],
+              "note": "events are notifications; they are pruned through the separate event-retention watermark",
+              "retained": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406595,
+                  "manifest_artifact": "sha256:fea28d40d373b1c9986c18111d632dc099c8b2358dda2bcd220b57097b23e2ff",
+                  "reasons": [
+                    "pinned"
+                  ],
+                  "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+                },
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406593,
+                  "manifest_artifact": "sha256:e80782c71f051f12e02ccd59b862662387e16f1f9402fb32eb5c97ad4aa9e60d",
+                  "reasons": [
+                    "architecture"
+                  ],
+                  "snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072"
+                }
+              ]
+            },
+            "keep_snapshots": 2,
+            "kept_count": 2,
+            "mode": "automatic",
+            "run_id": "retention.45ddc9fc732edd65aea00801687edd40"
+          },
+          {
+            "candidate_count": 1,
+            "created_at": 1793406597,
+            "deleted_count": 1,
+            "details": {
+              "candidates": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406594,
+                  "manifest_artifact": "sha256:a7a50b9a8d7e1729e7de6ce71c41a6fc9aeaa63b8e65c8558b3da46bae10ab15",
+                  "snapshot_id": "sha256:40411492963647901c49431e773b40a13fba099ce3418d457e0290b514aee9a4"
+                }
+              ],
+              "deleted": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "snapshot_id": "sha256:40411492963647901c49431e773b40a13fba099ce3418d457e0290b514aee9a4"
+                }
+              ],
+              "event_log_pruned": false,
+              "kept": [
+                {
+                  "created_at": 1793406597,
+                  "manifest_artifact": "sha256:0eb11b0f132b4155d4111e8f12d7a7784f728ce644e85937922787e6c6391f51",
+                  "reason": "within_keep_count",
+                  "snapshot_id": "sha256:619bf37fb123e3ae779ccf8c33af7fbbfa73120c5bfc26eb4479202e074b22a5"
+                },
+                {
+                  "created_at": 1793406595,
+                  "manifest_artifact": "sha256:fea28d40d373b1c9986c18111d632dc099c8b2358dda2bcd220b57097b23e2ff",
+                  "reason": "within_keep_count",
+                  "snapshot_id": "sha256:c861ad15868a2830f9afd9b3283f4d091fc47eb1ea4f840c02dceef1a5d2132e"
+                }
+              ],
+              "note": "events are notifications; they are pruned through the separate event-retention watermark",
+              "retained": [
+                {
+                  "counts": {
+                    "diagnostics": 0,
+                    "entities": 0,
+                    "evidence": 0,
+                    "files": 5,
+                    "generations": 0,
+                    "relations": 0,
+                    "run_batches": 0
+                  },
+                  "created_at": 1793406593,
+                  "manifest_artifact": "sha256:e80782c71f051f12e02ccd59b862662387e16f1f9402fb32eb5c97ad4aa9e60d",
+                  "reasons": [
+                    "architecture"
+                  ],
+                  "snapshot_id": "sha256:cf71f2895fedaa2440b0a6d4468f1609b60985f4f5293b47f4bb954c2ebfe072"
+                }
+              ]
+            },
+            "keep_snapshots": 2,
+            "kept_count": 2,
+            "mode": "manual",
+            "run_id": "retention.10350ef87b37b1ad4a3ed0d0aed80421"
+          }
+        ]
+      },
+      "status": "passed"
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/drift_recovery.rs",
+  "platform": "windows"
+}

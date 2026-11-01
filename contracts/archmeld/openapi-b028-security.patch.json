@@ -1,0 +1,37 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-033-security-boundaries.md",
+  "changes": [
+    {
+      "surface": "HTTP middleware",
+      "path": "all /v1 routes",
+      "summary": "Require a loopback Host and reject any Origin header; health remains unauthenticated but Host-checked."
+    },
+    {
+      "surface": "authentication",
+      "path": "Authorization header",
+      "summary": "Bearer tokens are accepted only in Authorization; URL/query tokens are not accepted and the token is not written to stderr/access logs."
+    },
+    {
+      "surface": "Project",
+      "field": "workspace_security",
+      "summary": "Reports externally_writable=true, isolation=none and not_a_sandbox=true for the user's workspace."
+    },
+    {
+      "surface": "ContextPack / MCP read results",
+      "field": "trust",
+      "summary": "Repository source and trace text is untrusted data; content_policy states no repository-instruction execution and no network/write access."
+    },
+    {
+      "surface": "Webview HTML",
+      "field": "Content-Security-Policy",
+      "summary": "default-src 'none'; the SVG fallback script uses a nonce, not unsafe-inline; no remote assets."
+    }
+  ],
+  "red_team_evidence": {
+    "AT061": ["untrusted context/source", "no network connection", "no sentinel file", "run/write tools denied"],
+    "AT062": ["foreign Host 403", "any Origin 403", "URL token 403", "wrong bearer 403", "loopback + bearer normal response", "CSP nonce/no remote assets"],
+    "AT063": ["externally_writable disclosure", "external write detected", "old prepared patch blocked", "external bytes preserved"]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual provenance from the real CodeBoarding run and the loopback proxy log",
+  "provider": "opencode go orange",
+  "model": "deepseek-v4.1-flash",
+  "base_url_host": "opencode.ai",
+  "calls": 11,
+  "input_tokens": 88612,
+  "output_tokens": 22718,
+  "provider_version": "0.15.3",
+  "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+  "target_repo": "F:\\Codex_Work_Space\\_archmeld_temp\\b017-codeboarding-target",
+  "analysis_path": "docs\\evidence\\B017-model-analysis.json",
+  "analysis_sha256": "sha256:8a81ed5d937318c36950f7c2f92c9c7685df4d791b826653585782d75c8fc869",
+  "analysis_size_bytes": 2014697,
+  "run_log": "baseline/logs/b017-model-run-cb.log",
+  "proxy_log": "baseline/logs/b017-model-proxy-cb.log",
+  "key_source": "ZCode provider configuration (provider_config.json); the key never enters argv, logs or this file",
+  "limitations": [
+    "model output varies by run; component counts and descriptions are observations of this run",
+    "the source copy is from the pinned CodeBoarding commit a38a8d15 with .git/.venv/.codeboarding removed before the run"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "delegate_target": "unresolved_or_variable",
+  "language": "csharp",
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "Program.cs",
+    "Util.cs"
+  ],
+  "runtime_trace": "pending:B016",
+  "server": "csharp-ls 0.14.0",
+  "snapshot_id": "sha256:203a7f0bc87606313a21d44a74c952345bc30d861cbc577fad4234311e3da200"
+}

@@ -1,0 +1,10 @@
+{
+  "code": "stale_snapshot",
+  "message": "Synthetic stale-snapshot example",
+  "request_id": "request.example",
+  "retryable": false,
+  "details": {
+    "expected": "sha256:c2959f915ad14c9b30d6c75d32d6c8dbaeaefe0d4658f45924f2bd67e51da47b"
+  },
+  "evidence_refs": []
+}

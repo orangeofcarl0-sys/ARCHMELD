@@ -1,0 +1,133 @@
+{
+  "acceptance": {
+    "AT050": {
+      "changeset_after_accept": "accepted",
+      "complete_required_accepted": true,
+      "optional_state": "unsupported",
+      "required_not_passed": [
+        {
+          "check_id": "check.unsupported",
+          "required": true,
+          "state": "unsupported"
+        }
+      ],
+      "unsupported_required_state": "unsupported",
+      "verification_id": "verification.8f1a3eb3bb94abeeb40591ff89901771",
+      "verifications": [
+        {
+          "acceptance": false,
+          "changeset_id": "changeset.b022.missing",
+          "finished_at": 1793492349,
+          "required_not_passed": [
+            {
+              "check_id": "check.unsupported",
+              "required": true,
+              "state": "unsupported"
+            }
+          ],
+          "snapshot_id": "sha256:4757b3b8ecfdc63f0315a96b3d473e1284e28da18e0c8a88c3ffff92e78ebd05",
+          "started_at": 1793492348,
+          "state": "failed",
+          "verification_id": "verification.5c2d27664761601b59e658b6b96d180d"
+        }
+      ],
+      "zero_test_reason": "the report contains fewer tests than required",
+      "zero_test_state": "failed"
+    },
+    "AT051": {
+      "base_snapshot_id": "sha256:d920727f9288bc6d284725e559fdd4151a896130b2433fc9542cf1e77f916e95",
+      "changeset_state": "failed",
+      "drift": [
+        {
+          "actual_digest": "sha256:4f36d024be20f7781d23edd65d9527141403a08ff79fa155d45577a4819aacae",
+          "expected_digest": "sha256:f0f0d9761e8fcb991da26e198b02dbeecd05fc9edad43207aa1551edc0536e7d",
+          "path": "src/calc/keep.py",
+          "state": "changed"
+        }
+      ],
+      "resulting_snapshot_id": "sha256:139b6f7e4e68dcc812887ca414bc92c905bb7c5c7bc3eacb2f37a0886e81205e",
+      "staged_snapshot_rejected": true,
+      "verdict": {
+        "acceptance": false,
+        "checks_total": 1,
+        "contract_digest": "sha256:e5b968c3f426a3f9f2a2b72028486c4aa8752468f058a7b8e4c154819d52e080",
+        "coverage": {
+          "limitations": [
+            "evidence_invalid: the workspace changed relative to the resulting snapshot",
+            "missing check results: check.command",
+            "1 required check(s) did not pass"
+          ],
+          "scope": "frozen contract checks against the resulting applied snapshot",
+          "state": "partial"
+        },
+        "drift": [
+          {
+            "actual_digest": "sha256:4f36d024be20f7781d23edd65d9527141403a08ff79fa155d45577a4819aacae",
+            "expected_digest": "sha256:f0f0d9761e8fcb991da26e198b02dbeecd05fc9edad43207aa1551edc0536e7d",
+            "path": "src/calc/keep.py",
+            "state": "changed"
+          }
+        ],
+        "extra_results": [],
+        "missing_results": [
+          "check.command"
+        ],
+        "optional_not_passed": [],
+        "reasons": [
+          "evidence_invalid: the workspace changed relative to the resulting snapshot",
+          "missing check results: check.command",
+          "1 required check(s) did not pass"
+        ],
+        "required_not_passed": [
+          {
+            "check_id": "check.command",
+            "required": true,
+            "state": "not_run"
+          }
+        ],
+        "required_total": 1,
+        "snapshot_id": "sha256:139b6f7e4e68dcc812887ca414bc92c905bb7c5c7bc3eacb2f37a0886e81205e",
+        "state": "failed",
+        "states": {
+          "check.command": "not_run"
+        },
+        "toolchain_digest": "sha256:d8e946d6f81a9f7ea6ff161c33a89d1481b312735d1b97ed03181afffbfde2c7"
+      }
+    },
+    "AT052": {
+      "acceptance": false,
+      "changeset_state": "failed",
+      "check_state": "timed_out",
+      "elapsed_ms": 1803,
+      "process_audit": {
+        "cleanup": [
+          {
+            "method": "taskkill /T /F",
+            "pid": 34008,
+            "result": "terminated"
+          }
+        ],
+        "error": null,
+        "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+        "observed": 1,
+        "processes": [
+          {
+            "first_seen_ms": 573,
+            "name": "python.exe",
+            "parent_pid": 34008,
+            "pid": 27232
+          }
+        ],
+        "state": "complete",
+        "survivors": [],
+        "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+      },
+      "retried": false,
+      "timeout_ms": 1000
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/verification.rs",
+  "platform": "windows",
+  "project_id": "project.6ad15ca902cc46b753c9df6ce2667881",
+  "snapshot_id": "sha256:ad83e36c2bb7f8f1ace8cb3be7b60239a950d79b83500cf02d8c6e2a2b550807"
+}

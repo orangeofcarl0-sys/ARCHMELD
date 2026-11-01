@@ -1,0 +1,455 @@
+{
+  "acceptance": {
+    "AT066": {
+      "accepted_state": "accepted",
+      "applied_state": "applied",
+      "architecture_id": "arch.caseb",
+      "baseline_estimate_digest": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+      "baseline_run": {
+        "argv": [
+          "python",
+          "pipeline.py",
+          "--capture",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe",
+          "--work",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\baseline"
+        ],
+        "exit_code": 0,
+        "process_audit": {
+          "cleanup": [],
+          "error": null,
+          "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+          "observed": 0,
+          "processes": [],
+          "state": "complete",
+          "survivors": [],
+          "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+        },
+        "stderr": "",
+        "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "{\"capture\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\capture.csv\", \"estimate\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\estimate.json\", \"ui\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\ui-report.html\"}\r\n",
+        "stdout_digest": "sha256:11dca13b808ce1aa804a6701bafa82624d37f06c1b103465752d38f90cf18b6e",
+        "wall_ms": 351
+      },
+      "baseline_ui_digest": "sha256:3ad1fd22df76b1b4f0180cf6576fbc2512ba8ab61aef840d1f7efb64c7e221b8",
+      "build": {
+        "argv": [
+          "D:/Strawberry/c/bin/g++.exe",
+          "-std=c++17",
+          "-O2",
+          "capture/main.cpp",
+          "-o",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe"
+        ],
+        "exit_code": 0,
+        "process_audit": {
+          "cleanup": [],
+          "error": null,
+          "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+          "observed": 1,
+          "processes": [
+            {
+              "first_seen_ms": 26,
+              "name": "cc1plus.exe",
+              "parent_pid": 45900,
+              "pid": 30884
+            }
+          ],
+          "state": "complete",
+          "survivors": [],
+          "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+        },
+        "stderr": "",
+        "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "",
+        "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wall_ms": 499
+      },
+      "capture_csv_digest": "sha256:43f16d00d9b8dca5bd59064f69d00910e52236590b18be078c3b8f6688ace8bd",
+      "case": "simulated C++ capture -> Python estimator -> static UI",
+      "changeset_id": "changeset.caseb",
+      "check_states": [
+        {
+          "check_id": "check.estimate",
+          "detail": {
+            "actual_artifact": "artifacts/estimate.json",
+            "artifacts": [
+              {
+                "digest": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+                "media_type": "application/octet-stream",
+                "role": "expected"
+              },
+              {
+                "digest": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+                "media_type": "application/json",
+                "role": "actual"
+              }
+            ],
+            "atol": "0.000000000001",
+            "columns": [
+              "voltage"
+            ],
+            "compared": 32,
+            "expected_artifact": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+            "kind": "numeric_tolerance",
+            "max_abs_error": "0",
+            "max_rel_error": "0",
+            "mismatch_count": 0,
+            "mismatches": [],
+            "mismatches_truncated": false,
+            "nonfinite_count": 0,
+            "nonfinite_policy": "reject",
+            "rtol": "0.000000000001",
+            "shape": [
+              32,
+              1
+            ],
+            "units": [
+              "V"
+            ]
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.invariant",
+          "detail": {
+            "artifact": "artifacts/estimate.json",
+            "artifacts": [
+              {
+                "digest": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+                "media_type": "application/json",
+                "role": "invariant"
+              }
+            ],
+            "checker_id": "numeric.invariants.v1",
+            "columns": [
+              "voltage"
+            ],
+            "kind": "invariant",
+            "rule_results": [
+              {
+                "detail": {
+                  "column": "voltage",
+                  "rule": "finite",
+                  "violations": []
+                },
+                "rule_id": "finite",
+                "state": "passed"
+              },
+              {
+                "detail": {
+                  "column": "voltage",
+                  "max": "2",
+                  "min": "0",
+                  "rule": "range",
+                  "violations": []
+                },
+                "rule_id": "range",
+                "state": "passed"
+              }
+            ],
+            "rules_total": 2,
+            "shape": [
+              32,
+              1
+            ],
+            "version": "1"
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.pipeline",
+          "detail": {
+            "completion": "succeeded",
+            "env_names": [
+              "PATH",
+              "PATHEXT",
+              "SYSTEMROOT",
+              "SYSTEMDRIVE",
+              "WINDIR",
+              "TEMP",
+              "TMP",
+              "HOME",
+              "USERPROFILE",
+              "APPDATA",
+              "LOCALAPPDATA",
+              "NUMBER_OF_PROCESSORS"
+            ],
+            "grant_id": "grant.caseb",
+            "grant_reason": "case-b end-to-end verification",
+            "predicate": {
+              "errors": 0,
+              "failures": 0,
+              "format": "json",
+              "kind": "test_report",
+              "max_failures": 0,
+              "min_tests": 3,
+              "skipped": 0,
+              "tests": 3
+            },
+            "process_audit": {
+              "cleanup": [],
+              "error": null,
+              "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+              "observed": 0,
+              "processes": [],
+              "state": "complete",
+              "survivors": [],
+              "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+            },
+            "stderr_truncated": false,
+            "stdout_truncated": false,
+            "wall_ms": 300
+          },
+          "state": "passed"
+        },
+        {
+          "check_id": "check.ui",
+          "detail": {
+            "digest": "sha256:3ad1fd22df76b1b4f0180cf6576fbc2512ba8ab61aef840d1f7efb64c7e221b8",
+            "kind": "file_digest",
+            "path": "artifacts/ui-report.html"
+          },
+          "state": "passed"
+        }
+      ],
+      "contract_digest": "sha256:f291157aa44b3e499d57149b45014c4ba9813105666d58e708a6d6285134eb91",
+      "limitations": [
+        "capture device is simulated; no real hardware was accessed",
+        "queue saturation, slow consumer and device disconnect are not simulated in this case",
+        "trace maps spans to source entities; it does not fabricate observed call edges",
+        "UI is static HTML, not the VS Code panel"
+      ],
+      "numeric_comparison": {
+        "actual_artifact": "artifacts/estimate.json",
+        "artifacts": [
+          {
+            "digest": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+            "media_type": "application/octet-stream",
+            "role": "expected"
+          },
+          {
+            "digest": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+            "media_type": "application/json",
+            "role": "actual"
+          }
+        ],
+        "atol": "0.000000000001",
+        "columns": [
+          "voltage"
+        ],
+        "compared": 32,
+        "expected_artifact": "sha256:fb91435e1e948479b7b06c9e1bddaf2b5bdeaeac83ccf7fb485c92b4c45c28e0",
+        "kind": "numeric_tolerance",
+        "max_abs_error": "0",
+        "max_rel_error": "0",
+        "mismatch_count": 0,
+        "mismatches": [],
+        "mismatches_truncated": false,
+        "nonfinite_count": 0,
+        "nonfinite_policy": "reject",
+        "rtol": "0.000000000001",
+        "shape": [
+          32,
+          1
+        ],
+        "units": [
+          "V"
+        ]
+      },
+      "plan_id": "plan.caseb",
+      "prepared_digest": "sha256:2db8cb0902d9ebc3b1e27183c7ce86f1800c27c8b48ef5ea397f28d2810cdd6f",
+      "report": {
+        "bundle_digest": "sha256:5037f10a6efd1d73ccca1e5a9f05a095c81a204c5e751ce2d449b92a318ba676",
+        "files": [
+          {
+            "digest": "sha256:63ce89ef3f7351c079a3051fee7c2c51da1f555f3a50864bb9be4eab1f77d00a",
+            "media_type": "application/json",
+            "path": "evidence/index.json",
+            "size": 225
+          },
+          {
+            "digest": "sha256:e0315ea50e6ac16d7475122281a50071ecb86e67c5a39faa4de515f595895801",
+            "media_type": "application/json",
+            "path": "model.json",
+            "size": 985
+          },
+          {
+            "digest": "sha256:1bec8e2ffb471078b2d506f27fa084cf8b6ff0ea658b6617c68fe594a4d689dd",
+            "media_type": "text/html",
+            "path": "report.html",
+            "size": 5538
+          },
+          {
+            "digest": "sha256:0f757c4181e78b4a0c11b4436243f85eb3f6a9d587092f68d4a5923602c63dba",
+            "media_type": "application/json",
+            "path": "report.json",
+            "size": 18477
+          }
+        ],
+        "offline": true,
+        "report_id": "report.3288a45a8325a02b",
+        "source_included": false,
+        "verified_files": 4
+      },
+      "simulated_device": true,
+      "source_hashes": {
+        "capture": "sha256:334789fdc8f4c7773e37685df46769cda6d10a49707844bec726d601481db49d",
+        "estimator_after": "sha256:04742639fb0ddf5255deeace42a5a705d08b814124b6aed5fbf1d3765597a697",
+        "estimator_before": "sha256:d6ca4c14798025a08b2a821d9a0799e20c32637c66448379148f27d7301aafc5",
+        "ui": "sha256:fbed651ce57a6c552bc7f644d7913314d1440a445b3588533753a577eaaac26f"
+      },
+      "status": "passed",
+      "trace_import": {
+        "artifact_digest": "sha256:c391729993adbbd1ae7ba13eb15a9ead2cbacfc8449ae2030f5cbe42ad2f495b",
+        "bound": true,
+        "capture": {
+          "tool": "case-b-pipeline",
+          "version": "1"
+        },
+        "causal": {
+          "bound": true,
+          "causal_edges": 0,
+          "clock_domains": [
+            {
+              "calibrated": true,
+              "clock_id": "default",
+              "kind": "monotonic",
+              "origin_ns": "0",
+              "uncertainty_ns": "0",
+              "unit": "ns",
+              "wall_clock": false
+            }
+          ],
+          "correlation_links": 0,
+          "link_count": 0,
+          "mapped_entities": 3,
+          "mapped_spans": 3,
+          "mapping_conflicts": 0,
+          "missing_association": [],
+          "state": "complete",
+          "unknown_entity": 0,
+          "unknown_probe": 0,
+          "unmapped_links": 0,
+          "unmapped_spans": 0
+        },
+        "clock": {
+          "domains": [
+            {
+              "calibrated": true,
+              "clock_id": "default",
+              "kind": "monotonic",
+              "origin_ns": "0",
+              "uncertainty_ns": "0",
+              "unit": "ns",
+              "wall_clock": false
+            }
+          ],
+          "kind": "monotonic",
+          "ordering": "single-clock-start-time",
+          "origin_ns": "0",
+          "total_order": true,
+          "unit": "ns"
+        },
+        "coverage": {
+          "expected_count": 3,
+          "limitations": [],
+          "observed_count": 3,
+          "omitted_count": 0,
+          "scope": "runtime run spans in the requested window",
+          "state": "complete",
+          "unresolved_count": 0
+        },
+        "links": [],
+        "links_truncated": false,
+        "loss_notes": [],
+        "lossy": false,
+        "run_id": "run.caseb.trace",
+        "snapshot_id": "sha256:551de8aee31d54f622882e3dcc32679f2464f95aae65114e591069461981c4dd",
+        "span_count": 3,
+        "spans": [
+          {
+            "attributes": {
+              "archmeld.entity_id": "entity.caseb.capture"
+            },
+            "clock_id": "default",
+            "end_ns": "52030468000000",
+            "kind": "function",
+            "name": "capture.exe",
+            "parent_span_id": null,
+            "process_id": "41260",
+            "span_id": "span.1",
+            "start_ns": "52030453000000",
+            "thread_id": "main"
+          },
+          {
+            "attributes": {
+              "archmeld.entity_id": "entity.caseb.estimator"
+            },
+            "clock_id": "default",
+            "end_ns": "52030546000000",
+            "kind": "function",
+            "name": "python.exe",
+            "parent_span_id": null,
+            "process_id": "41260",
+            "span_id": "span.2",
+            "start_ns": "52030468000000",
+            "thread_id": "main"
+          },
+          {
+            "attributes": {
+              "archmeld.entity_id": "entity.caseb.ui"
+            },
+            "clock_id": "default",
+            "end_ns": "52030609000000",
+            "kind": "function",
+            "name": "python.exe",
+            "parent_span_id": null,
+            "process_id": "41260",
+            "span_id": "span.3",
+            "start_ns": "52030546000000",
+            "thread_id": "main"
+          }
+        ],
+        "truncated": false
+      },
+      "trace_run": {
+        "argv": [
+          "python",
+          "pipeline.py",
+          "--capture",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe",
+          "--work",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\traced",
+          "--snapshot-id",
+          "sha256:551de8aee31d54f622882e3dcc32679f2464f95aae65114e591069461981c4dd",
+          "--config-digest",
+          "sha256:fe1d06a2c70b5b53906e756d4a05f7d5a9fd025cc93f0cefe9d8506b6c6f44c2",
+          "--entities",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\entities.json",
+          "--trace",
+          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\trace.json"
+        ],
+        "exit_code": 0,
+        "process_audit": {
+          "cleanup": [],
+          "error": null,
+          "method": "taskkill /PID <root> /T /F plus live process-tree audit",
+          "observed": 0,
+          "processes": [],
+          "state": "complete",
+          "survivors": [],
+          "tool": "Toolhelp32 CreateToolhelp32Snapshot"
+        },
+        "stderr": "",
+        "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "{\"capture\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\capture.csv\", \"estimate\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\estimate.json\", \"ui\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\ui-report.html\"}\r\n",
+        "stdout_digest": "sha256:be9d41935c32796ff3422ee4b9c3dd56212b230e3ebeae3586fcb4ad0aa7129c",
+        "wall_ms": 302
+      },
+      "verification_id": "verification.a8c4f715007dda808bcef76e40a1d604"
+    }
+  },
+  "generated_by": "crates/archmeld-core/tests/e2e_case_b.rs",
+  "platform": "windows"
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "NUDGE",
+  "task_id": "task.investigate",
+  "task_revision": 1,
+  "expires_at": "2026-10-30T01:00:00Z",
+  "reason": "已经有等待证据，但根因尚未定位。",
+  "existing_scope_ref": "investigation.example",
+  "suggested_investigation": "检查现有场景中的队列交接，而非新增功能。"
+}

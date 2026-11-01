@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "manual evidence after real CLI runs; commands recorded in baseline/commands.ndjson",
+  "generated_at": "2026-11-01T00:53:24+0800",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.9"
+  },
+  "passphrase_handling": {
+    "source": "environment only: ARCHMELD_BACKUP_PASSPHRASE and ARCHMELD_BACKUP_NEW_PASSPHRASE",
+    "argv_contains_passphrase": false,
+    "manifest_contains_passphrase": false
+  },
+  "rotation": {
+    "command": "b025-cli-backup-rotate",
+    "old_key_id": "fb6fbd897eca5351dff97be44e75a7e6",
+    "new_key_id": "4ba0137c81bd2167db5652ab9da09bd3",
+    "generation": 2,
+    "file_count": 8,
+    "manifest_digest": "sha256:1af8c2cb7a183074f07e9e2d135a253972c1db7fe9092837b46d3df1f4a95ef0",
+    "old_passphrase_verify": {
+      "exit_code": 1,
+      "error": "{\"error\":\"invalid input: encrypted backup manifest authentication failed\"}"
+    },
+    "new_passphrase_verify": {
+      "exit_code": 0,
+      "checked_files": 8,
+      "key_id": "4ba0137c81bd2167db5652ab9da09bd3"
+    },
+    "restore_after_rotation": "covered by encrypted_backup tests: restore reopens the ledger and reads the blob"
+  },
+  "retention": {
+    "command": "b025-cli-backup-retain",
+    "target_kind": "path",
+    "retention_id": "retention.b025",
+    "checked_files": 8,
+    "manifest_digest": "sha256:1af8c2cb7a183074f07e9e2d135a253972c1db7fe9092837b46d3df1f4a95ef0",
+    "record_digest": "sha256:c62a1a295527bcfa85e7b5915df4b82af3ab3b19bc5799353d6fc7e851b58a5a",
+    "record": {
+      "checked_files": 8,
+      "copied_at": 1793465550,
+      "key_provenance": {
+        "generation": 2,
+        "key_id": "4ba0137c81bd2167db5652ab9da09bd3",
+        "rotated_at": 1793465543,
+        "rotated_from": "fb6fbd897eca5351dff97be44e75a7e6"
+      },
+      "kind": "archmeld.retention_record",
+      "limitations": [
+        "path-based target only; transport and remote credentials are outside this operation",
+        "the retention record is not authenticated; verify the copied bundle before restore"
+      ],
+      "manifest_digest": "sha256:1af8c2cb7a183074f07e9e2d135a253972c1db7fe9092837b46d3df1f4a95ef0",
+      "retention_id": "retention.b025",
+      "schema_version": "1.0",
+      "source": "backup-new",
+      "target": "\\\\?\\F:\\Codex_Work_Space\\_archmeld_temp\\b025_backup\\offhost\\retention.b025",
+      "target_kind": "path",
+      "verified": true
+    },
+    "independent_verify": {
+      "command": "b025-cli-verify-retained",
+      "exit_code": 0,
+      "checked_files": 8
+    }
+  },
+  "tests": {
+    "command": "b025-backup-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "archmeld-core",
+      "--test",
+      "encrypted_backup",
+      "--offline"
+    ],
+    "exit_code": 0,
+    "passed": 3,
+    "failed": 0,
+    "log": "baseline/logs/b025-backup-tests.log",
+    "log_sha256": "sha256:10a9287d5d09655b5b0e3ba38895f0e1a40e5665882edfa612facc6897af9dea",
+    "covered": [
+      "create/verify/tamper/restore",
+      "rotation provenance and restore",
+      "path retention copy/verify/tamper and target refusals"
+    ]
+  },
+  "limitations": [
+    "the retention target is a path on any mounted filesystem; no cloud API, credential or network transport is implemented",
+    "the retention record is a plain JSON sidecar and is not authenticated; the bundle itself must be verified before restore",
+    "the old key id is recorded for provenance but old key material is not escrowed",
+    "rotation re-encrypts locally and leaves the source bundle in place; operators must delete the old bundle explicitly"
+  ],
+  "full_regression": {
+    "command": "b025-rotation-full-regression",
+    "exit_code": 0,
+    "sections": 58,
+    "passed": 131,
+    "failed": 0,
+    "ignored": 0,
+    "log": "baseline/logs/b025-rotation-full-regression.log",
+    "log_sha256": "sha256:6c0391b80ef146e9bb52f315d8524ea9403ece24087dc3fb36e59d2db9aff33a"
+  }
+}

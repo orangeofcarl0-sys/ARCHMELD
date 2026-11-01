@@ -1,0 +1,12 @@
+{
+  "batches": 200,
+  "budget_ms": 180000,
+  "elapsed_ms": 24197,
+  "entities": 20000,
+  "generated_by": "crates/archmeld-core/tests/t3_stress.rs",
+  "integrity": "ok",
+  "limitations": [
+    "synthetic incremental batches; no filesystem changes in this test"
+  ],
+  "schema_version": "1.0"
+}

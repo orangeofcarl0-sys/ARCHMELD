@@ -1,0 +1,149 @@
+{
+  "command": "watch",
+  "mode": "os",
+  "project_id": "project.cli",
+  "result": {
+    "debounce_ms": 150,
+    "limitations": [
+      "OS notifications may be coalesced or dropped; each report re-hashes the workspace so an event is only a wakeup",
+      "no event payload is trusted as drift evidence"
+    ],
+    "reports": [
+      {
+        "added": [],
+        "affected_entities": [
+          {
+            "entity_id": "syn.004f530ee18076ccada4229932bca62d00df577f033fba44bac71d696bf191db",
+            "kind": "symbol",
+            "qualified_name": "app.py::stage"
+          },
+          {
+            "entity_id": "syn.47053d0c11dfd5928a110bff714e0a90a6e601403d0b8321bdb359824c201621",
+            "kind": "file",
+            "qualified_name": "app.py"
+          },
+          {
+            "entity_id": "syn.cbaa08a95e25ebbf7bddfa14ed022ef6e7f5b99e87457d72a9b574c37002938a",
+            "kind": "symbol",
+            "qualified_name": "app.py::queue_depth"
+          }
+        ],
+        "affected_relations": [
+          {
+            "kind": "static_call_candidate",
+            "relation_id": "rel.26bf1ff5b56f9ae64762812c70f337b9dca2b0406a03d819ee347b2cf83dc2f0",
+            "resolution": "candidate",
+            "source_id": "syn.004f530ee18076ccada4229932bca62d00df577f033fba44bac71d696bf191db",
+            "target_id": "syn.cbaa08a95e25ebbf7bddfa14ed022ef6e7f5b99e87457d72a9b574c37002938a"
+          },
+          {
+            "kind": "contains",
+            "relation_id": "rel.dc80b2506ad09b6b63c686bcf28d11f9e7c6bb3cffc1aea9b994289367fa4312",
+            "resolution": "declared",
+            "source_id": "syn.47053d0c11dfd5928a110bff714e0a90a6e601403d0b8321bdb359824c201621",
+            "target_id": "syn.004f530ee18076ccada4229932bca62d00df577f033fba44bac71d696bf191db"
+          },
+          {
+            "kind": "contains",
+            "relation_id": "rel.e602229d441b725734a96dc519c6c1a37c268b6f979619ecba027c69ddc84e09",
+            "resolution": "declared",
+            "source_id": "syn.47053d0c11dfd5928a110bff714e0a90a6e601403d0b8321bdb359824c201621",
+            "target_id": "syn.cbaa08a95e25ebbf7bddfa14ed022ef6e7f5b99e87457d72a9b574c37002938a"
+          }
+        ],
+        "changed": [
+          {
+            "base_digest": "sha256:bfe3faf616f034c86660460ed27e027d99dab06f9dfddee279441edfabcb73a0",
+            "current_digest": "sha256:e4192c9379f00999d7e3055d0b769bf3e3855154aa2239ca2861b1c56604dd68",
+            "path": "app.py",
+            "state": "changed"
+          }
+        ],
+        "deleted": [],
+        "report_id": "drift.watch.os.1793464127139115900.0",
+        "state": "changed"
+      },
+      {
+        "added": [],
+        "affected_entities": [
+          {
+            "entity_id": "syn.004f530ee18076ccada4229932bca62d00df577f033fba44bac71d696bf191db",
+            "kind": "symbol",
+            "qualified_name": "app.py::stage"
+          },
+          {
+            "entity_id": "syn.47053d0c11dfd5928a110bff714e0a90a6e601403d0b8321bdb359824c201621",
+            "kind": "file",
+            "qualified_name": "app.py"
+          },
+          {
+            "entity_id": "syn.cbaa08a95e25ebbf7bddfa14ed022ef6e7f5b99e87457d72a9b574c37002938a",
+            "kind": "symbol",
+            "qualified_name": "app.py::queue_depth"
+          }
+        ],
+        "affected_relations": [
+          {
+            "kind": "static_call_candidate",
+            "relation_id": "rel.26bf1ff5b56f9ae64762812c70f337b9dca2b0406a03d819ee347b2cf83dc2f0",
+            "resolution": "candidate",
+            "source_id": "syn.004f530ee18076ccada4229932bca62d00df577f033fba44bac71d696bf191db",
+            "target_id": "syn.cbaa08a95e25ebbf7bddfa14ed022ef6e7f5b99e87457d72a9b574c37002938a"
+          },
+          {
+            "kind": "contains",
+            "relation_id": "rel.dc80b2506ad09b6b63c686bcf28d11f9e7c6bb3cffc1aea9b994289367fa4312",
+            "resolution": "declared",
+            "source_id": "syn.47053d0c11dfd5928a110bff714e0a90a6e601403d0b8321bdb359824c201621",
+            "target_id": "syn.004f530ee18076ccada4229932bca62d00df577f033fba44bac71d696bf191db"
+          },
+          {
+            "kind": "contains",
+            "relation_id": "rel.e602229d441b725734a96dc519c6c1a37c268b6f979619ecba027c69ddc84e09",
+            "resolution": "declared",
+            "source_id": "syn.47053d0c11dfd5928a110bff714e0a90a6e601403d0b8321bdb359824c201621",
+            "target_id": "syn.cbaa08a95e25ebbf7bddfa14ed022ef6e7f5b99e87457d72a9b574c37002938a"
+          }
+        ],
+        "changed": [
+          {
+            "base_digest": "sha256:bfe3faf616f034c86660460ed27e027d99dab06f9dfddee279441edfabcb73a0",
+            "current_digest": "sha256:0117af0910eed85caed88b239c2b32cf3c6cb4562e66d55b4b8f1b7657a9233f",
+            "path": "app.py",
+            "state": "changed"
+          }
+        ],
+        "deleted": [],
+        "report_id": "drift.watch.os.1793464161024965900.1",
+        "state": "changed"
+      }
+    ],
+    "source_mutation": "none",
+    "stopped_by": "iterations",
+    "ticks": 2,
+    "watcher_backend": "notify::RecommendedWatcher",
+    "watcher_kind": "os_notify"
+  },
+  "snapshot_id": "sha256:852e7684f8bd40c9ef4e97329e43793400d087e66aa007354320b0a5d9042c6a",
+  "argv": [
+    "archmeld",
+    "watch",
+    "--state",
+    "state",
+    "--project",
+    "project.cli",
+    "--snapshot",
+    "sha256:852e7684f8bd40c9ef4e97329e43793400d087e66aa007354320b0a5d9042c6a",
+    "--workspace",
+    "repo",
+    "--mode",
+    "os",
+    "--iterations",
+    "2",
+    "--interval-ms",
+    "3600000",
+    "--debounce-ms",
+    "150"
+  ],
+  "cwd": "F:/Codex_Work_Space/_archmeld_temp/b016_trace_evidence"
+}

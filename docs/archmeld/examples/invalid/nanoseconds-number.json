@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "id": "runtime.synthetic",
+  "project_id": "project.synthetic",
+  "scenario_id": null,
+  "snapshot_id": null,
+  "build_digest": null,
+  "binding": "unbound",
+  "status": "succeeded",
+  "raw_artifacts": [
+    "sha256:9d785104e5e80eb1ae018bfad253f7d817628e1e6a4d0ac098eec6be31253881"
+  ],
+  "normalized_artifact": null,
+  "producer": {
+    "name": "synthetic-spec-fixture",
+    "version": "1.0",
+    "source_ref": "not-a-real-analysis-run",
+    "run_id": "run.trace"
+  },
+  "clocks": [
+    {
+      "id": "clock.example",
+      "kind": "monotonic",
+      "unit": "ns",
+      "offset_ns": null,
+      "uncertainty_ns": null
+    }
+  ],
+  "mapping_coverage": {
+    "state": "unknown",
+    "scope": "synthetic input without runtime manifest",
+    "expected_count": null,
+    "observed_count": 0,
+    "omitted_count": 0,
+    "unresolved_count": 1,
+    "limitations": [
+      "Not collected from a running program"
+    ]
+  },
+  "lossy": false,
+  "loss_notes": [],
+  "overhead": "unknown",
+  "sample_spans": [
+    {
+      "id": "span.example",
+      "parent_id": null,
+      "process_id": "process.example",
+      "thread_or_task_id": "task.example",
+      "name": "compute",
+      "start_ns": 9007199254740993,
+      "duration_ns": "10",
+      "clock_id": "clock.example",
+      "entity_id": null,
+      "source_mapping": "unmapped",
+      "correlation_ids": []
+    }
+  ]
+}

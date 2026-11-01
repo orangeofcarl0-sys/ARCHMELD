@@ -1,0 +1,75 @@
+{
+  "checks": {
+    "annotation_definition": [
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Marker.java",
+        9,
+        18
+      ]
+    ],
+    "annotation_references": [
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Marker.java",
+        9,
+        18
+      ],
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
+        2,
+        1
+      ]
+    ],
+    "interface_definition": [
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Transformer.java",
+        3,
+        8
+      ]
+    ],
+    "other_class_definition": [
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Other.java",
+        3,
+        22
+      ]
+    ],
+    "overload_int_definition": [
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
+        4,
+        22
+      ]
+    ],
+    "overload_string_definition": [
+      [
+        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
+        8,
+        22
+      ]
+    ],
+    "reflection_definition": [],
+    "reflection_not_guessed": true,
+    "rename_did_not_touch": {
+      "other_call_line": 10,
+      "reflection_line": 14
+    },
+    "rename_touched_app_lines": [
+      [
+        8,
+        9
+      ]
+    ]
+  },
+  "language": "java",
+  "process_audit": {
+    "exit_code": 0,
+    "orphan_pids": []
+  },
+  "rename_files": [
+    "src/main/java/pkg/App.java",
+    "src/main/java/pkg/Util.java"
+  ],
+  "runtime_trace": "B016 runtime mapping available; Java runtime scenario not yet run",
+  "server": "jdtls 1.64.0.202610301801 / JDK 25.0.5+8",
+  "snapshot_id": "sha256:dca6e67cd4e357234b871fcc4d541816e88fe766265b8759d38149c5f1e6f9b9"
+}

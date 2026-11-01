@@ -1,0 +1,33 @@
+{
+  "id": "typescript",
+  "languages": [
+    "typescript"
+  ],
+  "fixture": "fixtures/typescript",
+  "tools": {
+    "lsp": {
+      "name": "typescript-language-server",
+      "version": "4.3.4"
+    },
+    "typescript": "5.8.3"
+  },
+  "capabilities": {
+    "structure": "verified_by_parser",
+    "definition_reference": "verified_by_test",
+    "bounded_refactor": "verified_apply:B030",
+    "runtime_linkage": "verified_native_capture:B030",
+    "build_verify": "verified_fixture:B030",
+    "controlled_change": "verified_changeset:B030"
+  },
+  "evidence": [
+    "evidence/typescript.json",
+    "docs/release-evidence/B030-runtime-linkage.json",
+    "docs/release-evidence/B030-medium-projects.json",
+    "docs/release-evidence/B030-rename-apply.json"
+  ],
+  "limits": [
+    "dynamic property access does not resolve to a static project target",
+    "rename is preview-only"
+  ],
+  "matrix": "docs/release-evidence/B030-language-matrix.json"
+}

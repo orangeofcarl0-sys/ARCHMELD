@@ -1,0 +1,37 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-027-drift-backup-gc.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/drift",
+      "summary": "Compare the current workspace against an explicit base snapshot and persist a review report. Never mutates history or source."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/drift",
+      "summary": "List persisted drift reports.",
+      "added_parameters": [
+        {"name": "project_id", "in": "query", "required": true, "schema": {"$ref": "#/$defs/Id"}}
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/backups",
+      "summary": "Create a consistent VACUUM INTO database copy plus a verified CAS object manifest under a server-selected directory."
+    },
+    {
+      "method": "POST",
+      "path": "/v1/gc",
+      "summary": "Mark-and-sweep GC over the ledger CAS; dry_run defaults to true and pinned/referenced objects are never removed."
+    }
+  ],
+  "invariants": {
+    "history_mutation": "none",
+    "source_mutation": "none",
+    "old_snapshot_queryable": true,
+    "gc_deletion": "only unreferenced and unpinned objects, after a non-dry-run request",
+    "backup": "VACUUM INTO + object manifest, verified by digest and PRAGMA integrity_check"
+  }
+}

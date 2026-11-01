@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "algorithm": "first_order_iir_estimator",
+  "units": {
+    "input": "V",
+    "output": "V",
+    "alpha": "dimensionless",
+    "sample_rate": "Hz",
+    "phase": "rad"
+  },
+  "shape": {
+    "output": [8, 1],
+    "phase": [6, 1]
+  },
+  "dtype": "float64",
+  "seed": 0,
+  "tolerance": {
+    "atol": "1e-12",
+    "rtol": "1e-12",
+    "source": "frozen in BehaviorContract before apply; ADR-034"
+  },
+  "input": [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0],
+  "alpha": "0.5",
+  "initial": "0.0",
+  "expected_output": [0.0, 0.5, 0.75, 0.875, 0.4375, 0.21875, 0.609375, 0.3046875],
+  "phase_angles": [3.0, 3.2, -3.2, -3.0, 3.141592653589793, -3.141592653589793],
+  "expected_phase": [
+    3.0,
+    -3.083185307179586,
+    3.083185307179586,
+    -3.0,
+    -3.141592653589793,
+    -3.141592653589793
+  ],
+  "dynamic_checks": {
+    "first_step_value": 0.5,
+    "peak": 0.875,
+    "final": 0.3046875,
+    "full_trace_compared": true,
+    "state_update_order": "y[n]=alpha*x[n]+(1-alpha)*y[n-1]"
+  },
+  "boundary_checks": [
+    "empty input returns an empty output",
+    "alpha=0 holds the initial value",
+    "alpha=1 copies the input",
+    "phase at +pi wraps to -pi",
+    "phase just above -pi remains in the valid circle",
+    "repeated runs are deterministic"
+  ]
+}
