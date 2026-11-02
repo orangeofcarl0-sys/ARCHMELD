@@ -81,7 +81,7 @@
           "scope": "scenario process exit, output capture and process-tree audit",
           "state": "partial"
         },
-        "cwd": "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run",
+        "cwd": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run",
         "env_names": [
           "PATH",
           "PATHEXT",
@@ -148,9 +148,9 @@
       "normal_manifest": {
         "argv": [
           "python",
-          "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\repo\\producer.py",
-          "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run\\trace.json",
-          "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\repo\\consumer_worker.py"
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\repo\\producer.py",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run\\trace.json",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\repo\\consumer_worker.py"
         ],
         "cancelled": false,
         "completion": "succeeded",
@@ -160,7 +160,7 @@
           "scope": "scenario process exit, output capture and process-tree audit",
           "state": "complete"
         },
-        "cwd": "<local-user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run",
+        "cwd": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp7Mv5vY\\run",
         "env_names": [
           "PATH",
           "PATHEXT",

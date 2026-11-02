@@ -18,8 +18,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "F:/Codex_Work_Space/_archmeld_tools";
-const TEMP: &str = "F:/Codex_Work_Space/_archmeld_temp";
+const TOOLS: &str = "<workspace>/_archmeld_tools";
+const TEMP: &str = "<workspace>/_archmeld_temp";
 
 fn fixtures() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../adapters/languages/fixtures")
@@ -344,7 +344,7 @@ fn csharp_env(root: &Path) -> Vec<(String, String)> {
         ("DOTNET_ROOT".into(), format!("{TOOLS}/dotnet8")),
         (
             "NUGET_PACKAGES".into(),
-            "<local-user>/.nuget/packages".into(),
+            "<home>/.nuget/packages".into(),
         ),
         ("DOTNET_CLI_TELEMETRY_OPTOUT".into(), "1".into()),
         ("DOTNET_NOLOGO".into(), "1".into()),
@@ -353,7 +353,7 @@ fn csharp_env(root: &Path) -> Vec<(String, String)> {
             root.to_string_lossy().into_owned(),
         ),
         ("HOMEDRIVE".into(), "C:".into()),
-        ("HOMEPATH".into(), "<local-user>".into()),
+        ("HOMEPATH".into(), "<home>".into()),
         ("ProgramFiles".into(), "C:/Program Files".into()),
         ("ProgramFiles(x86)".into(), "C:/Program Files (x86)".into()),
         ("PROCESSOR_ARCHITECTURE".into(), "AMD64".into()),
@@ -863,7 +863,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let session = LspSession::start(
             &LspServerSpec {
                 id: "rust-analyzer".into(),
-                program: PathBuf::from("<local-user>/.rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe"),
+                program: PathBuf::from("<home>/.rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe"),
                 args: vec![],
                 cwd: fixture.root.clone(),
                 env: Vec::new(),

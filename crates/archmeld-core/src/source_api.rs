@@ -74,44 +74,8 @@ pub fn read_source(store: &Store, raw: &Value) -> Result<Value> {
     let text = std::str::from_utf8(&bytes).map_err(|_| {
         CoreError::unsupported(format!("{path} is not valid UTF-8; source is unsupported"))
     })?;
-    let index = LineIndex::new(&bytes);
-
-    let (start, end) = match anchor["precision"].as_str().unwrap_or("") {
-        "bytes" => {
-            let start = anchor["byte_start"]
-                .as_u64()
-                .ok_or_else(|| CoreError::Storage("byte anchor has no byte_start".to_string()))?;
-            let end = anchor["byte_end"]
-                .as_u64()
-                .ok_or_else(|| CoreError::Storage("byte anchor has no byte_end".to_string()))?;
-            (start, end)
-        }
-        "line_only" => {
-            // Upstream parsers expose 1-based lines. 0 is accepted as "first
-            // line" for adapters that use 0-based rows.
-            let line_start = anchor["line_start"].as_u64().unwrap_or(0);
-            let first = if line_start == 0 { 0 } else { line_start - 1 };
-            let last = anchor["line_end"]
-                .as_u64()
-                .map(|end| if end == 0 { 0 } else { end - 1 })
-                .unwrap_or(first);
-            let start = index
-                .line_start(first)
-                .ok_or_else(|| CoreError::invalid("line anchor start is out of range"))?;
-            let end = index
-                .line_start(last + 1)
-                .unwrap_or(index.len());
-            (start, end)
-        }
-        other => {
-            return Err(CoreError::unsupported(format!(
-                "anchor precision {other:?} cannot be read as source"
-            )))
-        }
-    };
-    if start > end || end > bytes.len() as u64 {
-        return Err(CoreError::invalid("anchor range is outside the blob"));
-    }
+    let range = crate::anchor::byte_range(&anchor, &bytes)?;
+    let (start, end) = (range.start, range.end);
     let mut slice_end = end;
     let max = request.max_bytes as u64;
     let truncated = end - start > max;

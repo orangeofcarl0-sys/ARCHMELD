@@ -34,14 +34,17 @@ use archmeld_core::manager::{
 };
 use archmeld_core::query::run_query;
 use archmeld_core::report::export_report;
+use archmeld_core::review::review_workspace_diff;
 use archmeld_core::scenario::{
-    get_scenario_run, run_scenario, ExecutionGrant, ScenarioSandbox, ScenarioSpec,
+    execute_prepared_owned, finalize_scenario, get_scenario_run, prepare_scenario,
+    ExecutionGrant, ScenarioSandbox, ScenarioSpec,
 };
 use archmeld_core::retention::{
     configure_retention, list_retention_runs, prune_snapshots, retention_status,
 };
 use archmeld_core::runtime::{runtime_summary, timeline};
 use archmeld_core::source_api::{read_source, read_source_file};
+use archmeld_core::status::status_report;
 use archmeld_core::store::Store;
 use archmeld_core::verification::{
     accept_changeset, get_verification, list_verifications, verify_changeset,
@@ -57,7 +60,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
@@ -72,14 +75,26 @@ pub struct ApiState {
     /// Trusted allowlist: workspace handle -> canonical root.
     pub workspaces: HashMap<String, PathBuf>,
     pub state_dir: PathBuf,
+    /// Cooperative cancellation flags for live scenario runs. This lock is
+    /// independent of the Store so a cancel request never waits for a child.
+    pub scenario_cancels: Arc<Mutex<HashMap<(String, String), Arc<AtomicBool>>>>,
 }
 
 pub fn router(state: ApiState) -> Router {
     let shared = state.clone();
     Router::new()
         .route("/v1/health", get(health))
+        .route("/v1/status", get(status_handler))
+        .route(
+            "/v1/reviews/workspace-diff",
+            post(review_workspace_diff_handler),
+        )
         .route("/v1/scenarios", post(run_scenario_handler))
         .route("/v1/scenarios/{run_id}", get(get_scenario_handler))
+        .route(
+            "/v1/scenarios/{run_id}/cancel",
+            post(cancel_scenario_handler),
+        )
         .route("/v1/projects/open", post(open_project))
         .route("/v1/projects/{project_id}", get(get_project_handler))
         .route("/v1/projects/{project_id}/close", post(close_project_handler))
@@ -310,33 +325,103 @@ async fn run_scenario_handler(
                 .unwrap_or(0)
         )
     });
-    let mut store = lock_mut(&state)?;
-    let payload = store
-        .snapshot_payload(project_id, snapshot_id)
-        .map_err(ApiError::core_err)?
-        .ok_or_else(|| ApiError::core(CoreError::not_found("snapshot not found"), "runScenario"))?;
-    let config_digest = payload["config_digest"]
-        .as_str()
-        .ok_or_else(|| ApiError::core(CoreError::Storage("snapshot has no config_digest".into()), "runScenario"))?
-        .to_string();
-    let spec = ScenarioSpec {
-        project_id: project_id.to_string(),
-        run_id: run_id.clone(),
-        snapshot_id: snapshot_id.to_string(),
-        config_digest,
-        argv,
-        cwd,
-        env,
-        timeout: Duration::from_millis(timeout_ms),
-        sandbox,
+    let spec = {
+        let store = lock(&state)?;
+        let payload = store
+            .snapshot_payload(project_id, snapshot_id)
+            .map_err(ApiError::core_err)?
+            .ok_or_else(|| ApiError::core(CoreError::not_found("snapshot not found"), "runScenario"))?;
+        let config_digest = payload["config_digest"]
+            .as_str()
+            .ok_or_else(|| ApiError::core(CoreError::Storage("snapshot has no config_digest".into()), "runScenario"))?
+            .to_string();
+        ScenarioSpec {
+            project_id: project_id.to_string(),
+            run_id: run_id.clone(),
+            snapshot_id: snapshot_id.to_string(),
+            config_digest,
+            argv,
+            cwd,
+            env,
+            timeout: Duration::from_millis(timeout_ms),
+            sandbox,
+        }
     };
-    let scenario = run_scenario(
-        &mut store,
-        &spec,
-        &ExecutionGrant::grant(grant_id, reason),
-    )
-    .map_err(ApiError::core_err)?;
+    let prepared = {
+        let mut store = lock_mut(&state)?;
+        prepare_scenario(&mut store, spec, ExecutionGrant::grant(grant_id, reason))
+            .map_err(ApiError::core_err)?
+    };
+    // The child process can take minutes; run it on a blocking worker with no
+    // Store guard, so queries, events and cancellation remain responsive.
+    let cancel = Arc::new(AtomicBool::new(false));
+    let cancel_key = (project_id.to_string(), run_id.clone());
+    if let Ok(mut active) = state.scenario_cancels.lock() {
+        active.insert(cancel_key.clone(), cancel.clone());
+    }
+    let outcome = tokio::task::spawn_blocking(move || {
+        execute_prepared_owned(prepared, Some(cancel))
+    })
+    .await;
+    if let Ok(mut active) = state.scenario_cancels.lock() {
+        active.remove(&cancel_key);
+    }
+    let outcome = outcome
+        .map_err(|error| {
+            ApiError::core(
+                CoreError::Storage(format!("scenario task join: {error}")),
+                "runScenario",
+            )
+        })?
+        .map_err(ApiError::core_err)?;
+    let mut store = lock_mut(&state)?;
+    let scenario = finalize_scenario(&mut store, outcome).map_err(ApiError::core_err)?;
     Ok(Json(scenario))
+}
+
+async fn cancel_scenario_handler(
+    State(state): State<ApiState>,
+    Path(run_id): Path<String>,
+    Json(body): Json<Value>,
+) -> Result<Json<Value>, ApiError> {
+    let project_id = body["project_id"]
+        .as_str()
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| {
+            ApiError::core(
+                CoreError::invalid("project_id is required"),
+                "cancelScenario",
+            )
+        })?;
+    let key = (project_id.to_string(), run_id.clone());
+    let flag = state
+        .scenario_cancels
+        .lock()
+        .map_err(|_| {
+            ApiError::core(
+                CoreError::Storage("scenario cancellation registry is poisoned".into()),
+                "cancelScenario",
+            )
+        })?
+        .get(&key)
+        .cloned();
+    match flag {
+        Some(flag) => {
+            flag.store(true, Ordering::SeqCst);
+            Ok(Json(json!({
+                "run_id": run_id,
+                "project_id": project_id,
+                "state": "cancel_requested",
+                "cancelled": true,
+            })))
+        }
+        None => Ok(Json(json!({
+            "run_id": run_id,
+            "project_id": project_id,
+            "state": "not_running",
+            "cancelled": false,
+        }))),
+    }
 }
 
 #[derive(Deserialize)]
@@ -514,6 +599,73 @@ async fn health() -> Json<Value> {
         "status": "ready",
         "product_version": PRODUCT_VERSION,
     }))
+}
+
+#[derive(Deserialize)]
+struct StatusQuery {
+    project_id: Option<String>,
+    workspace_handle: Option<String>,
+}
+
+async fn status_handler(
+    State(state): State<ApiState>,
+    Query(params): Query<StatusQuery>,
+) -> Result<Json<Value>, ApiError> {
+    let workspace = match params.workspace_handle {
+        Some(handle) => Some(state.workspaces.get(&handle).cloned().ok_or_else(|| {
+            ApiError::core(
+                CoreError::Unsupported(
+                    "permission_denied: workspace_handle is not authorized".into(),
+                ),
+                "status",
+            )
+        })?),
+        None => None,
+    };
+    let store = lock(&state)?;
+    status_report(&store, params.project_id.as_deref(), workspace.as_deref())
+        .map(Json)
+        .map_err(ApiError::core_err)
+}
+
+async fn review_workspace_diff_handler(
+    State(state): State<ApiState>,
+    Json(body): Json<Value>,
+) -> Result<Json<Value>, ApiError> {
+    let project_id = body["project_id"].as_str().ok_or_else(|| {
+        ApiError::core(
+            CoreError::invalid("project_id is required"),
+            "reviewWorkspaceDiff",
+        )
+    })?;
+    let handle = body["workspace_handle"].as_str().ok_or_else(|| {
+        ApiError::core(
+            CoreError::invalid("workspace_handle is required"),
+            "reviewWorkspaceDiff",
+        )
+    })?;
+    let root = state.workspaces.get(handle).cloned().ok_or_else(|| {
+        ApiError::core(
+            CoreError::Unsupported("permission_denied: workspace_handle is not authorized".into()),
+            "reviewWorkspaceDiff",
+        )
+    })?;
+    let store = lock(&state)?;
+    let base_snapshot_id = match body["base_snapshot_id"].as_str() {
+        Some(snapshot_id) if !snapshot_id.is_empty() => snapshot_id.to_string(),
+        _ => store
+            .latest_snapshot_id(project_id)
+            .map_err(ApiError::core_err)?
+            .ok_or_else(|| {
+                ApiError::core(
+                    CoreError::not_found("project has no snapshot to review against"),
+                    "reviewWorkspaceDiff",
+                )
+            })?,
+    };
+    review_workspace_diff(&store, project_id, &base_snapshot_id, &root)
+        .map(Json)
+        .map_err(ApiError::core_err)
 }
 
 async fn query(State(state): State<ApiState>, Json(body): Json<Value>) -> Result<Json<Value>, ApiError> {

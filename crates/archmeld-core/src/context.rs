@@ -11,8 +11,9 @@
 
 use crate::error::{CoreError, Result};
 use crate::hash;
+use crate::source::LineIndex;
 use crate::store::{validate, Store};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -21,6 +22,11 @@ const SNIPPET_BYTES: usize = 1200;
 const MAX_ENTITY_METADATA: usize = 80;
 const MAX_RELATIONS: usize = 300;
 const RESUME_BYTES: usize = 200;
+const MAX_SEEDS: usize = 8;
+const MAX_CANDIDATES: usize = 200;
+const MAX_OBJECTIVE_TOKENS: usize = 16;
+const MAX_OBJECTIVE_SCAN_BYTES: u64 = 64 * 1024 * 1024;
+const CLAIM_BUDGET_PERCENT: usize = 35;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -32,6 +38,422 @@ struct ContextRequest {
     entity_ids: Vec<String>,
     budget_tokens: u64,
     changeset_id: Option<String>,
+    #[serde(default)]
+    cursor: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct ContextCursor {
+    /// The request digest includes the snapshot id, so the cursor is bound to
+    /// both without repeating a 64-character digest in every small pack.
+    request_digest: String,
+    offset: u64,
+}
+
+#[derive(Debug, Clone)]
+struct CandidateSelection {
+    ids: Vec<String>,
+    scores: BTreeMap<String, i64>,
+    matched_by: BTreeMap<String, BTreeSet<String>>,
+    names: BTreeMap<String, String>,
+    seeds: BTreeSet<String>,
+    missing_requested: Vec<String>,
+    seed_source: &'static str,
+    fallback: bool,
+    objective_terms: Vec<String>,
+    source_scanned_bytes: u64,
+    source_scan_truncated: bool,
+}
+
+fn context_request_digest(raw: &Value) -> Result<String> {
+    let mut normalized = raw.clone();
+    if let Some(object) = normalized.as_object_mut() {
+        object.remove("cursor");
+    }
+    hash::digest_value(&normalized)
+        .map_err(|error| CoreError::invalid(format!("context request digest: {error}")))
+}
+
+fn encode_context_cursor(cursor: &ContextCursor) -> Result<String> {
+    let digest = cursor
+        .request_digest
+        .strip_prefix("sha256:")
+        .unwrap_or(&cursor.request_digest);
+    if digest.len() != 64 || !digest.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err(CoreError::Storage(
+            "context cursor request digest is not sha256".to_string(),
+        ));
+    }
+    Ok(format!("k1:{}:{digest}", cursor.offset))
+}
+
+fn decode_context_cursor(token: &str) -> Result<ContextCursor> {
+    let rest = token
+        .strip_prefix("k1:")
+        .ok_or_else(|| CoreError::invalid("context cursor has an unknown format"))?;
+    let (offset, digest) = rest
+        .split_once(':')
+        .ok_or_else(|| CoreError::invalid("context cursor payload is corrupt"))?;
+    let offset = offset
+        .parse::<u64>()
+        .map_err(|_| CoreError::invalid("context cursor offset is invalid"))?;
+    if digest.len() != 64 || !digest.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err(CoreError::invalid("context cursor digest is invalid"));
+    }
+    Ok(ContextCursor {
+        request_digest: format!("sha256:{digest}"),
+        offset,
+    })
+}
+
+fn objective_tokens(objective: &str) -> Vec<String> {
+    const STOPWORDS: &[&str] = &[
+        "the", "and", "for", "with", "this", "that", "from", "into", "without", "whether",
+        "what", "when", "where", "which", "while", "should", "would", "could", "have", "has",
+        "are", "was", "were", "its", "our", "your", "their", "about", "after", "before",
+        "between", "code", "changes", "files", "project", "snapshot", "using", "make",
+    ];
+    let mut tokens = Vec::new();
+    for word in objective
+        .split(|character: char| !character.is_alphanumeric() && character != '_')
+    {
+        let word = word.to_lowercase();
+        if word.len() < 3 || STOPWORDS.contains(&word.as_str()) {
+            continue;
+        }
+        if !tokens.contains(&word) {
+            tokens.push(word);
+            if tokens.len() >= MAX_OBJECTIVE_TOKENS {
+                break;
+            }
+        }
+    }
+    tokens
+}
+
+fn escape_like(text: &str) -> String {
+    text.replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_")
+}
+
+fn add_candidate(
+    scores: &mut BTreeMap<String, i64>,
+    matched_by: &mut BTreeMap<String, BTreeSet<String>>,
+    id: &str,
+    score: i64,
+    reason: &str,
+) {
+    scores
+        .entry(id.to_string())
+        .and_modify(|current| *current = current.saturating_add(score))
+        .or_insert(score);
+    matched_by
+        .entry(id.to_string())
+        .or_default()
+        .insert(reason.to_string());
+}
+
+fn relation_weight(kind: &str) -> i64 {
+    match kind {
+        "implements" | "declares" | "contains" | "resolved_call" | "observed_call" => 40,
+        "static_call_candidate" | "references" | "imports" => 25,
+        "reads" | "writes" | "publishes" | "consumes" | "awaits" | "schedules" => 15,
+        _ => 5,
+    }
+}
+
+fn select_candidates(
+    store: &Store,
+    request: &ContextRequest,
+    relations: &[Value],
+) -> Result<CandidateSelection> {
+    let objective_terms = objective_tokens(&request.objective);
+    let mut scores: BTreeMap<String, i64> = BTreeMap::new();
+    let mut matched_by: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    let mut names: BTreeMap<String, String> = BTreeMap::new();
+    let mut missing_requested = Vec::new();
+    let mut requested = request.entity_ids.clone();
+    requested.sort();
+    requested.dedup();
+    for id in &requested {
+        match store.get_entity(&request.project_id, &request.snapshot_id, id)? {
+            Some(entity) => {
+                let name = entity["qualified_name"].as_str().unwrap_or("").to_string();
+                add_candidate(&mut scores, &mut matched_by, id, 1000, "requested");
+                names.insert(id.clone(), name);
+            }
+            None => missing_requested.push(id.clone()),
+        }
+    }
+    let mut seed_source = "explicit";
+    let mut fallback = false;
+    let mut source_scanned_bytes = 0u64;
+    let mut source_scan_truncated = false;
+    if request.entity_ids.is_empty() {
+        for term in &objective_terms {
+            let pattern = format!("%{}%", escape_like(term));
+            let mut statement = store.conn.prepare(
+                "SELECT payload_json FROM entities
+                 WHERE project_id=?1 AND snapshot_id=?2
+                   AND LOWER(qualified_name) LIKE ?3 ESCAPE '\\'
+                 LIMIT 500",
+            )?;
+            let rows = statement.query_map(
+                (&request.project_id, &request.snapshot_id, &pattern),
+                |row| row.get::<_, String>(0),
+            )?;
+            for row in rows {
+                let payload: Value = serde_json::from_str(&row?).map_err(|error| {
+                    CoreError::Storage(format!("entity payload corrupt: {error}"))
+                })?;
+                let Some(id) = payload["id"].as_str() else {
+                    continue;
+                };
+                let name = payload["qualified_name"].as_str().unwrap_or("");
+                let lower = name.to_lowercase();
+                let short = lower.rsplit("::").next().unwrap_or(&lower);
+                let score = if lower == *term {
+                    140
+                } else if short == term {
+                    110
+                } else {
+                    40 + (term.len() as i64).min(10)
+                };
+                add_candidate(&mut scores, &mut matched_by, id, score, term);
+                names
+                    .entry(id.to_string())
+                    .or_insert_with(|| name.to_string());
+            }
+        }
+        let (source_scores, scanned, truncated) =
+            objective_source_scores(store, request, &objective_terms)?;
+        source_scanned_bytes = scanned;
+        source_scan_truncated = truncated;
+        for (id, (score, terms)) in source_scores {
+            for term in terms {
+                add_candidate(&mut scores, &mut matched_by, &id, score, &term);
+            }
+            if !names.contains_key(&id) {
+                if let Some(entity) =
+                    store.get_entity(&request.project_id, &request.snapshot_id, &id)?
+                {
+                    names.insert(
+                        id.clone(),
+                        entity["qualified_name"].as_str().unwrap_or("").to_string(),
+                    );
+                }
+            }
+        }
+        if scores.is_empty() {
+            let mut ids = store.entity_ids(&request.project_id, &request.snapshot_id)?;
+            ids.truncate(MAX_ENTITY_METADATA);
+            for id in ids {
+                if let Some(entity) =
+                    store.get_entity(&request.project_id, &request.snapshot_id, &id)?
+                {
+                    add_candidate(&mut scores, &mut matched_by, &id, 1, "fallback");
+                    names.insert(
+                        id.clone(),
+                        entity["qualified_name"].as_str().unwrap_or("").to_string(),
+                    );
+                }
+            }
+            seed_source = "fallback";
+            fallback = true;
+        } else {
+            seed_source = "objective";
+        }
+    }
+
+    let mut ranked: Vec<(String, i64)> = scores
+        .iter()
+        .map(|(id, score)| (id.clone(), *score))
+        .collect();
+    ranked.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
+    let seeds: BTreeSet<String> = ranked
+        .iter()
+        .take(MAX_SEEDS)
+        .map(|(id, _)| id.clone())
+        .collect();
+
+    // One bounded hop from the seeds. A neighbor of several seeds accumulates
+    // relevance; a candidate that is itself a seed is never replaced.
+    let mut neighbor_scores: BTreeMap<String, i64> = BTreeMap::new();
+    for relation in relations {
+        let Some(source) = relation["source_id"].as_str() else {
+            continue;
+        };
+        let Some(target) = relation["target_id"].as_str() else {
+            continue;
+        };
+        let source_seed = seeds.contains(source);
+        let target_seed = seeds.contains(target);
+        if source_seed == target_seed {
+            continue;
+        }
+        let (neighbor, reason) = if source_seed {
+            (target, "outgoing_neighbor")
+        } else {
+            (source, "incoming_neighbor")
+        };
+        let weight = relation_weight(relation["kind"].as_str().unwrap_or(""));
+        let entry = neighbor_scores.entry(neighbor.to_string()).or_insert(0);
+        *entry = entry.saturating_add(weight);
+        matched_by
+            .entry(neighbor.to_string())
+            .or_default()
+            .insert(reason.to_string());
+    }
+    for (id, score) in neighbor_scores {
+        scores
+            .entry(id.clone())
+            .and_modify(|current| *current = current.saturating_add(score))
+            .or_insert(score);
+        if !names.contains_key(&id) {
+            if let Some(entity) = store.get_entity(&request.project_id, &request.snapshot_id, &id)? {
+                names.insert(id.clone(), entity["qualified_name"].as_str().unwrap_or("").to_string());
+            }
+        }
+    }
+    let mut ranked: Vec<(String, i64)> = scores
+        .iter()
+        .map(|(id, score)| (id.clone(), *score))
+        .collect();
+    ranked.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
+    ranked.truncate(MAX_CANDIDATES);
+    let ids = ranked.iter().map(|(id, _)| id.clone()).collect();
+    Ok(CandidateSelection {
+        ids,
+        scores,
+        matched_by,
+        names,
+        seeds,
+        missing_requested,
+        seed_source,
+        fallback,
+        objective_terms,
+        source_scanned_bytes,
+        source_scan_truncated,
+    })
+}
+
+fn objective_source_scores(
+    store: &Store,
+    request: &ContextRequest,
+    terms: &[String],
+) -> Result<(BTreeMap<String, (i64, BTreeSet<String>)>, u64, bool)> {
+    if terms.is_empty() {
+        return Ok((BTreeMap::new(), 0, false));
+    }
+    let mut statement = store.conn.prepare(
+        "SELECT path, blob_digest FROM files
+         WHERE project_id=?1 AND snapshot_id=?2 ORDER BY path",
+    )?;
+    let rows = statement.query_map(
+        (&request.project_id, &request.snapshot_id),
+        |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
+    )?;
+    let mut found: BTreeMap<String, (i64, BTreeSet<String>)> = BTreeMap::new();
+    let mut scanned = 0u64;
+    let mut truncated = false;
+    let mut span_cache: BTreeMap<String, Vec<(String, u64, u64)>> = BTreeMap::new();
+    for row in rows {
+        let (path, digest) = row?;
+        if scanned >= MAX_OBJECTIVE_SCAN_BYTES {
+            truncated = true;
+            break;
+        }
+        let Some(blob) = store.read_blob_bytes(&digest)? else {
+            continue;
+        };
+        scanned += blob.len() as u64;
+        let Ok(text) = std::str::from_utf8(&blob) else {
+            continue;
+        };
+        let index = LineIndex::new(&blob);
+        let mut spans: Option<Vec<(String, u64, u64)>> = None;
+        for term in terms {
+            let mut from = 0usize;
+            let mut hits = 0usize;
+            while let Some(relative) = text[from..].find(term) {
+                let start = from + relative;
+                let (line0, _) = index.line_col(start as u64).unwrap_or((0, 0));
+                let line = line0 + 1;
+                if spans.is_none() {
+                    let loaded = match span_cache.get(&path) {
+                        Some(spans) => spans.clone(),
+                        None => {
+                            let spans = crate::query::entity_spans_for_path(
+                                store,
+                                &request.project_id,
+                                &request.snapshot_id,
+                                &path,
+                            )?;
+                            span_cache.insert(path.clone(), spans.clone());
+                            spans
+                        }
+                    };
+                    spans = Some(loaded);
+                }
+                for (id, first, last) in spans.as_ref().expect("spans loaded above") {
+                    if *first <= line && line <= *last {
+                        let entry = found.entry(id.clone()).or_insert_with(|| (0, BTreeSet::new()));
+                        entry.0 += 30 + (term.len() as i64).min(20) * 2;
+                        entry.1.insert(term.clone());
+                    }
+                }
+                hits += 1;
+                if hits >= 100 {
+                    break;
+                }
+                from = start + term.len().max(1);
+            }
+        }
+    }
+    Ok((found, scanned, truncated))
+}
+
+fn claim_is_relevant(
+    claim: &Value,
+    terms: &[String],
+    candidate_ids: &BTreeSet<String>,
+    names: &BTreeMap<String, String>,
+) -> bool {
+    let text = format!(
+        "{} {}",
+        claim["text"].as_str().unwrap_or(""),
+        claim["scope"].as_str().unwrap_or("")
+    )
+    .to_lowercase();
+    if terms.iter().any(|term| text.contains(term)) {
+        return true;
+    }
+    for id in claim["support_ids"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .chain(
+            claim["counterevidence_ids"]
+                .as_array()
+                .into_iter()
+                .flatten(),
+        )
+    {
+        if let Some(id) = id.as_str() {
+            if candidate_ids.contains(id) {
+                return true;
+            }
+        }
+    }
+    for name in names.values() {
+        if let Some(short) = name.rsplit("::").next() {
+            if short.len() >= 3 && text.contains(&short.to_lowercase()) {
+                return true;
+            }
+        }
+    }
+    false
 }
 
 pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
@@ -44,6 +466,19 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         return Err(CoreError::invalid("budget_tokens must be 128..=64000"));
     }
     store.check_snapshot_scope(&request.project_id, &request.snapshot_id)?;
+    let request_digest = context_request_digest(raw)?;
+    let offset = match &request.cursor {
+        None => 0,
+        Some(token) => {
+            let cursor = decode_context_cursor(token)?;
+            if cursor.request_digest != request_digest {
+                return Err(CoreError::conflict(
+                    "scope_conflict: context cursor belongs to a different request or snapshot",
+                ));
+            }
+            cursor.offset
+        }
+    };
     let (config_digest, base_payload): (String, String) = store
         .conn
         .query_row(
@@ -63,10 +498,11 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         .filter(|goal| !goal.is_empty())
         .collect();
     let budget_bytes = (request.budget_tokens as usize).saturating_mul(4);
+    let include_selection_metadata = budget_bytes >= 4096;
     let mut pack = json!({
         "schema_version": CONTEXT_VERSION,
         "context_id": format!("context.{}", short_hash(&format!(
-            "{}:{}:{}:{}:{}",
+            "{}:{}:{}:{}:{}:{offset}",
             request.project_id, request.snapshot_id, request.objective, request.budget_tokens,
             request.entity_ids.join(",")
         ))),
@@ -114,13 +550,48 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         },
     });
 
+    let relations = store.relation_payloads(&request.project_id, &request.snapshot_id)?;
+    let selection = select_candidates(store, &request, &relations)?;
+    let candidate_ids: BTreeSet<String> = selection.ids.iter().cloned().collect();
+    if include_selection_metadata {
+        pack["relevance"] = json!({
+            "objective_terms": selection.objective_terms,
+            "seed_source": selection.seed_source,
+            "fallback": selection.fallback,
+            "candidate_count": selection.ids.len(),
+            "source_scan": {
+                "bytes": selection.source_scanned_bytes,
+                "truncated": selection.source_scan_truncated,
+                "limit_bytes": MAX_OBJECTIVE_SCAN_BYTES,
+            },
+        });
+    }
+
     let mut omissions: Vec<Value> = Vec::new();
     let mut omissions_truncated = 0usize;
     let mut counterexample_preserved = false;
 
-    // Claims and counterexamples come before large source bodies.
+    // Claims and counterexamples come before large source bodies. Claims that
+    // cannot be tied to the objective or the candidate slice are aggregated as
+    // omissions instead of being allowed to crowd out the implementation.
     let claims = latest_claims(store, &request.project_id, &request.snapshot_id)?;
-    let mut ordered_claims = claims;
+    let mut relevant_claims = Vec::new();
+    let mut preserved_irrelevant = Vec::new();
+    let mut irrelevant_claims = 0usize;
+    for claim in claims {
+        if claim_is_relevant(&claim, &selection.objective_terms, &candidate_ids, &selection.names) {
+            relevant_claims.push(claim);
+        } else if matches!(
+            claim["status"].as_str().unwrap_or(""),
+            "rejected" | "needs_review"
+        ) && preserved_irrelevant.len() < 2
+        {
+            preserved_irrelevant.push(claim);
+        } else {
+            irrelevant_claims += 1;
+        }
+    }
+    let mut ordered_claims = relevant_claims;
     ordered_claims.sort_by_key(|claim| {
         let status = claim["status"].as_str().unwrap_or("");
         match status {
@@ -130,8 +601,39 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
             _ => 3,
         }
     });
+    let mut preserved_irrelevant = preserved_irrelevant;
+    preserved_irrelevant.sort_by_key(|claim| {
+        if claim["status"] == "rejected" {
+            0
+        } else {
+            1
+        }
+    });
+    ordered_claims.extend(preserved_irrelevant);
+    if irrelevant_claims > 0 {
+        omissions.push(json!({
+            "kind": "claim",
+            "count": irrelevant_claims,
+            "reason": "irrelevant_to_objective",
+            "note": "claims whose text, scope and evidence are unrelated to the objective and candidate slice",
+        }));
+    }
+    let claim_budget_start = serde_json::to_string(&pack)
+        .map(|text| text.len())
+        .unwrap_or(0);
+    let claim_budget = budget_bytes.saturating_mul(CLAIM_BUDGET_PERCENT) / 100;
     let mut claim_refs: BTreeSet<String> = BTreeSet::new();
+    let mut claim_budget_exhausted = false;
     for claim in &ordered_claims {
+        if serde_json::to_string(&pack)
+            .map(|text| text.len())
+            .unwrap_or(0)
+            .saturating_sub(claim_budget_start)
+            > claim_budget
+        {
+            claim_budget_exhausted = true;
+            break;
+        }
         let mut summary = json!({
             "claim_id": claim["id"],
             "claim_type": claim["claim_type"],
@@ -191,29 +693,51 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         }
     }
 
-    // Entities: requested first, then a deterministic bounded neighborhood.
-    let mut requested: Vec<String> = request.entity_ids.clone();
-    requested.sort();
-    requested.dedup();
-    let mut missing_requested = Vec::new();
-    let mut candidate_ids = Vec::new();
-    for id in &requested {
-        if store
-            .get_entity(&request.project_id, &request.snapshot_id, id)?
-            .is_some()
-        {
-            candidate_ids.push(id.clone());
-        } else {
-            missing_requested.push(id.clone());
+    if claim_budget_exhausted {
+        let packed_ids: BTreeSet<String> = pack["claims"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|claim| claim["claim_id"].as_str().map(str::to_string))
+            .collect();
+        let mut other_claims = 0usize;
+        for claim in &ordered_claims {
+            let Some(id) = claim["id"].as_str() else {
+                continue;
+            };
+            if packed_ids.contains(id) {
+                continue;
+            }
+            let status = claim["status"].as_str().unwrap_or("");
+            if matches!(status, "rejected" | "needs_review") {
+                omissions.push(json!({
+                    "kind": "claim",
+                    "id": id,
+                    "status": status,
+                    "reason": "claim_budget",
+                }));
+            } else {
+                other_claims += 1;
+            }
         }
+        if other_claims > 0 {
+            omissions.push(json!({
+                "kind": "claim_budget",
+                "count": other_claims,
+                "reason": "claim_budget",
+                "note": "relevant claims beyond the claim share of the budget are omitted; they are not silently discarded",
+            }));
+        }
+        let remaining = ordered_claims.len().saturating_sub(packed_ids.len());
+        omissions_truncated += remaining;
     }
-    if candidate_ids.is_empty() {
-        candidate_ids = store.entity_ids(&request.project_id, &request.snapshot_id)?;
-        candidate_ids.truncate(MAX_ENTITY_METADATA);
-    }
-    let mut next_cursor = None;
+
+    // Entities: explicit or objective-derived seeds first, then a bounded
+    // one-hop neighborhood. The cursor is an offset into this deterministic
+    // candidate order, so a resumed pack continues the same sequence.
+    let mut next_cursor: Option<String> = None;
     let mut selected_entities: BTreeSet<String> = BTreeSet::new();
-    for (index, entity_id) in candidate_ids.iter().enumerate() {
+    for (index, entity_id) in selection.ids.iter().enumerate().skip(offset as usize) {
         let Some(entity) =
             store.get_entity(&request.project_id, &request.snapshot_id, entity_id)?
         else {
@@ -226,6 +750,11 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
             "qualified_name": entity["qualified_name"],
             "config_digest": entity["config_digest"],
             "anchor_count": entity["anchors"].as_array().map(Vec::len).unwrap_or(0),
+            "relevance": {
+                "score": selection.scores.get(entity_id),
+                "matched_by": selection.matched_by.get(entity_id),
+                "seed": selection.seeds.contains(entity_id),
+            },
         });
         if !append_fits(&pack, &metadata, budget_bytes, RESUME_BYTES) {
             omissions.push(json!({
@@ -234,8 +763,11 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
                 "reason": "budget",
             }));
             omissions_truncated += 1;
-            next_cursor = Some(entity_id.clone());
-            continue;
+            next_cursor = Some(encode_context_cursor(&ContextCursor {
+                request_digest: request_digest.clone(),
+                offset: index as u64,
+            })?);
+            break;
         }
         pack["selected_entities"]
             .as_array_mut()
@@ -259,13 +791,20 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
                 }
             }
         }
-        if index + 1 < candidate_ids.len() {
-            next_cursor = Some(candidate_ids[index + 1].clone());
-        }
+    }
+
+    if include_selection_metadata {
+        pack["page"] = json!({
+            "offset": offset,
+            "candidate_count": selection.ids.len(),
+            "returned_entities": selected_entities.len(),
+            "has_more": next_cursor.is_some(),
+            "seed_source": selection.seed_source,
+            "fallback": selection.fallback,
+        });
     }
 
     // Graph slice touching selected entities, with basis and evidence refs.
-    let relations = store.relation_payloads(&request.project_id, &request.snapshot_id)?;
     let mut relation_refs: BTreeSet<String> = BTreeSet::new();
     let mut relation_count = 0usize;
     for relation in relations {
@@ -381,10 +920,28 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
             }
         }
     }
-    for id in missing_requested {
+    for id in &selection.missing_requested {
         unresolved.push(format!(
             "requested entity {id} is not present in this snapshot"
         ));
+    }
+    if selection.fallback {
+        unresolved.push(
+            "objective matched no symbol or source text; the first entities were selected deterministically, not by relevance"
+                .to_string(),
+        );
+    }
+    if selection.source_scan_truncated {
+        unresolved.push(
+            "objective source scan stopped at the byte limit; relevance may be incomplete"
+                .to_string(),
+        );
+    }
+    if next_cursor.is_some() {
+        unresolved.push(
+            "more candidate entities remain; call again with next_cursor to continue"
+                .to_string(),
+        );
     }
     if counterexample_preserved {
         unresolved.push(
@@ -433,6 +990,29 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
                 }
             }
             popped
+        };
+        let dropped = if dropped {
+            dropped
+        } else {
+            let removed = {
+                let object = pack.as_object_mut().unwrap();
+                ["page", "relevance"]
+                    .into_iter()
+                    .find(|key| object.contains_key(*key))
+                    .map(|key| {
+                        object.remove(key);
+                        key.to_string()
+                    })
+            };
+            if let Some(key) = removed {
+                pack["omissions"]
+                    .as_array_mut()
+                    .unwrap()
+                    .push(json!({"kind": key, "reason": "final_budget_trim"}));
+                true
+            } else {
+                false
+            }
         };
         if !dropped {
             let compacted_omissions = pack["omissions"]
@@ -556,15 +1136,24 @@ fn source_snippet(store: &Store, anchor: &Value) -> Result<Option<Value>> {
     let Some(bytes) = store.read_blob_bytes(blob_digest)? else {
         return Ok(None);
     };
-    let (start, end) = anchor_range(anchor, bytes.len())?;
+    let full = std::str::from_utf8(&bytes).map_err(|_| {
+        CoreError::unsupported(format!("{path} is not valid UTF-8; source is unsupported"))
+    })?;
+    let range = crate::anchor::byte_range(anchor, &bytes)?;
+    let (start, end) = (range.start, range.end);
+    if !full.is_char_boundary(start as usize) {
+        return Err(CoreError::invalid(
+            "anchor start splits a UTF-8 character",
+        ));
+    }
     let slice_end = (start + SNIPPET_BYTES as u64)
         .min(end)
         .min(bytes.len() as u64);
     let mut cut = slice_end as usize;
-    while cut > start as usize && std::str::from_utf8(&bytes[start as usize..cut]).is_err() {
+    while cut > start as usize && !full.is_char_boundary(cut) {
         cut -= 1;
     }
-    let text = std::str::from_utf8(&bytes[start as usize..cut]).unwrap_or("");
+    let text = &full[start as usize..cut];
     Ok(Some(json!({
         "path": path,
         "blob_digest": blob_digest,
@@ -576,22 +1165,17 @@ fn source_snippet(store: &Store, anchor: &Value) -> Result<Option<Value>> {
             "line_start": anchor["line_start"],
             "line_end": anchor["line_end"],
         },
+        "range": {
+            "byte_start": start,
+            "byte_end": end,
+            "line_start": anchor["line_start"],
+            "line_end": anchor["line_end"],
+        },
         "text": text,
         "trust": "untrusted",
         "truncated": cut as u64 != end,
         "blob_size": bytes.len(),
     })))
-}
-
-fn anchor_range(anchor: &Value, blob_len: usize) -> Result<(u64, u64)> {
-    if anchor["precision"] == "bytes" {
-        let start = anchor["byte_start"].as_u64().unwrap_or(0);
-        let end = anchor["byte_end"].as_u64().unwrap_or(blob_len as u64);
-        return Ok((start.min(blob_len as u64), end.min(blob_len as u64)));
-    }
-    // Line-only anchors carry no byte precision; use the whole blob and mark
-    // the range as line-based in the copied anchor.
-    Ok((0, blob_len as u64))
 }
 
 fn short_hash(identity: &str) -> String {

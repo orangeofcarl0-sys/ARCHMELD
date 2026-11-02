@@ -802,6 +802,24 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<Vec<String>>>()?)
     }
 
+    /// Entity counts by language for one snapshot. Used by the session status
+    /// entry; it is a projection of stored facts, not a capability claim.
+    pub fn language_counts(
+        &self,
+        project_id: &str,
+        snapshot_id: &str,
+    ) -> Result<Vec<(String, u64)>> {
+        let mut statement = self.conn.prepare(
+            "SELECT language, COUNT(*) FROM entities
+             WHERE project_id=?1 AND snapshot_id=?2
+             GROUP BY language ORDER BY language",
+        )?;
+        let rows = statement.query_map((project_id, snapshot_id), |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)? as u64))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<Vec<(String, u64)>>>()?)
+    }
+
     /// Registered project ids, for single-project read-only bridges. The
     /// caller still has to resolve an explicit project when more than one
     /// exists.
@@ -809,6 +827,22 @@ impl Store {
         let mut statement = self.conn.prepare("SELECT project_id FROM projects ORDER BY project_id")?;
         let rows = statement.query_map([], |row| row.get::<_, String>(0))?;
         Ok(rows.collect::<rusqlite::Result<Vec<String>>>()?)
+    }
+
+    /// Active workspace root registered for a project. Used by the read-only
+    /// MCP status/review surface; arbitrary caller paths are never accepted.
+    pub fn active_project_root(&self, project_id: &str) -> Result<Option<PathBuf>> {
+        let path: Option<String> = self
+            .conn
+            .query_row(
+                "SELECT root_path FROM project_roots
+                 WHERE project_id=?1 AND active=1
+                 ORDER BY last_seen DESC LIMIT 1",
+                (project_id,),
+                |row| row.get(0),
+            )
+            .ok();
+        Ok(path.map(PathBuf::from))
     }
 
     /// Latest snapshot registered for a project. This is a convenience for

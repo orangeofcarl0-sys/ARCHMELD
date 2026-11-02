@@ -1,0 +1,213 @@
+{
+  "schema_version": "1.0",
+  "review": "2026-11-02 cross-review of public snapshot 94468c6304be5c13892f6c84fc1a4145f994994f",
+  "scope": "F01-F08 executable code findings; F09/F10 remain product work",
+  "status": "code_findings_closed_test_phase",
+  "base_commit": "faf0c426783c1b4b4cbdea0d456a33599da3cd12",
+  "commit": "3d6b7be449361e286bdb15c6f632af1db2cbc4b8",
+  "platform": {
+    "os": "win32",
+    "toolchain": "1.94.1-x86_64-pc-windows-gnu",
+    "rustc": "1.94.1 (e408947bf 2026-03-25)",
+    "cargo": "1.94.1 (29ea6fb6a 2026-03-24)",
+    "python": "3.11.9",
+    "temp": "<home>/AppData/Local/Temp (writable)",
+    "note": "Python 3.14 and the non-writable system TEMP produce unrelated asyncio/JFR/gopls failures; the final run uses 3.11.9 and a writable TEMP/TMP."
+  },
+  "regression": {
+    "cwd": "<repo>",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--no-fail-fast",
+      "-p",
+      "archmeld-core",
+      "-p",
+      "archmeld-api"
+    ],
+    "exit_code": 0,
+    "sections": 73,
+    "passed": 201,
+    "failed": 0,
+    "ignored": 0,
+    "stdout_log_sha256": "sha256:9894aa1a52cccd63a505aa2280b36198159667cd12d205277680c7c3f1cdde9e"
+  },
+  "extension": {
+    "cwd": "<repo>/archmeld-vscode",
+    "argv": [
+      "node",
+      "--test",
+      "test/*.test.js"
+    ],
+    "exit_code": 0,
+    "passed": 37,
+    "failed": 0,
+    "ignored": 0,
+    "stdout_log_sha256": "sha256:52765088e7536981936bf8328fcfe3ef324de33fbfaf7efa4deedfbf0c13409f"
+  },
+  "findings": {
+    "F01_mcp_tool_surface": {
+      "status": "closed",
+      "implementation": "tools/list is generated from the implemented handler registry; inspect advertises only implemented kinds; archmeld_capabilities reports contract tools as requires_grant or not_implemented",
+      "tests": [
+        "crates/archmeld-api/tests/mcp_stdio.rs: tools.len()==5, all advertised tools implemented, write tools absent, capabilities statuses",
+        "crates/archmeld-api/tests/security_mcp.rs: no exec/network tool, all advertised tools implemented"
+      ]
+    },
+    "F02_context_anchor": {
+      "status": "closed",
+      "implementation": "core::anchor::byte_range resolves byte and one-based line anchors for ContextPack and source API; ContextPack reports the resolved byte range",
+      "tests": [
+        "crates/archmeld-core/src/anchor.rs: 3 unit tests",
+        "crates/archmeld-core/tests/context_pack.rs: target function at line 262 with CRLF/CJK/no trailing newline returns the target body, not the header"
+      ]
+    },
+    "F03_snapshot_first_index": {
+      "status": "closed",
+      "implementation": "capture snapshot, materialize every captured file from CAS, parse the materialization, import against the same captured file digests, remove the copy",
+      "tests": [
+        "crates/archmeld-api/src/cli.rs index_tests: fake helper mutates the live file while parsing; published entity and source still match the captured bytes",
+        "real packaged helper run: 2 files -> 4 entities / 3 relations, analysis.removed=true"
+      ],
+      "real_run": {
+        "argv": [
+          "target/debug/archmeld.exe",
+          "index",
+          "--workspace",
+          "<workspace>/archmeld-realindex-UUAfUy/repo",
+          "--state",
+          "<workspace>/archmeld-realindex-UUAfUy/state",
+          "--project",
+          "project.realindex",
+          "--run-id",
+          "run.realindex.1",
+          "--index-helper",
+          "dist/build/archmeld-cli-0.1.0-windows-x64/bin/archmeld-index.exe"
+        ],
+        "exit_code": 0,
+        "snapshot_id": "sha256:2547462d9e54aec4d171121c13a7bb6524209e58f1a7ce09dfd0b2b6dbe06d0b",
+        "snapshot_files": 2,
+        "entities": 4,
+        "relations": 3,
+        "analysis_mode": "snapshot_materialization",
+        "analysis_removed": true,
+        "index_output_sha256": "sha256:fae167d7381e4919f5e83ac2b969514424ffb91633829d283e918ce3905f4ee9",
+        "helper_sha256": "sha256:0c7c8db147014408c97ea1a68935cff0e719cfe16a97ddf398cbdd913b5db5d7"
+      }
+    },
+    "F04_source_search": {
+      "status": "closed",
+      "implementation": "kind=source performs literal, case-sensitive, snapshot-bound byte search with path/line/column/byte range/text/entity_ids and a resumable cursor",
+      "limits": "256 MiB scan budget; non-UTF-8 files skipped and coverage partial; no tokenizer/FTS/embeddings",
+      "tests": "crates/archmeld-core/tests/source_search.rs: body text at line >220, entity mapping, three-page cursor union of five matches, live edit does not change the old snapshot result"
+    },
+    "F05_context_relevance": {
+      "status": "closed",
+      "implementation": "objective tokens seed name/source matches plus a bounded one-hop relation neighborhood; relevant claims are ranked, unrelated claims aggregated as omissions; cursor is bound to snapshot+request and continues the deterministic candidate order",
+      "limits": "heuristic name/source/one-hop relevance, not a semantic model; tiny budgets may trim optional relevance/page metadata explicitly",
+      "tests": "crates/archmeld-core/tests/context_relevance.rs: objective picks target_widget first, 30 unrelated rejected claims do not crowd it out, 1024-token cursor pages equal the 64000-token selection, unmatched objective reports fallback"
+    },
+    "F06_edge_cap": {
+      "status": "closed",
+      "implementation": "relation scan requests cap+1, truncates at cap, marks coverage partial, records unresolved_count and a limitation/warning",
+      "tests": "crates/archmeld-core/src/query.rs production test inserts 200001 relations and calls traverse with the real HARD_EDGE_CAP; asserts edge_scan_truncated, boundary_edges_truncated, coverage=partial and unresolved_count=1 (36.36s). A reduced-cap test remains for the fast branch."
+    },
+    "F07_page_boundary_edges": {
+      "status": "closed",
+      "implementation": "each traversal page reports boundary_edges and deduplicated boundary_entities with missing-endpoint stubs; merging by relation id reconstructs incident edges",
+      "tests": "crates/archmeld-core/tests/query_pagination.rs: A->B->C, max_nodes=2; B->C appears on both pages and survives the union"
+    },
+    "F08_scenario_lock": {
+      "status": "closed",
+      "implementation": "scenario prepare (Store) / execute (no Store, spawn_blocking) / finalize (Store); independent cancellation registry and POST /v1/scenarios/{run_id}/cancel",
+      "tests": "crates/archmeld-api/tests/scenario_http.rs: during a 10-second scenario, a query and a cancel both return in under 2 seconds; run completion is cancelled",
+      "limit": "cancellation is cooperative and in-memory; it is not persisted across a server restart"
+    },
+    "F10_status_entry": {
+      "status": "closed_test_phase",
+      "implementation": "archmeld status and GET /v1/status report projects, latest snapshot, counts, languages, actions and optional read-only workspace freshness. archmeld review-diff and POST /v1/reviews/workspace-diff report line changes, base/current digests, base-anchor entities, static relation impact, trigger, confidence and verification=not_run. archmeld refresh creates a new snapshot and reports the exact snapshot-to-snapshot delta while retaining the old snapshot. The extension can discover project/snapshot through /v1/status. MCP exposes read-only archmeld_status and archmeld_review using only the project's registered active workspace root.",
+      "tests": [
+        "crates/archmeld-core/tests/diff_review.rs: workspace review and exact snapshot diff",
+        "crates/archmeld-api/src/cli.rs tests: review-diff CLI, refresh new snapshot + old retained, fake-helper refresh",
+        "crates/archmeld-api/tests/scenario_http.rs: GET /v1/status, POST /v1/reviews/workspace-diff, unknown workspace handle refused",
+        "archmeld-vscode/test/api.test.js: status/review client calls"
+      ],
+      "residuals": [
+        "review is static and never executes build/tests",
+        "the comparative agent-without-ARCHMELD benchmark was not run",
+        "runtime/line evidence is not a semantic correctness proof"
+      ]
+    },
+    "F09_module_projection": {
+      "status": "closed_test_phase",
+      "implementation": "Modules view groups by first path segment; Responsibilities view groups by a selected candidate architecture's real member_entity_ids. Both use dependency-depth layers, persist manual drag positions per project/snapshot/view, retain relation_ids/kinds/evidence_ids on aggregate edges, and support member drill-down plus underlying-edge inspection. Runtime filter keeps entities mapped by /v1/runtime spans and projects parent/child span pairs as observed_span_parent containment edges labelled span parent; other edges are static adjacency.",
+      "tests": [
+        "archmeld-vscode/test/model.test.js: module/component grouping, topology positions, manual overrides, aggregate evidence/relation ids, drill-down, runtime filter",
+        "archmeld-vscode/test/webview.test.js: Modules button, Cytoscape dragfree/moveNode handlers"
+      ],
+      "residuals": [
+        "span-parent containment is not confirmed call semantics",
+        "responsibility projection requires an explicitly selected candidate architecture",
+        "no comparative usability study"
+      ]
+    }
+  },
+  "remaining": {
+    "code_findings": "none for F01-F10 in the declared testing-phase scope",
+    "F09_residuals": [
+      "span-parent containment is not confirmed call semantics",
+      "responsibility view requires an explicit architecture candidate"
+    ],
+    "F10_residuals": [
+      "review is static; no command execution",
+      "no comparative agent benchmark",
+      "no semantic correctness proof"
+    ]
+  },
+  "limitations": [
+    "This is a project-test-phase closure, not a release-level or R1 claim.",
+    "Context relevance and source search are deterministic heuristics, not semantic/vector retrieval.",
+    "Differential line-overlap review is static text evidence; it does not execute builds/tests and does not infer new calls.",
+    "Responsibility components come from an explicitly selected candidate architecture and are never treated as accepted architecture.",
+    "MCP status/review use only the registered active workspace root; they do not accept caller-supplied paths.",
+    "Runtime span-parent edges are containment evidence from real spans; they are not confirmed calls and do not imply runtime order.",
+    "The 200001-edge test verifies truncation/partial semantics, not query throughput or memory as a benchmark."
+  ],
+  "real_flow": {
+    "cwd": "<repo>",
+    "argv": [
+      "target/debug/archmeld.exe index --workspace <tmp>/repo --state <tmp>/state --project project.f10b --index-helper dist/build/archmeld-cli-0.1.0-windows-x64/bin/archmeld-index.exe",
+      "target/debug/archmeld.exe review-diff --state <tmp>/state --project project.f10b --workspace <tmp>/repo",
+      "target/debug/archmeld.exe refresh --state <tmp>/state --project project.f10b --workspace <tmp>/repo --run-id run.f10b.refresh --index-helper dist/build/archmeld-cli-0.1.0-windows-x64/bin/archmeld-index.exe"
+    ],
+    "exit_code": 0,
+    "index_snapshot_id": "sha256:8f75b81dea769c3da4bb3d0699ab4983a4c0c4b31e6409ff30b458ccc41e3a60",
+    "index_entities": 2,
+    "index_relations": 1,
+    "review_state": "changed",
+    "review_file": "src/a.py",
+    "review_entity_state": "changed",
+    "review_verification": "not_run",
+    "refresh_base_snapshot_id": "sha256:8f75b81dea769c3da4bb3d0699ab4983a4c0c4b31e6409ff30b458ccc41e3a60",
+    "refresh_new_snapshot_id": "sha256:b309e214de38760b101146461cdcb30481ab24b832cd08553cb02028895df64d",
+    "refresh_files_changed": 1,
+    "refresh_entities_changed": 2,
+    "index_output_sha256": "sha256:bf0fe2b93131548430b1c96465a7598f3a3064ce7e2cfca690e120825c28a29e",
+    "review_output_sha256": "sha256:fcb42aae6e28ca401158fe9f412b0329208d26974da8e157020693386370c0a6",
+    "refresh_output_sha256": "sha256:a6bdc1d10622a1bd5927d865a2b5db88019f48d8cd11df6a1a88d75224c6c141"
+  },
+  "mcp": {
+    "tool_count": 7,
+    "implemented": [
+      "archmeld_inspect",
+      "archmeld_query",
+      "archmeld_context",
+      "archmeld_source",
+      "archmeld_status",
+      "archmeld_review",
+      "archmeld_capabilities"
+    ],
+    "approval_exposed": false
+  }
+}

@@ -11,7 +11,7 @@
       "version": "18.1.8",
       "platform": "windows-msvc",
       "sha256": "234f15c35893306321504603db20a645f062578ffb6bfe98c09a89f9efb2defe",
-      "path": "F:/Codex_Work_Space/_archmeld_tools/llvm18/bin/clangd.exe"
+      "path": "<workspace>/_archmeld_tools/llvm18/bin/clangd.exe"
     },
     "compile_db": [
       "build-a/compile_commands.json",

@@ -2,47 +2,47 @@
   "checks": {
     "annotation_definition": [
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Marker.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Marker.java",
         9,
         18
       ]
     ],
     "annotation_references": [
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Marker.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Marker.java",
         9,
         18
       ],
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
         2,
         1
       ]
     ],
     "interface_definition": [
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Transformer.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Transformer.java",
         3,
         8
       ]
     ],
     "other_class_definition": [
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Other.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Other.java",
         3,
         22
       ]
     ],
     "overload_int_definition": [
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
         4,
         22
       ]
     ],
     "overload_string_definition": [
       [
-        "file:///<local-user>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
+        "file:///<home>/AppData/Local/Temp/.tmp4ZIM6V/repo/src/main/java/pkg/Util.java",
         8,
         22
       ]

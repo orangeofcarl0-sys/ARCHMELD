@@ -56,7 +56,7 @@ update order and a phase-wrap boundary.
 ```sh
 ARCHMELD_WRITE_EVIDENCE=1 \
 RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
-PATH=/d/Strawberry/c/bin:/c/Users/<local-user>/.cargo/bin:$PATH \
+PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
 cargo test -p archmeld-core --test scientific_profile
 ```
 

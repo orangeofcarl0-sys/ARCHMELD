@@ -11,7 +11,7 @@
     "archmeld.openSource",
     "archmeld.back"
   ],
-  "screenshot": "F:\\Codex_Work_Space\\ARCHMELD-work\\docs\\evidence\\b026-workbench-paint-2.png",
+  "screenshot": "F:\\Codex_Work_Space\\<repo>\\docs\\evidence\\b026-workbench-paint-2.png",
   "capture_method": "cdp",
   "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
   "captured_at": "2026-10-31T19:24:33.693Z",

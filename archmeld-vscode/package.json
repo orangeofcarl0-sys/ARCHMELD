@@ -15,12 +15,24 @@
   "contributes": {
     "commands": [
       {
+        "command": "archmeld.discoverProject",
+        "title": "ARCHMELD: Discover Project and Snapshot"
+      },
+      {
         "command": "archmeld.openGraph",
         "title": "ARCHMELD: Open Graph for Symbol"
       },
       {
         "command": "archmeld.openSource",
         "title": "ARCHMELD: Open Historical Source"
+      },
+      {
+        "command": "archmeld.showComponents",
+        "title": "ARCHMELD: Show Architecture Components"
+      },
+      {
+        "command": "archmeld.filterRuntime",
+        "title": "ARCHMELD: Filter Graph by Runtime Run"
       },
       {
         "command": "archmeld.back",

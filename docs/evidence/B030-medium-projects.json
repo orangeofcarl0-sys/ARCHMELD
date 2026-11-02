@@ -3,7 +3,7 @@
   "groups": {
     "c_cpp": {
       "archive": {
-        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/5.4.7.tar.gz",
+        "path": "<workspace>/_archmeld_tools/fixtures/5.4.7.tar.gz",
         "sha256": "5c39111b3fc4c1c9e56671008955a1730f54a15b95e1f1bd0752b868b929d8e3",
         "verified": true
       },
@@ -12,45 +12,45 @@
           "argv": [
             "D:/Strawberry/c/bin/gcc.exe",
             "-O2",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lapi.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lauxlib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lbaselib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lcode.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lcorolib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lctype.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldblib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldebug.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldo.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ldump.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lfunc.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lgc.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\linit.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\liolib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\llex.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lmathlib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lmem.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\loadlib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lobject.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lopcodes.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\loslib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lparser.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lstate.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lstring.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lstrlib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltable.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltablib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltests.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\ltm.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lua.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lundump.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lutf8lib.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lvm.c",
-            "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7\\lzio.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lapi.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lauxlib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lbaselib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lcode.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lcorolib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lctype.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ldblib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ldebug.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ldo.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ldump.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lfunc.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lgc.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\linit.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\liolib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\llex.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lmathlib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lmem.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\loadlib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lobject.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lopcodes.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\loslib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lparser.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lstate.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lstring.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lstrlib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ltable.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ltablib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ltests.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\ltm.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lua.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lundump.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lutf8lib.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lvm.c",
+            "<workspace>/_archmeld_tools/fixtures/lua-5.4.7\\lzio.c",
             "-o",
-            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out\\lua.exe",
+            "<workspace>/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out\\lua.exe",
             "-lm"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -228,11 +228,11 @@
         },
         "smoke": {
           "argv": [
-            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out\\lua.exe",
+            "<workspace>/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out\\lua.exe",
             "-e",
             "print(2+2)"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-c_cpp-jBIMtT\\out",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -259,7 +259,7 @@
       "minimum_source_files": 30,
       "sample": "lua",
       "source_file_count": 40,
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7",
+      "source_path": "<workspace>/_archmeld_tools/fixtures/lua-5.4.7",
       "source_tree_digest": "sha256:807a5cb390ef29a260b7ce6dc71a7a7d05e0754e00400e397afc543719e0aa55",
       "source_url": "https://github.com/lua/lua/tree/v5.4.7",
       "status": "verified",
@@ -267,14 +267,14 @@
     },
     "csharp": {
       "archive": {
-        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/newtonsoft.tar.gz",
+        "path": "<workspace>/_archmeld_tools/fixtures/newtonsoft.tar.gz",
         "sha256": "3dc1eeeb8f781122e0713481bad993329c669feb9928cc4ec86e0ab24d9eff9e",
         "verified": true
       },
       "build": {
         "build": {
           "argv": [
-            "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+            "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
             "build",
             "Src/Newtonsoft.Json/Newtonsoft.Json.csproj",
             "-f",
@@ -282,7 +282,7 @@
             "-nologo",
             "-v:q"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3",
+          "cwd": "<workspace>/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -309,7 +309,7 @@
       "minimum_source_files": 200,
       "sample": "newtonsoft-json",
       "source_file_count": 235,
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3/Src/Newtonsoft.Json",
+      "source_path": "<workspace>/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3/Src/Newtonsoft.Json",
       "source_tree_digest": "sha256:bd440c517a83b6f140a99cf9b03dd5efb7c5d7574850cf8dee7b58f5af92eea9",
       "source_url": "https://github.com/JamesNK/Newtonsoft.Json/tree/13.0.3",
       "status": "verified",
@@ -323,13 +323,13 @@
       "build": {
         "build": {
           "argv": [
-            "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+            "<workspace>/_archmeld_tools/go/go/bin/go.exe",
             "test",
             "net/http",
             "-run",
             "TestStatusText"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-go-NIx1H5",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-go-NIx1H5",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -356,7 +356,7 @@
       "minimum_source_files": 150,
       "sample": "go-stdlib-net-http",
       "source_file_count": 158,
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/go/go/src/net/http",
+      "source_path": "<workspace>/_archmeld_tools/go/go/src/net/http",
       "source_tree_digest": "sha256:c6f3c1875c17b66f7aa3ffcd9806211b25b6ab7c1fcbd34c02e19232e987d9cc",
       "source_url": "https://github.com/golang/go/tree/go1.27.3/src/net/http",
       "status": "verified",
@@ -364,21 +364,21 @@
     },
     "java": {
       "archive": {
-        "path": "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/lib/src.zip",
+        "path": "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/lib/src.zip",
         "sha256": "726ad631e289979e88688dc53ca8b4486f2296001525011313a548c8e55a3840",
         "verified": true
       },
       "build": {
         "build": {
           "argv": [
-            "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+            "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
             "--patch-module",
-            "java.base=F:/Codex_Work_Space/_archmeld_tools/fixtures/jdk-src/java.base",
+            "java.base=<workspace>/_archmeld_tools/fixtures/jdk-src/java.base",
             "-d",
-            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-java-5mGvcW\\out",
-            "@F:/Codex_Work_Space/_archmeld_temp\\b030-medium-java-5mGvcW\\sources.txt"
+            "<workspace>/_archmeld_temp\\b030-medium-java-5mGvcW\\out",
+            "@<workspace>/_archmeld_temp\\b030-medium-java-5mGvcW\\sources.txt"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-java-5mGvcW",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-java-5mGvcW",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -405,7 +405,7 @@
       "minimum_source_files": 60,
       "sample": "openjdk-java.util.concurrent",
       "source_file_count": 68,
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/jdk-src/java.base/java/util/concurrent",
+      "source_path": "<workspace>/_archmeld_tools/fixtures/jdk-src/java.base/java/util/concurrent",
       "source_tree_digest": "sha256:ce252315f0de4497750ee4134d80870b9c81e7913a5d07d1f2966185600db373",
       "source_url": "https://github.com/adoptium/temurin25-binaries/releases/tag/jdk-25.0.5%2B8",
       "status": "verified",
@@ -420,10 +420,10 @@
         "build": {
           "argv": [
             "node",
-            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-javascript_typescript-fHUOsh\\parse_all.cjs",
+            "<workspace>/_archmeld_temp\\b030-medium-javascript_typescript-fHUOsh\\parse_all.cjs",
             "C:/Program Files/nodejs/node_modules/npm/lib"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-javascript_typescript-fHUOsh",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-javascript_typescript-fHUOsh",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -472,7 +472,7 @@
             "-q",
             "asyncio"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-python-cDlzfx",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-python-cDlzfx",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -497,7 +497,7 @@
             "-c",
             "import asyncio; print(asyncio.__name__)"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-python-cDlzfx",
+          "cwd": "<workspace>/_archmeld_temp\\b030-medium-python-cDlzfx",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -524,7 +524,7 @@
       "minimum_source_files": 30,
       "sample": "cpython-asyncio",
       "source_file_count": 33,
-      "source_path": "<local-user>/AppData/Local/Programs/Python/Python311/Lib/asyncio",
+      "source_path": "<home>/AppData/Local/Programs/Python/Python311/Lib/asyncio",
       "source_tree_digest": "sha256:f77136b376d86c470888cb117ad2fa97887eb3be8af652e0dd0362cff4b8e06f",
       "source_url": "https://github.com/python/cpython/tree/v3.11.9/Lib/asyncio",
       "status": "verified",
@@ -545,9 +545,9 @@
             "--no-default-features",
             "--offline",
             "--target-dir",
-            "F:/Codex_Work_Space/_archmeld_temp\\b030-medium-rust-AvPIuY\\target"
+            "<workspace>/_archmeld_temp\\b030-medium-rust-AvPIuY\\target"
           ],
-          "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../..",
+          "cwd": "F:\\Codex_Work_Space\\<repo>\\crates\\archmeld-core\\../..",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -962,7 +962,7 @@
             "survivors": [],
             "tool": "Toolhelp32 CreateToolhelp32Snapshot"
           },
-          "stderr": "   Compiling proc-macro2 v1.0.106\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.45\n   Compiling serde_core v1.0.228\n   Compiling zmij v1.0.21\n   Compiling getrandom v0.4.2\n    Checking cfg-if v1.0.4\n   Compiling thiserror v1.0.69\n   Compiling serde v1.0.228\n   Compiling serde_json v1.0.149\n   Compiling codegraph v0.2.0 (F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\codegraph)\n    Checking itoa v1.0.18\n    Checking memchr v2.8.0\n    Checking log v0.4.29\n   Compiling syn v2.0.117\n    Checking uuid v1.23.0\n   Compiling thiserror-impl v1.0.69\n   Compiling serde_derive v1.0.228\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.01s\n",
+          "stderr": "   Compiling proc-macro2 v1.0.106\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.45\n   Compiling serde_core v1.0.228\n   Compiling zmij v1.0.21\n   Compiling getrandom v0.4.2\n    Checking cfg-if v1.0.4\n   Compiling thiserror v1.0.69\n   Compiling serde v1.0.228\n   Compiling serde_json v1.0.149\n   Compiling codegraph v0.2.0 (F:\\Codex_Work_Space\\<repo>\\crates\\codegraph)\n    Checking itoa v1.0.18\n    Checking memchr v2.8.0\n    Checking log v0.4.29\n   Compiling syn v2.0.117\n    Checking uuid v1.23.0\n   Compiling thiserror-impl v1.0.69\n   Compiling serde_derive v1.0.228\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.01s\n",
           "stderr_digest": "sha256:9c5c2531924a5071a09c47f9a82ddba101aa4217345b219020500f0a6ce2a4ae",
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

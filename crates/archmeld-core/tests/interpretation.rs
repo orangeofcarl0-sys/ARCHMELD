@@ -465,7 +465,7 @@ fn manual_architecture_is_candidate_and_never_writes_ledger_relations() {
 }
 
 fn codeboarding_dir() -> PathBuf {
-    PathBuf::from("F:/Codex_Work_Space/_archmeld_tools/codeboarding")
+    PathBuf::from("<workspace>/_archmeld_tools/codeboarding")
 }
 
 #[test]

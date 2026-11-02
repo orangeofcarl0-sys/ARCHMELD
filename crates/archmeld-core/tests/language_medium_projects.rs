@@ -16,8 +16,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "F:/Codex_Work_Space/_archmeld_tools";
-const TEMP: &str = "F:/Codex_Work_Space/_archmeld_temp";
+const TOOLS: &str = "<workspace>/_archmeld_tools";
+const TEMP: &str = "<workspace>/_archmeld_temp";
 
 fn repo_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -276,7 +276,7 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
                     "NUGET_PACKAGES".into(),
                     build["env"]["NUGET_PACKAGES"]
                         .as_str()
-                        .unwrap_or("F:/Codex_Work_Space/_archmeld_tools/fixtures/nuget-packages")
+                        .unwrap_or("<workspace>/_archmeld_tools/fixtures/nuget-packages")
                         .to_string(),
                 ),
                 ("DOTNET_CLI_TELEMETRY_OPTOUT".into(), "1".into()),
@@ -286,7 +286,7 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
                     temp.path().to_string_lossy().into_owned(),
                 ),
                 ("HOMEDRIVE".into(), "C:".into()),
-                ("HOMEPATH".into(), "<local-user>".into()),
+                ("HOMEPATH".into(), "<home>".into()),
                 ("ProgramFiles".into(), "C:/Program Files".into()),
                 ("ProgramFiles(x86)".into(), "C:/Program Files (x86)".into()),
                 ("PROCESSOR_ARCHITECTURE".into(), "AMD64".into()),

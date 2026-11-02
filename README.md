@@ -1,3 +1,43 @@
+# ARCHMELD
+
+ARCHMELD is a thin, evidence-first fork of the pinned CodeGraph commit. Start
+with the ARCHMELD entry points, not the inherited upstream service below:
+
+```bash
+# What is registered, which snapshot is current, and is the workspace dirty?
+archmeld status --state <ledger> [--project <id>] [--workspace <repo>]
+
+# Capture a new snapshot, materialize it, index it, and bind the graph to those bytes.
+archmeld index --workspace <repo> --state <ledger> --project <id>
+
+# Review the current working tree against the latest snapshot; static only.
+archmeld review-diff --state <ledger> --project <id> --workspace <repo>
+
+# Refresh explicitly: create a new snapshot, retain the old one, and diff both.
+archmeld refresh --state <ledger> --project <id> --workspace <repo>
+
+# Read-only agent surfaces (pick one)
+archmeld-mcp --state <ledger> --project <id>
+archmeld-serve --state <ledger> --allow-workspace <repo>
+```
+
+`archmeld status --workspace` is read-only: it reports changed/added/deleted
+files and affected entities/claims/plans, but creates no snapshot and does not
+record drift history. `archmeld review-diff` adds line-level overlap, base
+anchors, graph impact, confidence and an explicit `verification=not_run`; it
+executes no build or test. `archmeld refresh` is the explicit refresh: it creates
+a new snapshot, diffs it against the previous one, and keeps the old snapshot
+and evidence addressable. MCP exposes inspect/query/context/source/status/review
+plus a capabilities report; `archmeld_capabilities` distinguishes external-grant
+operations from unimplemented declarations, and status/review use only the
+project's registered active workspace root.
+
+The CodeGraph sections below are inherited upstream documentation and describe
+the upstream engine/plugins, not the ARCHMELD acceptance surface. ARCHMELD
+operator details: [docs/OPERATOR_GUIDE.md](docs/OPERATOR_GUIDE.md).
+
+---
+
 # CodeGraph
 
 **Cross-language code intelligence for AI agents and developers.**

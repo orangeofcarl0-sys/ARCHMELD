@@ -18,7 +18,7 @@ pinned upstream extension.
 2. Point VS Code at it:
 
    ```sh
-   code --extensionDevelopmentPath=F:\Codex_Work_Space\ARCHMELD-work\archmeld-vscode
+   code --extensionDevelopmentPath=<repo>\archmeld-vscode
    ```
 
    Settings (or environment variables, which win):
@@ -28,20 +28,36 @@ pinned upstream extension.
    - `archmeld.projectId` / `ARCHMELD_PROJECT`
    - `archmeld.snapshotId` / `ARCHMELD_SNAPSHOT`
 
-3. Put the cursor on an indexed symbol and run `ARCHMELD: Open Graph for Symbol`.
+3. Run `ARCHMELD: Discover Project and Snapshot` to choose a registered project
+   and set its latest snapshot explicitly (the settings remain overridable).
+4. Put the cursor on an indexed symbol and run `ARCHMELD: Open Graph for Symbol`.
    Clicking a node opens the snapshot's historical source in a read-only
    virtual document; clicking an edge shows its evidence, basis and resolution.
 
 ## What the UI guarantees
 
 - Node positions are derived from entity identity, so expanding neighbors never
-  reshuffles the existing graph.
+  reshuffles the existing graph. Dragging a node stores its position per
+  project/snapshot/view in workspace state; later merges keep it.
 - Resolved, candidate and unknown edges use solid/dashed/dotted strokes plus
   text labels (colour is never the only encoding).
 - Missing evidence renders as `unknown`; a candidate is never labelled resolved.
+- The Modules view groups by first path segment, layers by dependency direction,
+  keeps underlying `relation_ids`/`evidence_ids` on aggregate edges, and is
+  explicitly labelled a path-prefix projection, not an accepted architecture.
+  Clicking a module lists its members; clicking an aggregate edge lists the
+  underlying relations and evidence.
+- `ARCHMELD: Show Architecture Components` loads a candidate architecture and
+  projects its real `member_entity_ids` into the Responsibilities view. The
+  warning names the architecture status; declared dependencies and underlying
+  graph relations keep their evidence but remain a candidate projection.
 - File / responsibility / runtime are projections of one model, not a generated
   parent/child tree. An empty projection falls back to the local graph with an
   explicit warning instead of pretending there is no data.
+- `ARCHMELD: Filter Graph by Runtime Run` reads `/v1/runtime/{runId}`, keeps
+  only entities mapped by spans, and projects parent/child span pairs as
+  `span parent` edges. Those edges are observed span containment, not confirmed
+  calls; other edges remain static graph adjacency, not runtime ordering.
 - Historical source is served from the snapshot blob, marked as historical.
 
 ## Trace source jump
@@ -61,10 +77,11 @@ this path when `ARCHMELD_UI_TRACE_RUN` is set; see ADR-045 and
 node --test test/*.test.js
 ```
 
-Covers precise cursor→anchor selection, layout stability, view projection,
-relation certainty, selection loop guard and back navigation, HTML
-escaping/offline CSP, Cytoscape element/style generation, and a real spawned
-`archmeld-serve` for health, token 403 and structured 404/400 errors.
+Covers precise cursor→anchor selection, layout stability, manual position
+persistence, module aggregation/drill-down, runtime run filtering, view
+projection, relation certainty, selection loop guard and back navigation, HTML
+escaping/offline CSP, Cytoscape element/style/drag generation, and a real
+spawned `archmeld-serve` for health, token 403 and structured 404/400 errors.
 
 Editor-level test (real VS Code extension host):
 

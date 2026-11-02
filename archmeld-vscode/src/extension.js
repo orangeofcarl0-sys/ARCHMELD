@@ -56,6 +56,61 @@ function getClient(settings) {
   return client;
 }
 
+async function discoverProject(context) {
+  const config = vscode.workspace.getConfiguration('archmeld');
+  const endpoint = process.env.ARCHMELD_ENDPOINT || config.get('endpoint');
+  const token = process.env.ARCHMELD_TOKEN || config.get('token') || '';
+  const workspaceHandle = process.env.ARCHMELD_WORKSPACE || config.get('workspaceHandle') || '';
+  const api = new ArchmeldClient({ endpoint, token });
+  const report = await api.status(undefined, workspaceHandle || undefined);
+  const projects = (report.projects || []).filter((project) => project.latest_snapshot_id);
+  if (projects.length === 0) {
+    throw new Error('No project with a snapshot is registered in this ledger.');
+  }
+  const target = vscode.workspace.workspaceFolders
+    ? vscode.ConfigurationTarget.Workspace
+    : vscode.ConfigurationTarget.Global;
+  const pick = await vscode.window.showQuickPick(
+    projects.map((project) => ({
+      label: project.project_id,
+      description: `snapshot ${String(project.latest_snapshot_id).slice(0, 19)}…`,
+      detail: `${project.snapshot_count} snapshot(s) · ${
+        project.counts ? project.counts.entities : 0
+      } entities · freshness ${project.freshness?.state || 'unknown'}`,
+      project,
+    })),
+    {
+      title: 'ARCHMELD project discovery',
+      placeHolder: 'Select the project for this workspace; the latest snapshot is set explicitly',
+    },
+  );
+  if (!pick) {
+    return undefined;
+  }
+  await config.update('projectId', pick.project.project_id, target);
+  await config.update('snapshotId', pick.project.latest_snapshot_id, target);
+  if (workspaceHandle) {
+    await config.update('workspaceHandle', workspaceHandle, target);
+  }
+  vscode.window.showInformationMessage(
+    `ARCHMELD: ${pick.project.project_id} · ${pick.project.latest_snapshot_id.slice(0, 19)}…`,
+  );
+  return pick.project;
+}
+
+function positionKey(settings, view) {
+  return `archmeld.positions.${settings.projectId}.${settings.snapshotId}.${view}`;
+}
+
+function loadPositions(context, settings, view) {
+  const saved = context.workspaceState.get(positionKey(settings, view));
+  model.setPositionOverrides(saved && typeof saved === 'object' ? saved : {});
+}
+
+async function persistPositions(context, settings, view) {
+  await context.workspaceState.update(positionKey(settings, view), model.exportPositionOverrides());
+}
+
 function refresh(stale = false) {
   if (!panel) {
     return;
@@ -122,13 +177,47 @@ async function ensurePanel(context) {
       const settings = readSettings();
       if (message.type === 'setView') {
         model.setView(message.view);
+        loadPositions(context, settings, model.view);
         refresh();
+      } else if (message.type === 'moveNode') {
+        if (model.setPosition(message.entityId, message.position)) {
+          await persistPositions(context, settings, model.view);
+        }
       } else if (message.type === 'selectEdge') {
-        const evidence = model.evidenceFor(message.edgeId);
-        const relation = model.edges.get(message.edgeId);
-        if (!relation) {
+        const display = model.displayEdge(message.edgeId);
+        if (!display) {
           return;
         }
+        if (display.aggregate) {
+          const edge = display.edge;
+          const items = [
+            ...edge.relations.map((relation) => ({
+              label: relation.relation_id,
+              description: `${relation.kind} · ${relation.basis}/${relation.resolution}`,
+              detail: `${relation.source_id} → ${relation.target_id}`,
+            })),
+            ...(edge.architecture_dependencies || []).map((dependency) => ({
+              label: `${dependency.source_id} → ${dependency.target_id}`,
+              description: `architecture dependency · ${dependency.status || 'candidate'}`,
+              detail: dependency.reason,
+            })),
+            ...edge.evidence_ids.map((id) => ({
+              label: id,
+              description: 'evidence attached to the aggregate edge',
+              detail: model.evidence.get(id)?.locator || 'evidence payload not loaded',
+            })),
+          ];
+          if (items.length === 0) {
+            items.push({ label: 'No underlying relations', description: 'empty aggregate' });
+          }
+          await vscode.window.showQuickPick(items, {
+            title: `module projection · ${edge.relation_ids.length} relation(s)`,
+            placeHolder: 'Underlying relations and evidence; this is not a confirmed dependency',
+          });
+          return;
+        }
+        const relation = display.edge;
+        const evidence = model.evidenceFor(message.edgeId);
         const style = model
           .visibleEdges([relation.source_id, relation.target_id])
           .find((edge) => edge.id === relation.id)?.style;
@@ -144,14 +233,40 @@ async function ensurePanel(context) {
           placeHolder: 'Evidence for this relation (basis and resolution are shown, not inferred certainty)',
         });
       } else if (message.type === 'selectEntity') {
+        let entityId = message.entityId;
+        if (entityId.startsWith('module:') || entityId.startsWith('component:')) {
+          const members = entityId.startsWith('module:')
+            ? model.membersOfModule(entityId)
+            : model.membersOfComponent(entityId);
+          if (members.length === 0) {
+            vscode.window.showInformationMessage('This projection has no member entities.');
+            return;
+          }
+          const pick = await vscode.window.showQuickPick(
+            members.map((member) => ({
+              label: member.qualified_name || member.id,
+              description: member.kind || 'entity',
+              detail: member.id,
+              entityId: member.id,
+            })),
+            {
+              title: `Members of ${entityId}`,
+              placeHolder: 'Open the historical source for one member',
+            },
+          );
+          if (!pick) {
+            return;
+          }
+          entityId = pick.entityId;
+        }
         const changed = model.pushSelection({
           projectId: settings.projectId,
           snapshotId: settings.snapshotId,
-          entityId: message.entityId,
+          entityId,
           originView: model.view,
         });
         if (changed) {
-          await openHistoricalSource(settings, message.entityId, 0);
+          await openHistoricalSource(settings, entityId, 0);
         }
       }
     } catch (error) {
@@ -342,6 +457,56 @@ async function openTraceFrame(settings, argument) {
   };
 }
 
+async function openComponents(context) {
+  const settings = readSettings();
+  const architectureId = await vscode.window.showInputBox({
+    prompt: 'Architecture candidate id for the responsibility projection',
+    placeHolder: 'arch.…',
+    ignoreFocusOut: true,
+  });
+  if (!architectureId) {
+    return undefined;
+  }
+  const architecture = await getClient(settings).architecture(settings.projectId, architectureId);
+  if (architecture.snapshot_id && architecture.snapshot_id !== settings.snapshotId) {
+    throw new Error(
+      `architecture ${architectureId} belongs to ${architecture.snapshot_id}, not the open snapshot`,
+    );
+  }
+  model.setArchitecture(architecture);
+  model.setView('responsibility');
+  loadPositions(context, settings, 'responsibility');
+  await ensurePanel(context);
+  refresh(false);
+  status.text = `ARCHMELD · components ${architectureId} (${architecture.status || 'candidate'})`;
+  status.show();
+  return model.projectComponents();
+}
+
+async function filterRuntime(context, argument) {
+  const settings = readSettings();
+  let runId = typeof argument === 'string' ? argument : argument?.runId;
+  if (!runId) {
+    runId = await vscode.window.showInputBox({
+      prompt: 'Runtime run id to filter the graph',
+      placeHolder: 'run.…',
+      ignoreFocusOut: true,
+    });
+  }
+  if (!runId) {
+    return undefined;
+  }
+  const timeline = await getClient(settings).runtime(settings.projectId, runId, 2000);
+  const filter = model.setRuntimeRun(timeline, runId);
+  model.setView('runtime');
+  loadPositions(context, settings, 'runtime');
+  await ensurePanel(context);
+  refresh(false);
+  status.text = `ARCHMELD · runtime ${runId} · ${filter.entityIds.length} mapped entities`;
+  status.show();
+  return filter;
+}
+
 function wordAtCursor() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
@@ -427,6 +592,7 @@ async function openGraph(context) {
     cursor: null,
   });
   model.mergeResult({ ...result, entities: [entity, ...result.entities] });
+  loadPositions(context, settings, model.view);
   model.pushSelection({
     projectId: settings.projectId,
     snapshotId: settings.snapshotId,
@@ -718,6 +884,14 @@ function activate(context) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand('archmeld.discoverProject', async () => {
+      try {
+        return await discoverProject(context);
+      } catch (error) {
+        vscode.window.showErrorMessage(`ARCHMELD: ${error.message}`);
+        throw error;
+      }
+    }),
     vscode.commands.registerCommand('archmeld.openGraph', async () => {
       try {
         await openGraph(context);
@@ -737,6 +911,22 @@ function activate(context) {
         await openHistoricalSource(settings, entityId, 0);
       } catch (error) {
         vscode.window.showErrorMessage(`ARCHMELD: ${error.message}`);
+      }
+    }),
+    vscode.commands.registerCommand('archmeld.showComponents', async () => {
+      try {
+        return await openComponents(context);
+      } catch (error) {
+        vscode.window.showErrorMessage(`ARCHMELD: ${error.message}`);
+        throw error;
+      }
+    }),
+    vscode.commands.registerCommand('archmeld.filterRuntime', async (argument) => {
+      try {
+        return await filterRuntime(context, argument);
+      } catch (error) {
+        vscode.window.showErrorMessage(`ARCHMELD: ${error.message}`);
+        throw error;
       }
     }),
     vscode.commands.registerCommand('archmeld.openTraceFrame', async (argument) => {

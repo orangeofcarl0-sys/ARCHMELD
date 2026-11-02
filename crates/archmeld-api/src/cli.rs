@@ -11,11 +11,14 @@ use archmeld_core::encrypted_backup::{
 };
 use archmeld_core::hash;
 use archmeld_core::evaluate_numeric_tolerance_artifacts;
+use archmeld_core::sandbox::{materialize_all, sanitize_id};
 use archmeld_core::migrate::migrate_ledger;
 use archmeld_core::perfetto::perfetto_trace;
 use archmeld_core::report::{export_report, verify_bundle};
+use archmeld_core::review::{diff_snapshots, review_workspace_diff};
 use archmeld_core::runtime::{import_trace, RuntimeImport};
 use archmeld_core::scenario::{run_scenario, ExecutionGrant, ScenarioSandbox, ScenarioSpec};
+use archmeld_core::status::status_report;
 use archmeld_core::trace_adapters::{chrome_trace, probe_jsonl, TraceLocator, TraceMeta};
 use archmeld_core::trace_processor::perfetto_trace_via_processor;
 use archmeld_core::tracy_csv::import_tracy_capture;
@@ -42,6 +45,15 @@ struct Cli {
 enum Commands {
     /// Index a workspace into a local evidence ledger.
     Index(IndexArgs),
+    /// Report projects, latest snapshots, counts, languages and optional
+    /// workspace freshness without mutating source or history.
+    Status(StatusArgs),
+    /// Review the current workspace against a frozen snapshot. Static only:
+    /// no build, test or runtime command is executed.
+    ReviewDiff(ReviewDiffArgs),
+    /// Index the current workspace as a new snapshot and report the exact diff
+    /// from the previous snapshot. The old snapshot and evidence are retained.
+    Refresh(RefreshArgs),
     /// Export a checksummed offline report bundle for one snapshot.
     Report(ReportArgs),
     /// Verify every file in an existing report bundle.
@@ -95,6 +107,52 @@ struct IndexArgs {
     max_files: usize,
     /// Override the packaged codegraph helper path (defaults to a sibling
     /// `archmeld-index` executable).
+    #[arg(long)]
+    index_helper: Option<PathBuf>,
+    #[arg(long)]
+    run_id: Option<String>,
+}
+
+#[derive(clap::Args)]
+struct StatusArgs {
+    #[arg(long)]
+    state: PathBuf,
+    /// Restrict the report to one project; otherwise every registered project
+    /// is listed.
+    #[arg(long)]
+    project: Option<String>,
+    /// Optional workspace to compare with the latest snapshot. This only reads
+    /// the workspace; it never creates a snapshot or records a drift report.
+    #[arg(long)]
+    workspace: Option<PathBuf>,
+}
+
+#[derive(clap::Args)]
+struct ReviewDiffArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    project: String,
+    #[arg(long)]
+    workspace: PathBuf,
+    /// Base snapshot; defaults to the project's latest snapshot.
+    #[arg(long)]
+    base_snapshot: Option<String>,
+}
+
+#[derive(clap::Args)]
+struct RefreshArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    project: String,
+    #[arg(long)]
+    workspace: PathBuf,
+    /// Base snapshot to diff from; defaults to the latest snapshot.
+    #[arg(long)]
+    base_snapshot: Option<String>,
+    #[arg(long, default_value_t = 5000)]
+    max_files: usize,
     #[arg(long)]
     index_helper: Option<PathBuf>,
     #[arg(long)]
@@ -363,7 +421,158 @@ fn helper_path(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
         })
 }
 
+struct HelperOutput {
+    success: bool,
+    status: Option<i32>,
+    stdout: Vec<u8>,
+    stderr: Vec<u8>,
+}
+
+type HelperRunner<'a> =
+    dyn FnMut(&PathBuf, &std::path::Path, &std::path::Path, &std::path::Path) -> Result<HelperOutput, String>
+        + 'a;
+
+fn run_status(args: StatusArgs) -> Result<Value, String> {
+    let store = Store::open(&args.state).map_err(|error| error.to_string())?;
+    let workspace = match &args.workspace {
+        Some(path) => {
+            let canonical = path
+                .canonicalize()
+                .map_err(|error| format!("workspace {}: {error}", path.display()))?;
+            if !canonical.is_dir() {
+                return Err(format!(
+                    "workspace {} is not a directory",
+                    canonical.display()
+                ));
+            }
+            Some(canonical)
+        }
+        None => None,
+    };
+    let mut result = status_report(&store, args.project.as_deref(), workspace.as_deref())
+        .map_err(|error| error.to_string())?;
+    result["command"] = json!("status");
+    Ok(result)
+}
+
+fn helper_runner(
+    state_root: PathBuf,
+    max_files: usize,
+) -> impl FnMut(&PathBuf, &std::path::Path, &std::path::Path, &std::path::Path) -> Result<HelperOutput, String> {
+    move |helper, analysis_input, export, _state| {
+        let output = Command::new(helper)
+            .arg(analysis_input)
+            .arg(export)
+            .arg(&state_root)
+            .arg(max_files.to_string())
+            .output()
+            .map_err(|error| format!("run {}: {error}", helper.display()))?;
+        Ok(HelperOutput {
+            success: output.status.success(),
+            status: output.status.code(),
+            stdout: output.stdout,
+            stderr: output.stderr,
+        })
+    }
+}
+
 fn run_index(args: IndexArgs) -> Result<Value, String> {
+    let helper = helper_path(args.index_helper.clone())?;
+    let mut runner = helper_runner(args.state.join("codegraph"), args.max_files);
+    run_index_with(args, &helper, &mut runner)
+}
+
+fn run_refresh(args: RefreshArgs) -> Result<Value, String> {
+    let helper = helper_path(args.index_helper.clone())?;
+    let mut runner = helper_runner(args.state.join("codegraph"), args.max_files);
+    run_refresh_with(args, &helper, &mut runner)
+}
+
+fn run_refresh_with(
+    args: RefreshArgs,
+    helper: &PathBuf,
+    runner: &mut HelperRunner<'_>,
+) -> Result<Value, String> {
+    let store = Store::open(&args.state).map_err(|error| error.to_string())?;
+    let base_snapshot_id = match args.base_snapshot.clone() {
+        Some(snapshot_id) => snapshot_id,
+        None => store
+            .latest_snapshot_id(&args.project)
+            .map_err(|error| error.to_string())?
+            .ok_or_else(|| format!("project {} has no snapshot to refresh from", args.project))?,
+    };
+    if store
+        .snapshot_payload(&args.project, &base_snapshot_id)
+        .map_err(|error| error.to_string())?
+        .is_none()
+    {
+        return Err(format!(
+            "base snapshot {base_snapshot_id} is not registered for project {}",
+            args.project
+        ));
+    }
+    let run_id = args
+        .run_id
+        .clone()
+        .unwrap_or_else(|| format!("run.{}.refresh.{}", args.project, now_unix()));
+    let index = run_index_with(
+        IndexArgs {
+            workspace: args.workspace.clone(),
+            state: args.state.clone(),
+            project: args.project.clone(),
+            max_files: args.max_files,
+            index_helper: None,
+            run_id: Some(run_id),
+        },
+        helper,
+        runner,
+    )?;
+    let new_snapshot_id = index["snapshot_id"]
+        .as_str()
+        .ok_or_else(|| "index result has no snapshot_id".to_string())?
+        .to_string();
+    let store = Store::open(&args.state).map_err(|error| error.to_string())?;
+    let diff = diff_snapshots(&store, &args.project, &base_snapshot_id, &new_snapshot_id)
+        .map_err(|error| error.to_string())?;
+    Ok(json!({
+        "command": "refresh",
+        "project_id": args.project,
+        "base_snapshot_id": base_snapshot_id,
+        "new_snapshot_id": new_snapshot_id,
+        "state": diff["state"],
+        "history": {
+            "old_snapshot_retained": true,
+            "source_mutation": "none",
+        },
+        "index": index,
+        "diff": diff,
+    }))
+}
+
+fn run_review_diff(args: ReviewDiffArgs) -> Result<Value, String> {
+    let store = Store::open(&args.state).map_err(|error| error.to_string())?;
+    let base_snapshot_id = match args.base_snapshot {
+        Some(snapshot_id) => snapshot_id,
+        None => store
+            .latest_snapshot_id(&args.project)
+            .map_err(|error| error.to_string())?
+            .ok_or_else(|| format!("project {} has no snapshot to review against", args.project))?,
+    };
+    let workspace = args
+        .workspace
+        .canonicalize()
+        .map_err(|error| format!("workspace {}: {error}", args.workspace.display()))?;
+    let mut result = review_workspace_diff(&store, &args.project, &base_snapshot_id, &workspace)
+        .map_err(|error| error.to_string())?;
+    result["command"] = json!("review-diff");
+    Ok(result)
+}
+
+fn run_index_with(
+    args: IndexArgs,
+    helper: &PathBuf,
+    runner: &mut HelperRunner<'_>,
+) -> Result<Value, String> {
     let workspace = args
         .workspace
         .canonicalize()
@@ -374,41 +583,20 @@ fn run_index(args: IndexArgs) -> Result<Value, String> {
     fs::create_dir_all(&args.state).map_err(|error| format!("state {}: {error}", args.state.display()))?;
     let run_id = args
         .run_id
+        .clone()
         .unwrap_or_else(|| format!("run.{}.index.{}", args.project, now_unix()));
     let export = args.state.join("index-runs").join(format!("{run_id}.ndjson"));
     if let Some(parent) = export.parent() {
         fs::create_dir_all(parent).map_err(|error| error.to_string())?;
     }
-    let helper = helper_path(args.index_helper)?;
-    let started = SystemTime::now();
-    let output = Command::new(&helper)
-        .arg(&workspace)
-        .arg(&export)
-        .arg(args.state.join("codegraph"))
-        .arg(args.max_files.to_string())
-        .output()
-        .map_err(|error| format!("run {}: {error}", helper.display()))?;
-    let elapsed_ms = started.elapsed().map(|d| d.as_millis()).unwrap_or(0);
-    let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
-    if !output.status.success() {
-        return Err(format!(
-            "archmeld-index exited {:?}: {}",
-            output.status.code(),
-            if stderr.is_empty() { &stdout } else { &stderr }
-        ));
-    }
-    let helper_summary: Value = serde_json::from_str(&stdout)
-        .map_err(|error| format!("index helper returned non-JSON: {error}: {stdout}"))?;
-    let export_bytes = fs::read(&export).map_err(|error| error.to_string())?;
-    let export_digest = hash::digest_bytes(&export_bytes);
-    let export_text = String::from_utf8(export_bytes)
-        .map_err(|_| "archmeld-index wrote non-UTF-8 NDJSON".to_string())?;
-
     let mut store = Store::open(&args.state).map_err(|error| error.to_string())?;
     store
         .ensure_project(&args.project, "expedition")
         .map_err(|error| error.to_string())?;
+
+    // Capture first, parse second. The helper reads a materialization of the
+    // captured CAS blobs, so a save in the live workspace cannot produce a
+    // graph that is bound to different bytes.
     let captured = capture_snapshot(
         &mut store,
         &args.project,
@@ -419,12 +607,13 @@ fn run_index(args: IndexArgs) -> Result<Value, String> {
                 "variant": "default",
                 "producer": "codegraph-export-v1",
                 "helper": "archmeld-index",
+                "analysis_input": "snapshot_materialization",
             }),
             environment: json!({
                 "os": std::env::consts::OS,
                 "arch": std::env::consts::ARCH,
                 "adapter": "codegraph",
-                "helper_files_parsed": helper_summary["files_parsed"],
+                "capture_order": "snapshot_then_parse",
             }),
         },
         &SnapshotOptions {
@@ -437,6 +626,60 @@ fn run_index(args: IndexArgs) -> Result<Value, String> {
         .as_str()
         .ok_or_else(|| "snapshot has no config_digest".to_string())?
         .to_string();
+    let project_scope = sanitize_id(&args.project);
+    let run_scope = sanitize_id(&run_id);
+    let materialized = materialize_all(
+        &mut store,
+        &args.project,
+        &captured.snapshot_id,
+        &["index-sandboxes", project_scope.as_str(), run_scope.as_str()],
+    )
+    .map_err(|error| {
+        format!(
+            "materialize snapshot {} for indexing: {error}",
+            captured.snapshot_id
+        )
+    })?;
+    let analysis = materialized.detail.clone();
+    let analysis_root = materialized.root.clone();
+    let analysis_input = materialized.cwd.clone();
+
+    let started = SystemTime::now();
+    let output = runner(helper, &analysis_input, &export, &args.state)?;
+    let elapsed_ms = started.elapsed().map(|d| d.as_millis()).unwrap_or(0);
+    let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+    if !output.success {
+        let _ = fs::remove_dir_all(&analysis_root);
+        return Err(format!(
+            "archmeld-index exited {:?}: {}; snapshot {} was captured but not indexed",
+            output.status,
+            if stderr.is_empty() { &stdout } else { &stderr },
+            captured.snapshot_id
+        ));
+    }
+    let helper_summary: Value = match serde_json::from_str(&stdout) {
+        Ok(summary) => summary,
+        Err(error) => {
+            let _ = fs::remove_dir_all(&analysis_root);
+            return Err(format!("index helper returned non-JSON: {error}: {stdout}"));
+        }
+    };
+    let export_bytes = match fs::read(&export) {
+        Ok(bytes) => bytes,
+        Err(error) => {
+            let _ = fs::remove_dir_all(&analysis_root);
+            return Err(error.to_string());
+        }
+    };
+    let export_digest = hash::digest_bytes(&export_bytes);
+    let export_text = match String::from_utf8(export_bytes) {
+        Ok(text) => text,
+        Err(_) => {
+            let _ = fs::remove_dir_all(&analysis_root);
+            return Err("archmeld-index wrote non-UTF-8 NDJSON".to_string());
+        }
+    };
     let bridge = import_codegraph_export(
         &mut store,
         &BridgeConfig {
@@ -444,14 +687,20 @@ fn run_index(args: IndexArgs) -> Result<Value, String> {
             snapshot_id: &captured.snapshot_id,
             config_digest: &config_digest,
             run_id: &run_id,
-            workspace_root: Some(&workspace),
+            workspace_root: Some(&analysis_input),
             max_entities_per_batch: 500,
             max_relations_per_batch: 2000,
         },
         &captured.files,
         &export_text,
-    )
-    .map_err(|error| error.to_string())?;
+    );
+    let analysis_removed = fs::remove_dir_all(&analysis_root).is_ok();
+    let bridge = bridge.map_err(|error| {
+        format!(
+            "import export for snapshot {}: {error}",
+            captured.snapshot_id
+        )
+    })?;
     let counts = store
         .published_counts(&args.project, &captured.snapshot_id)
         .map_err(|error| error.to_string())?;
@@ -463,6 +712,11 @@ fn run_index(args: IndexArgs) -> Result<Value, String> {
         "run_id": run_id,
         "workspace": workspace,
         "state": args.state,
+        "analysis": {
+            "mode": "snapshot_materialization",
+            "input": analysis,
+            "removed": analysis_removed,
+        },
         "export": export,
         "export_digest": export_digest,
         "helper": helper,
@@ -948,10 +1202,125 @@ fn write_trace_result(out: Option<&PathBuf>, result: Value) -> Result<Value, Str
     Ok(result)
 }
 
+#[cfg(test)]
+mod index_tests {
+    use super::*;
+    use archmeld_core::source_api::read_source;
+
+    #[test]
+    fn index_parses_the_captured_snapshot_not_a_concurrent_save() {
+        let dir = tempfile::tempdir().unwrap();
+        let workspace = dir.path().join("repo");
+        fs::create_dir_all(workspace.join("src")).unwrap();
+        let old = "def old_symbol():\n    return 'old'\n";
+        let new = "def new_symbol():\n    return 'new'\n";
+        fs::write(workspace.join("src/target.py"), old).unwrap();
+        let live = workspace.canonicalize().unwrap();
+        let state = dir.path().join("state");
+        let mut helper_saw_live = false;
+        let mut runner = |_helper: &PathBuf,
+                          analysis: &std::path::Path,
+                          export: &std::path::Path,
+                          _state: &std::path::Path|
+         -> Result<HelperOutput, String> {
+            if analysis == live {
+                helper_saw_live = true;
+            }
+            let captured = fs::read(analysis.join("src/target.py"))
+                .map_err(|error| format!("helper read: {error}"))?;
+            assert_eq!(
+                String::from_utf8(captured).unwrap(),
+                old,
+                "helper must parse the materialized snapshot"
+            );
+            // Simulate a user save after snapshot capture, while the helper is
+            // still parsing.
+            fs::write(workspace.join("src/target.py"), new).unwrap();
+            let manifest = json!({
+                "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+                "version":"0.2.0","node_count":1,"edge_count":0,"iteration":"real-iterators"
+            });
+            let node = json!({
+                "type":"node","id":1,"node_type":"Function","properties":{
+                    "path": analysis.join("src/target.py").to_string_lossy(),
+                    "name":"old_symbol","line_start":1,"line_end":2
+                }
+            });
+            fs::write(export, format!("{manifest}\n{node}\n"))
+                .map_err(|error| format!("helper export: {error}"))?;
+            let summary = json!({
+                "format":"archmeld-export-v1","nodes":1,"edges":0,
+                "files_total":1,"files_parsed":1,"files_skipped":0,
+                "by_language":{"python":1},"parser_errors":{},"elapsed_ms":1,
+                "storage":"in_memory"
+            });
+            Ok(HelperOutput {
+                success: true,
+                status: Some(0),
+                stdout: serde_json::to_vec(&summary).unwrap(),
+                stderr: Vec::new(),
+            })
+        };
+        let args = IndexArgs {
+            workspace: workspace.clone(),
+            state: state.clone(),
+            project: "project.index.race".to_string(),
+            max_files: 500,
+            index_helper: None,
+            run_id: Some("run.index.race".to_string()),
+        };
+        let result = run_index_with(args, &dir.path().join("fake-helper.exe"), &mut runner)
+            .expect("index run");
+        assert!(!helper_saw_live, "helper received the live workspace");
+        assert_eq!(
+            fs::read_to_string(workspace.join("src/target.py")).unwrap(),
+            new,
+            "the simulated save must have happened"
+        );
+        let snapshot_id = result["snapshot_id"].as_str().unwrap();
+        let store = Store::open(&state).unwrap();
+        let entity_ids = store
+            .entity_ids("project.index.race", snapshot_id)
+            .unwrap();
+        assert_eq!(entity_ids.len(), 1);
+        let entity = store
+            .get_entity("project.index.race", snapshot_id, &entity_ids[0])
+            .unwrap()
+            .unwrap();
+        assert!(
+            entity["qualified_name"]
+                .as_str()
+                .unwrap()
+                .ends_with("::old_symbol"),
+            "{entity}"
+        );
+        let source = read_source(
+            &store,
+            &json!({
+                "project_id":"project.index.race",
+                "snapshot_id":snapshot_id,
+                "entity_id":entity_ids[0],
+                "anchor_index":0,
+                "max_bytes":1024
+            }),
+        )
+        .unwrap();
+        let text = source["text"].as_str().unwrap();
+        assert!(text.contains("old_symbol"), "{text}");
+        assert!(!text.contains("new_symbol"), "{text}");
+        assert_eq!(result["analysis"]["mode"], "snapshot_materialization");
+        assert_eq!(result["analysis"]["removed"], true);
+        assert_eq!(result["snapshot_files"], 1);
+    }
+}
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
     let result = match cli.command {
         Commands::Index(args) => run_index(args),
+        Commands::Status(args) => run_status(args),
+        Commands::ReviewDiff(args) => run_review_diff(args),
+        Commands::Refresh(args) => run_refresh(args),
         Commands::Report(args) => run_report(args),
         Commands::VerifyReport(args) => run_verify(args),
         Commands::Backup(args) => run_backup(args),
@@ -974,5 +1343,242 @@ fn main() -> ExitCode {
             eprintln!("{}", json!({"error": error}));
             ExitCode::FAILURE
         }
+    }
+}
+
+#[cfg(test)]
+mod status_tests {
+    use super::*;
+    use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
+
+    #[test]
+    fn status_reports_the_latest_snapshot_and_workspace_freshness_without_mutation() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().join("repo");
+        fs::create_dir_all(&root).unwrap();
+        fs::write(root.join("a.py"), "VALUE = 1\n").unwrap();
+        let state = dir.path().join("state");
+        let mut store = Store::open(&state).unwrap();
+        store.ensure_project("project.status", "expedition").unwrap();
+        let captured = capture_snapshot(
+            &mut store,
+            "project.status",
+            &root,
+            &SnapshotInputs {
+                build_config: json!({"variant": "status"}),
+                environment: json!({"os": "test"}),
+            },
+            &SnapshotOptions {
+                include_untracked: true,
+                ..SnapshotOptions::default()
+            },
+        )
+        .unwrap();
+        drop(store);
+        fs::write(root.join("a.py"), "VALUE = 2\n").unwrap();
+        let result = run_status(StatusArgs {
+            state: state.clone(),
+            project: Some("project.status".to_string()),
+            workspace: Some(root.clone()),
+        })
+        .unwrap();
+        let project = &result["projects"][0];
+        assert_eq!(project["latest_snapshot_id"], captured.snapshot_id);
+        assert_eq!(project["snapshot_count"], 1);
+        assert_eq!(project["snapshot"]["file_count"], 1);
+        assert_eq!(project["freshness"]["state"], "changed");
+        assert_eq!(project["freshness"]["changed"][0]["path"], "a.py");
+        assert_eq!(project["freshness"]["source_mutation"], "none");
+        let reopened = Store::open(&state).unwrap();
+        assert_eq!(reopened.snapshot_count("project.status").unwrap(), 1);
+    }
+}
+
+#[cfg(test)]
+mod diff_cli_tests {
+    use super::*;
+    use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
+
+    fn fake_export(
+        analysis: &std::path::Path,
+        export: &std::path::Path,
+    ) -> Result<(), String> {
+        let source = fs::read_to_string(analysis.join("src/a.py"))
+            .map_err(|error| format!("fake helper read: {error}"))?;
+        let name = source
+            .split("def ")
+            .nth(1)
+            .and_then(|rest| rest.split('(').next())
+            .unwrap_or("unknown")
+            .trim();
+        let manifest = json!({
+            "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+            "version":"0.2.0","node_count":1,"edge_count":0,"iteration":"real-iterators"
+        });
+        let node = json!({
+            "type":"node","id":1,"node_type":"Function","properties":{
+                "path": analysis.join("src/a.py").to_string_lossy(),
+                "name": name, "line_start": 1, "line_end": 2
+            }
+        });
+        fs::write(export, format!("{manifest}\n{node}\n"))
+            .map_err(|error| format!("fake helper export: {error}"))
+    }
+
+    fn fake_summary() -> Vec<u8> {
+        serde_json::to_vec(&json!({
+            "format":"archmeld-export-v1","nodes":1,"edges":0,
+            "files_total":1,"files_parsed":1,"files_skipped":0,
+            "by_language":{"python":1},"parser_errors":{},"elapsed_ms":1,
+            "storage":"in_memory"
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn review_diff_cli_reports_changed_entity_and_not_run_verification() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().join("repo");
+        fs::create_dir_all(root.join("src")).unwrap();
+        fs::write(root.join("src/a.py"), "def alpha():\n    return 1\n").unwrap();
+        let state = dir.path().join("state");
+        let mut store = Store::open(&state).unwrap();
+        store.ensure_project("project.review.cli", "expedition").unwrap();
+        let captured = capture_snapshot(
+            &mut store,
+            "project.review.cli",
+            &root,
+            &SnapshotInputs {
+                build_config: json!({"variant":"review-cli"}),
+                environment: json!({"os":"test"}),
+            },
+            &SnapshotOptions {
+                include_untracked: true,
+                ..SnapshotOptions::default()
+            },
+        )
+        .unwrap();
+        let config = captured.snapshot["config_digest"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        let export = json!({
+            "type":"node","id":1,"node_type":"Function","properties":{
+                "path": root.join("src/a.py").to_string_lossy(),
+                "name":"alpha","line_start":1,"line_end":2
+            }
+        });
+        import_codegraph_export(
+            &mut store,
+            &BridgeConfig {
+                project_id: "project.review.cli",
+                snapshot_id: &captured.snapshot_id,
+                config_digest: &config,
+                run_id: "run.review.cli",
+                workspace_root: Some(&root),
+                max_entities_per_batch: 500,
+                max_relations_per_batch: 2000,
+            },
+            &captured.files,
+            &format!(
+                "{}\n{}\n",
+                json!({
+                    "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+                    "version":"0.2.0","node_count":1,"edge_count":0,"iteration":"real-iterators"
+                }),
+                export
+            ),
+        )
+        .unwrap();
+        drop(store);
+        fs::write(root.join("src/a.py"), "def alpha():\n    return 2\n").unwrap();
+        let result = run_review_diff(ReviewDiffArgs {
+            state,
+            project: "project.review.cli".to_string(),
+            workspace: root,
+            base_snapshot: None,
+        })
+        .unwrap();
+        assert_eq!(result["command"], "review-diff");
+        assert_eq!(result["state"], "changed");
+        assert_eq!(result["verification"]["state"], "not_run");
+        let file = &result["files"][0];
+        assert_eq!(file["path"], "src/a.py");
+        assert_eq!(file["entities"][0]["qualified_name"], format!("src/a.py::alpha"));
+        assert_eq!(file["entities"][0]["state"], "changed");
+    }
+
+    #[test]
+    fn refresh_creates_a_new_snapshot_and_diffs_from_the_base() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().join("repo");
+        fs::create_dir_all(root.join("src")).unwrap();
+        fs::write(root.join("src/a.py"), "def alpha():\n    return 1\n").unwrap();
+        let state = dir.path().join("state");
+        let helper = dir.path().join("fake-helper.exe");
+        let mut runner = |_helper: &PathBuf,
+                          analysis: &std::path::Path,
+                          export: &std::path::Path,
+                          _state: &std::path::Path|
+         -> Result<HelperOutput, String> {
+            fake_export(analysis, export)?;
+            Ok(HelperOutput {
+                success: true,
+                status: Some(0),
+                stdout: fake_summary(),
+                stderr: Vec::new(),
+            })
+        };
+        let base = run_index_with(
+            IndexArgs {
+                workspace: root.clone(),
+                state: state.clone(),
+                project: "project.refresh".to_string(),
+                max_files: 100,
+                index_helper: None,
+                run_id: Some("run.refresh.base".to_string()),
+            },
+            &helper,
+            &mut runner,
+        )
+        .unwrap();
+        let base_snapshot = base["snapshot_id"].as_str().unwrap().to_string();
+        fs::write(root.join("src/a.py"), "def beta():\n    return 2\n").unwrap();
+        let refreshed = run_refresh_with(
+            RefreshArgs {
+                state: state.clone(),
+                project: "project.refresh".to_string(),
+                workspace: root,
+                base_snapshot: None,
+                max_files: 100,
+                index_helper: None,
+                run_id: Some("run.refresh.new".to_string()),
+            },
+            &helper,
+            &mut runner,
+        )
+        .unwrap();
+        assert_eq!(refreshed["command"], "refresh");
+        assert_eq!(refreshed["state"], "changed");
+        assert_eq!(refreshed["history"]["old_snapshot_retained"], true);
+        assert_ne!(refreshed["base_snapshot_id"], refreshed["new_snapshot_id"]);
+        assert_eq!(refreshed["base_snapshot_id"], base_snapshot);
+        assert!(refreshed["diff"]["files"]["changed"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|file| file["path"] == "src/a.py"));
+        assert!(refreshed["diff"]["entities"]["deleted"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entity| entity["qualified_name"].as_str().unwrap().ends_with("::alpha")));
+        assert!(refreshed["diff"]["entities"]["added"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entity| entity["qualified_name"].as_str().unwrap().ends_with("::beta")));
+        let store = Store::open(&state).unwrap();
+        assert_eq!(store.snapshot_count("project.refresh").unwrap(), 2);
     }
 }

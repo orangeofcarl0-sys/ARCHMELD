@@ -56,16 +56,16 @@
   "checks": {
     "statistical": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:131f21f8bb57e66105c8d570b675ee13153a3e2a6955bf37e4ca1286aa534e7d",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -169,16 +169,16 @@
     },
     "statistical_sample": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical_sample.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical_sample.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:5ec085e2b9551aca0b25b629e71d11e3266e60ce63bc01d136a67580af05576f",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -274,16 +274,16 @@
     },
     "ulp": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\ulp.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\ulp.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:499a0080d055d20b70bb6bac6a67277d613526d8e416c820425f9564333e9caa",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -345,16 +345,16 @@
     },
     "matlab_eps": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\matlab_eps.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\matlab_eps.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:ea0c33aec6edddd97bf10c3bd8c283c952cfd73fdad92de450ce57e2f11d7f4a",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -420,16 +420,16 @@
     },
     "dimension": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:0e2e96e9c817fe28b44bf3d69fa6e6d8e406801b25a13c318299a55ffc9d871c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -495,16 +495,16 @@
     },
     "dimension_custom": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_custom.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_custom.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:6b451e49c4e27210bdea3c17ffa94da41229f75c5bd8855f6994ee97a1b3067b",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -572,16 +572,16 @@
     },
     "dimension_negative_control": {
       "argv": [
-        "F:\\Codex_Work_Space\\ARCHMELD-work\\target\\debug\\archmeld.exe",
+        "F:\\Codex_Work_Space\\<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
         "--root",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
         "--predicate",
-        "<local-user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_negative.json"
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_negative.json"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work",
+      "cwd": "F:\\Codex_Work_Space\\<repo>",
       "exit_code": 0,
       "stdout_sha256": "sha256:f1998f5f72faa12e65cd032b3cc7f77397a21e7a4c5676fe95f1497f87f4e483",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

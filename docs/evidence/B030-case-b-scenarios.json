@@ -9,7 +9,7 @@
         "scenarios.py",
         "cancel"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../../examples/case-b",
+      "cwd": "F:\\Codex_Work_Space\\<repo>\\crates\\archmeld-core\\../../examples/case-b",
       "exit_code": 0,
       "process_audit": {
         "cleanup": [],
@@ -45,7 +45,7 @@
         "scenarios.py",
         "disconnect"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../../examples/case-b",
+      "cwd": "F:\\Codex_Work_Space\\<repo>\\crates\\archmeld-core\\../../examples/case-b",
       "exit_code": 0,
       "process_audit": {
         "cleanup": [],
@@ -82,7 +82,7 @@
         "scenarios.py",
         "normal"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../../examples/case-b",
+      "cwd": "F:\\Codex_Work_Space\\<repo>\\crates\\archmeld-core\\../../examples/case-b",
       "exit_code": 0,
       "process_audit": {
         "cleanup": [],
@@ -119,7 +119,7 @@
         "scenarios.py",
         "queue_saturation"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../../examples/case-b",
+      "cwd": "F:\\Codex_Work_Space\\<repo>\\crates\\archmeld-core\\../../examples/case-b",
       "exit_code": 0,
       "process_audit": {
         "cleanup": [],
@@ -157,7 +157,7 @@
         "scenarios.py",
         "slow_consumer"
       ],
-      "cwd": "F:\\Codex_Work_Space\\ARCHMELD-work\\crates\\archmeld-core\\../../examples/case-b",
+      "cwd": "F:\\Codex_Work_Space\\<repo>\\crates\\archmeld-core\\../../examples/case-b",
       "exit_code": 0,
       "process_audit": {
         "cleanup": [],

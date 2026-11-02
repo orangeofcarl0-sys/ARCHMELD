@@ -123,7 +123,7 @@ fn file_digest(root: &Path, path: &str) -> String {
 fn case_b_capture_estimator_ui_is_traceable_and_verified() {
     let temp = tempfile::Builder::new()
         .prefix("b030-case-b-")
-        .tempdir_in("F:/Codex_Work_Space/_archmeld_temp")
+        .tempdir_in("<workspace>/_archmeld_temp")
         .unwrap();
     let root = temp.path().join("case-b");
     copy_dir(

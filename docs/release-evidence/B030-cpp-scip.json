@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "WSL scip-clang v0.4.1 run + crates/archmeld-core/tests/cpp_scip_real.rs",
+  "scope": "C++ full-SCIP generation and import on the checked-in C++ fixture",
+  "status": "passed_for_testing_phase",
+  "platform": {
+    "host": "WSL2 Ubuntu 24.04.4 LTS",
+    "arch": "x86_64",
+    "glibc": "2.39",
+    "tool_location": "user-local ~/.local/bin/scip-clang (no system package, no sudo)"
+  },
+  "tool": {
+    "name": "scip-clang",
+    "version": "0.4.1",
+    "release_url": "https://github.com/sourcegraph/scip-clang/releases/download/v0.4.1/scip-clang-x86_64-linux",
+    "binary_sha256": "sha256:a434d26a079fd80e1996ba79276cb1ef86b2b2ad28b13e24386285db32c59046",
+    "binary_bytes": 149130216,
+    "llvm_commit": "2078da43e25a4623cab2d0d60decddf709aaea28"
+  },
+  "generation": {
+    "cwd": "<tmp>/archmeld-cpp-scip",
+    "argv": [
+      "<tmp>/archmeld-scip/scip-clang",
+      "--compdb-path=compile_commands.json"
+    ],
+    "exit_code": 0,
+    "translation_units": 2,
+    "errored_translation_units": 0,
+    "index": {
+      "path": "upstream-probes/scip/cpp.scip",
+      "sha256": "sha256:059b0bb763ec00751a8e705a0aaa34104d30ebcd7e9b8c508ffb376703f050a8",
+      "bytes": 2596
+    },
+    "stdout_sha256": "sha256:f55bccd2d6c72d7cb11fd4a4adabb4252f67ac22c054bdc0ee5ae6dfe269a09c",
+    "stderr_sha256": "sha256:4af42e38f923cc2a288d0e0a9f86953505231944ab3b43b9e5221671223c1009",
+    "warning": "scip-clang reported that g++ is absent on PATH and could not determine the resource directory; it still exited 0 with 2/2 TUs merged and 0 errored TUs"
+  },
+  "import": {
+    "test": "crates/archmeld-core/tests/cpp_scip_real.rs",
+    "documents": 3,
+    "entities": 21,
+    "relations": 21,
+    "external_entities": 4,
+    "diagnostics": 9,
+    "omitted_documents": 0,
+    "unresolved": 0,
+    "relation_kinds": [
+      "references"
+    ],
+    "resolved_call_promoted": false,
+    "coverage": {
+      "state": "complete",
+      "expected_count": 3,
+      "observed_count": 3,
+      "omitted_count": 0,
+      "unresolved_count": 0,
+      "limitations": [
+        "SCIP symbol references are resolved; call semantics are not asserted",
+        "external symbols have no source anchor"
+      ]
+    }
+  },
+  "limitations": [
+    "scip-clang is installed only in the WSL user directory; this is not a system package and is not on Windows.",
+    "The generation warning about a missing g++ resource directory did not prevent a 0-errored-TU index, but the host does not have a full C++ toolchain.",
+    "SCIP imports references; call semantics remain asserted by the existing clangd C++ pack, not by SCIP.",
+    "The index is a small fixture artifact; no large C++ repository or incremental SCIP run was measured.",
+    "The committed index embeds neutral /tmp paths; it contains no WSL username or local workspace path."
+  ],
+  "regression": {
+    "command": "cargo test --offline --no-fail-fast -p archmeld-core -p archmeld-api",
+    "sections": 73,
+    "passed": 201,
+    "failed": 0,
+    "ignored": 0,
+    "log_sha256": "sha256:9894aa1a52cccd63a505aa2280b36198159667cd12d205277680c7c3f1cdde9e"
+  }
+}

@@ -25,12 +25,12 @@
       "projects": [
         "project.e7f659e8cba6ac3e8fff1b503700da84"
       ],
-      "root": "\\\\?\\<local-user>\\AppData\\Local\\Temp\\.tmpJbnkkn\\state",
+      "root": "\\\\?\\C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmpJbnkkn\\state",
       "schema_version": 18
     },
     "target": {
       "database_sha256": "sha256:75892b1ad23044f550c3f02abe9fd2761c9930a661247f37437712ff6c3e1596",
-      "root": "\\\\?\\<local-user>\\AppData\\Local\\Temp\\.tmpJbnkkn\\migrated-state",
+      "root": "\\\\?\\C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmpJbnkkn\\migrated-state",
       "schema_version": 18
     },
     "verification": {

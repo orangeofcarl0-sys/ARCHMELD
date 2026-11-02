@@ -8,9 +8,9 @@ AT068 clean-machine delivery and AT077 real-upstream upgrade remain partial. See
 ## 1. Build and test (Windows reference machine)
 
 ```sh
-cd F:/Codex_Work_Space/ARCHMELD-work
+cd <repo>
 RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
-PATH=/d/Strawberry/c/bin:/c/Users/<local-user>/.cargo/bin:$PATH \
+PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
 cargo test -p archmeld-core -p archmeld-api
 ```
 
@@ -18,18 +18,28 @@ Release binaries:
 
 ```sh
 RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
-PATH=/d/Strawberry/c/bin:/c/Users/<local-user>/.cargo/bin:$PATH \
+PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
 cargo build --release -p archmeld-api --bins
-RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<local-user>/.cargo/bin:$PATH LIBCLANG_PATH=F:/Codex_Work_Space/_archmeld_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
+RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH LIBCLANG_PATH=<workspace>/_archmeld_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
 ```
 
 Offline clean-machine flow (installed bundle; no Cargo, model or network):
 
 ```sh
 archmeld index --workspace F:/path/to/repo --state F:/state --project project.local
+archmeld status --state F:/state --project project.local --workspace F:/path/to/repo
+archmeld review-diff --state F:/state --project project.local --workspace F:/path/to/repo
+archmeld refresh --state F:/state --project project.local --workspace F:/path/to/repo
 archmeld report --state F:/state --project project.local   --snapshot <snapshot_id> --out F:/state/report
 archmeld verify-report --dir F:/state/report
 ```
+
+`status --workspace` and `review-diff` are read-only. The review reports
+per-file line overlap, base/current digests, static relation impact, confidence
+and `verification.state=not_run`; it never executes a repository command.
+`refresh` creates a new snapshot and reports the exact file/entity/relation
+delta against the previous snapshot; the old snapshot remains addressable.
+See ADR-054.
 
 The default bundle has no source or trace bytes. Opting in copies them from
 the ledger's CAS and marks the whole bundle sensitive:
@@ -256,7 +266,7 @@ Linux release build (pinned image):
 
 ```sh
 MSYS_NO_PATHCONV=1 docker run --rm \
-  -v F:/Codex_Work_Space/ARCHMELD-work:/work -w /work \
+  -v <repo>:/work -w /work \
   -e CARGO_TARGET_DIR=/work/target-linux \
   rust:1.94.1-bookworm cargo build --release -p archmeld-api
 ```
@@ -281,7 +291,7 @@ The server binds loopback only. Every request must use a loopback `Host` and mus
 not send `Origin`; bearer tokens are accepted only in `Authorization`.
 
 ```sh
-target/release/archmeld-serve.exe --state F:/Codex_Work_Space/_archmeld_state \
+target/release/archmeld-serve.exe --state <workspace>/_archmeld_state \
   --allow-workspace F:/path/to/repo --port 0
 ```
 
@@ -309,8 +319,8 @@ token; a custom security descriptor is not set. See ADR-047 and ADR-048.
 MCP read-only server:
 
 ```sh
-target/release/archmeld-mcp.exe --state F:/Codex_Work_Space/_archmeld_state \
-  --project <project_id> --audit F:/Codex_Work_Space/_archmeld_temp/mcp-audit.jsonl
+target/release/archmeld-mcp.exe --state <workspace>/_archmeld_state \
+  --project <project_id> --audit <workspace>/_archmeld_temp/mcp-audit.jsonl
 ```
 
 The MCP surface advertises the contract tools but only inspect/query/context/
@@ -361,7 +371,7 @@ and never call a partial/unsupported check accepted.
   repository script.
 - Clang/libclang build errors: use the locked toolchain paths in `AGENTS.md`.
 - C: drive pressure: set `TMP/TEMP` and benchmark/temp roots to
-  `F:/Codex_Work_Space/_archmeld_temp`; `target-linux/` and `dist/` are ignored.
+  `<workspace>/_archmeld_temp`; `target-linux/` and `dist/` are ignored.
 
 ## 6. Current release status
 

@@ -117,6 +117,52 @@ pub fn materialize(
             "sandbox.include must not be empty for a snapshot copy",
         ));
     }
+    materialize_with(
+        store,
+        project_id,
+        snapshot_id,
+        scope,
+        |path| path_selected(path, &request.include, &request.exclude),
+        &request.include,
+        &request.exclude,
+        request.cwd.as_deref(),
+    )
+}
+
+/// Materialize every file of a snapshot. Used by the indexer so the parser
+/// consumes exactly the bytes that were hashed, never a live-tree race.
+pub fn materialize_all(
+    store: &mut Store,
+    project_id: &str,
+    snapshot_id: &str,
+    scope: &[&str],
+) -> Result<Materialized> {
+    materialize_with(
+        store,
+        project_id,
+        snapshot_id,
+        scope,
+        |_| true,
+        &[],
+        &[],
+        None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn materialize_with<F>(
+    store: &mut Store,
+    project_id: &str,
+    snapshot_id: &str,
+    scope: &[&str],
+    selected: F,
+    include: &[String],
+    exclude: &[String],
+    cwd_relative: Option<&str>,
+) -> Result<Materialized>
+where
+    F: Fn(&str) -> bool,
+{
     let payload = store
         .snapshot_payload(project_id, snapshot_id)?
         .ok_or_else(|| CoreError::not_found(format!("sandbox snapshot {snapshot_id} is missing")))?;
@@ -138,7 +184,7 @@ pub fn materialize(
     let mut total_bytes: u64 = 0;
     for file in files {
         let path = file["path"].as_str().unwrap_or("");
-        if !path_selected(path, &request.include, &request.exclude) {
+        if !selected(path) {
             continue;
         }
         if let Err(error) = validate::validate_path("snapshot file", path) {
@@ -186,17 +232,17 @@ pub fn materialize(
     if entries.is_empty() {
         let _ = fs::remove_dir_all(&sandbox_root);
         return Err(CoreError::invalid(
-            "sandbox.include selected no files from the snapshot",
+            "snapshot materialization selected no files",
         ));
     }
     // An included prefix may name an empty directory; create it so a declared
     // cwd inside it resolves.
-    for include in &request.include {
+    for prefix in include {
         let has_files = selected_paths
             .iter()
-            .any(|path| path == include || path.starts_with(&format!("{include}/")));
+            .any(|path| path == prefix || path.starts_with(&format!("{prefix}/")));
         if !has_files {
-            let _ = fs::create_dir_all(sandbox_root.join(include));
+            let _ = fs::create_dir_all(sandbox_root.join(prefix));
         }
     }
     let file_count = entries.len();
@@ -209,7 +255,7 @@ pub fn materialize(
         let _ = fs::remove_dir_all(&sandbox_root);
         CoreError::Storage(format!("sandbox manifest: {error}"))
     })?;
-    let cwd = match resolve_cwd(&sandbox_root, request.cwd.as_deref()) {
+    let cwd = match resolve_cwd(&sandbox_root, cwd_relative) {
         Ok(cwd) => cwd,
         Err(error) => {
             let _ = fs::remove_dir_all(&sandbox_root);
@@ -221,8 +267,8 @@ pub fn materialize(
             "source": "resulting_snapshot",
             "snapshot_id": snapshot_id,
             "root": sandbox_root.to_string_lossy(),
-            "include": request.include,
-            "exclude": request.exclude,
+            "include": include,
+            "exclude": exclude,
             "file_count": file_count,
             "bytes": total_bytes,
             "manifest_digest": manifest_digest,

@@ -94,6 +94,7 @@ async fn main() {
         token: token.clone(),
         workspaces: workspaces.clone(),
         state_dir: state_root.clone(),
+        scenario_cancels: Arc::new(Mutex::new(HashMap::new())),
     };
     let app = router(state);
     if let Some(name) = named_pipe {

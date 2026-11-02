@@ -9,7 +9,7 @@
 ## 2. 目标工作仓库（计划布局，不是当前包已有代码）
 
 ```text
-ARCHMELD-workbench/
+<repo>bench/
   Cargo.toml                      # 保留上游 workspace，只增加成员
   crates/
     codegraph*/                   # 原解析器、引擎、服务；最小必要修改

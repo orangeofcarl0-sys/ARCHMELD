@@ -4,7 +4,7 @@
 
 ## 0. 工作区选择与许可
 
-本初始化包为只读基线；在旁边创建 `ARCHMELD-work`。不要把工作台开发仓库建在待分析的用户项目中。先读取本包 AGENTS.md 和固定 ADR。用户批准开发范围后，一般构建和测试无需反复确认；真实硬件、源码外传、新付费服务和越权安装须另批。
+本初始化包为只读基线；在旁边创建 `<repo>`。不要把工作台开发仓库建在待分析的用户项目中。先读取本包 AGENTS.md 和固定 ADR。用户批准开发范围后，一般构建和测试无需反复确认；真实硬件、源码外传、新付费服务和越权安装须另批。
 
 ## 1. 固定源码（PowerShell）
 
@@ -13,7 +13,7 @@
 ```powershell
 $ErrorActionPreference = 'Stop'
 $Base = '590c2ca7dd7b37bd1d41caf45fac535b6522f969'
-$Dest = Join-Path (Get-Location) 'ARCHMELD-work'
+$Dest = Join-Path (Get-Location) '<repo>'
 if (Test-Path $Dest) { throw "目标已存在：$Dest。不要覆盖，先核实是否为本项目。" }
 git clone --no-checkout https://github.com/codegraph-ai/CodeGraph.git $Dest
 if ($LASTEXITCODE -ne 0) { throw 'clone failed' }
@@ -32,9 +32,9 @@ POSIX 对应命令：
 ```sh
 set -eu
 base=590c2ca7dd7b37bd1d41caf45fac535b6522f969
-test ! -e ARCHMELD-work
-git clone --no-checkout https://github.com/codegraph-ai/CodeGraph.git ARCHMELD-work
-cd ARCHMELD-work
+test ! -e <repo>
+git clone --no-checkout https://github.com/codegraph-ai/CodeGraph.git <repo>
+cd <repo>
 git switch -c archmeld/initial "$base"
 test "$(git rev-parse HEAD)" = "$base"
 git remote rename origin upstream

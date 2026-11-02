@@ -10,7 +10,7 @@
       {
         "name": "dotnet",
         "version": "8.0.427",
-        "path": "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe"
+        "path": "<workspace>/_archmeld_tools/dotnet8/dotnet.exe"
       },
       {
         "name": "csharp-ls",

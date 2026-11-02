@@ -41,7 +41,7 @@
     {
       "name": "python",
       "status": "present",
-      "path": "<local-user>\\AppData\\Local\\Programs\\Python\\Python311\\python.EXE",
+      "path": "C:\\Users\\<user>\\AppData\\Local\\Programs\\Python\\Python311\\python.EXE",
       "version": "Python 3.11.9",
       "sha256": "5f7b89a612c9b8af1d6456cdfcd1dbe5ca630849e79aebced9bee9a6694952ec",
       "source": "https://www.python.org/",
@@ -118,7 +118,7 @@
     {
       "name": "rustc-default-outside-repo",
       "status": "present",
-      "path": "<local-user>\\.cargo\\bin\\rustc.EXE",
+      "path": "C:\\Users\\<user>\\.cargo\\bin\\rustc.EXE",
       "version": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
       "sha256": null,
       "source": "https://rust-lang.org/",
@@ -131,7 +131,7 @@
     {
       "name": "cargo-default-outside-repo",
       "status": "present",
-      "path": "<local-user>\\.cargo\\bin\\cargo.EXE",
+      "path": "C:\\Users\\<user>\\.cargo\\bin\\cargo.EXE",
       "version": "cargo 1.97.1 (c980f4866 2026-06-30)",
       "sha256": null,
       "source": "https://rust-lang.org/",
@@ -144,7 +144,7 @@
     {
       "name": "rustc-pinned-gnu",
       "status": "present",
-      "path": "<local-user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rustc.exe",
+      "path": "C:\\Users\\<user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rustc.exe",
       "version": "rustc 1.94.1 (e408947bf 2026-03-25)",
       "sha256": "d79425896ac19fa86d8e039d0fd64eefdb544e0bb9481563bb9b0b08c45f188c",
       "source": "https://rust-lang.org/",
@@ -155,7 +155,7 @@
     {
       "name": "cargo-pinned-gnu",
       "status": "present",
-      "path": "<local-user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\cargo.exe",
+      "path": "C:\\Users\\<user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\cargo.exe",
       "version": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
       "sha256": "cfa068c87c13521410df59cd502f3d07aaf2e9bed1b6932ff2531b49d3ba2b60",
       "source": "https://rust-lang.org/",
@@ -166,7 +166,7 @@
     {
       "name": "rust-analyzer-pinned",
       "status": "present",
-      "path": "<local-user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rust-analyzer.exe",
+      "path": "C:\\Users\\<user>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rust-analyzer.exe",
       "version": "rust-analyzer 1.94.1 (e408947b 2026-03-25)",
       "sha256": "1e8e2f4efb8a9d1d945fa247a7f346d771b1746cf20fdbf686a58f7df54f3aba",
       "source": "https://rust-analyzer.github.io/",
@@ -177,7 +177,7 @@
     {
       "name": "rustup",
       "status": "present",
-      "path": "<local-user>\\.cargo\\bin\\rustup.EXE",
+      "path": "C:\\Users\\<user>\\.cargo\\bin\\rustup.EXE",
       "version": "rustup 1.29.2 (d8c92c676 2026-10-21)",
       "sha256": "00f139da614dced87d3c3d4121c43eebdac3c1bf8a5ee86b9d80dfd71c8d70fd",
       "source": "https://rust-lang.org/",

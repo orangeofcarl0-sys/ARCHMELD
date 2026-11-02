@@ -14,6 +14,7 @@
 //! * `changeset`/`apply` — controlled staging, prepared digests, writer
 //!   leases and journaled recovery.
 
+pub mod anchor;
 pub mod apply;
 pub mod blueprint;
 pub mod bridge;
@@ -38,6 +39,7 @@ mod predicate;
 pub mod query;
 pub mod report;
 pub mod retention;
+pub mod review;
 pub mod runtime;
 pub mod sandbox;
 pub mod scenario;
@@ -45,6 +47,7 @@ pub mod scip;
 pub mod snapshot;
 pub mod source;
 pub mod source_api;
+pub mod status;
 pub mod trace_processor;
 pub mod store;
 pub mod trace_adapters;

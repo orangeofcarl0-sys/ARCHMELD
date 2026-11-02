@@ -14,7 +14,9 @@ ErrorEnvelope 包含 code、message、request_id、retryable、details、evidenc
 
 ## 3. 高层 MCP 表面
 
-首版工具不超过 14 个，分别覆盖工作区状态、查找实体、取上下文、查询关系、运行场景、导入 Trace、管理架构候选、准备变更、执行已授权动作、查询验证与导出报告。详细输入 schema 与映射见 contracts/mcp-tools.json。[SRC-MCP]
+首版声明工具不超过 16 个：14 个核心工具覆盖工作区状态、查找实体、取上下文、查询关系、运行场景、导入 Trace、管理架构候选、准备变更、执行已授权动作、查询验证与导出报告；另加只读的 `archmeld_status` 与 `archmeld_review`。详细输入 schema 与映射见 contracts/mcp-tools.json。[SRC-MCP]
+
+当前实现只把有真实 handler 的工具放进 `tools/list`：`archmeld_inspect`、`archmeld_query`、`archmeld_context`、`archmeld_source`、`archmeld_status`、`archmeld_review`、`archmeld_capabilities`。其余契约工具由 `archmeld_capabilities` 明确标记为 `requires_grant`（需要 HTTP/CLI 外部授权，stdio 不能自批）或 `not_implemented`，不以“可用工具”公布。`archmeld_inspect` 的 schema 也只列出已实现的 kind。`archmeld_status`/`archmeld_review` 只使用已注册项目的 active root，不接受调用者路径；review 为静态比较，不执行 build/test。
 
 工具 annotations 仅为客户端提示，不是授权。只读查询不接受任意 SQL；source 读取用已授权 Entity/Artifact，不接受自由绝对路径。写工具调用需要服务端权限和具体批准 digest，不能通过字符串 `approved=true` 自行批准。
 

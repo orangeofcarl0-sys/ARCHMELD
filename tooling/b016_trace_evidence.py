@@ -26,7 +26,7 @@ LOGS = ROOT / "baseline" / "logs"
 COMMANDS = ROOT / "baseline" / "commands.ndjson"
 EVIDENCE = ROOT / "docs" / "release-evidence" / "B016-native-traces.json"
 FIXTURES = ROOT / "adapters" / "traces" / "fixtures"
-TOOLS = Path("F:/Codex_Work_Space/_archmeld_tools")
+TOOLS = Path("<workspace>/_archmeld_tools")
 PERFETTO = TOOLS / "perfetto"
 TRACY = TOOLS / "tracy"
 
@@ -139,7 +139,7 @@ def main() -> None:
     if not helper.is_file():
         raise SystemExit("build `cargo build -p codegraph-server --example archmeld_export` first")
 
-    work = Path("F:/Codex_Work_Space/_archmeld_temp/b016_trace_evidence")
+    work = Path("<workspace>/_archmeld_temp/b016_trace_evidence")
     if work.exists():
         shutil.rmtree(work)
     bin_dir = work / "bin"

@@ -4,6 +4,7 @@
 //! Real HTTP test for B016 scenario jobs: explicit grant, authorized workspace
 //! cwd, persisted run, and refusal without a grant.
 
+use archmeld_core::bridge::{import_codegraph_export, BridgeConfig};
 use archmeld_core::hash;
 use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
 use archmeld_core::store::Store;
@@ -50,7 +51,11 @@ fn start(state: &Path, workspace: &Path) -> Server {
 }
 
 fn http(server: &Server, method: &str, path: &str, body: Option<&Value>) -> (u16, Value) {
-    let address = server.endpoint.trim_start_matches("http://");
+    http_at(&server.endpoint, method, path, body)
+}
+
+fn http_at(endpoint: &str, method: &str, path: &str, body: Option<&Value>) -> (u16, Value) {
+    let address = endpoint.trim_start_matches("http://");
     let mut stream = TcpStream::connect(address).expect("connect");
     let payload = body.map(Value::to_string).unwrap_or_default();
     let request = format!(
@@ -236,4 +241,187 @@ fn scenario_http_sandbox_uses_the_snapshot_and_rejects_unknown_fields() {
         error["message"].as_str().unwrap_or("").contains("digest-pinned"),
         "{error}"
     );
+}
+
+#[test]
+fn queries_do_not_wait_for_a_long_scenario_run() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("workspace");
+    fs::create_dir_all(&root).unwrap();
+    fs::write(root.join("app.py"), "print('hello')\n").unwrap();
+    let state = dir.path().join("state");
+    let mut store = Store::open(&state).unwrap();
+    store.ensure_project(PROJECT, "expedition").unwrap();
+    let snapshot = capture_snapshot(
+        &mut store,
+        PROJECT,
+        &root,
+        &SnapshotInputs {
+            build_config: json!({"variant": "scenario-http-concurrency"}),
+            environment: json!({"os": "test"}),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    drop(store);
+    let canonical = root.canonicalize().unwrap();
+    let digest = hash::digest_bytes(canonical.to_string_lossy().as_bytes());
+    let handle = format!("ws.{}", &digest.trim_start_matches("sha256:")[..16]);
+    let server = start(&state, &canonical);
+    let endpoint = server.endpoint.clone();
+    let scenario_body = json!({
+        "project_id": PROJECT,
+        "snapshot_id": snapshot.snapshot_id,
+        "workspace_handle": handle,
+        "cwd": canonical.to_string_lossy(),
+        "argv": ["python", "-c", "import time; time.sleep(10)"],
+        "timeout_ms": 15000,
+        "execution_grant": {"granted": true, "grant_id": "grant.http.long", "reason": "lock test"},
+        "run_id": "run.http.scenario.long",
+    });
+    let scenario = std::thread::spawn(move || {
+        http_at(&endpoint, "POST", "/v1/scenarios", Some(&scenario_body))
+    });
+    std::thread::sleep(std::time::Duration::from_millis(600));
+    let query_body = json!({
+        "project_id": PROJECT,
+        "snapshot_id": snapshot.snapshot_id,
+        "kind": "symbols",
+        "query": "anything",
+        "entity_ids": [],
+        "relation_kinds": [],
+        "max_nodes": 10,
+        "max_depth": 0,
+        "cursor": null,
+    });
+    let started = std::time::Instant::now();
+    let (status, query) = http(&server, "POST", "/v1/query", Some(&query_body));
+    let elapsed = started.elapsed();
+    assert_eq!(status, 200, "{query}");
+    assert!(
+        elapsed < std::time::Duration::from_secs(2),
+        "query waited for the scenario run: {elapsed:?}"
+    );
+    let started = std::time::Instant::now();
+    let (status, cancelled) = http(
+        &server,
+        "POST",
+        "/v1/scenarios/run.http.scenario.long/cancel",
+        Some(&json!({"project_id": PROJECT})),
+    );
+    let cancel_elapsed = started.elapsed();
+    assert_eq!(status, 200, "{cancelled}");
+    assert_eq!(cancelled["cancelled"], true, "{cancelled}");
+    assert!(
+        cancel_elapsed < std::time::Duration::from_secs(2),
+        "cancel waited for the scenario run: {cancel_elapsed:?}"
+    );
+    let (status, run) = scenario.join().expect("scenario thread");
+    assert_eq!(status, 200, "{run}");
+    assert_eq!(run["completion"], "cancelled", "{run}");
+    assert_eq!(run["cancelled"], true, "{run}");
+}
+
+#[test]
+fn status_and_workspace_review_are_read_only_http_entries() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("workspace");
+    fs::create_dir_all(root.join("src")).unwrap();
+    fs::write(root.join("src/a.py"), "def alpha():\n    return 1\n").unwrap();
+    let state = dir.path().join("state");
+    let mut store = Store::open(&state).unwrap();
+    store.ensure_project(PROJECT, "expedition").unwrap();
+    let snapshot = capture_snapshot(
+        &mut store,
+        PROJECT,
+        &root,
+        &SnapshotInputs {
+            build_config: json!({"variant": "review-http"}),
+            environment: json!({"os": "test"}),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    let config_digest = snapshot.snapshot["config_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let node = json!({
+        "type":"node","id":1,"node_type":"Function","properties":{
+            "path": root.join("src/a.py").to_string_lossy(),
+            "name":"alpha","line_start":1,"line_end":2
+        }
+    });
+    import_codegraph_export(
+        &mut store,
+        &BridgeConfig {
+            project_id: PROJECT,
+            snapshot_id: &snapshot.snapshot_id,
+            config_digest: &config_digest,
+            run_id: "run.http.review",
+            workspace_root: Some(&root),
+            max_entities_per_batch: 500,
+            max_relations_per_batch: 2000,
+        },
+        &snapshot.files,
+        &format!(
+            "{}\n{}\n",
+            json!({
+                "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+                "version":"0.2.0","node_count":1,"edge_count":0,"iteration":"real-iterators"
+            }),
+            node
+        ),
+    )
+    .unwrap();
+    drop(store);
+    fs::write(root.join("src/a.py"), "def alpha():\n    return 2\n").unwrap();
+    let canonical = root.canonicalize().unwrap();
+    let digest = hash::digest_bytes(canonical.to_string_lossy().as_bytes());
+    let handle = format!("ws.{}", &digest.trim_start_matches("sha256:")[..16]);
+    let server = start(&state, &canonical);
+    let (status, review) = http(
+        &server,
+        "POST",
+        "/v1/reviews/workspace-diff",
+        Some(&json!({
+            "project_id": PROJECT,
+            "workspace_handle": handle,
+        })),
+    );
+    assert_eq!(status, 200, "{review}");
+    assert_eq!(review["state"], "changed");
+    assert_eq!(review["files"][0]["path"], "src/a.py");
+    assert_eq!(review["files"][0]["entities"][0]["state"], "changed");
+    assert_eq!(review["verification"]["state"], "not_run");
+    assert_eq!(review["source_mutation"], "none");
+
+    let (status, report) = http(
+        &server,
+        "GET",
+        &format!("/v1/status?project_id={PROJECT}&workspace_handle={handle}"),
+        None,
+    );
+    assert_eq!(status, 200, "{report}");
+    assert_eq!(report["projects"][0]["latest_snapshot_id"], snapshot.snapshot_id);
+    assert_eq!(report["projects"][0]["freshness"]["state"], "changed");
+    assert_eq!(report["projects"][0]["counts"]["entities"], 1);
+
+    let (status, denied) = http(
+        &server,
+        "POST",
+        "/v1/reviews/workspace-diff",
+        Some(&json!({
+            "project_id": PROJECT,
+            "workspace_handle": "ws.not-authorized",
+        })),
+    );
+    assert_eq!(status, 403, "{denied}");
+    assert_eq!(denied["code"], "permission_denied");
 }

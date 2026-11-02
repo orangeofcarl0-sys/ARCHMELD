@@ -10,12 +10,12 @@
       {
         "name": "go",
         "version": "1.27.3",
-        "path": "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe"
+        "path": "<workspace>/_archmeld_tools/go/go/bin/go.exe"
       },
       {
         "name": "gopls",
         "version": "0.20.0",
-        "path": "F:/Codex_Work_Space/_archmeld_tools/go/bin/gopls.exe"
+        "path": "<workspace>/_archmeld_tools/go/bin/gopls.exe"
       }
     ]
   },

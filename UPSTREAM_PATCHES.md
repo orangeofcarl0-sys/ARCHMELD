@@ -31,7 +31,7 @@ machine; they do not alter upstream source:
 - `LIBCLANG_PATH` pointing at a local libclang 18.1.1 bundle for bindgen.
 - `PATH` must put the MinGW runtime DLL directory (Strawberry) first; otherwise
   the Rust GNU test binaries fail with `STATUS_ENTRYPOINT_NOT_FOUND`.
-- `TMP`/`TEMP` redirected to `F:\Codex_Work_Space\_archmeld_temp` because the
+- `TMP`/`TEMP` redirected to `<workspace>\_archmeld_temp` because the
   system drive was full.
 - RocksDB still crashes at runtime under Windows GNU
   (`STATUS_ACCESS_VIOLATION` in `storage::rocksdb_backend::tests::test_delete`),

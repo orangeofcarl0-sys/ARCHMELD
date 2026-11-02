@@ -1,6 +1,6 @@
 {
   "contract_version": "1.0",
-  "status": "specification_not_implementation",
+  "status": "partially_implemented",
   "transport": "stdio via official SDK; negotiate supported MCP protocol",
   "tools": [
     {
@@ -74,6 +74,7 @@
             "enum": [
               "symbols",
               "text",
+              "source",
               "neighbors",
               "path",
               "impact"
@@ -202,6 +203,17 @@
             "type": "integer",
             "minimum": 128,
             "maximum": 64000
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -2164,8 +2176,108 @@
         "cancelJob"
       ],
       "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_status",
+      "description": "Report the registered project, latest snapshot, counts, languages and read-only workspace freshness. Creates no snapshot and records no drift.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "status"
+      ],
+      "x-authority": "same core checks as HTTP; hints are not authorization"
+    },
+    {
+      "name": "archmeld_review",
+      "description": "Statically review the registered workspace against a frozen snapshot. No build, test or runtime command is executed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "base_snapshot_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Digest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false,
+        "$defs": {
+          "Digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "reviewWorkspaceDiff"
+      ],
+      "x-authority": "same core checks as HTTP; the workspace root comes only from the registered project, never a caller path"
     }
   ],
   "output_policy": "structured result of mapped operation plus a bounded text summary; tool errors reflect Error; no raw secrets or huge artifacts",
-  "approval_exposed": false
+  "approval_exposed": false,
+  "implementation": {
+    "surface": "mcp_stdio_read_only",
+    "implemented_tools": [
+      "archmeld_inspect",
+      "archmeld_query",
+      "archmeld_context",
+      "archmeld_source",
+      "archmeld_status",
+      "archmeld_review",
+      "archmeld_capabilities"
+    ],
+    "implemented_inspect_kinds": [
+      "project",
+      "snapshot",
+      "entity",
+      "architecture",
+      "plan",
+      "contract",
+      "change",
+      "verification",
+      "claim",
+      "job"
+    ],
+    "requires_grant_tools": [
+      "archmeld_analyze",
+      "archmeld_architecture",
+      "archmeld_plan",
+      "archmeld_change",
+      "archmeld_change_action",
+      "archmeld_run",
+      "archmeld_verify",
+      "archmeld_import_trace",
+      "archmeld_report",
+      "archmeld_cancel"
+    ],
+    "not_implemented_inspect_kinds": [
+      "runtime_run",
+      "report"
+    ],
+    "approval_exposed": false,
+    "tools_list_source": "implemented handler registry; this declaration does not make a tool callable",
+    "note": "Write operations exist in the core/HTTP surface but require an external grant; the stdio bridge cannot self-approve and does not advertise them as callable."
+  }
 }

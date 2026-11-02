@@ -1,13 +1,13 @@
 # Public snapshot
 
 This repository is a sanitized public snapshot of ARCHMELD, exported from a
-private development repository on 2026-11-01. It is a single commit, not the
-private development history.
+private development repository on 2026-11-02. It is a single snapshot commit,
+not the private development history.
 
 Redactions applied to this snapshot:
 
 - authorized remote workstation host and user names;
-- local user paths and the local machine hostname;
+- local user paths, workspace paths and the local machine hostname;
 - the identity and aggregate values of the private recorded dataset used for
   B029 evidence. The dataset itself and its derived tables are not included.
 

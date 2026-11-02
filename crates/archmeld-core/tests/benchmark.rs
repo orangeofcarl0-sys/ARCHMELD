@@ -26,7 +26,7 @@ fn bench_tempdir(prefix: &str) -> tempfile::TempDir {
     let base = std::env::var_os("ARCHMELD_BENCH_TEMP")
         .map(PathBuf::from)
         .or_else(|| {
-            let candidate = PathBuf::from("F:/Codex_Work_Space/_archmeld_temp");
+            let candidate = PathBuf::from("<workspace>/_archmeld_temp");
             candidate.is_dir().then_some(candidate)
         });
     match base {

@@ -1,7 +1,7 @@
 {
   "analysis": {
     "components": 6,
-    "path": "F:/Codex_Work_Space/ARCHMELD-work/docs/evidence/B017-model-analysis.json",
+    "path": "<repo>/docs/evidence/B017-model-analysis.json",
     "relations": 101,
     "sha256": "sha256:8a81ed5d937318c36950f7c2f92c9c7685df4d791b826653585782d75c8fc869",
     "size_bytes": 2014697
@@ -1142,5 +1142,5 @@
     "provider_version": "0.15.3"
   },
   "schema_version": "1.0",
-  "target_repo": "F:/Codex_Work_Space/_archmeld_temp/b017-codeboarding-target"
+  "target_repo": "<workspace>/_archmeld_temp/b017-codeboarding-target"
 }

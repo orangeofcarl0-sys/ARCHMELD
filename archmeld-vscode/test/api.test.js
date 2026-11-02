@@ -49,6 +49,30 @@ test('report request carries the explicit source and trace opt-ins', async () =>
   assert.equal(result.risk_level, 'high');
 });
 
+test('status and workspace review use the authorized workspace handle', async () => {
+  const calls = [];
+  const client = new ArchmeldClient({
+    endpoint: 'http://127.0.0.1:9',
+    token: 'token',
+    fetchImpl: async (url, options) => {
+      calls.push({ url, options });
+      return { ok: true, text: async () => '{"state":"changed"}' };
+    },
+  });
+  await client.status('project.test', 'ws.abc');
+  assert.equal(
+    calls[0].url,
+    'http://127.0.0.1:9/v1/status?project_id=project.test&workspace_handle=ws.abc',
+  );
+  await client.reviewWorkspaceDiff('project.test', 'ws.abc');
+  assert.equal(calls[1].url, 'http://127.0.0.1:9/v1/reviews/workspace-diff');
+  assert.deepEqual(JSON.parse(calls[1].options.body), {
+    project_id: 'project.test',
+    workspace_handle: 'ws.abc',
+    base_snapshot_id: null,
+  });
+});
+
 test('real server enforces tokens and returns structured errors', async (t) => {
   if (!fs.existsSync(binary)) {
     t.skip(`archmeld-serve binary not found at ${binary}`);

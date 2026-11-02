@@ -100,6 +100,9 @@ test('cytoscape renderer embeds preset elements and a local-only asset', () => {
   assert.ok(html.includes('edge.dashed'));
   assert.ok(html.includes('edge.dotted'));
   assert.ok(html.includes('"position"'));
+  assert.ok(html.includes('data-view="module"'));
+  assert.ok(html.includes("cy.on('dragfree', 'node'"));
+  assert.ok(html.includes("type: 'moveNode'"));
   assert.ok(html.includes("script-src 'nonce-abc123'"));
   assert.ok(html.includes('vscode-resource://extension'));
   assert.ok(!html.includes('<script>alert(1)</script>'));

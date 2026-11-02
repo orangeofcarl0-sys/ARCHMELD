@@ -3248,6 +3248,7 @@
           "enum": [
             "symbols",
             "text",
+            "source",
             "neighbors",
             "path",
             "impact"
@@ -3374,6 +3375,30 @@
               "type": "null"
             }
           ]
+        },
+        "boundary_edges": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "minItems": 0
+        },
+        "boundary_entities": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "minItems": 0
+        },
+        "pagination": {
+          "type": "object"
+        },
+        "source_matches": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "minItems": 0
         }
       },
       "required": [
@@ -3383,7 +3408,10 @@
         "evidence",
         "coverage",
         "warnings",
-        "next_cursor"
+        "next_cursor",
+        "boundary_edges",
+        "boundary_entities",
+        "pagination"
       ],
       "additionalProperties": false
     },
@@ -3411,6 +3439,17 @@
           "type": "integer",
           "minimum": 128,
           "maximum": 64000
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [

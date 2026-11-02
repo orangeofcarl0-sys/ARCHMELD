@@ -212,7 +212,7 @@ fn evidence(name: &str, language: &str, server: &str, result: &PackResult) {
 fn python_alias_imports_same_names_and_dynamic_getattr() {
     let Some(server) = tool(
         "ARCHMELD_PYRIGHT",
-        "F:/Codex_Work_Space/_archmeld_tools/lang-servers/node_modules/pyright/langserver.index.js",
+        "<workspace>/_archmeld_tools/lang-servers/node_modules/pyright/langserver.index.js",
     ) else {
         eprintln!("pyright missing; skipping Python pack");
         return;
@@ -246,7 +246,7 @@ fn python_alias_imports_same_names_and_dynamic_getattr() {
 fn typescript_alias_imports_same_names_and_dynamic_index() {
     let Some(server) = tool(
         "ARCHMELD_TS_SERVER",
-        "F:/Codex_Work_Space/_archmeld_tools/lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
+        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
     ) else {
         eprintln!("typescript-language-server missing; skipping TypeScript pack");
         return;
@@ -287,7 +287,7 @@ fn typescript_alias_imports_same_names_and_dynamic_index() {
 fn javascript_alias_imports_same_names_and_dynamic_index() {
     let Some(server) = tool(
         "ARCHMELD_TS_SERVER",
-        "F:/Codex_Work_Space/_archmeld_tools/lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
+        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
     ) else {
         eprintln!("typescript-language-server missing; skipping JavaScript pack");
         return;

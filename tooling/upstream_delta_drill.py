@@ -23,7 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs/release-evidence/B031-upstream-delta.json"
 UPSTREAM = "590c2ca7dd7b37bd1d41caf45fac535b6522f969"
-TEMP_BASE = Path("F:/Codex_Work_Space/_archmeld_temp")
+TEMP_BASE = Path("<workspace>/_archmeld_temp")
 
 
 def sha256(path: Path) -> str:

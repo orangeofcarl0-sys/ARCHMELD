@@ -4,7 +4,7 @@
       "backup": {
         "backup_id": "backup.e3b17d5cbe0cf9b9c1c1f17554f4f457",
         "database_digest": "sha256:2e96379bb7af0aa68dac2fe7596d9d4de094304d6f4f2e164b5924ad95ea3b4b",
-        "directory": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\backup",
+        "directory": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp9awviB\\backup",
         "manifest_digest": "sha256:ba818fa4e248f8494e5ab85226d22dc8a2982c391ca5ab277503efc3c1a07edf",
         "object_count": 9,
         "verified": true
@@ -78,23 +78,23 @@
         "candidates": [
           {
             "digest": "sha256:1dc7b9b786d49365822c286d86f26c64eb5506e29c4cc2ce5173facf2834bac9",
-            "path": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\1d\\c7b9b786d49365822c286d86f26c64eb5506e29c4cc2ce5173facf2834bac9",
+            "path": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\1d\\c7b9b786d49365822c286d86f26c64eb5506e29c4cc2ce5173facf2834bac9",
             "size": 18
           },
           {
             "digest": "sha256:565719cac11d401235bbfe0b2ef828e1232155306d49ebb9bf0eb14e766089e3",
-            "path": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\56\\5719cac11d401235bbfe0b2ef828e1232155306d49ebb9bf0eb14e766089e3",
+            "path": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\56\\5719cac11d401235bbfe0b2ef828e1232155306d49ebb9bf0eb14e766089e3",
             "size": 34
           },
           {
             "digest": "sha256:d8e946d6f81a9f7ea6ff161c33a89d1481b312735d1b97ed03181afffbfde2c7",
-            "path": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\d8\\e946d6f81a9f7ea6ff161c33a89d1481b312735d1b97ed03181afffbfde2c7",
+            "path": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp9awviB\\state\\objects\\sha256\\d8\\e946d6f81a9f7ea6ff161c33a89d1481b312735d1b97ed03181afffbfde2c7",
             "size": 29
           }
         ],
         "deleted_count": 3,
         "dry_run": false,
-        "owned_root": "<local-user>\\AppData\\Local\\Temp\\.tmp9awviB\\state",
+        "owned_root": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmp9awviB\\state",
         "pinned_objects": 0,
         "referenced_objects": 12,
         "whole_tree_reset": false

@@ -1,0 +1,57 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-054-session-status-refresh-diff-review.md and docs/adr/ADR-055-module-runtime-views-and-manual-layout.md",
+  "changes": [
+    {
+      "method": "GET",
+      "path": "/v1/status",
+      "summary": "Read-only project/snapshot/counts/languages/freshness projection shared with the CLI status command.",
+      "query": {
+        "project_id": "optional; when absent every registered project is listed",
+        "workspace_handle": "optional authorized workspace handle; adds a read-only drift comparison"
+      },
+      "response": {
+        "actions": "read_only, requires_grant, not_exposed_over_mcp",
+        "projects": "project record, latest_snapshot_id, snapshot summary, counts, languages, freshness"
+      },
+      "behavior": "creates no snapshot, writes no drift report and executes no repository command"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/reviews/workspace-diff",
+      "summary": "Static task-level review of the current workspace against a frozen snapshot.",
+      "request": {
+        "project_id": "required",
+        "workspace_handle": "required authorized handle; arbitrary paths are refused",
+        "base_snapshot_id": "optional; defaults to the latest snapshot"
+      },
+      "response": {
+        "state": "clean | changed",
+        "files[]": "path, state, base/current digest, line_changes, base-anchor entities, trigger, confidence, impact",
+        "claims_at_risk": "claims whose scope overlaps changed paths",
+        "verification": "always not_run for this static review"
+      },
+      "behavior": "no build, test, scenario or runtime command is executed; binary/oversized/unmapped files make coverage partial"
+    },
+    {
+      "surface": "CLI",
+      "commands": [
+        "archmeld status",
+        "archmeld review-diff",
+        "archmeld refresh"
+      ],
+      "behavior": "refresh captures/indexes a new snapshot and reports the exact snapshot-to-snapshot delta; the old snapshot is retained"
+    },
+    {
+      "surface": "VS Code",
+      "commands": [
+        "ARCHMELD: Discover Project and Snapshot",
+        "ARCHMELD: Show Architecture Components",
+        "ARCHMELD: Filter Graph by Runtime Run"
+      ],
+      "behavior": "dragged positions persist per project/snapshot/view; module and architecture-component projections retain underlying relation/evidence ids; runtime filtering labels edges as static adjacency"
+    }
+  ],
+  "evidence": "docs/release-evidence/CROSSREVIEW-2026-11-02.json"
+}

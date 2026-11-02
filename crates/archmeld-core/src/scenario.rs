@@ -18,6 +18,7 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 const MAX_STREAM: usize = 4 * 1024 * 1024;
@@ -27,6 +28,7 @@ const ALLOWED_ENV: &[&str] = &[
     "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "NUMBER_OF_PROCESSORS",
 ];
 
+#[derive(Debug, Clone)]
 pub struct ExecutionGrant {
     pub granted: bool,
     pub grant_id: String,
@@ -50,6 +52,7 @@ impl ExecutionGrant {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct ScenarioSpec {
     pub project_id: String,
     pub run_id: String,
@@ -192,12 +195,34 @@ pub fn run_scenario(
 /// captured snapshot, not the live workspace. A container additionally has no
 /// network, a read-only root filesystem and a writable `/tmp`; it is removed
 /// even when the run times out or is cancelled.
-pub fn run_scenario_with_cancel(
+pub struct PreparedScenario {
+    spec: ScenarioSpec,
+    grant: ExecutionGrant,
+    exec_argv: Vec<String>,
+    command_cwd: PathBuf,
+    sandbox_detail: Value,
+    target_env: Vec<(String, String)>,
+    materialized: Option<crate::sandbox::Materialized>,
+    container: Option<crate::sandbox::ContainerRun>,
+}
+
+pub struct ScenarioOutcome {
+    spec: ScenarioSpec,
+    grant: ExecutionGrant,
+    capture: CommandCapture,
+    sandbox_detail: Value,
+    env_names: Vec<String>,
+    workdir: String,
+}
+
+/// Validate a scenario and materialize its sandbox. This is the only part that
+/// needs the Store; execution and finalization are split so a long child
+/// process never holds the global ledger mutex.
+pub fn prepare_scenario(
     store: &mut Store,
-    spec: &ScenarioSpec,
-    grant: &ExecutionGrant,
-    cancel: Option<&AtomicBool>,
-) -> Result<Value> {
+    spec: ScenarioSpec,
+    grant: ExecutionGrant,
+) -> Result<PreparedScenario> {
     validate::require_id("project_id", &spec.project_id)?;
     validate::require_id("run_id", &spec.run_id)?;
     validate::require_digest("snapshot_id", &spec.snapshot_id)?;
@@ -238,7 +263,7 @@ pub fn run_scenario_with_cancel(
     ];
     let mut materialized: Option<crate::sandbox::Materialized> = None;
     let mut container: Option<crate::sandbox::ContainerRun> = None;
-    let (exec_argv, command_cwd, mut sandbox_detail, target_env) = match (mode, request) {
+    let (exec_argv, command_cwd, sandbox_detail, target_env) = match (mode, request) {
         ("workspace_copy", Some(request)) => {
             let sandbox = crate::sandbox::materialize(
                 store,
@@ -316,6 +341,34 @@ pub fn run_scenario_with_cancel(
             )
         }
     };
+    Ok(PreparedScenario {
+        spec,
+        grant,
+        exec_argv,
+        command_cwd,
+        sandbox_detail,
+        target_env,
+        materialized,
+        container,
+    })
+}
+
+/// Run the prepared command without touching the Store. Cleanup of containers
+/// and snapshot copies is part of this phase.
+pub fn execute_prepared(
+    prepared: PreparedScenario,
+    cancel: Option<&AtomicBool>,
+) -> Result<ScenarioOutcome> {
+    let PreparedScenario {
+        spec,
+        grant,
+        exec_argv,
+        command_cwd,
+        mut sandbox_detail,
+        target_env,
+        materialized,
+        container,
+    } = prepared;
     let capture =
         match run_command_capture(&exec_argv, &command_cwd, &target_env, spec.timeout, cancel) {
             Ok(capture) => capture,
@@ -329,6 +382,7 @@ pub fn run_scenario_with_cancel(
                 return Err(error);
             }
         };
+    let is_container = container.is_some();
     let container_removed = container.as_ref().map(|running| running.removed());
     if let (Some(running), Some(removed)) = (&container, container_removed) {
         sandbox_detail["container"] = running.detail(removed);
@@ -341,7 +395,7 @@ pub fn run_scenario_with_cancel(
         }
     }
     sandbox_detail["retained"] = json!(retained);
-    let env_names = if container.is_some() {
+    let env_names = if is_container {
         spec.env.iter().map(|(name, _)| name.clone()).collect()
     } else {
         capture.env_names.clone()
@@ -350,6 +404,36 @@ pub fn run_scenario_with_cancel(
         .as_ref()
         .map(|running| running.workdir.clone())
         .unwrap_or_else(|| command_cwd.to_string_lossy().to_string());
+    Ok(ScenarioOutcome {
+        spec,
+        grant,
+        capture,
+        sandbox_detail,
+        env_names,
+        workdir,
+    })
+}
+
+/// Same as [`execute_prepared`] with an owned cancellation flag, suitable for a
+/// blocking worker or another thread.
+pub fn execute_prepared_owned(
+    prepared: PreparedScenario,
+    cancel: Option<Arc<AtomicBool>>,
+) -> Result<ScenarioOutcome> {
+    execute_prepared(prepared, cancel.as_deref())
+}
+
+/// Persist the captured process as a scenario run. Only this short phase takes
+/// the Store.
+pub fn finalize_scenario(store: &mut Store, outcome: ScenarioOutcome) -> Result<Value> {
+    let ScenarioOutcome {
+        spec,
+        grant,
+        capture,
+        sandbox_detail,
+        env_names,
+        workdir,
+    } = outcome;
     let stdout_digest = store.put_blob(&capture.stdout, "text/plain")?;
     let stderr_digest = store.put_blob(&capture.stderr, "text/plain")?;
     let completion = capture.completion;
@@ -381,6 +465,17 @@ pub fn run_scenario_with_cancel(
         (&spec.project_id, &spec.run_id, &spec.snapshot_id, &spec.config_digest, manifest.to_string(),
          capture.exit_code, if capture.timed_out {1} else {0}, &stdout_digest, &stderr_digest, crate::store::now_unix()))?;
     Ok(manifest)
+}
+
+pub fn run_scenario_with_cancel(
+    store: &mut Store,
+    spec: &ScenarioSpec,
+    grant: &ExecutionGrant,
+    cancel: Option<&AtomicBool>,
+) -> Result<Value> {
+    let prepared = prepare_scenario(store, spec.clone(), grant.clone())?;
+    let outcome = execute_prepared(prepared, cancel)?;
+    finalize_scenario(store, outcome)
 }
 
 /// Read a previously recorded scenario run by project and run id.

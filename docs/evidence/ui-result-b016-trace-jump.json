@@ -14,7 +14,7 @@
   "active_line": 4,
   "expected_line": 4,
   "trace_command_ms": 164,
-  "screenshot": "F:\\Codex_Work_Space\\ARCHMELD-work\\docs\\evidence\\b016-trace-source-jump.png",
+  "screenshot": "F:\\Codex_Work_Space\\<repo>\\docs\\evidence\\b016-trace-source-jump.png",
   "capture_method": "cdp",
   "capture_target": "page:[Extension Development Host] fixture - Visual Studio Code",
   "captured_at": "2026-10-31T21:29:10.078Z",

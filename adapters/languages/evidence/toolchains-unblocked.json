@@ -4,7 +4,7 @@
   "checks": [
     {
       "command": [
-        "F:/Codex_Work_Space/_archmeld_tools/jdk21/jdk-21.0.13+9/bin/java.exe",
+        "<workspace>/_archmeld_tools/jdk21/jdk-21.0.13+9/bin/java.exe",
         "-version"
       ],
       "exit": 0,
@@ -12,7 +12,7 @@
     },
     {
       "command": [
-        "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
+        "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
         "-version"
       ],
       "exit": 0,
@@ -21,7 +21,7 @@
     },
     {
       "command": [
-        "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+        "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
         "--list-sdks"
       ],
       "exit": 0,
@@ -29,18 +29,18 @@
     },
     {
       "command": [
-        "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+        "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
         "tool",
         "list",
         "--tool-path",
-        "F:/Codex_Work_Space/_archmeld_tools/csharp-tools"
+        "<workspace>/_archmeld_tools/csharp-tools"
       ],
       "exit": 0,
       "output": "包 ID           版本          命令       \n------------------------------------\ncsharp-ls      0.14.0      csharp-ls\n"
     },
     {
       "command": [
-        "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
         "version"
       ],
       "exit": 0,
@@ -48,7 +48,7 @@
     },
     {
       "command": [
-        "F:/Codex_Work_Space/_archmeld_tools/go/bin/gopls.exe",
+        "<workspace>/_archmeld_tools/go/bin/gopls.exe",
         "version"
       ],
       "exit": 0,
@@ -59,7 +59,7 @@
         "powershell",
         "-NoProfile",
         "-Command",
-        "Get-ChildItem F:/Codex_Work_Space/_archmeld_tools/jdtls/plugins/org.eclipse.equinox.launcher_*.jar | Select-Object -First 1 -ExpandProperty Name"
+        "Get-ChildItem <workspace>/_archmeld_tools/jdtls/plugins/org.eclipse.equinox.launcher_*.jar | Select-Object -First 1 -ExpandProperty Name"
       ],
       "exit": 0,
       "output": "org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar\n"

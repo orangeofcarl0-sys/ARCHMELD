@@ -1,0 +1,74 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/reviews/2026-11-02-cross-review-closure.md",
+  "changes": [
+    {
+      "method": "POST",
+      "path": "/v1/query",
+      "summary": "Add a snapshot-bound literal source search. Text remains metadata search; source reads snapshot bytes.",
+      "request_extension": {
+        "kind": "source",
+        "query": "non-empty literal, case-sensitive; empty is rejected"
+      },
+      "response_extension": {
+        "source_matches": "path, blob_digest, 1-based line/column, byte range, bounded text, entity_ids",
+        "pagination": "returned, has_more, total (null while paging), resumed, scan_complete, files_scanned, bytes_scanned, non_utf8_files, scan_byte_limit"
+      },
+      "limits": "literal byte search only; no tokenizer/FTS/embeddings; 256 MiB scan budget; non-UTF-8 files are skipped and make coverage partial"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/query",
+      "summary": "Traversal results must expose cross-page relations and explicit truncation.",
+      "response_extension": {
+        "boundary_edges": "relations incident to this page but with one endpoint outside it, including a missing-endpoint stub",
+        "boundary_entities": "deduplicated stubs for boundary endpoints",
+        "pagination": "offset, page_size, returned, total, has_more, boundary_edges_truncated, edge_scan_truncated"
+      },
+      "behavior": "merging pages by relation id reconstructs every edge incident to the paged nodes; a 200001-row scan reports partial coverage instead of an unreachable overflow branch"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/context",
+      "summary": "Context selection uses the objective and a deterministic cursor.",
+      "request_extension": {
+        "cursor": "optional opaque cursor bound to snapshot and request digest"
+      },
+      "response_extension": {
+        "relevance": "objective_terms, seed_source, fallback, candidate_count, source_scan",
+        "page": "offset, candidate_count, returned_entities, has_more, seed_source, fallback",
+        "selected_entities[].relevance": "score, matched_by, seed"
+      },
+      "behavior": "objective tokens seed name/source matches; one bounded relation hop adds neighbors; unrelated claims are aggregated as omissions; a tight budget resumes the same deterministic candidate order"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/scenarios/{run_id}/cancel",
+      "summary": "Request cooperative cancellation of an active scenario without acquiring the Store mutex.",
+      "request": {
+        "project_id": "required; the cancellation key is (project_id, run_id)"
+      },
+      "response": {
+        "run_id": "string",
+        "project_id": "string",
+        "state": "cancel_requested | not_running",
+        "cancelled": "boolean"
+      },
+      "behavior": "scenario execution is split into prepare (Store), execute (no Store), finalize (Store); the cancel flag is independent of the Store and is removed when the run finishes"
+    },
+    {
+      "surface": "MCP stdio",
+      "summary": "tools/list is generated from implemented handlers, not the declaration file.",
+      "implemented": [
+        "archmeld_inspect",
+        "archmeld_query",
+        "archmeld_context",
+        "archmeld_source",
+        "archmeld_capabilities"
+      ],
+      "unavailable": "other contract tools report requires_grant or not_implemented through archmeld_capabilities and are not advertised as callable"
+    }
+  ],
+  "evidence": "docs/release-evidence/CROSSREVIEW-2026-11-02.json"
+}

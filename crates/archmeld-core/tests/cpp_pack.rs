@@ -18,7 +18,7 @@ const PROJECT: &str = "project.cpp";
 
 fn clangd() -> Option<PathBuf> {
     let path = std::env::var("ARCHMELD_CLANGD")
-        .unwrap_or_else(|_| "F:/Codex_Work_Space/_archmeld_tools/llvm18/bin/clangd.exe".into());
+        .unwrap_or_else(|_| "<workspace>/_archmeld_tools/llvm18/bin/clangd.exe".into());
     let path = PathBuf::from(path);
     path.is_file().then_some(path)
 }
@@ -118,7 +118,7 @@ fn clangd_uses_compile_commands_for_macros_virtuals_and_indirect_calls() {
             initialization_options: None,
         },
         &SpawnPermission::grant("grant.b012", "C/C++ language pack integration test"),
-        &PathBuf::from("F:/Codex_Work_Space/_archmeld_temp/cpp-audit.ndjson"),
+        &PathBuf::from("<workspace>/_archmeld_temp/cpp-audit.ndjson"),
     )
     .expect("clangd start");
     session.initialize(&root).expect("initialize");

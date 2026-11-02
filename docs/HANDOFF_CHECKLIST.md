@@ -6,7 +6,7 @@ the whole research sweep; read the current state and continue.
 ## 1. Identify the exact state
 
 ```sh
-cd F:/Codex_Work_Space/ARCHMELD-work
+cd <repo>
 git rev-parse HEAD
 git status --short
 git log --oneline -12
@@ -61,16 +61,36 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   three `custom_contract` assertions cover current requirements; arbitrary user
   scripts are never executed and adding an assertion is a code change with
   tests.
-- Remaining task families: release-level C++ full SCIP (needs a Linux/WSL
-  scip-clang), Ubuntu GUI/VS Code host, macOS, AT077 upstream upgrade, and the
-  B000 Windows RocksDB/MSVC or full Ubuntu suite environment gap.
+- The 2026-11-02 cross-review F01–F10 is closed for this testing phase:
+  MCP tools/list is handler-derived; ContextPack anchors/selection and source
+  search are snapshot-bound; indexing is snapshot-first; edge truncation and
+  cross-page traversal are explicit; scenario execution no longer holds the
+  Store; module/architecture-component projections, manual positions, runtime
+  filtering and cross-view drill-down are implemented; and status, review-diff
+  and refresh exist in CLI, HTTP and MCP with explicit static-review boundaries.
+  Residuals: runtime span-parent edges are containment, not confirmed calls;
+  the responsibility view needs an explicitly selected candidate architecture;
+  the review executes no tests; and no same-agent comparison experiment was run.
+  Evidence: `docs/reviews/2026-11-02-cross-review-closure.md` and
+  `docs/release-evidence/CROSSREVIEW-2026-11-02.json`.
+- C++ full-SCIP is exercised for the testing phase with pinned WSL
+  `scip-clang v0.4.1` and the real `upstream-probes/scip/cpp.scip` import
+  (`docs/release-evidence/B030-cpp-scip.json`); references are imported, calls
+  remain clangd assertions. Remaining release families: Ubuntu GUI/VS Code
+  host, macOS, AT077 upstream upgrade, and the B000 Windows RocksDB/MSVC or
+  full Ubuntu suite environment gap.
+- Public snapshot publication: the sanitized update is published to the
+  public `main` branch. Identifier scans were clean before publication. WSL
+  `scip-clang v0.4.1` is installed only in the user directory (no system
+  package/sudo) and the C++ reference index was imported.
+
 
 ## 5. Next executable work (do not ask for a new plan each step)
 
-1. Release-level C++ full SCIP with a pinned Linux/WSL `scip-clang`.
-2. Ubuntu GUI/VS Code host and macOS release runs.
-3. AT077 real newer-upstream upgrade drill; B000 Windows RocksDB/MSVC or a
+1. Ubuntu GUI/VS Code host and macOS release runs.
+2. AT077 real newer-upstream upgrade drill; B000 Windows RocksDB/MSVC or a
    full Ubuntu suite environment.
+3. Public snapshot publication is complete for this snapshot.
 
 Independent tasks may proceed; blocked language work must stay marked blocked,
 not lowered or hidden.

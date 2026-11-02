@@ -55,6 +55,26 @@ class ArchmeldClient {
     return this.request('GET', '/v1/health');
   }
 
+  status(projectId = undefined, workspaceHandle = undefined) {
+    const params = new URLSearchParams();
+    if (projectId) {
+      params.set('project_id', projectId);
+    }
+    if (workspaceHandle) {
+      params.set('workspace_handle', workspaceHandle);
+    }
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    return this.request('GET', `/v1/status${suffix}`);
+  }
+
+  reviewWorkspaceDiff(projectId, workspaceHandle, baseSnapshotId = undefined) {
+    return this.request('POST', '/v1/reviews/workspace-diff', {
+      project_id: projectId,
+      workspace_handle: workspaceHandle,
+      base_snapshot_id: baseSnapshotId || null,
+    });
+  }
+
   query(request) {
     return this.request('POST', '/v1/query', request);
   }

@@ -10,7 +10,7 @@
   },
   "tool": {
     "name": "trace_processor_shell",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/perfetto/windows-amd64/trace_processor_shell.exe",
+    "path": "<workspace>/_archmeld_tools/perfetto/windows-amd64/trace_processor_shell.exe",
     "version": "Perfetto v59.1-1e9c61e98 (1e9c61e9844affd7dccd3d42d9ea9f3a3d10cf6d)",
     "sha256": "sha256:3acc5aca1c764541033a82ba3bb0a47524b5c3c0aa194eea8d9a7b0cdb346bdc",
     "archive": "https://github.com/google/perfetto/releases/download/v59.1/windows-amd64.zip"

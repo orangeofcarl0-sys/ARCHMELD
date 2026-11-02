@@ -147,7 +147,7 @@
         "database_problems": [],
         "hash_mismatches": [],
         "missing": [],
-        "store_root": "<local-user>\\AppData\\Local\\Temp\\.tmper6wWi\\state"
+        "store_root": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmper6wWi\\state"
       },
       "plan_status": "approved",
       "project_id": "project.25a2d036bd1995379ce8dc4888917ef1",

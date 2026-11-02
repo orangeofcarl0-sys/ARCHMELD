@@ -8,10 +8,10 @@
       "sample": "lua",
       "version": "5.4.7",
       "license": "MIT",
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/lua-5.4.7",
+      "source_path": "<workspace>/_archmeld_tools/fixtures/lua-5.4.7",
       "source_url": "https://github.com/lua/lua/tree/v5.4.7",
       "archive": {
-        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/5.4.7.tar.gz",
+        "path": "<workspace>/_archmeld_tools/fixtures/5.4.7.tar.gz",
         "url": "https://codeload.github.com/lua/lua/tar.gz/refs/tags/v5.4.7",
         "sha256": "5c39111b3fc4c1c9e56671008955a1730f54a15b95e1f1bd0752b868b929d8e3"
       },
@@ -42,7 +42,7 @@
       "sample": "cpython-asyncio",
       "version": "3.11.9",
       "license": "PSF-2.0",
-      "source_path": "<local-user>/AppData/Local/Programs/Python/Python311/Lib/asyncio",
+      "source_path": "<home>/AppData/Local/Programs/Python/Python311/Lib/asyncio",
       "source_url": "https://github.com/python/cpython/tree/v3.11.9/Lib/asyncio",
       "archive": null,
       "source_extension": "py",
@@ -101,10 +101,10 @@
       "sample": "openjdk-java.util.concurrent",
       "version": "Temurin JDK 25.0.5+8",
       "license": "GPL-2.0-only WITH Classpath-exception-2.0",
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/jdk-src/java.base/java/util/concurrent",
+      "source_path": "<workspace>/_archmeld_tools/fixtures/jdk-src/java.base/java/util/concurrent",
       "source_url": "https://github.com/adoptium/temurin25-binaries/releases/tag/jdk-25.0.5%2B8",
       "archive": {
-        "path": "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/lib/src.zip",
+        "path": "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/lib/src.zip",
         "url": "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_windows_hotspot_25.0.5_8.zip",
         "sha256": "726ad631e289979e88688dc53ca8b4486f2296001525011313a548c8e55a3840",
         "extract": "java.base/java/util/concurrent/"
@@ -130,10 +130,10 @@
       "sample": "newtonsoft-json",
       "version": "13.0.3",
       "license": "MIT",
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3/Src/Newtonsoft.Json",
+      "source_path": "<workspace>/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3/Src/Newtonsoft.Json",
       "source_url": "https://github.com/JamesNK/Newtonsoft.Json/tree/13.0.3",
       "archive": {
-        "path": "F:/Codex_Work_Space/_archmeld_tools/fixtures/newtonsoft.tar.gz",
+        "path": "<workspace>/_archmeld_tools/fixtures/newtonsoft.tar.gz",
         "url": "https://codeload.github.com/JamesNK/Newtonsoft.Json/tar.gz/refs/tags/13.0.3",
         "sha256": "3dc1eeeb8f781122e0713481bad993329c669feb9928cc4ec86e0ab24d9eff9e"
       },
@@ -141,7 +141,7 @@
       "minimum_source_files": 200,
       "build": {
         "kind": "dotnet_build",
-        "cwd": "F:/Codex_Work_Space/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3",
+        "cwd": "<workspace>/_archmeld_tools/fixtures/Newtonsoft.Json-13.0.3",
         "argv": [
           "{dotnet}",
           "build",
@@ -152,7 +152,7 @@
           "-v:q"
         ],
         "env": {
-          "NUGET_PACKAGES": "F:/Codex_Work_Space/_archmeld_tools/fixtures/nuget-packages"
+          "NUGET_PACKAGES": "<workspace>/_archmeld_tools/fixtures/nuget-packages"
         },
         "limitations": [
           "NuGet restore may require network on a new machine; package versions are resolved by the pinned project"
@@ -164,7 +164,7 @@
       "sample": "go-stdlib-net-http",
       "version": "go1.27.3",
       "license": "BSD-3-Clause",
-      "source_path": "F:/Codex_Work_Space/_archmeld_tools/go/go/src/net/http",
+      "source_path": "<workspace>/_archmeld_tools/go/go/src/net/http",
       "source_url": "https://github.com/golang/go/tree/go1.27.3/src/net/http",
       "archive": null,
       "source_extension": "go",
@@ -173,7 +173,7 @@
         "kind": "go_test",
         "cwd": "{temp}",
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
           "test",
           "net/http",
           "-run",

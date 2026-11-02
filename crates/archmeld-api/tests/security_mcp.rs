@@ -203,7 +203,10 @@ fn repository_instructions_remain_untrusted_and_are_not_executed() {
     mcp.notify(&json!({"jsonrpc": "2.0", "method": "notifications/initialized"}));
     let list = mcp.send(&json!({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}));
     let tools = list["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 14);
+    assert_eq!(tools.len(), 7);
+    assert!(tools
+        .iter()
+        .all(|tool| tool["x-implementation"]["status"] == "implemented"));
     for forbidden in ["exec", "shell", "upload", "network", "http"] {
         assert!(
             !tools.iter().any(|tool| tool["name"]

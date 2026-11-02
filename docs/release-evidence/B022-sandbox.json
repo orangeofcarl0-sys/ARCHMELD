@@ -21,7 +21,7 @@
         "manifest_digest": "sha256:857560fa72a2da2623e24098a4e41f2c232d3af56ac7c3289c7d6bc1ed14c114",
         "mode": "workspace_copy",
         "retained": false,
-        "root": "<local-user>\\AppData\\Local\\Temp\\.tmpfxaL1C\\state\\verify-sandboxes\\verification.c238a1834f59dd1d5e70957a400f9269\\check.sandbox.copy",
+        "root": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmpfxaL1C\\state\\verify-sandboxes\\verification.c238a1834f59dd1d5e70957a400f9269\\check.sandbox.copy",
         "snapshot_id": "sha256:ee149dfd4928a0743d66b72b0e96921b78a9155796d096a4884cfcb047ec9066",
         "source": "resulting_snapshot"
       },

@@ -12,14 +12,14 @@ fn pos(t:&str,n:&str)->(u64,u64){let i=t.find(n).unwrap();let b=&t[..i];(b.match
 fn has(e:&Value)->bool{e["documentChanges"].as_array().is_some_and(|c|c.iter().any(|x|x["edits"].as_array().is_some_and(|v|!v.is_empty())))||e["changes"].as_object().is_some_and(|c|c.values().any(|v|v.as_array().is_some_and(|a|!a.is_empty())))}
 #[test]
 fn csharp_ls_partial_delegates_and_cross_file_rename(){
- let exe=PathBuf::from("F:/Codex_Work_Space/_archmeld_tools/csharp-tools/csharp-ls.exe");
+ let exe=PathBuf::from("<workspace>/_archmeld_tools/csharp-tools/csharp-ls.exe");
  if !exe.is_file(){eprintln!("csharp-ls missing");return;}
  let dir=tempfile::tempdir().unwrap();let root=dir.path().join("repo");
  copy(&Path::new(env!("CARGO_MANIFEST_DIR")).join("../../adapters/languages/fixtures/csharp"),&root);
  let mut st=Store::open(dir.path().join("state")).unwrap();st.ensure_project(P,"expedition").unwrap();
  let snap=capture_snapshot(&mut st,P,&root,&SnapshotInputs{build_config:json!({"kind":"csharp","tfm":"net8.0"}),environment:json!({"os":"test"})},&SnapshotOptions{include_untracked:true,..SnapshotOptions::default()}).unwrap();
- let dn="F:/Codex_Work_Space/_archmeld_tools/dotnet8";
- let s=LspSession::start(&LspServerSpec{id:"csharp-ls".into(),program:exe,args:vec![],cwd:root.clone(),env:vec![("DOTNET_ROOT".into(),dn.into()),("PATH".into(),format!("{dn};{}",std::env::var("PATH").unwrap_or_default()))],initialization_options:None},&SpawnPermission::grant("grant.b013.csharp","C# pack test"),&PathBuf::from("F:/Codex_Work_Space/_archmeld_temp/csharp-audit.ndjson")).expect("start");
+ let dn="<workspace>/_archmeld_tools/dotnet8";
+ let s=LspSession::start(&LspServerSpec{id:"csharp-ls".into(),program:exe,args:vec![],cwd:root.clone(),env:vec![("DOTNET_ROOT".into(),dn.into()),("PATH".into(),format!("{dn};{}",std::env::var("PATH").unwrap_or_default()))],initialization_options:None},&SpawnPermission::grant("grant.b013.csharp","C# pack test"),&PathBuf::from("<workspace>/_archmeld_temp/csharp-audit.ndjson")).expect("start");
  s.initialize(&root).expect("initialize");
  for f in ["Util.cs","Other.cs","Program.cs"]{let t=fs::read_to_string(root.join(f)).unwrap();s.did_open(&root.join(f),"csharp",&t).unwrap();}
  let util=fs::read_to_string(root.join("Util.cs")).unwrap();let (l,c)=pos(&util,"Helper");

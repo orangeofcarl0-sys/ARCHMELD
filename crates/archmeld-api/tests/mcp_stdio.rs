@@ -7,6 +7,7 @@
 
 use archmeld_core::bridge::{import_codegraph_export, BridgeConfig};
 use archmeld_core::hash;
+use archmeld_core::manager::{open_project, OpenRequest};
 use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
 use archmeld_core::store::Store;
 use serde_json::{json, Value};
@@ -90,7 +91,17 @@ fn setup() -> (tempfile::TempDir, PathBuf, PathBuf, String, String) {
     fs::write(root.join("src/b.py"), "def b():\n    return 1\n").unwrap();
     let state = dir.path().join("state");
     let mut store = Store::open(&state).unwrap();
-    store.ensure_project("project.mcp", "expedition").unwrap();
+    open_project(
+        &mut store,
+        OpenRequest {
+            project_id: "project.mcp",
+            mode: "expedition",
+            workspace_root: &root,
+            state_root: &state.join("sessions"),
+            config: json!({"profile": "mcp"}),
+        },
+    )
+    .unwrap();
     let captured = capture_snapshot(
         &mut store,
         "project.mcp",
@@ -185,11 +196,84 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
 
     let list = server.send(&json!({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}));
     let tools = list["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 14);
+    assert_eq!(tools.len(), 7);
+    let names: Vec<&str> = tools
+        .iter()
+        .filter_map(|tool| tool["name"].as_str())
+        .collect();
+    assert_eq!(
+        names,
+        vec![
+            "archmeld_inspect",
+            "archmeld_query",
+            "archmeld_context",
+            "archmeld_source",
+            "archmeld_status",
+            "archmeld_review",
+            "archmeld_capabilities",
+        ]
+    );
     assert!(!tools.iter().any(|tool| {
         let name = tool["name"].as_str().unwrap_or("").to_lowercase();
         name.contains("approve") || name.contains("accept")
     }));
+    for tool in tools {
+        assert_eq!(tool["x-implementation"]["status"], "implemented", "{tool}");
+        assert_eq!(tool["x-implementation"]["surface"], "read_only");
+    }
+    let inspect_tool = tools
+        .iter()
+        .find(|tool| tool["name"] == "archmeld_inspect")
+        .unwrap();
+    let advertised_kinds = inspect_tool["inputSchema"]["properties"]["kind"]["enum"]
+        .as_array()
+        .unwrap();
+    assert!(!advertised_kinds.iter().any(|kind| kind == "runtime_run"));
+    assert!(!advertised_kinds.iter().any(|kind| kind == "report"));
+
+    let capabilities = server.call(10, "archmeld_capabilities", json!({}));
+    assert_eq!(capabilities["result"]["isError"], false);
+    let capabilities = text_of(&capabilities);
+    assert_eq!(capabilities["surface"], "mcp_stdio_read_only");
+    assert_eq!(capabilities["approval_exposed"], false);
+    assert_eq!(capabilities["grant_procedure"]["mcp_self_approval"], false);
+    assert_eq!(
+        capabilities["inspect_kinds"]["implemented"],
+        json!(advertised_kinds)
+    );
+    assert_eq!(
+        capabilities["inspect_kinds"]["not_implemented"],
+        json!(["runtime_run", "report"])
+    );
+    let change_action = capabilities["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|tool| tool["name"] == "archmeld_change_action")
+        .unwrap();
+    assert_eq!(change_action["status"], "requires_grant");
+    assert_eq!(change_action["authorization"]["self_approval"], false);
+    assert!(capabilities["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|tool| tool["status"] == "implemented"
+            || tool["status"] == "requires_grant"
+            || tool["status"] == "not_implemented"));
+
+    let status = server.call(11, "archmeld_status", json!({}));
+    assert_eq!(status["result"]["isError"], false, "{status}");
+    let status = text_of(&status);
+    assert_eq!(status["projects"][0]["latest_snapshot_id"], snapshot_id);
+    assert_eq!(status["projects"][0]["counts"]["entities"], 2);
+    assert_eq!(status["projects"][0]["freshness"]["state"], "clean");
+
+    let review = server.call(12, "archmeld_review", json!({}));
+    assert_eq!(review["result"]["isError"], false, "{review}");
+    let review = text_of(&review);
+    assert_eq!(review["state"], "clean");
+    assert_eq!(review["verification"]["state"], "not_run");
+    assert_eq!(review["source_mutation"], "none");
 
     let query = server.call(
         3,

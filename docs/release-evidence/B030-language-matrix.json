@@ -29,7 +29,7 @@
           "-o",
           "e2e.exe"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\c-cpp",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\c-cpp",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -82,9 +82,9 @@
       },
       "runtime": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\c-cpp\\e2e.exe"
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\c-cpp\\e2e.exe"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\c-cpp",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\c-cpp",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -118,12 +118,12 @@
     "csharp": {
       "build": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+          "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
           "build",
           "-nologo",
           "-v:q"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\csharp",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\csharp",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -168,10 +168,10 @@
       },
       "runtime": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+          "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
           "bin/Debug/net8.0/LangPack.dll"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\csharp",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\csharp",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -205,11 +205,11 @@
     "go": {
       "build": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
           "build",
           "./..."
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\go",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\go",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -254,11 +254,11 @@
       },
       "runtime": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
           "run",
           "."
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\go",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\go",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -290,11 +290,11 @@
       },
       "test": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
           "test",
           "./..."
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\go",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\go",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -317,18 +317,18 @@
     "java": {
       "build": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+          "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
           "-d",
           "out",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\App.java",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Doubler.java",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Main.java",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Marker.java",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Other.java",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Transformer.java",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Util.java"
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\App.java",
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Doubler.java",
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Main.java",
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Marker.java",
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Other.java",
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Transformer.java",
+          "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Util.java"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -373,12 +373,12 @@
       },
       "runtime": {
         "argv": [
-          "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
+          "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
           "-cp",
           "out",
           "pkg.Main"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\java",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -444,7 +444,7 @@
             "--check",
             "src/app.js"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\javascript",
+          "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\javascript",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -469,7 +469,7 @@
             "-e",
             "import('./src/app.js').then((m) => console.log(m.value))"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\javascript",
+          "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\javascript",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -554,12 +554,12 @@
         "build": {
           "argv": [
             "node",
-            "F:/Codex_Work_Space/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+            "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
             "--noEmit",
             "-p",
             "."
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\typescript",
+          "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\typescript",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -581,13 +581,13 @@
         "emit": {
           "argv": [
             "node",
-            "F:/Codex_Work_Space/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+            "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
             "-p",
             ".",
             "--outDir",
             "out"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\typescript",
+          "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\typescript",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -612,7 +612,7 @@
             "-e",
             "console.log(require('./out/app.js').value)"
           ],
-          "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\typescript",
+          "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\typescript",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -642,7 +642,7 @@
           "-q",
           "."
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\python",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\python",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -691,7 +691,7 @@
           "-c",
           "import app; print(app.main(3))"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\python",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\python",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -730,7 +730,7 @@
           "--quiet",
           "--offline"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\rust",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\rust",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -782,7 +782,7 @@
           "--example",
           "run"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\rust",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\rust",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -819,7 +819,7 @@
           "--quiet",
           "--offline"
         ],
-        "cwd": "F:/Codex_Work_Space/_archmeld_temp\\b030-matrix-tTMmIU\\rust",
+        "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\rust",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -902,7 +902,7 @@
   "tool_versions": {
     "clang++": {
       "argv": [
-        "F:/Codex_Work_Space/_archmeld_tools/llvm18/bin/clang++.exe",
+        "<workspace>/_archmeld_tools/llvm18/bin/clang++.exe",
         "--version"
       ],
       "exit_code": 0,
@@ -910,7 +910,7 @@
     },
     "dotnet": {
       "argv": [
-        "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+        "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
         "--version"
       ],
       "exit_code": 0,
@@ -918,7 +918,7 @@
     },
     "go": {
       "argv": [
-        "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
         "version"
       ],
       "exit_code": 0,
@@ -926,7 +926,7 @@
     },
     "javac": {
       "argv": [
-        "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+        "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
         "-version"
       ],
       "exit_code": 0,
@@ -959,7 +959,7 @@
     "typescript": {
       "argv": [
         "node",
-        "F:/Codex_Work_Space/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
         "--version"
       ],
       "exit_code": 0,

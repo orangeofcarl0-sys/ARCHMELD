@@ -203,6 +203,14 @@ function renderHtml({ graph, title = 'ARCHMELD graph', error = null, stale = fal
   });
   cy.on('tap', 'node', (event) => vscode.postMessage({ type: 'selectEntity', entityId: event.target.id() }));
   cy.on('tap', 'edge', (event) => vscode.postMessage({ type: 'selectEdge', edgeId: event.target.id() }));
+  cy.on('dragfree', 'node', (event) => {
+    const position = event.target.position();
+    vscode.postMessage({
+      type: 'moveNode',
+      entityId: event.target.id(),
+      position: { x: position.x, y: position.y }
+    });
+  });
   document.addEventListener('click', (event) => {
     const view = event.target.closest('[data-view]');
     if (view) { vscode.postMessage({ type: 'setView', view: view.getAttribute('data-view') }); }
@@ -241,6 +249,7 @@ function renderHtml({ graph, title = 'ARCHMELD graph', error = null, stale = fal
 <header>
   <strong>${escapeHtml(title)}</strong>
   <button data-view="file">Files</button>
+  <button data-view="module">Modules</button>
   <button data-view="responsibility">Responsibilities</button>
   <button data-view="runtime">Runtime</button>
   <span class="legend"><span><span class="swatch"></span> certain</span><span><span class="swatch dashed"></span> candidate</span><span><span class="swatch dotted"></span> unknown</span></span>

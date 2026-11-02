@@ -1,8 +1,8 @@
 # ARCHMELD remaining blockers
 
-Audit date: 2026-10-31. Current phase: **project testing**. Full release-level
+Audit date: 2026-11-02. Current phase: **project testing**. Full release-level
 acceptance is not required in this phase; release-time items are recorded but do
-not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the B031 CLI work).
+not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the F01–F10 cross-review closure; upstream HEAD was rechecked and is still `590c2ca7dd7b37bd1d41caf45fac535b6522f969`).
 This file separates **closed** work from **still-blocking** work. A blocker is
 only closed when the evidence path below exists and a real command produced it.
 It is not a roadmap wish list: every open item names a reproduction and a
@@ -23,7 +23,8 @@ closure condition.
 `AT067` is now `passed` in the language matrix with `r1_naming_allowed: true`
 for the seven-language gate. AT068 clean-machine indexing/report is now closed.
 R1 is still not declared complete: AT077's real upstream upgrade is externally
-blocked, and the C++ SCIP WSL worker remains a declared limitation.
+blocked; the C++ WSL reference index is verified, while Ubuntu GUI/macOS host
+runs remain external.
 
 ## 2. Release-time items (deferred in the test phase)
 
@@ -69,15 +70,20 @@ blocked, and the C++ SCIP WSL worker remains a declared limitation.
 
 ### 2.4 B030 · C/C++ full SCIP
 
-- Status: **declared degraded; deferred release item**.
+- Status: **closed for the testing phase**.
 - What exists: clangd definition/reference, macro/virtual/function-pointer
-  checks and a gated rename; profile records
-  `scip-clang: no_windows_binary; use_wsl_worker`.
-- Missing: a pinned Linux/WSL `scip-clang` run and SCIP import on the C++
-  sample. This does not block the AT067 group result because the declared
-  Windows capability is clangd, but it remains a platform-path limitation.
-- Closure condition: Linux/WSL worker with pinned scip-clang, SCIP import, and
-  the same reference/call-safety assertions.
+  checks and a gated rename; plus a pinned WSL run of `scip-clang v0.4.1`
+  (user-local binary, no system package) over the C++ fixture. The generated
+  `index.scip` imported 3 documents, 21 entities and 21 reference relations
+  with complete coverage, 0 omitted documents and 0 unresolved items;
+  references were not promoted to resolved calls.
+- Evidence: `docs/release-evidence/B030-cpp-scip.json` and
+  `crates/archmeld-core/tests/cpp_scip_real.rs`; index
+  `upstream-probes/scip/cpp.scip` sha256
+  `059b0bb763ec00751a8e705a0aaa34104d30ebcd7e9b8c508ffb376703f050a8`.
+- Limitation: the WSL host lacks `g++`, so scip-clang exited 0 with a
+  resource-directory warning; SCIP covers references, while call semantics
+  remain the clangd pack's assertions. The fixture is small.
 
 ### 2.5 B030 · JavaScript separate rename apply
 
@@ -135,9 +141,27 @@ time, shader cost or scan-out, and screencast intervals include capture
 throttling, so they are recorded without a gate. Evidence:
 `docs/release-evidence/B026-ui-webview-paint.json`, ADR-042.
 
+Cross-review closure (2026-11-02): F01–F08 are closed for the testing phase
+with real tests (MCP handler registry/capabilities, shared line anchors,
+snapshot-first indexing, snapshot-bound source search, objective-driven
+ContextPack with cursor, explicit edge truncation and cross-page boundary
+edges, and scenario prepare/execute/finalize with cooperative cancellation).
+Evidence: `docs/reviews/2026-11-02-cross-review-closure.md`,
+`docs/release-evidence/CROSSREVIEW-2026-11-02.json`. F09 and F10 are closed for
+the declared testing-phase scope: module and candidate-architecture component
+projections retain relation/evidence ids, positions persist, runtime filtering
+and drill-down work; status/review-diff/refresh exist in CLI, HTTP and MCP, and the
+extension can discover project/snapshot. Residuals are explicit: runtime
+span-parent edges are containment rather than confirmed calls, the
+responsibility view requires an explicitly selected candidate architecture,
+review is static and executes no tests, and no same-agent comparison experiment
+was run.
+
 | Area | Missing | Closure condition |
 |---|---|---|
 | B000 | Windows RocksDB/MSVC; full Ubuntu 24.04 suite | Install MSVC or use a supported Linux worker; run the full suite on the target Ubuntu image |
+| F09 | Closed for testing phase; residual span-parent containment is not confirmed call semantics and component view needs an explicit architecture | Only promote span relations if trace evidence supports call semantics; keep projections labeled candidate |
+| F10 | Closed for testing phase; `review-diff` is static and no same-agent comparison was run | Execute tests separately before claiming correctness; a future comparison needs a controlled agent experiment |
 
 B018 is closed for the declared scope: four executable rule checkers and three `custom_contract` assertions cover the current requirements, and arbitrary user scripts are never executed. Adding another assertion is a normal code change with tests, not an open defect; there is no active assertion requirement.
 
@@ -168,8 +192,9 @@ provider remains unconfigured by default. Evidence:
 ## 4. Release statement
 
 Current test-phase statement: “AT067 seven-language gate passed; AT068
-clean-machine indexing and offline report passed on Windows and Ubuntu; AT077
-real-upstream upgrade, C++ SCIP WSL worker and Ubuntu GUI are deferred release
+clean-machine indexing and offline report passed on Windows and Ubuntu; the
+C++ WSL scip-clang v0.4.1 reference index was generated and imported; AT077
+real-upstream upgrade and Ubuntu GUI/macOS host runs remain deferred release
 items.” Do not claim R1 complete or “real upstream upgrade verified”. The
 deferred items are not current test blockers.
 

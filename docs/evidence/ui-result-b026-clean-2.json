@@ -11,7 +11,7 @@
     "archmeld.openSource",
     "archmeld.back"
   ],
-  "screenshot": "F:\\Codex_Work_Space\\ARCHMELD-work\\docs\\evidence\\b026-workbench-clean-2.png",
+  "screenshot": "F:\\Codex_Work_Space\\<repo>\\docs\\evidence\\b026-workbench-clean-2.png",
   "capture_method": "cdp",
   "capture_target": "page:[扩展开发宿主] ARCHMELD Graph - fixture - Visual Studio Code",
   "captured_at": "2026-10-31T17:57:15.090Z",

@@ -254,6 +254,128 @@ fn context_pack_is_bounded_traceable_and_preserves_counterexamples() {
     write_evidence(&fixture, &large, &small, &claim_id, &evidence_id);
 }
 
+#[test]
+fn context_pack_reads_the_requested_lines_not_the_file_header() {
+    let mut content = String::from("FIRST_LINE_MARKER = 'head'\n");
+    for index in 0..260 {
+        content.push_str(&format!("# filler line {index:03} 迁移\n"));
+    }
+    assert!(content.len() > 1200);
+    let target_line = content.lines().count() + 1;
+    content.push_str("def late_target():\n    late_marker = '目标唯一标记'\n    return late_marker\n");
+    let target_end = target_line + 2;
+
+    let mut fixture = common::setup_prepared("b023-anchor-lines", |root| {
+        fs::create_dir_all(root.join("src")).unwrap();
+        fs::write(root.join("src/late.py"), &content).unwrap();
+    });
+    let captured = capture_snapshot(
+        &mut fixture.store,
+        &fixture.project,
+        &fixture.root,
+        &SnapshotInputs {
+            build_config: fixture.build_config.clone(),
+            environment: fixture.environment.clone(),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(captured.snapshot_id, fixture.snapshot_id);
+    let export = json!({
+        "type": "node",
+        "id": 1,
+        "node_type": "Function",
+        "properties": {
+            "path": fixture.root.join("src/late.py").to_string_lossy(),
+            "name": "late_target",
+            "line_start": target_line,
+            "line_end": target_end,
+        }
+    })
+    .to_string();
+    let export = format!(
+        "{}\n{}\n",
+        json!({
+            "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+            "version":"0.2.0","node_count":1,"edge_count":0,"iteration":"real-iterators"
+        }),
+        export
+    );
+    import_codegraph_export(
+        &mut fixture.store,
+        &BridgeConfig {
+            project_id: &fixture.project,
+            snapshot_id: &fixture.snapshot_id,
+            config_digest: &fixture.config_digest,
+            run_id: "run.context.anchor",
+            workspace_root: Some(&fixture.root),
+            max_entities_per_batch: 500,
+            max_relations_per_batch: 2000,
+        },
+        &captured.files,
+        &export,
+    )
+    .unwrap();
+    let entity_id = fixture
+        .store
+        .entity_ids(&fixture.project, &fixture.snapshot_id)
+        .unwrap()
+        .into_iter()
+        .find(|id| {
+            fixture
+                .store
+                .get_entity(&fixture.project, &fixture.snapshot_id, id)
+                .unwrap()
+                .and_then(|entity| entity["qualified_name"].as_str().map(str::to_string))
+                .is_some_and(|name| name.ends_with("::late_target"))
+        })
+        .expect("late_target entity");
+
+    let pack = create_context_pack(
+        &mut fixture.store,
+        &json!({
+            "project_id": fixture.project,
+            "snapshot_id": fixture.snapshot_id,
+            "objective": "inspect late_target only",
+            "entity_ids": [entity_id],
+            "budget_tokens": 4000,
+        }),
+    )
+    .unwrap();
+    let snippet = pack["source_snippets"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|snippet| snippet["path"] == "src/late.py")
+        .expect("late.py snippet");
+    let text = snippet["text"].as_str().unwrap();
+    assert!(text.contains("late_marker = '目标唯一标记'"), "{text}");
+    assert!(!text.contains("FIRST_LINE_MARKER"), "{text}");
+    let range_start = snippet["range"]["byte_start"].as_u64().unwrap();
+    assert!(range_start > 1200, "range_start={range_start}");
+    assert_eq!(snippet["range"]["line_start"], json!(target_line));
+    assert_eq!(snippet["range"]["line_end"], json!(target_end));
+
+    // The source API resolves the same anchor; the two paths must agree.
+    let source = archmeld_core::source_api::read_source(
+        &fixture.store,
+        &json!({
+            "project_id": fixture.project,
+            "snapshot_id": fixture.snapshot_id,
+            "entity_id": entity_id,
+            "anchor_index": 0,
+            "max_bytes": 4096,
+        }),
+    )
+    .unwrap();
+    let source_text = source["text"].as_str().unwrap();
+    assert!(source_text.contains("目标唯一标记"), "{source_text}");
+    assert!(!source_text.contains("FIRST_LINE_MARKER"), "{source_text}");
+}
+
 fn write_evidence(
     fixture: &common::Fixture,
     large: &Value,

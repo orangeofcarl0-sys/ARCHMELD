@@ -184,7 +184,7 @@ def rust_entries() -> list[dict]:
 
 
 def libclang_entry() -> dict:
-    path = Path(r"F:\Codex_Work_Space\_archmeld_tools\pylibclang\clang\native")
+    path = Path(r"<workspace>\_archmeld_tools\pylibclang\clang\native")
     dll = None
     for candidate in ("libclang.dll", "libclang.so", "libclang.dylib"):
         if (path / candidate).exists():

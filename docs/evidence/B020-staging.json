@@ -37,7 +37,7 @@
       "prepared_artifact": "sha256:7acb77d41c73be2c1496360e886004c1ab2f4f82fa5470671848c39b04fac394",
       "prepared_digest": "sha256:7acb77d41c73be2c1496360e886004c1ab2f4f82fa5470671848c39b04fac394",
       "source_unchanged_during_staging": true,
-      "staging_path": "<local-user>\\AppData\\Local\\Temp\\.tmpjDqdLI\\state\\staging\\project.dee9224f250c5650daab6b2c0f9fe290\\changeset.b020.stage",
+      "staging_path": "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmpjDqdLI\\state\\staging\\project.dee9224f250c5650daab6b2c0f9fe290\\changeset.b020.stage",
       "status": "passed",
       "write_set": [
         "src/a.py",

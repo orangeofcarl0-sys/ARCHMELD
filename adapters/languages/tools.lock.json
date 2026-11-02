@@ -45,59 +45,59 @@
   },
   "clangd": {
     "version": "18.1.8",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/llvm18/bin/clangd.exe",
+    "path": "<workspace>/_archmeld_tools/llvm18/bin/clangd.exe",
     "sha256": "sha256:234f15c35893306321504603db20a645f062578ffb6bfe98c09a89f9efb2defe",
     "license": "Apache-2.0 WITH LLVM-exception"
   },
   "rust-analyzer": {
     "version": "1.94.1",
-    "path": "<local-user>/.rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe",
+    "path": "C:\\Users\\<user>/.rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe",
     "sha256": "sha256:1e8e2f4efb8a9d1d945fa247a7f346d771b1746cf20fdbf686a58f7df54f3aba",
     "license": "MIT OR Apache-2.0"
   },
   "jdk21": {
     "version": "21.0.13+9",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/jdk21/jdk-21.0.13+9/bin/java.exe",
+    "path": "<workspace>/_archmeld_tools/jdk21/jdk-21.0.13+9/bin/java.exe",
     "sha256": "sha256:f8dc082a7dedbfd2924c3562405a5a1fd12efd2641808c92e2de819c76a58b7e",
     "license": "GPL-2.0 WITH Classpath-exception-2.0"
   },
   "jdtls": {
     "version": "1.64.0.202610301801",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/jdtls",
+    "path": "<workspace>/_archmeld_tools/jdtls",
     "license": "EPL-2.0",
     "notes": "jdtls 1.64 bundles org.eclipse.core.filesystem 1.12.0 which requires JavaSE 25; JDK 21 fails before initialize",
     "required_java": "25",
-    "launcher": "F:/Codex_Work_Space/_archmeld_tools/jdtls/plugins/org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar",
+    "launcher": "<workspace>/_archmeld_tools/jdtls/plugins/org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar",
     "launcher_sha256": "sha256:9b3b1da60813ac5fa09dd5c198f1884be7076d0a5daec54faa3f351a787e34b7",
     "core_sha256": "sha256:ae4e3590e2fafee4b89df2fc4cb32331a55f76f14840dbf4840be5264a944b71"
   },
   "dotnet-sdk": {
     "version": "8.0.427",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/dotnet8/dotnet.exe",
+    "path": "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
     "sha256": "sha256:a1ef87676086e14b67cc106c232b573c6bb70ebeaca41bf5c9155797022bc55f",
     "license": "MIT"
   },
   "csharp-ls": {
     "version": "0.14.0",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/csharp-tools/csharp-ls.exe",
+    "path": "<workspace>/_archmeld_tools/csharp-tools/csharp-ls.exe",
     "sha256": "sha256:be86489782d142a4984eff94160df1c7ebd8752d2417676c288ddd3aab65100d",
     "license": "MIT"
   },
   "go": {
     "version": "1.27.3",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/go/go/bin/go.exe",
+    "path": "<workspace>/_archmeld_tools/go/go/bin/go.exe",
     "sha256": "sha256:83b7ba66215e696414fa49462d0db2da4f4cf15c7bebd42f0b189fa04866999d",
     "license": "BSD-3-Clause"
   },
   "gopls": {
     "version": "0.20.0",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/go/bin/gopls.exe",
+    "path": "<workspace>/_archmeld_tools/go/bin/gopls.exe",
     "sha256": "sha256:ad6147f432a6064352269ad48ca502ccaf93a04ac8cc6db38ca7f1f22d5a1fe5",
     "license": "BSD-3-Clause"
   },
   "jdk25": {
     "version": "25.0.5+8",
-    "path": "F:/Codex_Work_Space/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
+    "path": "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
     "sha256": "sha256:f961fb8db73c7c546821bc6d30fdaa8ce2458da460a5e75e2c39189cd107e6ba",
     "license": "GPL-2.0 WITH Classpath-exception-2.0",
     "source": "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_windows_hotspot_25.0.5_8.zip",

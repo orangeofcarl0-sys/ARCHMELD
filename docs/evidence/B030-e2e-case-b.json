@@ -10,9 +10,9 @@
           "python",
           "pipeline.py",
           "--capture",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe",
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe",
           "--work",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\baseline"
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\baseline"
         ],
         "exit_code": 0,
         "process_audit": {
@@ -27,7 +27,7 @@
         },
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout": "{\"capture\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\capture.csv\", \"estimate\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\estimate.json\", \"ui\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\ui-report.html\"}\r\n",
+        "stdout": "{\"capture\": \"<workspace>/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\capture.csv\", \"estimate\": \"<workspace>/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\estimate.json\", \"ui\": \"<workspace>/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\ui-report.html\"}\r\n",
         "stdout_digest": "sha256:11dca13b808ce1aa804a6701bafa82624d37f06c1b103465752d38f90cf18b6e",
         "wall_ms": 351
       },
@@ -39,7 +39,7 @@
           "-O2",
           "capture/main.cpp",
           "-o",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe"
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe"
         ],
         "exit_code": 0,
         "process_audit": {
@@ -418,17 +418,17 @@
           "python",
           "pipeline.py",
           "--capture",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe",
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\build\\capture.exe",
           "--work",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\traced",
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\traced",
           "--snapshot-id",
           "sha256:551de8aee31d54f622882e3dcc32679f2464f95aae65114e591069461981c4dd",
           "--config-digest",
           "sha256:fe1d06a2c70b5b53906e756d4a05f7d5a9fd025cc93f0cefe9d8506b6c6f44c2",
           "--entities",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\entities.json",
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\entities.json",
           "--trace",
-          "F:/Codex_Work_Space/_archmeld_temp\\b030-case-b-ulX03e\\work\\trace.json"
+          "<workspace>/_archmeld_temp\\b030-case-b-ulX03e\\work\\trace.json"
         ],
         "exit_code": 0,
         "process_audit": {
@@ -443,7 +443,7 @@
         },
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout": "{\"capture\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\capture.csv\", \"estimate\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\estimate.json\", \"ui\": \"F:/Codex_Work_Space/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\ui-report.html\"}\r\n",
+        "stdout": "{\"capture\": \"<workspace>/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\capture.csv\", \"estimate\": \"<workspace>/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\estimate.json\", \"ui\": \"<workspace>/_archmeld_temp\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\ui-report.html\"}\r\n",
         "stdout_digest": "sha256:be9d41935c32796ff3422ee4b9c3dd56212b230e3ebeae3586fcb4ad0aa7129c",
         "wall_ms": 302
       },

@@ -8,7 +8,7 @@
     "machine": "AMD64"
   },
   "remote": {
-    "host": "<authorized-remote-workstation> (WSL2)",
+    "host": "<remote-user>@<remote-host>:2222 (WSL2)",
     "kernel": "6.6.87.2-microsoft-standard-WSL2",
     "cpu_count": 24,
     "memory_mb": 24030,

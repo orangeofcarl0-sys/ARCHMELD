@@ -157,7 +157,7 @@ fn rust_analyzer_trait_cfg_macro_and_function_pointer() {
             initialization_options: None,
         },
         &SpawnPermission::grant("grant.b014", "Rust language pack test"),
-        &PathBuf::from("F:/Codex_Work_Space/_archmeld_temp/rust-audit.ndjson"),
+        &PathBuf::from("<workspace>/_archmeld_temp/rust-audit.ndjson"),
     )
     .expect("rust-analyzer start");
     session.initialize(&root).expect("initialize");

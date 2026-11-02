@@ -14,7 +14,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "F:/Codex_Work_Space/_archmeld_tools";
+const TOOLS: &str = "<workspace>/_archmeld_tools";
 
 fn copy_dir(source: &Path, destination: &Path) {
     fs::create_dir_all(destination).unwrap();
@@ -37,7 +37,7 @@ fn copy_dir(source: &Path, destination: &Path) {
 }
 
 fn matrix_tempdir() -> tempfile::TempDir {
-    let base = PathBuf::from("F:/Codex_Work_Space/_archmeld_temp");
+    let base = PathBuf::from("<workspace>/_archmeld_temp");
     if base.is_dir() {
         tempfile::Builder::new()
             .prefix("b030-matrix-")
@@ -294,7 +294,7 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
         ),
         (
             "NUGET_PACKAGES".to_string(),
-            "<local-user>/.nuget/packages".to_string(),
+            "<home>/.nuget/packages".to_string(),
         ),
         ("DOTNET_CLI_TELEMETRY_OPTOUT".to_string(), "1".to_string()),
         ("DOTNET_NOLOGO".to_string(), "1".to_string()),
@@ -303,7 +303,7 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
             csharp.to_string_lossy().to_string(),
         ),
         ("HOMEDRIVE".to_string(), "C:".to_string()),
-        ("HOMEPATH".to_string(), "<local-user>".to_string()),
+        ("HOMEPATH".to_string(), "<home>".to_string()),
         (
             "ProgramFiles".to_string(),
             "C:/Program Files".to_string(),

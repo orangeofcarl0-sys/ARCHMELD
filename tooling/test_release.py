@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 EVIDENCE = ROOT / "docs/release-evidence/B031-install-tests.json"
 NOTES = ROOT / "docs/release-evidence/B031-release-notes.md"
-TEMP_BASE = Path("F:/Codex_Work_Space/_archmeld_temp")
+TEMP_BASE = Path("<workspace>/_archmeld_temp")
 VERSION = "0.1.0"
 PREVIOUS = "0.0.9"
 
