@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "snapshot_date": "2026-11-02",
+  "repository": "https://github.com/orangeofcarl0-sys/ARCHMELD",
+  "private_source_commit": "168f1402508e23c47a88c95368616f96679ed072",
+  "public_commit": "this snapshot (see repository HEAD)",
+  "public_parent": "91e4d6d813ffb456a53a127df4d0273ccf99008a",
+  "push": {
+    "command": "git push origin public-snapshot-next:main",
+    "result": "91e4d6d..this snapshot",
+    "fast_forward": true,
+    "remote_main_after": "this snapshot"
+  },
+  "sanitization": {
+    "private_identifiers_scanned": [
+      "local username",
+      "remote workstation host and user",
+      "local/workspace paths",
+      "private dataset name"
+    ],
+    "matches_after_sanitization": 0,
+    "secret_patterns_scanned": [
+      "sk- API keys",
+      "GitHub tokens",
+      "Slack tokens",
+      "PEM private keys"
+    ],
+    "secret_matches": 0,
+    "b029_dataset": "source name and aggregate values replaced; raw/derived tables not included",
+    "csharp_build_outputs": "adapters/languages/fixtures/csharp/{bin,obj} omitted",
+    "cpp_scip_index": "regenerated from neutral /tmp paths; no WSL username or local workspace path"
+  },
+  "included": [
+    "source, contracts, tests, docs and release evidence",
+    "pinned upstream license/NOTICE/provenance",
+    "real C++ SCIP index at upstream-probes/scip/cpp.scip"
+  ],
+  "limitations": [
+    "the public repository is a single sanitized snapshot, not private development history",
+    "artifact hashes in baseline/commands.ndjson refer to private originals before redaction",
+    "the secret scan covered known credential patterns, not every possible PII form"
+  ]
+}

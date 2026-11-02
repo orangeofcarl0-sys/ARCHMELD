@@ -76,13 +76,16 @@ fixture-only run is not a release gate. Partial completion stays explicit.
 - C++ full-SCIP is exercised for the testing phase with pinned WSL
   `scip-clang v0.4.1` and the real `upstream-probes/scip/cpp.scip` import
   (`docs/release-evidence/B030-cpp-scip.json`); references are imported, calls
-  remain clangd assertions. Remaining release families: Ubuntu GUI/VS Code
-  host, macOS, AT077 upstream upgrade, and the B000 Windows RocksDB/MSVC or
-  full Ubuntu suite environment gap.
-- Public snapshot publication: the sanitized update is published to the
-  public `main` branch. Identifier scans were clean before publication. WSL
-  `scip-clang v0.4.1` is installed only in the user directory (no system
-  package/sudo) and the C++ reference index was imported.
+  remain clangd assertions. B000's Linux worker path is closed: the full
+  upstream suite passed 141/0/1 on Ubuntu 24.04 with RocksDB
+  (`docs/release-evidence/B000-ubuntu-24.04.json`); Windows MSVC remains a
+  platform limitation. Remaining release families: Ubuntu GUI/VS Code host,
+  macOS, and AT077 upstream upgrade.
+- Public snapshot publication: this sanitized snapshot supersedes the previous
+  public snapshot `91e4d6d` and includes B000 Ubuntu 24.04 evidence. Identifier
+  scans were clean before publication. WSL `scip-clang v0.4.1` is installed
+  only in the user directory (no system package/sudo) and the C++ reference
+  index was imported.
 
 
 ## 5. Next executable work (do not ask for a new plan each step)
@@ -90,7 +93,8 @@ fixture-only run is not a release gate. Partial completion stays explicit.
 1. Ubuntu GUI/VS Code host and macOS release runs.
 2. AT077 real newer-upstream upgrade drill; B000 Windows RocksDB/MSVC or a
    full Ubuntu suite environment.
-3. Public snapshot publication is complete for this snapshot.
+3. If public publication is authorized, push the prepared sanitized
+   `public-snapshot-next` branch.
 
 Independent tasks may proceed; blocked language work must stay marked blocked,
 not lowered or hidden.

@@ -5,7 +5,7 @@
 - 当前阶段：**项目测试阶段**。不要求完整发布级验收；AT077 真实上游升级、Ubuntu GUI/VS Code host 等按发布项延后记录；C++ WSL scip-clang v0.4.1 reference index 已在测试阶段验证。
 - 上游固定提交与本地 diff：`590c2ca…`；全部本地改动见 `UPSTREAM_PATCHES.md`（新增 NDJSON 导出、`--archmeld-export-v1` / `--archmeld-state-root`、状态根隔离、探针测试、workspace 成员）
 - 当前任务 / 状态：
-  - B000 上游可重复基线：**partial**。Windows 内存后端 40 项 lib 测试通过；Linux 容器全套上游测试通过；Windows-GNU 的 RocksDB 运行时崩溃，MSVC 工具链未安装。
+  - B000 上游可重复基线：**closed for Linux worker path**。Ubuntu 24.04 + Rust 1.94.1 + GCC 13.3 + Clang 18 全套上游 `codegraph` 测试 141 passed / 0 failed / 1 ignored（exit 0，含 RocksDB）；证据 `docs/release-evidence/B000-ubuntu-24.04.json`。Windows-GNU RocksDB 崩溃/MSVC 缺失仍是平台限制。
   - B001 工具链获取、许可证与锁定：**passed**（`toolchains.lock.json`、`platform-matrix.json`、`third_party/NOTICE.md`、生成依赖清单、`tooling/doctor.py` 全部哈希校验通过）。
   - B002 上游边界最小探测：**passed（本切片）**。稀疏 ID 导出缺项已实证（内存与 RocksDB 持久化两种后端）；两个独立 RocksDB 目录缓存不互相污染；graph-only 导出在 strace 下 0 个 AF_INET 套接字；`--archmeld-state-root` 将 graph.db、index_state 与启动标记全部写入状态根。
   - B003 证据核心和持久事务：**passed**。SQLite 迁移 + CAS + 原子多批导入；崩溃回滚、幂等、冲突、悬空关系、伪造 resolved_call、UTF-8 边界均有测试。
@@ -73,7 +73,7 @@
   - B031 双平台发行、更新与审计：**AT068 passed；AT069 passed；AT077 partial（外部阻塞）**。新增 `archmeld` 离线 CLI 与 `archmeld-index` 一次性内存索引 helper（ADR-036）：`archmeld index` 用 pinned CodeGraph parser/indexer 直接生成 `archmeld-export-v1` NDJSON（不打开 RocksDB、不加载模型、不启动 watcher），捕获 snapshot 后经 bridge 导入账本；`archmeld report` 导出静态离线 bundle；`archmeld verify-report` 复核 4 个文件和 bundle digest。Windows GNU 与 Linux `rust:1.94.1-bookworm` release 双平台重新打包（CLI zip 现含 archmeld/archmeld-index/archmeld-serve/archmeld-mcp，VSIX 与 SBOM/checksums 同步更新）。真实 clean-prefix 测试：Windows 11 安装→索引（11 实体/7 关系）→导出→校验→Chrome headless 断网渲染成功；Ubuntu 24.04 容器安装→索引→导出→校验→静态 HTML 检查成功；升级/回滚/卸载、用户工程 marker 保留、VSIX 安装/卸载均通过。AT068 已 passed。剩余：Linux 渲染浏览器/VS Code host 未测（静态 HTML 已验证）；AT077 真实上游升级仍被外部阻塞（`git ls-remote upstream HEAD` 仍等于 pin `590c2ca…`），合成接口改名演练通过；macOS 不支持（声明）。证据 `docs/release-evidence/B031-install-tests.json`、`B031-release-notes.md`、`B031-upstream-delta.json`；ADR-035/ADR-036。发布级验收（AT077 真实上游升级等）按当前测试阶段要求延后，不作为项目测试阻塞。
   - B031 新增命令记录：`#b031-release-build-windows`、`#b031-release-build-linux`、`#b031-package-3`、`#b031-release-tests-8`、`#b031-package-4`、`#b031-release-tests-9`、`#extension-tests-validation-ui`。
   - B032 可持续本地 Agent 交接：**verified（AT070 passed）**。新增 `docs/OPERATOR_GUIDE.md`、`docs/HANDOFF_CHECKLIST.md` 与 `tooling/handoff_check.py`；真实接力演练读取 PROGRESS/evidence/命令记录，输出实际 HEAD/branch/工作树、下一任务、缺失证据/命令和 do-not-redo 列表。本次演练在 `archmeld/initial` / `644d535` 上：B030 AT066 passed、AT067 failed、B031 AT068 partial/AT069 passed/AT077 partial 均被正确识别；所有 progress 引用的 evidence 路径存在；历史命令 `#b020-*`、`#b022-*`、`#b023-*`、`#b024-*`、`#b025-*` 已补记录，缺失为 0；未把未完成项标成完成，R1 命名仍被 AT067 阻塞。证据 `docs/release-evidence/B032-handoff.json`（命令 `#b032-handoff-2`）。交接不保存秘密或无依据的“应该可以”，下一任务与 blocker 直接从 PROGRESS 读取。
-- 下一条可直接执行任务及依赖（项目测试阶段）：无活跃开发任务。剩余为发布级/环境项：Ubuntu GUI/VS Code host、macOS、AT077 上游升级、B000 Windows RocksDB/MSVC 与 Ubuntu 全量套件；C++ WSL scip-clang v0.4.1 reference index 已运行并导入。
+- 下一条可直接执行任务及依赖（项目测试阶段）：无活跃开发任务。剩余为发布级/环境项：Ubuntu GUI/VS Code host、macOS、AT077 上游升级、Windows RocksDB/MSVC 平台路径；Ubuntu 24.04 全量套件与 C++ WSL scip-clang v0.4.1 reference index 已验证。
 - B016 测试：核心全量 21 个测试二进制共 69 passed / 0 failed / 1 ignored（该次 Java 仍被忽略）。新增 `runtime_causal` 2 项（显式映射与不提升候选、多时钟不全序）、`causal_scenario` 1 项（真实双进程 correlation + 取消进程树）、`scenario_run` 取消测试；LSP shutdown 改为对已退出根的残留后代按 PID 清理并轮询确认（修复并行负载下 rust_pack 的瞬态孤儿误报）。命令记录 `baseline/commands.ndjson#b016-core-tests-4`（含 cwd/argv/退出码/日志哈希）。
 - B016 native trace 测试：`perfetto_native` 5 项（真实 Perfetto 夹具的 slices/counters/states、未闭合状态 loss、映射与无关系、probe/Chrome 校验）、`tracy_native` 3 项（zone/plot、原生 .tracy 保留与 artifact_ref、声明损坏拒绝）、`trace_import_cli` 3 项（CLI Perfetto 导入、Tracy 保留、unbound/config 拒绝）；核心+API 全量 126 passed / 0 failed / 0 ignored（57 个结果段）。证据 `docs/release-evidence/B016-native-traces.json`，fixtures `adapters/traces/fixtures.lock.json`；命令记录 `#b016-perfetto-tests`、`#b016-tracy-tests`、`#b016-trace-import-cli-tests`、`#b016-cli-perfetto-import`、`#b016-cli-tracy-import`、`#b016-perfetto-probe-build`、`#b016-perfetto-capture`、`#b016-tracy-client-build`、`#b016-tracy-capture`、`#b016-full-regression-2`。
 - B013 测试：Java 测试取消 `#[ignore]` 后核心全量 21 个二进制 70 passed / 0 failed / 0 ignored；命令记录 `baseline/commands.ndjson#b013-java-core-tests`。JDK 25 下载/解压命令记录 `#b013-jdk25-download`、`#b013-jdk25-extract`，归档哈希与 Adoptium 固定发布一致。
@@ -103,3 +103,17 @@ scip-clang reported a resource-directory warning while still exiting 0 with
 0 errored TUs. Evidence: `docs/release-evidence/B030-cpp-scip.json`,
 `crates/archmeld-core/tests/cpp_scip_real.rs`. Call semantics remain covered by
 the clangd pack, not SCIP.
+
+Public snapshot publication (2026-11-02): sanitized branch
+`public-snapshot-next` was pushed fast-forward to
+`orangeofcarl0-sys/ARCHMELD` main as `91e4d6d` (parent `94468c6`). Known
+private identifiers and secret patterns scanned clean; C# `bin/obj` and the
+private dataset identity/aggregates are absent. Evidence:
+`docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-02.json`.
+
+B000 Ubuntu 24.04 closure (2026-11-02): Docker Desktop started; `ubuntu:24.04`
+(Rust 1.94.1, GCC 13.3, Clang 18) ran `cargo test -p codegraph --locked` with
+RocksDB: 58 lib + 5 probes + 72 integration + 6 doctests = 141 passed, 0
+failed, 1 ignored, exit 0. Evidence `docs/release-evidence/B000-ubuntu-24.04.json`,
+log `baseline/logs/b000-ubuntu-24.04.log`. Windows MSVC/RocksDB remains a
+platform limitation.

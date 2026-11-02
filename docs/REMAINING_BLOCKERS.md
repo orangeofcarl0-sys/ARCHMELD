@@ -159,7 +159,7 @@ was run.
 
 | Area | Missing | Closure condition |
 |---|---|---|
-| B000 | Windows RocksDB/MSVC; full Ubuntu 24.04 suite | Install MSVC or use a supported Linux worker; run the full suite on the target Ubuntu image |
+| B000 | Closed for the Linux worker path: full Ubuntu 24.04 suite passed; Windows RocksDB/MSVC remains a platform limitation | Run the same suite on Windows with MSVC if that platform path is required |
 | F09 | Closed for testing phase; residual span-parent containment is not confirmed call semantics and component view needs an explicit architecture | Only promote span relations if trace evidence supports call semantics; keep projections labeled candidate |
 | F10 | Closed for testing phase; `review-diff` is static and no same-agent comparison was run | Execute tests separately before claiming correctness; a future comparison needs a controlled agent experiment |
 
@@ -170,6 +170,8 @@ B029 is closed for the comparison scope: authorized real data, ULP and statistic
 B027 is closed for this testing phase: opt-in source/trace export with explicit risk labels and budgets, an inline-SVG viewer with no scripts or CDN, and a whole-ledger migration protocol with integrity checks and a receipt (ADR-052).
 
 B028 is closed for this testing phase: contract checks and scenario runs have snapshot-copy/OCI container modes (ADR-043, ADR-050, ADR-051), the Unix socket is 0600 with a bearer token (ADR-047), and the Windows named pipe uses a protected custom DACL read back from the live handle (ADR-048).
+
+B000 is closed for the supported Linux worker path: the full upstream `codegraph` suite ran in Ubuntu 24.04 with RocksDB, Rust 1.94.1, GCC 13.3 and Clang 18 — 141 passed (58 lib + 5 probes + 72 integration + 6 doctests), 0 failed, 1 ignored, exit 0. Evidence: `docs/release-evidence/B000-ubuntu-24.04.json` and `baseline/logs/b000-ubuntu-24.04.log`. Windows RocksDB/MSVC remains an explicit platform limitation, not a current test blocker.
 
 B016 trace-processor closure (2026-10-31): `--format perfetto --trace-processor
 `<path>` now queries the pinned `trace_processor_shell` with explicit SQL and
@@ -193,9 +195,9 @@ provider remains unconfigured by default. Evidence:
 
 Current test-phase statement: “AT067 seven-language gate passed; AT068
 clean-machine indexing and offline report passed on Windows and Ubuntu; the
-C++ WSL scip-clang v0.4.1 reference index was generated and imported; AT077
-real-upstream upgrade and Ubuntu GUI/macOS host runs remain deferred release
-items.” Do not claim R1 complete or “real upstream upgrade verified”. The
+C++ WSL scip-clang v0.4.1 reference index was generated and imported; the
+Ubuntu 24.04 upstream suite passed 141/0/1; AT077 real-upstream upgrade and
+Ubuntu GUI/macOS host runs remain deferred release items.” Do not claim R1 complete or “real upstream upgrade verified”. The
 deferred items are not current test blockers.
 
 ## 5. Reproduce the open state
