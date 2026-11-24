@@ -2,6 +2,10 @@
 
 Status: accepted for the R1 MCP/context slice (B023).
 
+> Later amendments: ADR-054 added `archmeld_status` and `archmeld_review`;
+> ADR-056 added `archmeld_brief`, MCP-side defaults and the `init` onboarding
+> path. The read-only/no-self-approval decision below is unchanged.
+
 ## Decision
 
 - The MCP stdio bridge is a second entry point into the same Store, not a

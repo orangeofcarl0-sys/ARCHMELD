@@ -1,0 +1,18 @@
+{
+  "localizations": [
+    {"id":"Q1","file":"src/late.py","line":242,"symbol":"late_target","symbol_line":241},
+    {"id":"Q2","expression":"value * 2","line":243},
+    {"id":"Q3","caller":"run_report","file":"src/report.py","line":4},
+    {"id":"Q4","file":"src/change.py","line":2,"symbol":"apply_discount","old":"return value * 0.9","new":"return value * 0.8","caller":"checkout","caller_file":"src/checkout.py","caller_line":4}
+  ],
+  "conclusions": [
+    {"id":"C1","statement":"'E_UNIQUE_7F3' occurs exactly twice in the repository, both in src/late.py: a comment at line 240 and the assignment 'marker = ...' at line 242. The assignment is the first statement of late_target, whose def is at line 241.","evidence":[{"kind":"file_line","path":"src/late.py","line":240},{"kind":"file_line","path":"src/late.py","line":241},{"kind":"file_line","path":"src/late.py","line":242}]},
+    {"id":"C2","statement":"AST inspection of src/late.py confirms late_target's body is Assign@242, Assign@243, Return@244; the returned value is local 'adjusted' (return at 244), computed as value * 2 at line 243. The 'marker' assignment at line 242 is never used by the return.","evidence":[{"kind":"file_line","path":"src/late.py","line":242},{"kind":"file_line","path":"src/late.py","line":243},{"kind":"file_line","path":"src/late.py","line":244}]},
+    {"id":"C3","statement":"compute_metric is defined at src/metrics.py line 1, imported at src/report.py line 1, and called exactly once in the repository: at src/report.py line 4 inside run_report. No other .py file references it.","evidence":[{"kind":"file_line","path":"src/metrics.py","line":1},{"kind":"file_line","path":"src/report.py","line":1},{"kind":"file_line","path":"src/report.py","line":4}]},
+    {"id":"C4","statement":"git status --porcelain reports exactly one uncommitted modification (' M src/change.py'); git diff --unified=0 shows a single hunk '@@ -2 +2 @@ def apply_discount(value)' changing line 2 from 'return value * 0.9' to 'return value * 0.8'. The sole caller of apply_discount is checkout in src/checkout.py at line 4.","evidence":[{"kind":"git_diff","path":"src/change.py","line":2},{"kind":"file_line","path":"src/checkout.py","line":1},{"kind":"file_line","path":"src/checkout.py","line":4}]}
+  ],
+  "info_requests": [],
+  "uncertainties": [
+    {"id":"U1","reason":"Q2 wording is mildly ambiguous: the computed value is 'value * 2' (line 243) but it is returned through 'return adjusted' (line 244). I reported the computation expression and its evaluation line, 243."}
+  ]
+}

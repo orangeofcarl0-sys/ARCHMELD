@@ -35,13 +35,13 @@ VS Code 扩展 **37 passed / 0 failed**。
 | F07 分页丢跨页关系 | 已闭合 | 每页返回 `boundary_edges` 与端点 stub；合并页面按 relation id 可恢复 A→B→C 的 B→C。测试：`query_pagination.rs`。 |
 | F08 长命令持有全局 Store 锁 | 已闭合 | scenario 拆为 prepare（Store）/execute（无 Store）/finalize（Store），HTTP 用 `spawn_blocking`；新增独立取消注册表和 `POST /v1/scenarios/{run_id}/cancel`。测试在 10 秒 scenario 运行期间，查询和取消都在 2 秒内返回：`scenario_http.rs`。 |
 | F09 主图投影与布局 | 已闭合（测试阶段） | Modules 按首段路径聚合；Responsibilities 从显式候选架构的 `member_entity_ids` 聚合。两者按依赖方向分层、保留手动拖动位置、聚合边保留 `relation_ids`/`kind`/`evidence_ids`，模块/组件可下钻到成员源码，聚合边可查看底层关系和证据。`Filter Graph by Runtime Run` 只保留 run 映射实体，并把 `parent_span_id` 映射为 `span parent` containment 边；这些边不是 confirmed call，其他边仍是静态邻接。残余：span-parent 是包含关系而非调用语义，责任视图需显式选择架构。 |
-| F10 工作流与入口 | 已闭合（测试阶段） | `archmeld status` / `GET /v1/status` 报告项目、最新快照、计数、语言、脏状态和允许动作；`archmeld review-diff` / `POST /v1/reviews/workspace-diff` 给出当前工作区对快照的行级变化、受影响实体、静态关系影响、触发条件、置信度和 `verification=not_run`；`archmeld refresh` 创建新快照并对旧快照做精确 diff，旧快照保留；VS Code 可发现项目和快照；MCP 暴露只读 `archmeld_status`/`archmeld_review`，只使用项目已注册的 active root。残余：review 不执行测试，未做同 Agent 对比实验，静态行证据不等于语义正确性。 |
+| F10 工作流与入口 | 已闭合（测试阶段） | `archmeld status` / `GET /v1/status` 报告项目、最新快照、计数、语言、脏状态和允许动作；`archmeld review-diff` / `POST /v1/reviews/workspace-diff` 给出当前工作区对快照的行级变化、受影响实体、静态关系影响、触发条件、置信度和 `verification=not_run`；`archmeld refresh` 创建新快照并对旧快照做精确 diff，旧快照保留；VS Code 可发现项目和快照；MCP 暴露只读 `archmeld_status`/`archmeld_review`，只使用项目已注册的 active root。残余：review 不执行测试，静态行证据不等于语义正确性；同 Agent 对比实验已于 2026-11-03 执行（见下节）。 |
 
 ## 回归命令
 
 ```text
-TEMP/TMP = <home>/AppData/Local/Temp
-PATH     = <home>/AppData/Local/Programs/Python/Python311;...
+TEMP/TMP = C:/Users/<user>/AppData/Local/Temp
+PATH     = C:/Users/<user>/AppData/Local/Programs/Python/Python311;...
 toolchain = 1.94.1-x86_64-pc-windows-gnu
 cwd      = <repo>
 argv     = cargo test --offline --no-fail-fast -p archmeld-core -p archmeld-api
@@ -88,6 +88,25 @@ sha256 和输出结构记录在
   它不是 confirmed call，也不能替代调用语义；责任视图依赖显式选择的候选
   架构，且没有做可用性对比研究。
 - F10 的 status/review-diff/refresh 暴露在 CLI、HTTP 和 MCP；review 不执行
-  build/test；未执行“有/无 ARCHMELD”的同一 Agent 对比实验。
+  build/test；同一 Agent 有/无 ARCHMELD 对比已于 2026-11-03 执行（见下节）。
 - `archmeld status --workspace` 和 `review-diff` 只读且不持久化 drift；
   刷新必须显式运行 `archmeld refresh`，不会自动换快照。
+
+## 2026-11-03 后续：同一 Agent 对比实验
+
+此前记录的“未执行同 Agent 对比实验”已闭合。同一 general-purpose
+Agent/模型在 7 文件 fixture 上回答相同的 4 个定位问题（17 个检查字段），
+一次有 ARCHMELD、一次没有：
+
+```text
+arm A (no ARCHMELD): 17/17 fields, 4/4 tasks, 0 info requests, 0 unsupported
+                     9 tool uses, 140,449 tokens, 39.0 s
+arm B (ARCHMELD):    17/17 fields, 4/4 tasks, 0 info requests, 0 unsupported
+                     14 tool uses, 229,400 tokens, 66.7 s
+```
+
+两臂均无定位错误、无人工补信息、无无依据结论；ARCHMELD 臂额外把
+`run_report -> compute_metric` 标为 `static_call_candidate`/`candidate`，
+而不是已解析调用。这是单次、小 fixture 的天花板效应运行，不能外推为
+准确率或效率优势。证据：
+`docs/release-evidence/AGENT-COMPARISON-2026-11-03.json`。

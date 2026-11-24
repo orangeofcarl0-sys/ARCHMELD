@@ -1,8 +1,8 @@
 # ARCHMELD remaining blockers
 
-Audit date: 2026-11-02. Current phase: **project testing**. Full release-level
+Audit date: 2026-11-03. Current phase: **project testing**. Full release-level
 acceptance is not required in this phase; release-time items are recorded but do
-not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the F01–F10 cross-review closure; upstream HEAD was rechecked and is still `590c2ca7dd7b37bd1d41caf45fac535b6522f969`).
+not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the F01–F10 cross-review closure and the 2026-11-03 same-agent comparison; upstream HEAD was rechecked and is still `590c2ca7dd7b37bd1d41caf45fac535b6522f969`).
 This file separates **closed** work from **still-blocking** work. A blocker is
 only closed when the evidence path below exists and a real command produced it.
 It is not a roadmap wish list: every open item names a reproduction and a
@@ -19,6 +19,7 @@ closure condition.
 | B014 Rust runtime trace | Explicit Rust probe, 4001 spans, 4001 mapped, 2 observed relations | `docs/release-evidence/B030-runtime-linkage.json` |
 | B031 AT068 clean-machine indexing | Installed `archmeld` + `archmeld-index` index a workspace on Windows 11 and Ubuntu 24.04 with no Cargo/model/network | `docs/release-evidence/B031-install-tests.json` |
 | B031 AT068 offline report | Installed CLI exports/verifies a 4-file bundle; Windows headless Chrome renders it with DNS disabled; Ubuntu static HTML checked | `docs/release-evidence/B031-install-tests.json` |
+| M1 agent onboarding | `archmeld init` / `mcp install` / `brief`; index registers the workspace root; 8 read-only MCP tools; README, agent rules and ADR-056 | `docs/release-evidence/M1-AGENT-ONBOARDING-2026-11-11.json` |
 
 `AT067` is now `passed` in the language matrix with `r1_naming_allowed: true`
 for the seven-language gate. AT068 clean-machine indexing/report is now closed.
@@ -154,14 +155,43 @@ and drill-down work; status/review-diff/refresh exist in CLI, HTTP and MCP, and 
 extension can discover project/snapshot. Residuals are explicit: runtime
 span-parent edges are containment rather than confirmed calls, the
 responsibility view requires an explicitly selected candidate architecture,
-review is static and executes no tests, and no same-agent comparison experiment
-was run.
+review is static and executes no tests, and the same-agent comparison
+experiment has now been run with a ceiling-effect null result.
+
+Same-agent comparison (2026-11-03): one paired run of the same general-purpose
+agent and model answered the same four localization questions on a 7-file
+fixture, with and without ARCHMELD. Both arms scored 17/17 localization fields,
+4/4 fully correct tasks, 0 info requests and 0 unsupported conclusions. The
+ARCHMELD arm additionally labeled the `run_report -> compute_metric` relation
+as `static_call_candidate`/`candidate` rather than a resolved call, but used
+more tool calls (14 vs 9), tokens (229,400 vs 140,449) and time (66.7 s vs
+39.0 s). This closes the “no experiment was run” gap only; it is a single
+small-fixture run and does not demonstrate an accuracy or productivity
+advantage. Evidence:
+`docs/release-evidence/AGENT-COMPARISON-2026-11-03.json`.
+
+Agent onboarding closure (2026-11-11): `archmeld index` and `archmeld init`
+now register the workspace root, so MCP `status` freshness and `review` work on
+a real first run. `archmeld init` renders the Claude Code/Codex MCP command,
+previews the `AGENTS.md`/`CLAUDE.md` rule block and runs a real
+`initialize → tools/list → status` handshake. The new read-only
+`archmeld_brief` tool composes status/review into a one-screen brief with
+`counts` (confirmed/candidate/unknown/stale), `findings`, `unknowns` and
+`next_actions`; query/context/source have bridge-side defaults. The implemented
+MCP surface is eight read-only tools; no approve/apply tool is exposed. Final
+core/API regression is 211 passed / 0 failed / 0 ignored (75 sections), and a
+clean 4-file first run completed in 749 ms with a real MCP handshake. This
+closes the usability/entry gap, not the commit-supervision or scoped
+multi-agent work (M3/M4). Evidence:
+`docs/release-evidence/M1-AGENT-ONBOARDING-2026-11-11.json` and ADR-056.
 
 | Area | Missing | Closure condition |
 |---|---|---|
 | B000 | Closed for the Linux worker path: full Ubuntu 24.04 suite passed; Windows RocksDB/MSVC remains a platform limitation | Run the same suite on Windows with MSVC if that platform path is required |
 | F09 | Closed for testing phase; residual span-parent containment is not confirmed call semantics and component view needs an explicit architecture | Only promote span relations if trace evidence supports call semantics; keep projections labeled candidate |
-| F10 | Closed for testing phase; `review-diff` is static and no same-agent comparison was run | Execute tests separately before claiming correctness; a future comparison needs a controlled agent experiment |
+| F10 | Closed for testing phase; `review-diff` is static and the same-agent comparison recorded a ceiling-effect null result | Execute tests separately before claiming correctness; a larger or multi-run benchmark is needed to measure real accuracy differences |
+| M3 commit supervision | Not implemented; `watch` observes workspace bytes and snapshots record HEAD, but there is no commit trigger, commit-range review or commit gate | Add `commit-review` CLI and a non-blocking post-commit hook; test merge/empty/rename/binary/submodule/shallow/detached cases |
+| M4 multi-agent authority | One bearer token, caller-supplied `actor` and one project writer lease; no scoped read/propose/apply/verify tokens or proposer≠approver enforcement | Add scoped tokens and separation-of-duties tests; keep one writer lease and never self-approve through MCP |
 
 B018 is closed for the declared scope: four executable rule checkers and three `custom_contract` assertions cover the current requirements, and arbitrary user scripts are never executed. Adding another assertion is a normal code change with tests, not an open defect; there is no active assertion requirement.
 
@@ -196,8 +226,13 @@ provider remains unconfigured by default. Evidence:
 Current test-phase statement: “AT067 seven-language gate passed; AT068
 clean-machine indexing and offline report passed on Windows and Ubuntu; the
 C++ WSL scip-clang v0.4.1 reference index was generated and imported; the
-Ubuntu 24.04 upstream suite passed 141/0/1; AT077 real-upstream upgrade and
-Ubuntu GUI/macOS host runs remain deferred release items.” Do not claim R1 complete or “real upstream upgrade verified”. The
+Ubuntu 24.04 upstream suite passed 141/0/1; the same-agent with/without
+ARCHMELD comparison was executed and recorded a ceiling-effect null accuracy
+result; M1 agent onboarding (`init`/`mcp install`/`brief`, eight read-only MCP
+tools) was implemented and verified with a real MCP handshake; commit
+supervision (M3) and scoped multi-agent authority (M4) remain future work;
+AT077 real-upstream upgrade and Ubuntu GUI/macOS host runs remain deferred
+release items.” Do not claim R1 complete or “real upstream upgrade verified”. The
 deferred items are not current test blockers.
 
 ## 5. Reproduce the open state
@@ -216,3 +251,22 @@ archmeld verify-report --dir <state>/report
 git ls-remote upstream HEAD
 # expected: 590c2ca7dd7b37bd1d41caf45fac535b6522f969
 ```
+
+## 6. Reproduce the same-agent comparison
+
+The fixture, both exact prompts and the raw arm outputs are archived under
+`docs/evidence/agent-comparison-2026-11-03/`. The origin fixture was at
+`<workspace>/repo`, git `df2a5d13…`, with an
+uncommitted `src/change.py` line 2 change from `value * 0.9` to `value * 0.8`.
+
+```text
+target/debug/archmeld-serve.exe --state <state> --allow-workspace <fixture> --no-auth --port 0
+# then send docs/evidence/agent-comparison-2026-11-03/prompts.md
+# (common block + condition A or B) to two same-model subagents
+py docs/evidence/agent-comparison-2026-11-03/grade.py
+```
+
+Recorded result: both arms 17/17 fields, 4/4 tasks, 0 info requests, 0
+unsupported conclusions; ARCHMELD arm 14 tool calls / 229,400 tokens / 66.7 s
+versus 9 / 140,449 / 39.0 s. This is a single-run ceiling effect, not an
+advantage claim.

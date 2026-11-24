@@ -18,6 +18,7 @@ pub mod anchor;
 pub mod apply;
 pub mod blueprint;
 pub mod bridge;
+pub mod brief;
 pub mod changeset;
 pub mod context;
 pub mod drift;

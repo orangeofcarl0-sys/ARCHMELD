@@ -1,5 +1,9 @@
 # Troubleshooting
 
+> **Inherited upstream documentation.** These entries describe the upstream
+> CodeGraph extension/server. For ARCHMELD onboarding, start with
+> [`docs/OPERATOR_GUIDE.md`](OPERATOR_GUIDE.md) and `archmeld init`.
+
 ## No files indexed
 
 CodeGraph reported "indexed 0 files".

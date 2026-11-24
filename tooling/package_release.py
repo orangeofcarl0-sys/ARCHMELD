@@ -178,6 +178,8 @@ foreach ($name in $Manifest.files) {
 $record = @{ version = $Manifest.version; files = @($Manifest.files | Where-Object { $_ -like "bin/*" }); source = $Here }
 $record | ConvertTo-Json | Set-Content $Installed
 Write-Output "installed $($Manifest.version) to $Prefix"
+Write-Output "next: add '$Prefix\bin' to PATH, then run 'archmeld init' in the repository you want to index"
+Write-Output "or: & '$Prefix\bin\archmeld.exe' init --workspace ."
 """
 
 INSTALL_SH = r"""#!/bin/sh
@@ -210,6 +212,8 @@ case "$action" in
     printf '{"version":"VERSION","files":["bin/archmeld","bin/archmeld-index","bin/archmeld-serve","bin/archmeld-mcp"],"source":"%s"}
 ' "$here" > "$prefix/install.json"
     echo "installed VERSION to $prefix"
+    echo "next: add '$prefix/bin' to PATH, then run 'archmeld init' in the repository you want to index"
+    echo "or: '$prefix/bin/archmeld' init --workspace ."
     ;;
   *) echo "usage: $0 [install|uninstall|rollback]" >&2; exit 2 ;;
 esac
@@ -220,7 +224,8 @@ README = """# ARCHMELD CLI bundle
 Local, offline binaries for one platform. No model provider is required for
 read-only navigation, verification, reports or the MCP read surface.
 
-- `archmeld` — offline CLI: `index`, `report`, `verify-report`.
+- `archmeld` — offline CLI: `init`, `brief`, `status`, `review-diff`, `refresh`,
+  `index`, `report`, `verify-report`, backups, scenarios and trace import.
 - `archmeld-index` — one-shot in-memory CodeGraph bridge used by `archmeld index`.
 - `archmeld-serve` — loopback HTTP API; prints one JSON control line.
 - `archmeld-mcp` — read-only MCP stdio server.
@@ -229,6 +234,17 @@ Install with `./install.sh` (Linux) or `install.ps1` (Windows). The installer
 verifies `checksums.sha256`, copies only binaries, backs up a previous install,
 and never touches project/evidence data. `uninstall` removes installed binaries
 only. `rollback` restores the previous binaries.
+
+Next step after install (from the repository you want to index):
+
+```bash
+archmeld init
+```
+
+`init` indexes the workspace, registers its root, prints the exact
+`claude mcp add` / `codex mcp add` command, previews the agent-rule block and
+runs a real MCP handshake. Add `--write` to install the rule files and execute
+the client command. The MCP server is read-only and never uploads source.
 
 See `bundle.json`, `sbom.cdx.json`, `LICENSE`, `NOTICE` and
 `THIRD_PARTY_NOTICES.md`. macOS is not a tested release platform.

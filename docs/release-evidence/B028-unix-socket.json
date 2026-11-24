@@ -16,7 +16,7 @@
   "remote": {
     "host": "<remote-host>",
     "port": 2222,
-    "user": "<remote-user>",
+    "user": "<user>",
     "kernel": "6.6.87.2-microsoft-standard-WSL2",
     "python": "3.12.3",
     "working_dir": "/tmp/archmeld-b028"

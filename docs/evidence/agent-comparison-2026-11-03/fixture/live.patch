@@ -1,0 +1,8 @@
+diff --git a/src/change.py b/src/change.py
+index 75e085a..6ecd870 100644
+--- a/src/change.py
++++ b/src/change.py
+@@ -1,2 +1,2 @@
+ def apply_discount(value):
+-    return value * 0.9
++    return value * 0.8

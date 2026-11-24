@@ -1,5 +1,9 @@
 # CodeGraph for Visual Studio
 
+> **Inherited upstream documentation.** This page describes the upstream
+> CodeGraph MCP package for Visual Studio, not the ARCHMELD `archmeld_*`
+> surface. For ARCHMELD, use the README quick start and `archmeld init`.
+
 ## Visual Studio 2026+ (recommended)
 
 VS 2026 supports MCP natively. No extension needed.

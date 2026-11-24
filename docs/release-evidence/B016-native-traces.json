@@ -11,7 +11,7 @@
   "tools": {
     "perfetto": {
       "argv": [
-        "F:\\Codex_Work_Space\\_archmeld_tools\\perfetto\\windows-amd64\\traceconv.exe",
+        "<workspace>\\_archmeld_tools\\perfetto\\windows-amd64\\traceconv.exe",
         "--version"
       ],
       "exit": 0,
@@ -99,7 +99,7 @@
     "metric_count": 1,
     "bound": true,
     "native_capture": {
-      "path": "F:\\Codex_Work_Space\\<repo>\\adapters\\traces\\fixtures\\tracy-zones-plots.tracy",
+      "path": "<repo>\\adapters\\traces\\fixtures\\tracy-zones-plots.tracy",
       "sha256": "sha256:33b3932e9d9d06ecb47d90a2616ecdf5d1036582ea5be6170a76c91bed5fbfbf",
       "size": 1118
     },
@@ -195,8 +195,8 @@
       "log": "baseline/logs/b016-perfetto-capture.log",
       "log_sha256": "sha256:b46c9ba2ac0b1f5b83674a4bdf3d939c46c5998f746916bc15b0b1840a0d5da0",
       "argv": [
-        "F:\\Codex_Work_Space\\_archmeld_tools\\perfetto\\perfetto_probe.exe",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.pftrace"
+        "<workspace>\\_archmeld_tools\\perfetto\\perfetto_probe.exe",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.pftrace"
       ]
     },
     {
@@ -205,10 +205,10 @@
       "log": "baseline/logs/b016-perfetto-traceconv.log",
       "log_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "argv": [
-        "F:\\Codex_Work_Space\\_archmeld_tools\\perfetto\\windows-amd64\\traceconv.exe",
+        "<workspace>\\_archmeld_tools\\perfetto\\windows-amd64\\traceconv.exe",
         "json",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.pftrace",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.json"
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.pftrace",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\perfetto-scratch.json"
       ]
     },
     {
@@ -240,10 +240,10 @@
       "log": "baseline/logs/b016-cli-perfetto.log",
       "log_sha256": "sha256:91b43b5ad2471fd2cf5a6d9ad6f756ee7f9aebf3bb7f6062b9172cb7d27d9e1d",
       "argv": [
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\bin\\archmeld.exe",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\bin\\archmeld.exe",
         "trace-import",
         "--state",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\state",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\state",
         "--project",
         "project.cli",
         "--run-id",
@@ -253,13 +253,13 @@
         "--format",
         "perfetto",
         "--input",
-        "F:\\Codex_Work_Space\\<repo>\\adapters\\traces\\fixtures\\perfetto-counter-state.pftrace",
+        "<repo>\\adapters\\traces\\fixtures\\perfetto-counter-state.pftrace",
         "--tool",
         "perfetto-sdk",
         "--tool-version",
         "59.1",
         "--out",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\perfetto-import.json"
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\perfetto-import.json"
       ]
     },
     {
@@ -268,10 +268,10 @@
       "log": "baseline/logs/b016-cli-tracy.log",
       "log_sha256": "sha256:db0a69c989061f8e0435b7d1b0875142f27cd0f1490753678b362a3170de7366",
       "argv": [
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\bin\\archmeld.exe",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\bin\\archmeld.exe",
         "trace-import",
         "--state",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\state",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\state",
         "--project",
         "project.cli",
         "--run-id",
@@ -281,17 +281,17 @@
         "--format",
         "tracy",
         "--tracy-capture",
-        "F:\\Codex_Work_Space\\<repo>\\adapters\\traces\\fixtures\\tracy-zones-plots.tracy",
+        "<repo>\\adapters\\traces\\fixtures\\tracy-zones-plots.tracy",
         "--tracy-csv",
-        "F:\\Codex_Work_Space\\<repo>\\adapters\\traces\\fixtures\\tracy-zones-plots.csv",
+        "<repo>\\adapters\\traces\\fixtures\\tracy-zones-plots.csv",
         "--locator",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\locator.json",
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\locator.json",
         "--tool",
         "tracy",
         "--tool-version",
         "0.13.1",
         "--out",
-        "F:\\Codex_Work_Space\\_archmeld_temp\\b016_trace_evidence\\tracy-import.json"
+        "<workspace>\\_archmeld_temp\\b016_trace_evidence\\tracy-import.json"
       ]
     },
     {

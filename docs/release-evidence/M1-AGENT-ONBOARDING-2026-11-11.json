@@ -1,0 +1,331 @@
+{
+  "schema_version": "1.0",
+  "work_item": "M1",
+  "title": "Zero-concept agent onboarding and one-screen brief",
+  "date": "2026-11-11",
+  "phase": "project_testing",
+  "status": "closed_test_phase",
+  "base_commit": "86486558299d3d3e9dc335f8f1091195bfeddb6b",
+  "commit": "8a5e3cc",
+  "scope": "M1 of the low-cognitive-load agent adoption plan: fix the workspace-root first-run bug, add archmeld init / mcp install / brief, bridge-side MCP defaults and next actions, and label inherited upstream documentation.",
+  "changes": [
+    "archmeld index and archmeld init register the workspace root through register_project_root; MCP status freshness and review work on a real first run without an HTTP openProject step",
+    "archmeld init: preflight, index (or reuse a clean snapshot), rule preview/write, Claude/Codex MCP command rendering, and a real MCP initialize -> tools/list -> status handshake",
+    "archmeld mcp install --client claude|codex|generic --print|--write|--check",
+    "archmeld brief --recipe auto|project|change with JSON and markdown output",
+    "new read-only MCP tool archmeld_brief; bridge-side defaults for query/context/source; agent_summary and next_actions on results; next_action on errors",
+    "README first screen now starts with ARCHMELD init; inherited CodeGraph docs are labeled; docs/agent-rules/ added; ADR-056 records the decisions"
+  ],
+  "environment": {
+    "os": "Windows 11 10.0.26200 x64",
+    "shell": "Git Bash",
+    "rust_toolchain": "1.94.1-x86_64-pc-windows-gnu",
+    "python_on_path": "3.11.9",
+    "temp": "C:/Users/<user>/AppData/Local/Temp (writable)",
+    "rust_analyzer": "component rust-analyzer installed for 1.94.1-x86_64-pc-windows-gnu; required by the pre-existing language_rename_apply test",
+    "binaries": {
+      "archmeld": "sha256:aa3ce6e98653ce6bd2b37dcff4cbaa567899dd6c82f15e93bee4bdb6693dd2a3",
+      "archmeld_mcp": "sha256:05c03748680bf4391a5a33bae5caba4d88344302d8f4f37e2ee8c5d9004f759c",
+      "archmeld_index_helper": "sha256:0c7c8db147014408c97ea1a68935cff0e719cfe16a97ddf398cbdd913b5db5d7"
+    },
+    "fixture": {
+      "root": "<workspace>/repo",
+      "files": {
+        "main.py": "sha256:94763662f1cce3cfa796985a016f0b236f4113f6853d6582a0989c111212fb3e",
+        "src/a.py": "sha256:d311953cc9e6d8278be8e1184e001feee322b1f860a5dc849eec71e3be694096",
+        "src/b.py_base": "sha256:ab2d38dcad7f5eb7611e1b3fd17e182ffaa2858eeffda846be2392697d9b048d",
+        "src/b.py_live": "sha256:4422f3199f37fc4ecb54f90071e272c2b28600f50ed507d92accad7881c50ea0",
+        "README.md": "sha256:4fb6bc564da921ac2abdfc1f5a9e1eff5d46d707a158fe63d25bbca994a90d05"
+      }
+    }
+  },
+  "first_run": {
+    "command": [
+      "archmeld",
+      "init",
+      "--workspace",
+      "<workspace>/repo",
+      "--state",
+      "<workspace>/state",
+      "--project",
+      "project.m1",
+      "--client",
+      "codex"
+    ],
+    "elapsed_ms": 749,
+    "result": {
+      "state": "ok",
+      "index_state": "indexed",
+      "summary": "4 file(s) indexed; 7 entities; 7 relations; coverage complete; MCP health ok",
+      "snapshot_id": "sha256:9e43304f09e25de7bde38172ad7ca9a141d584b064acfa3b10d0830d7bddd4fc",
+      "counts": {
+        "files": 4,
+        "entities": 7,
+        "relations": 7
+      },
+      "coverage": "complete",
+      "warnings": [],
+      "source_mutation": "none",
+      "health": {
+        "state": "ok",
+        "tools": 8,
+        "freshness": "clean"
+      }
+    }
+  },
+  "brief": {
+    "project": {
+      "level": "module",
+      "summary": "4 files, 7 entities, 7 relations, 2 language(s)",
+      "counts": {
+        "confirmed": 6,
+        "candidate": 1,
+        "unknown": 0,
+        "stale": 0,
+        "findings": 0
+      },
+      "findings": 0,
+      "unknowns": 0
+    },
+    "change": {
+      "level": "change",
+      "summary": "1 file(s) changed; 1 affected entities; 1 candidate relation(s); verification not run",
+      "counts": {
+        "confirmed": 2,
+        "candidate": 1,
+        "unknown": 0,
+        "stale": 1,
+        "findings": 1
+      },
+      "findings": [
+        {
+          "severity": "HIGH",
+          "title": "src/b.py::b changed",
+          "why": "this entity changed and has incoming static relation(s) in the base snapshot",
+          "verification": "not_run",
+          "next_action": "archmeld_source"
+        }
+      ],
+      "unknowns": [
+        "Does this change pass tests? review is static and executed no repository command"
+      ]
+    }
+  },
+  "idempotency": {
+    "init_again": {
+      "state": "ok",
+      "index_state": "reused",
+      "summary": "4 file(s) already indexed (workspace clean); 7 entities; 7 relations; coverage complete; MCP health ok",
+      "same_snapshot": true
+    },
+    "init_write_rules": {
+      "state": "ok",
+      "index_state": "indexed",
+      "files": 6,
+      "source_mutation": "agent_rules_only",
+      "health_freshness": "clean",
+      "rule_markers": 1
+    },
+    "init_write_rules_again": {
+      "state": "ok",
+      "index_state": "reused",
+      "rules_changed": false,
+      "health_freshness": "clean",
+      "elapsed_ms": 553
+    }
+  },
+  "mcp_install": {
+    "client": "codex",
+    "plan_command": "codex mcp add archmeld -- <repo>/target/debug/archmeld-mcp.exe --state <workspace>/state --project project.m1",
+    "plan_read_only": true,
+    "health": {
+      "state": "ok",
+      "tools": 8
+    }
+  },
+  "regression": {
+    "cwd": "<repo>",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--no-fail-fast",
+      "-p",
+      "archmeld-core",
+      "-p",
+      "archmeld-api"
+    ],
+    "exit_code": 0,
+    "sections": 75,
+    "passed": 211,
+    "failed": 0,
+    "ignored": 0,
+    "stdout_log": "baseline/logs/m1-final-regression.log",
+    "stdout_log_sha256": "sha256:700d070dffeab131c1ea4720c24c93dd61f744fc6d9b2fecba588ea72a823e4a"
+  },
+  "targeted_tests": {
+    "brief": "3 passed (project/change/no-snapshot)",
+    "onboard": "6 passed (paths, config plans, rules, preflight, state safety, real handshake)",
+    "mcp_stdio": "1 passed (8 tools, brief, defaults, review)",
+    "security_mcp": "1 passed (8 tools, untrusted content)",
+    "index_reuse": "2 passed (snapshot reuse on clean workspace; dirty workspace re-indexes)"
+  },
+  "artifacts": {
+    "run_script": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/run.sh",
+      "sha256": "sha256:6c0da129c1be435191e46f617efd404f16f8384997286c1ceb07e3f660be1de6"
+    },
+    "init": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init.json",
+      "sha256": "sha256:52efb6650915205368234411a63fe0c0b85d299989307210223c28b895c4f620"
+    },
+    "init_again": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init-again.json",
+      "sha256": "sha256:7767b6c4965102ccaf0aa12b9514d0599a70f48840ca24681eb10e0b68cc09ac"
+    },
+    "brief_project": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/brief-project.md",
+      "sha256": "sha256:a2977d267a1debc616f09e460cf21d514e22bd623e2ef6d9b04df892f3592989"
+    },
+    "brief_change": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/brief-change.md",
+      "sha256": "sha256:b08d8733227aadc87b5d4f07547f4d07a9d65d057daf027a62e0066132abd222"
+    },
+    "mcp_install_check": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/mcp-install-check.json",
+      "sha256": "sha256:0bbf5ddd08329164fd777ea2ed7be713623292b304bd4bc338ef1d9d5842aafe"
+    },
+    "init_write_rules": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init-write-rules.json",
+      "sha256": "sha256:d6591a88b16be7d8cb473a1114bfc3b653823bbe954182e4b04d025fcb7878a1"
+    },
+    "init_write_rules_2": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init-write-rules-2.json",
+      "sha256": "sha256:817c0faff42c701c0483fbc8b8c5eba53082fda2cfcd384aeab6ead240b158b7"
+    },
+    "init_check": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init-check.json",
+      "sha256": "sha256:7727ccb6ae25d10eacf346d6c76c557fb04155318ed1389e72cc735aa47297b5"
+    },
+    "init_timing": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init-timing.json",
+      "sha256": "sha256:0e52577989f0b167378f7a54c8ceb3ad6d90b49b829f8fe4b34626a916027664"
+    },
+    "init_write_timing": {
+      "path": "docs/evidence/m1-onboarding-2026-11-11/init-write-timing.json",
+      "sha256": "sha256:c33e163fe017577a888df72bcc832e86e4e6ba601e963da1eb6aff0f4e12617b"
+    }
+  },
+  "commands": [
+    {
+      "purpose": "first run and MCP handshake",
+      "cwd": "<repo>",
+      "argv": [
+        "archmeld",
+        "init",
+        "--workspace",
+        "<workspace>/repo",
+        "--state",
+        "<workspace>/state",
+        "--project",
+        "project.m1",
+        "--client",
+        "codex"
+      ],
+      "exit_code": 0,
+      "elapsed_ms": 749
+    },
+    {
+      "purpose": "project brief",
+      "cwd": "<repo>",
+      "argv": [
+        "archmeld",
+        "brief",
+        "--state",
+        "<workspace>/state",
+        "--project",
+        "project.m1",
+        "--markdown"
+      ],
+      "exit_code": 0
+    },
+    {
+      "purpose": "change brief after modifying src/b.py",
+      "cwd": "<repo>",
+      "argv": [
+        "archmeld",
+        "brief",
+        "--state",
+        "<workspace>/state",
+        "--project",
+        "project.m1",
+        "--markdown"
+      ],
+      "exit_code": 0
+    },
+    {
+      "purpose": "MCP client plan and real handshake",
+      "cwd": "<repo>",
+      "argv": [
+        "archmeld",
+        "mcp",
+        "install",
+        "--client",
+        "codex",
+        "--state",
+        "<workspace>/state",
+        "--project",
+        "project.m1",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "purpose": "rule write and snapshot synchronization",
+      "cwd": "<repo>",
+      "argv": [
+        "archmeld",
+        "init",
+        "--workspace",
+        "<workspace>/repo-rules",
+        "--state",
+        "<workspace>/state-rules",
+        "--project",
+        "project.m1r",
+        "--write",
+        "--client",
+        "generic"
+      ],
+      "exit_code": 0,
+      "elapsed_ms": 553
+    },
+    {
+      "purpose": "full core/API regression",
+      "cwd": "<repo>",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--no-fail-fast",
+        "-p",
+        "archmeld-core",
+        "-p",
+        "archmeld-api"
+      ],
+      "exit_code": 0,
+      "passed": 211,
+      "failed": 0,
+      "ignored": 0,
+      "sections": 75
+    }
+  ],
+  "limitations": [
+    "The fixture is 4 Python files and 7 entities; this validates first-run mechanics, not large-repository performance.",
+    "The Claude Code and Codex client binaries were not installed, so --write client execution was not run; the exact commands and TOML/JSON snippets were rendered, and the MCP handshake was executed directly.",
+    "The release zip was not rebuilt with the M1 binaries; tooling/test_release.py now includes an installed-bundle init handshake, but that packaging path was not re-run in this slice.",
+    "Direct archmeld index re-runs on identical bytes still use a new run id and can hit the external-entity payload conflict; archmeld init avoids this by reusing a clean snapshot. Track as a follow-up for the low-level index path.",
+    "brief is a deterministic composition of status and static review. It does not execute tests, synthesize architecture, or infer new calls; candidate relations remain candidate and verification is not_run.",
+    "M3 commit supervision and M4 scoped multi-agent authority are not part of M1.",
+    "The local GNU toolchain now has the rust-analyzer component because the pre-existing language_rename_apply acceptance test resolves it from the toolchain bin; this is a test-environment change, not a product dependency."
+  ]
+}

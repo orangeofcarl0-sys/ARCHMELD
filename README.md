@@ -1,40 +1,73 @@
 # ARCHMELD
 
-ARCHMELD is a thin, evidence-first fork of the pinned CodeGraph commit. Start
-with the ARCHMELD entry points, not the inherited upstream service below:
+ARCHMELD is a local, read-only code-evidence workbench for coding agents. It
+captures a snapshot of a repository, indexes the graph into a local ledger, and
+exposes bounded evidence over MCP: status, one-screen briefs, static change
+review, call-graph queries and exact source reads.
+
+## Quick start
+
+Download the release bundle for your platform, then from the unpacked directory:
 
 ```bash
-# What is registered, which snapshot is current, and is the workspace dirty?
-archmeld status --state <ledger> [--project <id>] [--workspace <repo>]
+# 1. Install the bundle (archmeld, archmeld-index, archmeld-serve, archmeld-mcp)
+./install.sh          # Windows: .\install.ps1; then add <prefix>/bin to PATH
 
-# Capture a new snapshot, materialize it, index it, and bind the graph to those bytes.
-archmeld index --workspace <repo> --state <ledger> --project <id>
-
-# Review the current working tree against the latest snapshot; static only.
-archmeld review-diff --state <ledger> --project <id> --workspace <repo>
-
-# Refresh explicitly: create a new snapshot, retain the old one, and diff both.
-archmeld refresh --state <ledger> --project <id> --workspace <repo>
-
-# Read-only agent surfaces (pick one)
-archmeld-mcp --state <ledger> --project <id>
-archmeld-serve --state <ledger> --allow-workspace <repo>
+# 2. Index the current repository and render the MCP configuration
+archmeld init
 ```
 
-`archmeld status --workspace` is read-only: it reports changed/added/deleted
-files and affected entities/claims/plans, but creates no snapshot and does not
-record drift history. `archmeld review-diff` adds line-level overlap, base
-anchors, graph impact, confidence and an explicit `verification=not_run`; it
-executes no build or test. `archmeld refresh` is the explicit refresh: it creates
-a new snapshot, diffs it against the previous one, and keeps the old snapshot
-and evidence addressable. MCP exposes inspect/query/context/source/status/review
-plus a capabilities report; `archmeld_capabilities` distinguishes external-grant
-operations from unimplemented declarations, and status/review use only the
-project's registered active workspace root.
+`init` indexes the workspace, registers its root, prints the exact MCP command
+for Claude Code and Codex, previews a short agent-rule block, and runs a real
+MCP `initialize → tools/list → status` handshake. It does not edit repository
+source unless `--write` is passed for the rule files.
 
-The CodeGraph sections below are inherited upstream documentation and describe
-the upstream engine/plugins, not the ARCHMELD acceptance surface. ARCHMELD
-operator details: [docs/OPERATOR_GUIDE.md](docs/OPERATOR_GUIDE.md).
+```bash
+archmeld init --workspace . --state <ledger> --client claude,codex
+archmeld mcp install --client claude --state <ledger> --project <id> --check
+```
+
+The generated MCP entry is a normal stdio server:
+
+```bash
+claude mcp add archmeld -- <path>/archmeld-mcp --state <ledger> --project <id>
+codex  mcp add archmeld -- <path>/archmeld-mcp --state <ledger> --project <id>
+```
+
+Ask your agent:
+
+- “What changed since the last snapshot, and who calls the changed functions?”
+- “Summarize this project and tell me what is unknown.”
+- “Who calls this symbol, and what breaks if I change it?”
+
+Read-only by default: MCP exposes no approve/apply tool, never uploads source,
+and marks repository content as untrusted. Static review is not a test run;
+`verification=not_run` is explicit.
+
+## CLI and surfaces
+
+| Command | Purpose |
+|---|---|
+| `archmeld init` | Index a workspace, register its root, render MCP config and rules |
+| `archmeld brief` | One-screen project or change brief with findings, unknowns and next actions |
+| `archmeld status` | Projects, latest snapshots, counts, languages and read-only freshness |
+| `archmeld review-diff` | Static workspace-vs-snapshot review; no command execution |
+| `archmeld refresh` | Explicit new snapshot + exact diff; the old snapshot is retained |
+| `archmeld index` | Low-level snapshot capture and indexing |
+| `archmeld mcp install` | Render or install one client's MCP server entry |
+| `archmeld-mcp` | Read-only MCP stdio server used by agents |
+| `archmeld-serve` | Loopback HTTP API for the extension and advanced flows |
+| `archmeld report` | Checksummed offline report bundle for one snapshot |
+
+Agent rules are in [`docs/agent-rules/`](docs/agent-rules/); operator details are
+in [`docs/OPERATOR_GUIDE.md`](docs/OPERATOR_GUIDE.md).
+
+## Inherited upstream documentation
+
+The CodeGraph sections below are inherited from the pinned upstream commit and
+describe the upstream engine/plugins, not the ARCHMELD acceptance surface. In
+particular, `codegraph-server --mcp` and the upstream 42-tool inventory are not
+the ARCHMELD MCP entry; use `archmeld init` and `archmeld-mcp` above.
 
 ---
 
@@ -91,7 +124,11 @@ sharing `~/.codegraph/bin`.
 → **[jetbrains/README.md](jetbrains/README.md)** for surfaces, engine
 resolution order, and building from source.
 
-### Rules for AI agents
+### Rules for AI agents (inherited upstream)
+
+> These are upstream CodeGraph rules for `codegraph_*` tools. ARCHMELD ships its
+> own rules in [`docs/agent-rules/`](docs/agent-rules/) and installs them with
+> `archmeld init`; use those for `archmeld_*` tools.
 
 Pre-configured rule files that teach AI coding agents (Claude, Cursor,
 Windsurf, Codex, Cline) to use CodeGraph MCP tools before falling back

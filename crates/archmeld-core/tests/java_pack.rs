@@ -157,8 +157,8 @@ fn touches(ranges: &[(u64, u64)], line: u64) -> bool {
 
 #[test]
 fn jdtls_overloads_interfaces_annotations_reflection_and_cross_file_rename() {
-    let jdk = PathBuf::from("<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe");
-    let jdtls = PathBuf::from("<workspace>/_archmeld_tools/jdtls");
+    let jdk = PathBuf::from("<workspace>/_tools/jdk25/jdk-25.0.5+8/bin/java.exe");
+    let jdtls = PathBuf::from("<workspace>/_tools/jdtls");
     let launcher = fs::read_dir(jdtls.join("plugins"))
         .ok()
         .and_then(|entries| {

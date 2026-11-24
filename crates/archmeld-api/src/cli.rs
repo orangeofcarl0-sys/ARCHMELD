@@ -4,27 +4,29 @@
 //! Offline operator CLI: index a workspace, export a review bundle, or verify
 //! an existing bundle. No model provider, network or server is required.
 
+use archmeld_api::onboard;
 use archmeld_core::bridge::{import_codegraph_export, BridgeConfig};
+use archmeld_core::brief::{build_brief, render_markdown, BriefRecipe, BriefRequest};
 use archmeld_core::encrypted_backup::{
     create_encrypted_backup, restore_encrypted_backup, retain_encrypted_backup,
     rotate_encrypted_backup, verify_encrypted_backup,
 };
-use archmeld_core::hash;
 use archmeld_core::evaluate_numeric_tolerance_artifacts;
-use archmeld_core::sandbox::{materialize_all, sanitize_id};
+use archmeld_core::hash;
 use archmeld_core::migrate::migrate_ledger;
 use archmeld_core::perfetto::perfetto_trace;
 use archmeld_core::report::{export_report, verify_bundle};
 use archmeld_core::review::{diff_snapshots, review_workspace_diff};
 use archmeld_core::runtime::{import_trace, RuntimeImport};
+use archmeld_core::sandbox::{materialize_all, sanitize_id};
 use archmeld_core::scenario::{run_scenario, ExecutionGrant, ScenarioSandbox, ScenarioSpec};
+use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
 use archmeld_core::status::status_report;
+use archmeld_core::store::Store;
 use archmeld_core::trace_adapters::{chrome_trace, probe_jsonl, TraceLocator, TraceMeta};
 use archmeld_core::trace_processor::perfetto_trace_via_processor;
 use archmeld_core::tracy_csv::import_tracy_capture;
 use archmeld_core::watch::{watch_drift, watch_drift_notify, NotifyWatchOptions, WatchOptions};
-use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
-use archmeld_core::store::Store;
 use clap::{Parser, Subcommand};
 use serde_json::{json, Value};
 
@@ -80,6 +82,13 @@ enum Commands {
     /// Evaluate a numeric_tolerance predicate against artifacts without
     /// creating a verification or accepting a ChangeSet.
     NumericCheck(NumericCheckArgs),
+    /// One-command onboarding: index the workspace, register its root, render
+    /// MCP configuration and install the agent rule block.
+    Init(InitArgs),
+    /// Print or install the MCP server entry for a supported client.
+    Mcp(McpArgs),
+    /// Build a one-screen project or change brief from the current snapshot.
+    Brief(BriefArgs),
 }
 
 #[derive(clap::Args)]
@@ -93,6 +102,85 @@ struct NumericCheckArgs {
     /// JSON file containing the numeric_tolerance predicate.
     #[arg(long)]
     predicate: PathBuf,
+}
+
+#[derive(clap::Args)]
+struct InitArgs {
+    /// Repository to initialize; defaults to the current directory.
+    #[arg(long, default_value = ".")]
+    workspace: PathBuf,
+    /// Ledger location; defaults to a per-workspace user data directory.
+    #[arg(long)]
+    state: Option<PathBuf>,
+    /// Stable project id; defaults to a repo-name plus path hash.
+    #[arg(long)]
+    project: Option<String>,
+    /// Comma-separated clients: claude,codex,generic. Defaults to claude,codex.
+    #[arg(long = "client", value_delimiter = ',')]
+    clients: Vec<String>,
+    /// Write the agent rule block and execute the MCP client command.
+    #[arg(long)]
+    write: bool,
+    /// Preflight only: show the plan without creating a ledger.
+    #[arg(long)]
+    dry_run: bool,
+    /// Health-check an existing state instead of indexing.
+    #[arg(long)]
+    check: bool,
+    #[arg(long, default_value_t = 5000)]
+    max_files: usize,
+    /// Override the packaged index helper (hidden; for tests and custom builds).
+    #[arg(long, hide = true)]
+    index_helper: Option<PathBuf>,
+}
+
+#[derive(clap::Args)]
+struct McpArgs {
+    #[command(subcommand)]
+    action: McpAction,
+}
+
+#[derive(Subcommand)]
+enum McpAction {
+    /// Render or install one client's MCP server entry.
+    Install(McpInstallArgs),
+}
+
+#[derive(clap::Args)]
+struct McpInstallArgs {
+    /// claude, codex or generic.
+    #[arg(long, default_value = "claude")]
+    client: String,
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    project: String,
+    /// Execute the printed client command instead of only printing it.
+    #[arg(long)]
+    write: bool,
+    /// Run a real initialize/tools/list/status handshake.
+    #[arg(long)]
+    check: bool,
+}
+
+#[derive(clap::Args)]
+struct BriefArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    project: String,
+    /// Optional workspace for change review; defaults to the registered root.
+    #[arg(long)]
+    workspace: Option<PathBuf>,
+    /// Base snapshot; defaults to the project's latest snapshot.
+    #[arg(long)]
+    snapshot: Option<String>,
+    /// auto, project or change.
+    #[arg(long, default_value = "auto")]
+    recipe: String,
+    /// Print a markdown one-screen instead of JSON.
+    #[arg(long)]
+    markdown: bool,
 }
 
 #[derive(clap::Args)]
@@ -385,7 +473,9 @@ fn passphrase(variable: &str) -> Result<String, String> {
     let value = std::env::var(variable)
         .map_err(|_| format!("passphrase environment variable {variable} is not set"))?;
     if value.is_empty() {
-        return Err(format!("passphrase environment variable {variable} is empty"));
+        return Err(format!(
+            "passphrase environment variable {variable} is empty"
+        ));
     }
     Ok(value)
 }
@@ -409,7 +499,10 @@ fn helper_path(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
         .parent()
         .ok_or_else(|| "current executable has no parent directory".to_string())?;
     let candidates = if cfg!(windows) {
-        vec![dir.join("archmeld-index.exe"), dir.join("archmeld_export.exe")]
+        vec![
+            dir.join("archmeld-index.exe"),
+            dir.join("archmeld_export.exe"),
+        ]
     } else {
         vec![dir.join("archmeld-index"), dir.join("archmeld_export")]
     };
@@ -428,9 +521,13 @@ struct HelperOutput {
     stderr: Vec<u8>,
 }
 
-type HelperRunner<'a> =
-    dyn FnMut(&PathBuf, &std::path::Path, &std::path::Path, &std::path::Path) -> Result<HelperOutput, String>
-        + 'a;
+type HelperRunner<'a> = dyn FnMut(
+        &PathBuf,
+        &std::path::Path,
+        &std::path::Path,
+        &std::path::Path,
+    ) -> Result<HelperOutput, String>
+    + 'a;
 
 fn run_status(args: StatusArgs) -> Result<Value, String> {
     let store = Store::open(&args.state).map_err(|error| error.to_string())?;
@@ -458,7 +555,12 @@ fn run_status(args: StatusArgs) -> Result<Value, String> {
 fn helper_runner(
     state_root: PathBuf,
     max_files: usize,
-) -> impl FnMut(&PathBuf, &std::path::Path, &std::path::Path, &std::path::Path) -> Result<HelperOutput, String> {
+) -> impl FnMut(
+    &PathBuf,
+    &std::path::Path,
+    &std::path::Path,
+    &std::path::Path,
+) -> Result<HelperOutput, String> {
     move |helper, analysis_input, export, _state| {
         let output = Command::new(helper)
             .arg(analysis_input)
@@ -549,6 +651,306 @@ fn run_refresh_with(
     }))
 }
 
+/// Return an existing snapshot when the workspace is byte-clean against it.
+/// `init` uses this to stay idempotent: re-indexing identical bytes would
+/// re-import the same content-addressed snapshot under a new run id, which the
+/// ledger rejects because the entity payload would differ.
+fn existing_clean_index(
+    state: &PathBuf,
+    project: &str,
+    workspace: &std::path::Path,
+) -> Result<Option<Value>, String> {
+    let store = Store::open(state).map_err(|error| error.to_string())?;
+    let Some(snapshot_id) = store
+        .latest_snapshot_id(project)
+        .map_err(|error| error.to_string())?
+    else {
+        return Ok(None);
+    };
+    let drift = archmeld_core::drift::analyze_drift(&store, project, &snapshot_id, workspace, None)
+        .map_err(|error| error.to_string())?;
+    if drift["state"] != "clean" {
+        return Ok(None);
+    }
+    let payload = store
+        .snapshot_payload(project, &snapshot_id)
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| format!("snapshot {snapshot_id} is not registered"))?;
+    let counts = store
+        .published_counts(project, &snapshot_id)
+        .map_err(|error| error.to_string())?;
+    let files = payload["files"].as_array().map(Vec::len).unwrap_or(0);
+    // A snapshot can exist after capture but before a successful import. Never
+    // reuse an empty index for a non-empty workspace: it would hide the
+    // failed import behind a "clean" freshness result.
+    if counts.entities == 0 && files > 0 {
+        return Ok(None);
+    }
+    Ok(Some(json!({
+        "command": "index",
+        "state": "reused",
+        "index_reuse": true,
+        "project_id": project,
+        "snapshot_id": snapshot_id,
+        "snapshot_files": files,
+        "ledger": {
+            "entities": counts.entities,
+            "relations": counts.relations,
+            "evidence": counts.evidence,
+            "relation_evidence": counts.relation_evidence,
+            "backend_mappings": counts.backend_mappings,
+            "diagnostics": counts.diagnostics,
+        },
+        "bridge": {"coverage": payload["coverage"]},
+    })))
+}
+
+fn run_init(args: InitArgs) -> Result<Value, String> {
+    let workspace = args
+        .workspace
+        .canonicalize()
+        .map_err(|error| format!("workspace {}: {error}", args.workspace.display()))?;
+    if !workspace.is_dir() {
+        return Err(format!(
+            "workspace {} is not a directory",
+            workspace.display()
+        ));
+    }
+    let state = match &args.state {
+        Some(path) => path.clone(),
+        None => onboard::default_state_root(&workspace)?,
+    };
+    let project = args
+        .project
+        .clone()
+        .unwrap_or_else(|| onboard::default_project_id(&workspace));
+    if onboard::state_inside_workspace(&state, &workspace)? {
+        return Err(
+            "state_root_inside_workspace: choose a --state outside the repository; the ledger stores source bytes"
+                .to_string(),
+        );
+    }
+    let mut clients = args.clients.clone();
+    if clients.is_empty() {
+        clients = vec!["claude".to_string(), "codex".to_string()];
+    }
+    let preflight = onboard::count_source_files(&workspace, args.max_files)?;
+    if args.dry_run {
+        return Ok(json!({
+            "command": "init",
+            "state": "dry_run",
+            "workspace": workspace.to_string_lossy(),
+            "state_root": state.to_string_lossy(),
+            "project_id": project,
+            "clients": clients,
+            "preflight": preflight,
+            "next": "re-run without --dry-run to index and render the client configuration"
+        }));
+    }
+    if args.check {
+        let health = onboard::health_check(&state, &project)?;
+        return Ok(json!({
+            "command": "init",
+            "state": "check",
+            "workspace": workspace.to_string_lossy(),
+            "state_root": state.to_string_lossy(),
+            "project_id": project,
+            "health": health
+        }));
+    }
+    // Install the rule block before indexing so a `--write` run leaves the
+    // snapshot and the working tree in sync; preview runs write nothing.
+    let rules = vec![
+        onboard::install_rules(&workspace, "AGENTS.md", args.write)?,
+        onboard::install_rules(&workspace, "CLAUDE.md", args.write)?,
+    ];
+    let mut warnings = Vec::new();
+    if preflight["files"].as_u64().unwrap_or(0) == 0 {
+        warnings.push(json!("no source files were found in the workspace"));
+    }
+    if preflight["truncated"].as_bool().unwrap_or(false) {
+        warnings.push(json!(format!(
+            "preflight stopped at max_files={}; the snapshot budget may truncate the index",
+            args.max_files
+        )));
+    }
+    fs::create_dir_all(&state).map_err(|error| format!("state {}: {error}", state.display()))?;
+    let index = match existing_clean_index(&state, &project, &workspace)? {
+        Some(existing) => {
+            let mut store = Store::open(&state).map_err(|error| error.to_string())?;
+            archmeld_core::manager::register_project_root(&mut store, &project, &workspace, &state)
+                .map_err(|error| error.to_string())?;
+            existing
+        }
+        None => run_index(IndexArgs {
+            workspace: workspace.clone(),
+            state: state.clone(),
+            project: project.clone(),
+            max_files: args.max_files,
+            index_helper: args.index_helper.clone(),
+            run_id: None,
+        })?,
+    };
+    let mut mcp = Vec::new();
+    for client in &clients {
+        let plan = onboard::plan_mcp_install(client, &state, &project)?;
+        let install = if args.write
+            && !plan["command"]
+                .as_array()
+                .map(|command| command.is_empty())
+                .unwrap_or(true)
+        {
+            match onboard::execute_mcp_install(&plan) {
+                Ok(value) => value,
+                Err(error) => {
+                    warnings.push(json!({"client": client, "error": error}));
+                    json!({"executed": false})
+                }
+            }
+        } else {
+            json!({"executed": false, "reason": "preview only; pass --write to install"})
+        };
+        mcp.push(json!({"plan": plan, "install": install}));
+    }
+    let health = match onboard::health_check(&state, &project) {
+        Ok(value) => value,
+        Err(error) => {
+            warnings.push(json!({"health": error}));
+            json!({"state": "failed", "error": error})
+        }
+    };
+    let source_mutation = if rules.iter().any(|rule| {
+        rule["written"].as_bool().unwrap_or(false) && rule["changed"].as_bool().unwrap_or(false)
+    }) {
+        "agent_rules_only"
+    } else {
+        "none"
+    };
+    let snapshot_id = index["snapshot_id"].clone();
+    let files = index["snapshot_files"]
+        .as_u64()
+        .unwrap_or_else(|| preflight["files"].as_u64().unwrap_or(0));
+    let counts = index["ledger"].clone();
+    let coverage = index["bridge"]["coverage"].clone();
+    let health_summary = json!({
+        "state": health["state"],
+        "tools": health["tools"],
+        "project": health["project"],
+        "snapshot_id": health["status"]["projects"][0]["latest_snapshot_id"],
+        "freshness": health["status"]["projects"][0]["freshness"]["state"],
+    });
+    let rules_summary: Vec<Value> = rules
+        .iter()
+        .map(|rule| {
+            json!({
+                "path": rule["path"],
+                "written": rule["written"],
+                "changed": rule["changed"],
+            })
+        })
+        .collect();
+    let mcp_summary: Vec<Value> = mcp
+        .iter()
+        .map(|entry| {
+            json!({
+                "client": entry["plan"]["client"],
+                "target": entry["plan"]["target"],
+                "command_line": entry["plan"]["command_line"],
+                "executed": entry["install"]["executed"],
+            })
+        })
+        .collect();
+    let reused = index["index_reuse"].as_bool().unwrap_or(false);
+    let index_state = if reused { "reused" } else { "indexed" };
+    let summary = if reused {
+        format!(
+            "{} file(s) already indexed (workspace clean); {} entities; {} relations; coverage {}; MCP health {}",
+            files,
+            counts["entities"].as_u64().unwrap_or(0),
+            counts["relations"].as_u64().unwrap_or(0),
+            coverage["state"].as_str().unwrap_or("unknown"),
+            health_summary["state"].as_str().unwrap_or("unknown"),
+        )
+    } else {
+        format!(
+            "{} file(s) indexed; {} entities; {} relations; coverage {}; MCP health {}",
+            files,
+            counts["entities"].as_u64().unwrap_or(0),
+            counts["relations"].as_u64().unwrap_or(0),
+            coverage["state"].as_str().unwrap_or("unknown"),
+            health_summary["state"].as_str().unwrap_or("unknown"),
+        )
+    };
+    Ok(json!({
+        "command": "init",
+        "state": "ok",
+        "index_state": index_state,
+        "summary": summary,
+        "workspace": workspace.to_string_lossy(),
+        "state_root": state.to_string_lossy(),
+        "project_id": project,
+        "snapshot_id": snapshot_id,
+        "counts": {
+            "files": files,
+            "entities": counts["entities"],
+            "relations": counts["relations"],
+        },
+        "coverage": coverage,
+        "rules": rules_summary,
+        "mcp": mcp_summary,
+        "health": health_summary,
+        "warnings": warnings,
+        "source_mutation": source_mutation,
+        "next_prompt": "Ask your agent: what changed, who calls it, or summarize this project."
+    }))
+}
+
+fn run_mcp_command(args: McpArgs) -> Result<Value, String> {
+    match args.action {
+        McpAction::Install(install) => {
+            let plan =
+                onboard::plan_mcp_install(&install.client, &install.state, &install.project)?;
+            let mut result = json!({"command": "mcp.install", "plan": plan});
+            if install.check {
+                result["health"] = onboard::health_check(&install.state, &install.project)?;
+            }
+            if install.write {
+                result["install"] = onboard::execute_mcp_install(&plan)?;
+            }
+            Ok(result)
+        }
+    }
+}
+
+fn run_brief(args: BriefArgs) -> Result<Value, String> {
+    let store = Store::open(&args.state).map_err(|error| error.to_string())?;
+    let recipe = BriefRecipe::parse(&args.recipe).map_err(|error| error.to_string())?;
+    let workspace = match args.workspace {
+        Some(path) => Some(
+            path.canonicalize()
+                .map_err(|error| format!("workspace {}: {error}", path.display()))?,
+        ),
+        None => store
+            .active_project_root(&args.project)
+            .map_err(|error| error.to_string())?,
+    };
+    let brief = build_brief(
+        &store,
+        &BriefRequest {
+            project_id: &args.project,
+            snapshot_id: args.snapshot.as_deref(),
+            workspace: workspace.as_deref(),
+            recipe,
+        },
+    )
+    .map_err(|error| error.to_string())?;
+    if args.markdown {
+        Ok(Value::String(render_markdown(&brief)))
+    } else {
+        Ok(brief)
+    }
+}
+
 fn run_review_diff(args: ReviewDiffArgs) -> Result<Value, String> {
     let store = Store::open(&args.state).map_err(|error| error.to_string())?;
     let base_snapshot_id = match args.base_snapshot {
@@ -578,14 +980,21 @@ fn run_index_with(
         .canonicalize()
         .map_err(|error| format!("workspace {}: {error}", args.workspace.display()))?;
     if !workspace.is_dir() {
-        return Err(format!("workspace {} is not a directory", workspace.display()));
+        return Err(format!(
+            "workspace {} is not a directory",
+            workspace.display()
+        ));
     }
-    fs::create_dir_all(&args.state).map_err(|error| format!("state {}: {error}", args.state.display()))?;
+    fs::create_dir_all(&args.state)
+        .map_err(|error| format!("state {}: {error}", args.state.display()))?;
     let run_id = args
         .run_id
         .clone()
         .unwrap_or_else(|| format!("run.{}.index.{}", args.project, now_unix()));
-    let export = args.state.join("index-runs").join(format!("{run_id}.ndjson"));
+    let export = args
+        .state
+        .join("index-runs")
+        .join(format!("{run_id}.ndjson"));
     if let Some(parent) = export.parent() {
         fs::create_dir_all(parent).map_err(|error| error.to_string())?;
     }
@@ -593,6 +1002,17 @@ fn run_index_with(
     store
         .ensure_project(&args.project, "expedition")
         .map_err(|error| error.to_string())?;
+    // The MCP status/review tools resolve the project's active workspace root.
+    // Indexing must therefore register the same root; otherwise a real
+    // `archmeld index` followed by `archmeld-mcp` reports freshness=unknown and
+    // review fails with "no active workspace root".
+    archmeld_core::manager::register_project_root(
+        &mut store,
+        &args.project,
+        &workspace,
+        &args.state,
+    )
+    .map_err(|error| error.to_string())?;
 
     // Capture first, parse second. The helper reads a materialization of the
     // captured CAS blobs, so a save in the live workspace cannot produce a
@@ -632,7 +1052,11 @@ fn run_index_with(
         &mut store,
         &args.project,
         &captured.snapshot_id,
-        &["index-sandboxes", project_scope.as_str(), run_scope.as_str()],
+        &[
+            "index-sandboxes",
+            project_scope.as_str(),
+            run_scope.as_str(),
+        ],
     )
     .map_err(|error| {
         format!(
@@ -934,8 +1358,8 @@ fn run_numeric_check(args: NumericCheckArgs) -> Result<Value, String> {
 }
 
 fn run_migrate(args: MigrateArgs) -> Result<Value, String> {
-    let receipt = migrate_ledger(&args.from, &args.to, &args.reason)
-        .map_err(|error| error.to_string())?;
+    let receipt =
+        migrate_ledger(&args.from, &args.to, &args.reason).map_err(|error| error.to_string())?;
     Ok(json!({
         "command": "ledger-migrate",
         "from": args.from,
@@ -1069,7 +1493,9 @@ fn run_trace_import(args: TraceImportArgs) -> Result<Value, String> {
             &fs::read(path).map_err(|error| format!("{}: {error}", path.display()))?,
         )
         .map_err(|error| format!("{}: {error}", path.display()))?,
-        None => snapshot.clone().unwrap_or_else(|| json!({"kind": "unbound"})),
+        None => snapshot
+            .clone()
+            .unwrap_or_else(|| json!({"kind": "unbound"})),
     };
     let locator = load_locator(args.locator.as_ref())?;
     let meta = TraceMeta::new(
@@ -1124,10 +1550,9 @@ fn run_trace_import(args: TraceImportArgs) -> Result<Value, String> {
                 .map_err(|error| format!("{}: {error}", capture_path.display()))?;
             let csv = fs::read_to_string(csv_path)
                 .map_err(|error| format!("{}: {error}", csv_path.display()))?;
-            let timeline = import_tracy_capture(
-                &mut store, &request, &capture, &csv, &locator, &meta,
-            )
-            .map_err(|error| error.to_string())?;
+            let timeline =
+                import_tracy_capture(&mut store, &request, &capture, &csv, &locator, &meta)
+                    .map_err(|error| error.to_string())?;
             let result = json!({
                 "command": "trace-import",
                 "format": "tracy",
@@ -1279,9 +1704,20 @@ mod index_tests {
         );
         let snapshot_id = result["snapshot_id"].as_str().unwrap();
         let store = Store::open(&state).unwrap();
-        let entity_ids = store
-            .entity_ids("project.index.race", snapshot_id)
-            .unwrap();
+        let registered_root = store
+            .active_project_root("project.index.race")
+            .unwrap()
+            .expect("index must register the workspace root for MCP status/review");
+        assert_eq!(
+            registered_root.to_string_lossy().replace('\\', "/"),
+            live.to_string_lossy().replace('\\', "/")
+        );
+        let status = status_report(&store, Some("project.index.race"), Some(&live)).unwrap();
+        assert_eq!(
+            status["projects"][0]["freshness"]["state"], "changed",
+            "the registered root must let status see the concurrent save"
+        );
+        let entity_ids = store.entity_ids("project.index.race", snapshot_id).unwrap();
         assert_eq!(entity_ids.len(), 1);
         let entity = store
             .get_entity("project.index.race", snapshot_id, &entity_ids[0])
@@ -1312,6 +1748,70 @@ mod index_tests {
         assert_eq!(result["analysis"]["removed"], true);
         assert_eq!(result["snapshot_files"], 1);
     }
+
+    #[test]
+    fn clean_workspace_reuses_the_indexed_snapshot() {
+        let dir = tempfile::tempdir().unwrap();
+        let workspace = dir.path().join("repo");
+        fs::create_dir_all(workspace.join("src")).unwrap();
+        fs::write(workspace.join("src/a.py"), "def a():\n    return 1\n").unwrap();
+        let state = dir.path().join("state");
+        let mut runner = |_helper: &PathBuf,
+                          analysis: &std::path::Path,
+                          export: &std::path::Path,
+                          _state: &std::path::Path|
+         -> Result<HelperOutput, String> {
+            let manifest = json!({
+                "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+                "version":"0.2.0","node_count":1,"edge_count":0,"iteration":"real-iterators"
+            });
+            let node = json!({
+                "type":"node","id":1,"node_type":"Function","properties":{
+                    "path": analysis.join("src/a.py").to_string_lossy(),
+                    "name":"a","line_start":1,"line_end":2
+                }
+            });
+            fs::write(export, format!("{manifest}\n{node}\n"))
+                .map_err(|error| format!("helper export: {error}"))?;
+            let summary = json!({
+                "format":"archmeld-export-v1","nodes":1,"edges":0,
+                "files_total":1,"files_parsed":1,"files_skipped":0,
+                "by_language":{"python":1},"parser_errors":{},"elapsed_ms":1,
+                "storage":"in_memory"
+            });
+            Ok(HelperOutput {
+                success: true,
+                status: Some(0),
+                stdout: serde_json::to_vec(&summary).unwrap(),
+                stderr: Vec::new(),
+            })
+        };
+        let args = || IndexArgs {
+            workspace: workspace.clone(),
+            state: state.clone(),
+            project: "project.index.reuse".to_string(),
+            max_files: 500,
+            index_helper: None,
+            run_id: Some("run.index.reuse.1".to_string()),
+        };
+        let first = run_index_with(args(), &dir.path().join("fake-helper.exe"), &mut runner)
+            .expect("index run");
+        let snapshot_id = first["snapshot_id"].as_str().unwrap().to_string();
+
+        let reused = existing_clean_index(&state, "project.index.reuse", &workspace)
+            .unwrap()
+            .expect("a clean workspace should reuse its snapshot");
+        assert_eq!(reused["snapshot_id"], snapshot_id);
+        assert_eq!(reused["index_reuse"], true);
+
+        fs::write(workspace.join("src/a.py"), "def a():\n    return 2\n").unwrap();
+        assert!(
+            existing_clean_index(&state, "project.index.reuse", &workspace)
+                .unwrap()
+                .is_none(),
+            "a dirty workspace must be re-indexed"
+        );
+    }
 }
 
 fn main() -> ExitCode {
@@ -1333,10 +1833,17 @@ fn main() -> ExitCode {
         Commands::TraceImport(args) => run_trace_import(args),
         Commands::LedgerMigrate(args) => run_migrate(args),
         Commands::NumericCheck(args) => run_numeric_check(args),
+        Commands::Init(args) => run_init(args),
+        Commands::Mcp(args) => run_mcp_command(args),
+        Commands::Brief(args) => run_brief(args),
     };
     match result {
         Ok(value) => {
-            println!("{}", value);
+            if let Some(text) = value.as_str() {
+                println!("{text}");
+            } else {
+                println!("{value}");
+            }
             ExitCode::SUCCESS
         }
         Err(error) => {
@@ -1359,7 +1866,9 @@ mod status_tests {
         fs::write(root.join("a.py"), "VALUE = 1\n").unwrap();
         let state = dir.path().join("state");
         let mut store = Store::open(&state).unwrap();
-        store.ensure_project("project.status", "expedition").unwrap();
+        store
+            .ensure_project("project.status", "expedition")
+            .unwrap();
         let captured = capture_snapshot(
             &mut store,
             "project.status",
@@ -1399,10 +1908,7 @@ mod diff_cli_tests {
     use super::*;
     use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
 
-    fn fake_export(
-        analysis: &std::path::Path,
-        export: &std::path::Path,
-    ) -> Result<(), String> {
+    fn fake_export(analysis: &std::path::Path, export: &std::path::Path) -> Result<(), String> {
         let source = fs::read_to_string(analysis.join("src/a.py"))
             .map_err(|error| format!("fake helper read: {error}"))?;
         let name = source
@@ -1443,7 +1949,9 @@ mod diff_cli_tests {
         fs::write(root.join("src/a.py"), "def alpha():\n    return 1\n").unwrap();
         let state = dir.path().join("state");
         let mut store = Store::open(&state).unwrap();
-        store.ensure_project("project.review.cli", "expedition").unwrap();
+        store
+            .ensure_project("project.review.cli", "expedition")
+            .unwrap();
         let captured = capture_snapshot(
             &mut store,
             "project.review.cli",
@@ -1504,7 +2012,10 @@ mod diff_cli_tests {
         assert_eq!(result["verification"]["state"], "not_run");
         let file = &result["files"][0];
         assert_eq!(file["path"], "src/a.py");
-        assert_eq!(file["entities"][0]["qualified_name"], format!("src/a.py::alpha"));
+        assert_eq!(
+            file["entities"][0]["qualified_name"],
+            format!("src/a.py::alpha")
+        );
         assert_eq!(file["entities"][0]["state"], "changed");
     }
 
@@ -1572,12 +2083,18 @@ mod diff_cli_tests {
             .as_array()
             .unwrap()
             .iter()
-            .any(|entity| entity["qualified_name"].as_str().unwrap().ends_with("::alpha")));
+            .any(|entity| entity["qualified_name"]
+                .as_str()
+                .unwrap()
+                .ends_with("::alpha")));
         assert!(refreshed["diff"]["entities"]["added"]["items"]
             .as_array()
             .unwrap()
             .iter()
-            .any(|entity| entity["qualified_name"].as_str().unwrap().ends_with("::beta")));
+            .any(|entity| entity["qualified_name"]
+                .as_str()
+                .unwrap()
+                .ends_with("::beta")));
         let store = Store::open(&state).unwrap();
         assert_eq!(store.snapshot_count("project.refresh").unwrap(), 2);
     }

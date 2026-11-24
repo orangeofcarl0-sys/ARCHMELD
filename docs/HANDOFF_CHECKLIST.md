@@ -70,9 +70,22 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   and refresh exist in CLI, HTTP and MCP with explicit static-review boundaries.
   Residuals: runtime span-parent edges are containment, not confirmed calls;
   the responsibility view needs an explicitly selected candidate architecture;
-  the review executes no tests; and no same-agent comparison experiment was run.
-  Evidence: `docs/reviews/2026-11-02-cross-review-closure.md` and
-  `docs/release-evidence/CROSSREVIEW-2026-11-02.json`.
+  the review executes no tests; and the 2026-11-03 same-agent comparison was
+  run with a ceiling-effect null result (17/17 fields in both arms, 0 info
+  requests, 0 unsupported conclusions; the ARCHMELD arm cost more).
+  Evidence: `docs/reviews/2026-11-02-cross-review-closure.md`,
+  `docs/release-evidence/CROSSREVIEW-2026-11-02.json` and
+  `docs/release-evidence/AGENT-COMPARISON-2026-11-03.json`.
+- M1 agent onboarding is closed for the testing phase: `archmeld init` indexes
+  and registers the workspace root, renders the Claude/Codex MCP command,
+  previews agent rules and runs a real MCP handshake; `archmeld brief` returns
+  a one-screen project/change brief; the read-only MCP surface is eight tools
+  with bridge-side defaults and next actions. Final regression is 211/0/0
+  (75 sections); the clean 4-file first run took 749 ms with a real MCP
+  handshake. Residuals: direct `index` re-runs on identical bytes still need
+  the low-level reuse path; M3 commit supervision and M4 scoped multi-agent
+  authority are not implemented. Evidence:
+  `docs/release-evidence/M1-AGENT-ONBOARDING-2026-11-11.json`, ADR-056.
 - C++ full-SCIP is exercised for the testing phase with pinned WSL
   `scip-clang v0.4.1` and the real `upstream-probes/scip/cpp.scip` import
   (`docs/release-evidence/B030-cpp-scip.json`); references are imported, calls
@@ -81,11 +94,12 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   (`docs/release-evidence/B000-ubuntu-24.04.json`); Windows MSVC remains a
   platform limitation. Remaining release families: Ubuntu GUI/VS Code host,
   macOS, and AT077 upstream upgrade.
-- Public snapshot publication: this sanitized snapshot supersedes the previous
-  public snapshot `91e4d6d` and includes B000 Ubuntu 24.04 evidence. Identifier
-  scans were clean before publication. WSL `scip-clang v0.4.1` is installed
-  only in the user directory (no system package/sudo) and the C++ reference
-  index was imported.
+- Public snapshot publication: `public-snapshot-next` was pushed fast-forward
+  to `origin/main` as `fb94e36` (parent `91e4d6d`), including B000 Ubuntu
+  24.04 evidence. Identifier scans were clean before publication; evidence is
+  `docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-02.json`. WSL `scip-clang
+  v0.4.1` is installed only in the user directory (no system package/sudo) and
+  the C++ reference index was imported.
 
 
 ## 5. Next executable work (do not ask for a new plan each step)

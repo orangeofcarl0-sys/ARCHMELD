@@ -20,12 +20,20 @@ Release binaries:
 RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
 PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
 cargo build --release -p archmeld-api --bins
-RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH LIBCLANG_PATH=<workspace>/_archmeld_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
+RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH LIBCLANG_PATH=<workspace>/_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
 ```
 
 Offline clean-machine flow (installed bundle; no Cargo, model or network):
 
 ```sh
+# One-command onboarding: index, register the workspace root, render MCP
+# configuration and run a real MCP handshake. Source files are not edited
+# unless --write is passed for the AGENTS.md/CLAUDE.md rule block.
+archmeld init --workspace F:/path/to/repo --state F:/state --client claude,codex
+
+# One-screen project/change brief (uses the registered workspace root).
+archmeld brief --state F:/state --project project.local --markdown
+
 archmeld index --workspace F:/path/to/repo --state F:/state --project project.local
 archmeld status --state F:/state --project project.local --workspace F:/path/to/repo
 archmeld review-diff --state F:/state --project project.local --workspace F:/path/to/repo
@@ -33,6 +41,10 @@ archmeld refresh --state F:/state --project project.local --workspace F:/path/to
 archmeld report --state F:/state --project project.local   --snapshot <snapshot_id> --out F:/state/report
 archmeld verify-report --dir F:/state/report
 ```
+
+`archmeld index` also registers the workspace root, so a later `archmeld-mcp`
+can report `status` freshness and run `review` without an HTTP `openProject`
+step.
 
 `status --workspace` and `review-diff` are read-only. The review reports
 per-file line overlap, base/current digests, static relation impact, confidence
@@ -310,7 +322,7 @@ Windows rejects `--unix-socket` explicitly instead of falling back to TCP. Use a
 named pipe there:
 
 ```powershell
-archmeld-serve --state F:/state --named-pipe "\.\piperchmeld" --token <token>
+archmeld-serve --state F:/state --named-pipe "\\.\pipe\archmeld" --token <token>
 ```
 
 The pipe uses the default owner/SYSTEM/administrators DACL plus the bearer
@@ -323,9 +335,13 @@ target/release/archmeld-mcp.exe --state <workspace>/_archmeld_state \
   --project <project_id> --audit <workspace>/_archmeld_temp/mcp-audit.jsonl
 ```
 
-The MCP surface advertises the contract tools but only inspect/query/context/
-source are callable; run/write/apply tools return `permission_denied`. Content
-returned from a repository is `untrusted` data and is never executed.
+The MCP surface advertises only handlers this build can execute:
+`archmeld_status`, `archmeld_brief`, `archmeld_review`, `archmeld_query`,
+`archmeld_context`, `archmeld_source`, `archmeld_inspect` and
+`archmeld_capabilities`. Run/write/apply tools are not exposed and return
+`permission_denied`; the contract's broader grant-only declarations are reported
+by `archmeld_capabilities`. Content returned from a repository is `untrusted`
+data and is never executed.
 
 ## 3. Data locations and safety
 

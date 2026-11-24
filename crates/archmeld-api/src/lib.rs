@@ -68,6 +68,8 @@ pub const CONTRACT_VERSION: &str = "1.0";
 pub const PRODUCT_VERSION: &str = env!("CARGO_PKG_VERSION");
 const MAX_BODY_BYTES: usize = 16 * 1024 * 1024;
 
+pub mod onboard;
+
 #[derive(Clone)]
 pub struct ApiState {
     pub store: Arc<Mutex<Store>>,

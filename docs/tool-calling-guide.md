@@ -1,5 +1,9 @@
 # CodeGraph Tool Calling Guide
 
+> **Inherited upstream documentation.** This guide describes the upstream
+> CodeGraph `codegraph_*` tools, not the ARCHMELD `archmeld_*` surface. For
+> ARCHMELD, use [`docs/agent-rules/`](agent-rules/) and the README quick start.
+
 Reference for calling the CodeGraph MCP tools — how to shape arguments and read results.
 The [README's tool section](../README.md#tools) owns the inventory and the community/pro split; this guide does not repeat the counts.
 Each tool is prefixed with `codegraph_` (e.g., `codegraph_symbol_search`).

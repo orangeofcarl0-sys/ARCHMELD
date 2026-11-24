@@ -190,6 +190,22 @@ def main() -> int:
         )
         index_result = json.loads(index["stdout"].strip().splitlines()[-1])
         assert index_result["ledger"]["entities"] > 0
+        init = check(
+            run([
+                str(prefix / "bin/archmeld.exe"), "init",
+                "--workspace", str(clean_workspace),
+                "--state", str(clean_state),
+                "--project", "project.clean",
+                "--client", "generic",
+            ]),
+            "windows init and MCP handshake",
+        )
+        init_result = json.loads(init["stdout"].strip().splitlines()[-1])
+        assert init_result["health"]["state"] == "ok", init_result
+        assert init_result["health"]["tools"] == 8, init_result
+        assert init_result["health"]["freshness"] == "clean", init_result
+        assert init_result["counts"]["entities"] > 0, init_result
+        assert init_result["source_mutation"] == "none", init_result
         report = check(
             run([
                 str(prefix / "bin/archmeld.exe"), "report",

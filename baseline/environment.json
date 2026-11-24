@@ -22,7 +22,7 @@
     "gcc": "gcc (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
     "gxx": "g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
     "perl": "This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-msys-thread-multi",
-    "libclang_path": "F:\\Codex_Work_Space\\_archmeld_tools\\pylibclang\\clang\native",
+    "libclang_path": "<workspace>\\_archmeld_tools\\pylibclang\\clang\native",
     "libclang": "File \"<string>\", line 1"
   },
   "absent": {

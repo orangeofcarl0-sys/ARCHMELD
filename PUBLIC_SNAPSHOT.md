@@ -1,8 +1,16 @@
 # Public snapshot
 
 This repository is a sanitized public snapshot of ARCHMELD, exported from a
-private development repository on 2026-11-02. It is a single snapshot commit,
+private development repository on 2026-11-24. It is a single snapshot commit,
 not the private development history.
+
+This snapshot includes the M1 agent-onboarding slice:
+
+- `archmeld init` / `archmeld mcp install` / `archmeld brief`;
+- workspace-root registration so MCP `status` and `review` work on a first run;
+- the read-only `archmeld_brief` MCP tool (8 implemented, read-only tools);
+- ARCHMELD agent rules and ADR-056;
+- the 2026-11-03 same-agent comparison evidence and the M1 first-run evidence.
 
 Redactions applied to this snapshot:
 
@@ -10,6 +18,9 @@ Redactions applied to this snapshot:
 - local user paths, workspace paths and the local machine hostname;
 - the identity and aggregate values of the private recorded dataset used for
   B029 evidence. The dataset itself and its derived tables are not included.
+
+Local paths in the retained evidence are replaced with `<repo>`, `<workspace>`
+and `<user>` placeholders.
 
 Other intentional differences:
 

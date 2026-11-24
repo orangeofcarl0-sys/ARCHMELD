@@ -90,6 +90,7 @@ pub fn read_source(store: &Store, raw: &Value) -> Result<Value> {
         .map_err(|_| CoreError::invalid("anchor range splits a UTF-8 character".to_string()))?;
     Ok(json!({
         "snapshot_id": request.snapshot_id,
+        "entity_id": request.entity_id,
         "anchor": anchor,
         "text": excerpt,
         "redacted": false,

@@ -1,0 +1,16 @@
+{
+  "localizations": [
+    {"id": "Q1", "file": "src/late.py", "line": 242, "symbol": "late_target", "symbol_line": 241},
+    {"id": "Q2", "expression": "value * 2", "line": 243},
+    {"id": "Q3", "caller": "run_report", "file": "src/report.py", "line": 4},
+    {"id": "Q4", "file": "src/change.py", "line": 2, "symbol": "apply_discount", "old": "value * 0.9", "new": "value * 0.8", "caller": "checkout", "caller_file": "src/checkout.py", "caller_line": 4}
+  ],
+  "conclusions": [
+    {"id": "C1", "statement": "The string 'E_UNIQUE_7F3' appears twice in src/late.py: once in a comment at line 240 outside the function, and once in the assignment \"marker = 'E_UNIQUE_7F3'\" at line 242 inside late_target, whose def is at line 241.", "evidence": [{"kind": "file_line", "path": "src/late.py", "line": 240}, {"kind": "file_line", "path": "src/late.py", "line": 242}]},
+    {"id": "C2", "statement": "late_target binds \"adjusted = value * 2\" at line 243 and then returns it via \"return adjusted\" at line 244; the computation producing the returned value is therefore value * 2 evaluated on line 243.", "evidence": [{"kind": "file_line", "path": "src/late.py", "line": 243}, {"kind": "file_line", "path": "src/late.py", "line": 244}]},
+    {"id": "C3", "statement": "ARCHMELD records the run_report -> compute_metric edge as a static_call_candidate with resolution 'candidate' (syntax-only), not a resolved call; the only textual call site of compute_metric is src/report.py line 4.", "evidence": [{"kind": "file_line", "path": "src/report.py", "line": 4}, {"kind": "file_line", "path": "src/metrics.py", "line": 1}]},
+    {"id": "C4", "statement": "The uncommitted change replaces the whole line at src/change.py line 2; the full old line text was \"    return value * 0.9\" and the full new line text is \"    return value * 0.8\", with apply_discount defined at line 1.", "evidence": [{"kind": "file_line", "path": "src/change.py", "line": 1}, {"kind": "file_line", "path": "src/change.py", "line": 2}]}
+  ],
+  "info_requests": [],
+  "uncertainties": []
+}

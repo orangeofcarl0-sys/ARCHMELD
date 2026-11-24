@@ -11,7 +11,7 @@
     "rustc": "1.94.1 (e408947bf 2026-03-25)",
     "cargo": "1.94.1 (29ea6fb6a 2026-03-24)",
     "python": "3.11.9",
-    "temp": "<home>/AppData/Local/Temp (writable)",
+    "temp": "C:/Users/<user>/AppData/Local/Temp (writable)",
     "note": "Python 3.14 and the non-writable system TEMP produce unrelated asyncio/JFR/gopls failures; the final run uses 3.11.9 and a writable TEMP/TMP."
   },
   "regression": {
@@ -164,6 +164,13 @@
       "no comparative agent benchmark",
       "no semantic correctness proof"
     ]
+  },
+  "later_closure": {
+    "date": "2026-11-03",
+    "item": "no comparative agent benchmark",
+    "status": "executed_test_phase_null_result",
+    "evidence": "docs/release-evidence/AGENT-COMPARISON-2026-11-03.json",
+    "summary": "A single paired same-agent run scored 17/17 localization fields and 4/4 tasks in both arms, with 0 info requests and 0 unsupported conclusions; the ARCHMELD arm cost more tool calls, tokens and time. The fixture hit a ceiling, so this closes the 'not run' gap without claiming an advantage."
   },
   "limitations": [
     "This is a project-test-phase closure, not a release-level or R1 claim.",

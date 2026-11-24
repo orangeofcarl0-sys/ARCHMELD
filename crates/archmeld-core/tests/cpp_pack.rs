@@ -18,7 +18,7 @@ const PROJECT: &str = "project.cpp";
 
 fn clangd() -> Option<PathBuf> {
     let path = std::env::var("ARCHMELD_CLANGD")
-        .unwrap_or_else(|_| "<workspace>/_archmeld_tools/llvm18/bin/clangd.exe".into());
+        .unwrap_or_else(|_| "<workspace>/_tools/llvm18/bin/clangd.exe".into());
     let path = PathBuf::from(path);
     path.is_file().then_some(path)
 }

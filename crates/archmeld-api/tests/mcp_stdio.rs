@@ -196,7 +196,7 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
 
     let list = server.send(&json!({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}));
     let tools = list["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 7);
+    assert_eq!(tools.len(), 8);
     let names: Vec<&str> = tools
         .iter()
         .filter_map(|tool| tool["name"].as_str())
@@ -209,6 +209,7 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
             "archmeld_context",
             "archmeld_source",
             "archmeld_status",
+            "archmeld_brief",
             "archmeld_review",
             "archmeld_capabilities",
         ]
@@ -274,6 +275,39 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
     assert_eq!(review["state"], "clean");
     assert_eq!(review["verification"]["state"], "not_run");
     assert_eq!(review["source_mutation"], "none");
+
+    let brief = server.call(13, "archmeld_brief", json!({"recipe": "project"}));
+    assert_eq!(brief["result"]["isError"], false, "{brief}");
+    let brief = text_of(&brief);
+    assert_eq!(brief["level"], "module");
+    assert!(brief["summary"].is_string());
+    assert!(brief["next_actions"].is_array());
+    assert_eq!(brief["counts"]["findings"], 0);
+
+    let human = server.call(
+        14,
+        "archmeld_brief",
+        json!({"recipe": "project", "format": "human"}),
+    );
+    assert_eq!(human["result"]["isError"], false, "{human}");
+    let human = text_of(&human);
+    assert!(human["human_text"]
+        .as_str()
+        .unwrap_or_default()
+        .contains("# ARCHMELD brief"));
+
+    let query_defaults = server.call(
+        15,
+        "archmeld_query",
+        json!({"kind": "symbols", "query": "a1"}),
+    );
+    assert_eq!(
+        query_defaults["result"]["isError"], false,
+        "{query_defaults}"
+    );
+    let query_defaults = text_of(&query_defaults);
+    assert_eq!(query_defaults["entities"].as_array().unwrap().len(), 1);
+    assert!(query_defaults["agent_summary"].is_string());
 
     let query = server.call(
         3,

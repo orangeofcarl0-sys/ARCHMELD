@@ -2,7 +2,7 @@
   "build_verification": {
     "argv": {
       "baseline_build": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<workspace>/_tools/go/go/bin/go.exe",
         "build",
         "-o",
         "baseline.exe",
@@ -12,12 +12,12 @@
         "C:\\Users\\<user>\\AppData\\Local\\Temp\\.tmpSb1Sln\\build\\renamed.exe"
       ],
       "go_test": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<workspace>/_tools/go/go/bin/go.exe",
         "test",
         "./..."
       ],
       "renamed_build": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<workspace>/_tools/go/go/bin/go.exe",
         "build",
         "-o",
         "renamed.exe",

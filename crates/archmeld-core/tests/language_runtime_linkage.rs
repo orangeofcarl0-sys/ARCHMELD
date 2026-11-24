@@ -24,7 +24,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "<workspace>/_archmeld_tools";
+const TOOLS: &str = "<workspace>/_tools";
 const TEMP: &str = "<workspace>/_archmeld_temp";
 const PROJECT: &str = "project.b030.runtime";
 
@@ -907,7 +907,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
             ("DOTNET_ROOT".to_string(), format!("{TOOLS}/dotnet8")),
             (
                 "NUGET_PACKAGES".to_string(),
-                "<home>/.nuget/packages".to_string(),
+                "C:/Users/<user>/.nuget/packages".to_string(),
             ),
             ("DOTNET_CLI_TELEMETRY_OPTOUT".to_string(), "1".to_string()),
             ("DOTNET_NOLOGO".to_string(), "1".to_string()),
@@ -916,7 +916,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
                 fixture.root.to_string_lossy().into_owned(),
             ),
             ("HOMEDRIVE".to_string(), "C:".to_string()),
-            ("HOMEPATH".to_string(), "<home>".to_string()),
+            ("HOMEPATH".to_string(), "C:/Users/<user>".to_string()),
             ("ProgramFiles".to_string(), "C:/Program Files".to_string()),
             (
                 "ProgramFiles(x86)".to_string(),

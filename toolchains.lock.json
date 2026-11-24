@@ -188,7 +188,7 @@
     {
       "name": "libclang",
       "status": "present",
-      "path": "F:\\Codex_Work_Space\\_archmeld_tools\\pylibclang\\clang\\native\\libclang.dll",
+      "path": "<workspace>\\_archmeld_tools\\pylibclang\\clang\\native\\libclang.dll",
       "version": "18.1.1 (PyPI libclang bundle)",
       "sha256": "b13ec96d9a036d6c6c36dd09e00415ead7acc7fcfd40e721bf33ea86b3490f9d",
       "source": "https://pypi.org/project/libclang/",

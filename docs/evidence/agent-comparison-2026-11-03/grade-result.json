@@ -1,0 +1,262 @@
+{
+  "schema_version": "1.0",
+  "experiment": "same-agent with/without ARCHMELD, 2026-11-03",
+  "ground_truth": {
+    "Q1": {
+      "file": "src/late.py",
+      "line": 242,
+      "symbol": "late_target",
+      "symbol_line": 241
+    },
+    "Q2": {
+      "expression": "value * 2",
+      "line": 243
+    },
+    "Q3": {
+      "caller": "run_report",
+      "file": "src/report.py",
+      "line": 4
+    },
+    "Q4": {
+      "file": "src/change.py",
+      "line": 2,
+      "symbol": "apply_discount",
+      "old": "value * 0.9",
+      "new": "value * 0.8",
+      "caller": "checkout",
+      "caller_file": "src/checkout.py",
+      "caller_line": 4
+    }
+  },
+  "arms": {
+    "A": {
+      "fields_correct": 17,
+      "fields_total": 17,
+      "field_accuracy": 1.0,
+      "tasks_all_fields_correct": 4,
+      "tasks_total": 4,
+      "info_requests": 0,
+      "uncertainties": 1,
+      "conclusions": 4,
+      "evidence_refs_checked": 12,
+      "evidence_ref_issues": [],
+      "detail": {
+        "Q1": {
+          "file": {
+            "expected": "src/late.py",
+            "actual": "src/late.py",
+            "correct": true
+          },
+          "line": {
+            "expected": 242,
+            "actual": 242,
+            "correct": true
+          },
+          "symbol": {
+            "expected": "late_target",
+            "actual": "late_target",
+            "correct": true
+          },
+          "symbol_line": {
+            "expected": 241,
+            "actual": 241,
+            "correct": true
+          }
+        },
+        "Q2": {
+          "expression": {
+            "expected": "value * 2",
+            "actual": "value * 2",
+            "correct": true
+          },
+          "line": {
+            "expected": 243,
+            "actual": 243,
+            "correct": true
+          }
+        },
+        "Q3": {
+          "caller": {
+            "expected": "run_report",
+            "actual": "run_report",
+            "correct": true
+          },
+          "file": {
+            "expected": "src/report.py",
+            "actual": "src/report.py",
+            "correct": true
+          },
+          "line": {
+            "expected": 4,
+            "actual": 4,
+            "correct": true
+          }
+        },
+        "Q4": {
+          "file": {
+            "expected": "src/change.py",
+            "actual": "src/change.py",
+            "correct": true
+          },
+          "line": {
+            "expected": 2,
+            "actual": 2,
+            "correct": true
+          },
+          "symbol": {
+            "expected": "apply_discount",
+            "actual": "apply_discount",
+            "correct": true
+          },
+          "old": {
+            "expected": "value * 0.9",
+            "actual": "return value * 0.9",
+            "correct": true
+          },
+          "new": {
+            "expected": "value * 0.8",
+            "actual": "return value * 0.8",
+            "correct": true
+          },
+          "caller": {
+            "expected": "checkout",
+            "actual": "checkout",
+            "correct": true
+          },
+          "caller_file": {
+            "expected": "src/checkout.py",
+            "actual": "src/checkout.py",
+            "correct": true
+          },
+          "caller_line": {
+            "expected": 4,
+            "actual": 4,
+            "correct": true
+          }
+        }
+      }
+    },
+    "B": {
+      "fields_correct": 17,
+      "fields_total": 17,
+      "field_accuracy": 1.0,
+      "tasks_all_fields_correct": 4,
+      "tasks_total": 4,
+      "info_requests": 0,
+      "uncertainties": 0,
+      "conclusions": 4,
+      "evidence_refs_checked": 8,
+      "evidence_ref_issues": [],
+      "detail": {
+        "Q1": {
+          "file": {
+            "expected": "src/late.py",
+            "actual": "src/late.py",
+            "correct": true
+          },
+          "line": {
+            "expected": 242,
+            "actual": 242,
+            "correct": true
+          },
+          "symbol": {
+            "expected": "late_target",
+            "actual": "late_target",
+            "correct": true
+          },
+          "symbol_line": {
+            "expected": 241,
+            "actual": 241,
+            "correct": true
+          }
+        },
+        "Q2": {
+          "expression": {
+            "expected": "value * 2",
+            "actual": "value * 2",
+            "correct": true
+          },
+          "line": {
+            "expected": 243,
+            "actual": 243,
+            "correct": true
+          }
+        },
+        "Q3": {
+          "caller": {
+            "expected": "run_report",
+            "actual": "run_report",
+            "correct": true
+          },
+          "file": {
+            "expected": "src/report.py",
+            "actual": "src/report.py",
+            "correct": true
+          },
+          "line": {
+            "expected": 4,
+            "actual": 4,
+            "correct": true
+          }
+        },
+        "Q4": {
+          "file": {
+            "expected": "src/change.py",
+            "actual": "src/change.py",
+            "correct": true
+          },
+          "line": {
+            "expected": 2,
+            "actual": 2,
+            "correct": true
+          },
+          "symbol": {
+            "expected": "apply_discount",
+            "actual": "apply_discount",
+            "correct": true
+          },
+          "old": {
+            "expected": "value * 0.9",
+            "actual": "value * 0.9",
+            "correct": true
+          },
+          "new": {
+            "expected": "value * 0.8",
+            "actual": "value * 0.8",
+            "correct": true
+          },
+          "caller": {
+            "expected": "checkout",
+            "actual": "checkout",
+            "correct": true
+          },
+          "caller_file": {
+            "expected": "src/checkout.py",
+            "actual": "src/checkout.py",
+            "correct": true
+          },
+          "caller_line": {
+            "expected": 4,
+            "actual": 4,
+            "correct": true
+          }
+        }
+      }
+    }
+  },
+  "delta_b_minus_a": {
+    "fields_correct": 0,
+    "field_accuracy": 0.0,
+    "info_requests": 0,
+    "uncertainties": -1
+  },
+  "run": {
+    "cwd": "<repo>",
+    "argv": [
+      "docs/evidence/agent-comparison-2026-11-03/grade.py"
+    ],
+    "python": "3.14.7",
+    "grader_sha256": "sha256:17a5e9c4ddd23ac46e0403ba260bcfe6d11d5c2203f4d026ca75c5eb12e3a686",
+    "exit_code": 0
+  }
+}

@@ -118,7 +118,7 @@
     "csharp": {
       "build": {
         "argv": [
-          "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
+          "<workspace>/_tools/dotnet8/dotnet.exe",
           "build",
           "-nologo",
           "-v:q"
@@ -168,7 +168,7 @@
       },
       "runtime": {
         "argv": [
-          "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
+          "<workspace>/_tools/dotnet8/dotnet.exe",
           "bin/Debug/net8.0/LangPack.dll"
         ],
         "cwd": "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\csharp",
@@ -205,7 +205,7 @@
     "go": {
       "build": {
         "argv": [
-          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_tools/go/go/bin/go.exe",
           "build",
           "./..."
         ],
@@ -254,7 +254,7 @@
       },
       "runtime": {
         "argv": [
-          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_tools/go/go/bin/go.exe",
           "run",
           "."
         ],
@@ -290,7 +290,7 @@
       },
       "test": {
         "argv": [
-          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+          "<workspace>/_tools/go/go/bin/go.exe",
           "test",
           "./..."
         ],
@@ -317,7 +317,7 @@
     "java": {
       "build": {
         "argv": [
-          "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+          "<workspace>/_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
           "-d",
           "out",
           "<workspace>/_archmeld_temp\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\App.java",
@@ -373,7 +373,7 @@
       },
       "runtime": {
         "argv": [
-          "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
+          "<workspace>/_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
           "-cp",
           "out",
           "pkg.Main"
@@ -554,7 +554,7 @@
         "build": {
           "argv": [
             "node",
-            "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+            "<workspace>/_tools/lang-servers/node_modules/typescript/bin/tsc",
             "--noEmit",
             "-p",
             "."
@@ -581,7 +581,7 @@
         "emit": {
           "argv": [
             "node",
-            "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+            "<workspace>/_tools/lang-servers/node_modules/typescript/bin/tsc",
             "-p",
             ".",
             "--outDir",
@@ -902,7 +902,7 @@
   "tool_versions": {
     "clang++": {
       "argv": [
-        "<workspace>/_archmeld_tools/llvm18/bin/clang++.exe",
+        "<workspace>/_tools/llvm18/bin/clang++.exe",
         "--version"
       ],
       "exit_code": 0,
@@ -910,7 +910,7 @@
     },
     "dotnet": {
       "argv": [
-        "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
+        "<workspace>/_tools/dotnet8/dotnet.exe",
         "--version"
       ],
       "exit_code": 0,
@@ -918,7 +918,7 @@
     },
     "go": {
       "argv": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<workspace>/_tools/go/go/bin/go.exe",
         "version"
       ],
       "exit_code": 0,
@@ -926,7 +926,7 @@
     },
     "javac": {
       "argv": [
-        "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+        "<workspace>/_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
         "-version"
       ],
       "exit_code": 0,
@@ -959,7 +959,7 @@
     "typescript": {
       "argv": [
         "node",
-        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+        "<workspace>/_tools/lang-servers/node_modules/typescript/bin/tsc",
         "--version"
       ],
       "exit_code": 0,

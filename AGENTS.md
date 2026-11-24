@@ -22,7 +22,7 @@
 本机没有 MSVC 链接器与 Windows SDK，使用上游固定的 Rust 1.94.1 的 GNU host：
 
 ```sh
-export LIBCLANG_PATH='<workspace>\_archmeld_tools\pylibclang\clang\native'
+export LIBCLANG_PATH='<workspace>/_tools\pylibclang\clang\native'
 cargo +1.94.1-x86_64-pc-windows-gnu <command> --locked
 ```
 

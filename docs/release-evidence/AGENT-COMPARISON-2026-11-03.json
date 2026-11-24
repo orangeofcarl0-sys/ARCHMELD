@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "AGENT-COMPARISON-2026-11-03",
+  "title": "Same-agent localization with and without ARCHMELD",
+  "phase": "project_testing",
+  "date": "2026-11-03",
+  "status": "completed_test_phase",
+  "question": "Does the same agent localize and explain a small repository more accurately, request less human-supplied information, or make fewer unsupported conclusions when ARCHMELD is available than when it is not?",
+  "protocol": {
+    "design": "One paired run. Both arms received the identical task text and JSON output schema; only the permitted evidence tooling differed. Both were read-only, and no human was available during the run, so explicit unresolved information items (info_requests) are the operational proxy for human supplements.",
+    "agent": {
+      "type": "general-purpose subagent",
+      "model": "same session model for both arms (opencode/deepseek-v4.1-flash)",
+      "launch": "two subagents launched in parallel by the host Agent tool"
+    },
+    "fixture": {
+      "repo": "<workspace>/repo",
+      "git_head": "df2a5d13e7a67c9e460517b7f6a859bc909d16d2",
+      "tracked_files": 7,
+      "tracked_python_files": 6,
+      "project_id": "project.agentbench",
+      "snapshot_id": "sha256:5c78e50c0dda756e52e1a6edc0ec55cac5e4576c6ccd479995fe9049a7728b21",
+      "ledger_entities": 15,
+      "ledger_relations": 15,
+      "uncommitted_change": "src/change.py line 2, apply_discount, return value * 0.9 -> value * 0.8"
+    },
+    "task": {
+      "questions": [
+        "Q1: locate the assignment of 'E_UNIQUE_7F3', its line, enclosing function and def line",
+        "Q2: report late_target's returned computation expression and line",
+        "Q3: find compute_metric's caller with file and call line",
+        "Q4: identify the single uncommitted change, old/new expression, enclosing function, and its caller with file and call line"
+      ],
+      "checked_fields": 17,
+      "response_format": "strict JSON with localizations, conclusions + evidence refs, info_requests and uncertainties"
+    },
+    "arms": {
+      "A_no_archmeld": {
+        "permitted": "read-only rg/grep/sed/awk/find/git/python and file reads inside the repository",
+        "prohibited": "ARCHMELD binaries, MCP, loopback HTTP, and the state directory"
+      },
+      "B_with_archmeld": {
+        "permitted": "ARCHMELD HTTP status/review/query/source as primary evidence, plus read-only file inspection for confirmation",
+        "endpoint": "http://127.0.0.1:6778 (loopback, --no-auth, no token issued or logged)",
+        "workspace_handle": "ws.1f4df45471cbbd9f",
+        "prohibited": "direct reads or writes of the state directory"
+      }
+    }
+  },
+  "environment": {
+    "os": "Windows 11 10.0.26200 x64",
+    "shell": "Git Bash",
+    "cwd_for_grading": "<repo>",
+    "archmeld_head": "b5bb8a44a92db873114599093684e1d9b53e4239",
+    "server_binary": "target/debug/archmeld-serve.exe",
+    "server_binary_sha256": "sha256:2da6615873b862776efc9f9d80f47bf7ffbf446f58f9d7f27b1e3a7126641c8d",
+    "state_dir": "<workspace>/state",
+    "state_db_sha256": "sha256:23e68696f7c1250870a1df949da70ca88d4f7de6af5bbe89c8ef8907d41d01b8",
+    "fixture_base_change_sha256": "sha256:f0103cfe7d4b1b4e4e61eca5986394926f4121f331aa489a3419b78d18ca7531",
+    "fixture_live_change_sha256": "sha256:538bcbb739f07002809bf5d9c12737a44711fd35ccc6c658c71425601d94ade9",
+    "fixture_file_sha256": {
+      ".gitignore": "sha256:01d8d0360f02a0c00e236a4eb2a1d8bdf83377acf442eaafad7a136bf14d6bb0",
+      "main.py": "sha256:db113dead978e05c8bb7476c266833fc5ac73f3d89baf2a16c4c4b994248b1c1",
+      "src/change.py": "sha256:538bcbb739f07002809bf5d9c12737a44711fd35ccc6c658c71425601d94ade9",
+      "src/checkout.py": "sha256:1444cb05980fff5246d2c49682fcf93565c5ebc286eea835c2df203a10ae36a7",
+      "src/late.py": "sha256:16cdadf8841eeccd35486825d9d3c0234d2e200053b038a79c943176effcb6a5",
+      "src/metrics.py": "sha256:e924c7be9d1024a6f5e50825dd1745053b90a8bb25803e50fc9383ce80a55fe6",
+      "src/report.py": "sha256:6d11a9ee72d2b7fee8181ea277c6f7660e02bf8b367a9a4c4542e976945f5a6d"
+    },
+    "tool_versions": {
+      "git": "2.53.0.windows.2",
+      "ripgrep": "14.1.1",
+      "python": "3.14.7",
+      "curl": "8.18.0",
+      "archmeld": "0.1.0"
+    },
+    "server_log": {
+      "path": "<workspace>/serve.log",
+      "sha256": "sha256:d5dbd3e5dfeac400d0481235b06106e0d35bad259f40f2e0d61c7aa97778c7f9",
+      "contains_token": false,
+      "note": "The only line is the announcement with token:null and the workspace handle."
+    }
+  },
+  "api_preflight": {
+    "status": "GET /v1/status returned the project, freshness and 15/15 counts",
+    "review_workspace_diff": "POST /v1/reviews/workspace-diff returned the affected src/change.py entity and the static_call_candidate edge from checkout to apply_discount",
+    "source_search": "POST /v1/query kind=source for E_UNIQUE_7F3 returned exactly 2 matches: src/late.py line 240 (comment) and line 242 (assignment), with the entity id attached to line 242",
+    "impact": "POST /v1/query kind=impact from compute_metric returned run_report via a static_call_candidate edge with resolution=candidate, not a resolved call"
+  },
+  "results": {
+    "arm_a_no_archmeld": {
+      "localizations_correct": 17,
+      "localizations_total": 17,
+      "field_accuracy": 1.0,
+      "tasks_all_fields_correct": 4,
+      "tasks_total": 4,
+      "info_requests": 0,
+      "uncertainties": 1,
+      "conclusions": 4,
+      "unsupported_conclusions": 0,
+      "evidence_refs_checked": 12,
+      "evidence_ref_issues": 0,
+      "subagent_tool_uses": 9,
+      "subagent_tokens": 140449,
+      "subagent_duration_ms": 38996
+    },
+    "arm_b_with_archmeld": {
+      "localizations_correct": 17,
+      "localizations_total": 17,
+      "field_accuracy": 1.0,
+      "tasks_all_fields_correct": 4,
+      "tasks_total": 4,
+      "info_requests": 0,
+      "uncertainties": 0,
+      "conclusions": 4,
+      "unsupported_conclusions": 0,
+      "evidence_refs_checked": 8,
+      "evidence_ref_issues": 0,
+      "subagent_tool_uses": 14,
+      "subagent_tokens": 229400,
+      "subagent_duration_ms": 66678
+    },
+    "difference_b_minus_a": {
+      "localizations_correct": 0,
+      "field_accuracy": 0.0,
+      "tasks_all_fields_correct": 0,
+      "info_requests": 0,
+      "unsupported_conclusions": 0,
+      "uncertainties": -1,
+      "subagent_tool_uses": 5,
+      "subagent_tokens": 88951,
+      "subagent_duration_ms": 27682
+    }
+  },
+  "manual_grading": {
+    "method": "Each conclusion was checked against the cited file lines and independently against the preflight API responses. A conclusion is unsupported if its cited evidence is absent, out of range, or does not establish the stated claim.",
+    "arm_a": {
+      "C1": {"supported": true, "basis": "src/late.py lines 240/241/242; rg confirms exactly two occurrences"},
+      "C2": {"supported": true, "basis": "src/late.py lines 242/243/244; marker is assigned but not read by the return"},
+      "C3": {"supported": true, "basis": "src/metrics.py line 1, src/report.py lines 1 and 4; rg confirms one call site"},
+      "C4": {"supported": true, "basis": "git diff shows one hunk at src/change.py line 2; src/checkout.py lines 1 and 4 show the sole caller"}
+    },
+    "arm_b": {
+      "C1": {"supported": true, "basis": "src/late.py lines 240/242; matches the API source search"},
+      "C2": {"supported": true, "basis": "src/late.py lines 243/244; matches the snapshot bytes"},
+      "C3": {"supported": true, "basis": "src/report.py line 4 and src/metrics.py line 1; the candidate-vs-resolved distinction matches the API impact response"},
+      "C4": {"supported": true, "basis": "src/change.py lines 1/2; live bytes and base snapshot agree with the workspace-diff response"}
+    },
+    "info_request_grading": {
+      "arm_a": "0 requests; nothing required human-supplied information",
+      "arm_b": "0 requests; nothing required human-supplied information",
+      "human_supplements_observed": 0
+    }
+  },
+  "verdict": {
+    "experiment_executed": true,
+    "summary": "Both arms reached 17/17 localization fields and 4/4 fully correct tasks, made 0 info requests, and had 0 unsupported conclusions. No accuracy or information-request difference was observed on this fixture.",
+    "qualitative_difference": "The ARCHMELD arm explicitly labeled the run_report -> compute_metric edge as a static_call_candidate with resolution=candidate rather than a resolved call. The baseline arm reported the source-level call correctly but did not carry that resolution label. This is a precision difference, not an accuracy difference.",
+    "cost": "The ARCHMELD arm used 14 versus 9 tool calls (+5), 229,400 versus 140,449 tokens (+63%), and 66.7 versus 39.0 seconds (+71%) on this 7-file fixture.",
+    "claim_boundary": "This is a single paired run on a small, deterministic fixture with a ceiling effect. It closes the previously recorded 'no same-agent comparison experiment was run' gap and records a null accuracy result; it is not a statistically powered benchmark and must not be used to claim an accuracy or productivity advantage for ARCHMELD."
+  },
+  "artifacts": {
+    "arm_a_output": {
+      "path": "docs/evidence/agent-comparison-2026-11-03/arm-a.json",
+      "sha256": "sha256:98e57f3096fe4888ac4655632f66ac7e01aa7b4a6a64819404ca105ce3ce515b"
+    },
+    "arm_b_output": {
+      "path": "docs/evidence/agent-comparison-2026-11-03/arm-b.json",
+      "sha256": "sha256:4bb71d0e01f6907ac717a8bac1830b1191afa9312cbd50546507de69bdbf6555"
+    },
+    "grader": {
+      "path": "docs/evidence/agent-comparison-2026-11-03/grade.py",
+      "sha256": "sha256:17a5e9c4ddd23ac46e0403ba260bcfe6d11d5c2203f4d026ca75c5eb12e3a686"
+    },
+    "grade_result": {
+      "path": "docs/evidence/agent-comparison-2026-11-03/grade-result.json",
+      "sha256": "sha256:6224e843512c95389512616d073f0febea2ff09e88c228c224662979b41f98ef"
+    },
+    "prompts": {
+      "path": "docs/evidence/agent-comparison-2026-11-03/prompts.md",
+      "sha256": "sha256:c206a7b741315b54f16ad5b098f0910ef2f1a6a75c525d6fd605d81e67ed10a7"
+    },
+    "fixture_archive": {
+      "path": "docs/evidence/agent-comparison-2026-11-03/fixture",
+      "live_patch_sha256": "sha256:a6b8002569525354bdf4320e8b2f7d6ac4d39219cbc6c9d40499aa945335449c",
+      "base_change_sha256": "sha256:f0103cfe7d4b1b4e4e61eca5986394926f4121f331aa489a3419b78d18ca7531",
+      "note": "Copies of the 7-file working tree plus base/change.py and live.patch; file digests match the origin repository."
+    }
+  },
+  "commands": [
+    {
+      "purpose": "start local evidence API",
+      "cwd": "<repo>",
+      "argv": ["./target/debug/archmeld-serve.exe", "--state", "<workspace>/state", "--allow-workspace", "<workspace>/repo", "--no-auth", "--port", "0"],
+      "exit_code": null,
+      "state": "background process; announcement captured, still serving during the run",
+      "endpoint": "http://127.0.0.1:6778"
+    },
+    {
+      "purpose": "verify status, workspace diff, source search and impact queries",
+      "cwd": "<repo>",
+      "argv": ["curl", "-s", "... http://127.0.0.1:6778/v1/{status,reviews/workspace-diff,query}"],
+      "exit_code": 0,
+      "note": "four loopback requests; responses are summarized under api_preflight"
+    },
+    {
+      "purpose": "mechanically grade both outputs",
+      "cwd": "<repo>",
+      "argv": ["py", "docs/evidence/agent-comparison-2026-11-03/grade.py"],
+      "exit_code": 0,
+      "stdout_sha256": "sha256:6224e843512c95389512616d073f0febea2ff09e88c228c224662979b41f98ef"
+    },
+    {
+      "purpose": "run the two same-model agents",
+      "cwd": "host Agent tool",
+      "argv": ["general-purpose subagent A", "general-purpose subagent B"],
+      "exit_code": 0,
+      "note": "identical task text and schema; only the tool-condition paragraph differed"
+    }
+  ],
+  "limitations": [
+    "Single paired run; no repeated trials or confidence interval.",
+    "Seven-file fixture with a deterministic answer; both arms hit the 17/17 ceiling, so the experiment cannot distinguish accuracy on harder repositories.",
+    "Agent tool-use counts, token counts and durations are host-reported usage, not an independent shell audit; final JSON outputs were machine-parsed and their evidence references were range-checked.",
+    "The ARCHMELD arm's advantage in resolution labeling is qualitative and was not separately scored as a localization field.",
+    "No human was present; info_requests is a proxy for human information supplements, not a count of actual human interventions.",
+    "The live src/change.py edit was made by the experimenter before the run; the agents made no repository changes."
+  ],
+  "reproduction": {
+    "fixture": "Apply docs/evidence/agent-comparison-2026-11-03/fixture/live.patch to the archived fixture, or use the archived working tree directly.",
+    "index": "The original index used the packaged archmeld-index helper over the snapshot; the project/snapshot ids, manifest digest and file digests are recorded above.",
+    "serve": "target/debug/archmeld-serve.exe --state <state> --allow-workspace <fixture> --no-auth --port 0",
+    "preflight": "Run the four loopback requests summarized under api_preflight; the source search must return exactly lines 240 and 242.",
+    "agents": "Send the common block in prompts.md plus the matching TOOL CONDITION paragraph to two general-purpose subagents in parallel, then save both JSON outputs.",
+    "grade": "py docs/evidence/agent-comparison-2026-11-03/grade.py"
+  }
+}

@@ -59,7 +59,7 @@
     },
     {
       "name": "archmeld_query",
-      "description": "Search symbols/text or query bounded neighbors, paths and impact. Relations include basis and evidence.",
+      "description": "Use when you need symbols, callers, dependencies or a bounded path/impact traversal. Results carry basis, resolution and evidence; candidate edges are not resolved calls.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -78,18 +78,21 @@
               "neighbors",
               "path",
               "impact"
-            ]
+            ],
+            "default": "symbols"
           },
           "query": {
             "type": "string",
-            "minLength": 0
+            "minLength": 0,
+            "default": ""
           },
           "entity_ids": {
             "type": "array",
             "items": {
               "$ref": "#/$defs/Id"
             },
-            "minItems": 0
+            "minItems": 0,
+            "default": []
           },
           "relation_kinds": {
             "type": "array",
@@ -116,17 +119,20 @@
                 "communicates_with"
               ]
             },
-            "minItems": 0
+            "minItems": 0,
+            "default": []
           },
           "max_nodes": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 2000
+            "maximum": 2000,
+            "default": 100
           },
           "max_depth": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 8
+            "maximum": 8,
+            "default": 1
           },
           "cursor": {
             "anyOf": [
@@ -137,20 +143,11 @@
               {
                 "type": "null"
               }
-            ]
+            ],
+            "default": null
           }
         },
-        "required": [
-          "project_id",
-          "snapshot_id",
-          "kind",
-          "query",
-          "entity_ids",
-          "relation_kinds",
-          "max_nodes",
-          "max_depth",
-          "cursor"
-        ],
+        "required": [],
         "additionalProperties": false,
         "$defs": {
           "Digest": {
@@ -178,7 +175,7 @@
     },
     {
       "name": "archmeld_context",
-      "description": "Build a bounded, snapshot-bound context package with evidence, counterclaims and explicit omissions.",
+      "description": "Use when you need a bounded, snapshot-bound evidence pack for a task. Returns selected entities, source snippets, claims, omissions and a resume cursor.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -197,12 +194,14 @@
             "items": {
               "$ref": "#/$defs/Id"
             },
-            "minItems": 0
+            "minItems": 0,
+            "default": []
           },
           "budget_tokens": {
             "type": "integer",
             "minimum": 128,
-            "maximum": 64000
+            "maximum": 64000,
+            "default": 4000
           },
           "cursor": {
             "anyOf": [
@@ -217,11 +216,7 @@
           }
         },
         "required": [
-          "project_id",
-          "snapshot_id",
-          "objective",
-          "entity_ids",
-          "budget_tokens"
+          "objective"
         ],
         "additionalProperties": false,
         "$defs": {
@@ -250,7 +245,7 @@
     },
     {
       "name": "archmeld_source",
-      "description": "Read an authorized source anchor in its original snapshot, not an arbitrary local path.",
+      "description": "Use when you need the exact bytes of an entity anchor from the snapshot. Never reads an arbitrary filesystem path.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -265,20 +260,18 @@
           },
           "anchor_index": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "default": 0
           },
           "max_bytes": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 1048576
+            "maximum": 1048576,
+            "default": 200000
           }
         },
         "required": [
-          "project_id",
-          "snapshot_id",
-          "entity_id",
-          "anchor_index",
-          "max_bytes"
+          "entity_id"
         ],
         "additionalProperties": false,
         "$defs": {
@@ -2179,7 +2172,7 @@
     },
     {
       "name": "archmeld_status",
-      "description": "Report the registered project, latest snapshot, counts, languages and read-only workspace freshness. Creates no snapshot and records no drift.",
+      "description": "Call this first when the project, snapshot or working-tree state is unknown. Reports registered projects, latest snapshots, counts, languages and read-only freshness. Creates no snapshot and records no drift.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -2198,8 +2191,56 @@
       "x-authority": "same core checks as HTTP; hints are not authorization"
     },
     {
+      "name": "archmeld_brief",
+      "description": "Use when the user asks to summarize a project, review a change, or decide what to inspect next. Returns a one-screen read-only brief with counts, findings, unknowns and next actions. Candidate relations are not resolved calls; review never executes tests.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipe": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "project",
+              "change"
+            ],
+            "default": "auto"
+          },
+          "project_id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "snapshot_id": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "agent",
+              "human"
+            ],
+            "default": "agent"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "x-operations": [
+        "status",
+        "reviewWorkspaceDiff"
+      ],
+      "x-authority": "read-only composition of status and static workspace review; the workspace root comes only from the registered project"
+    },
+    {
       "name": "archmeld_review",
-      "description": "Statically review the registered workspace against a frozen snapshot. No build, test or runtime command is executed.",
+      "description": "Use when the user asks what changed or whether a workspace is safe to edit. Statically reviews the registered workspace against a frozen snapshot; no build, test or runtime command is executed and verification is not_run.",
       "inputSchema": {
         "type": "object",
         "properties": {

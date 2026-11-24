@@ -26,7 +26,7 @@ LOGS = ROOT / "baseline" / "logs"
 COMMANDS = ROOT / "baseline" / "commands.ndjson"
 EVIDENCE = ROOT / "docs" / "release-evidence" / "B016-native-traces.json"
 FIXTURES = ROOT / "adapters" / "traces" / "fixtures"
-TOOLS = Path("<workspace>/_archmeld_tools")
+TOOLS = Path("<workspace>/_tools")
 PERFETTO = TOOLS / "perfetto"
 TRACY = TOOLS / "tracy"
 

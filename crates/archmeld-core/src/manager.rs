@@ -99,17 +99,7 @@ pub fn open_project(store: &mut Store, request: OpenRequest<'_>) -> Result<Value
             1
         }
     };
-    tx.execute(
-        "UPDATE project_roots SET active=0 WHERE project_id=?1",
-        (request.project_id,),
-    )?;
-    tx.execute(
-        "INSERT INTO project_roots (project_id, root_path, first_seen, last_seen, active)
-         VALUES (?1, ?2, ?3, ?3, 1)
-         ON CONFLICT(project_id, root_path)
-         DO UPDATE SET last_seen=excluded.last_seen, active=1",
-        (request.project_id, &workspace_text, now),
-    )?;
+    upsert_project_root(&tx, request.project_id, &workspace_text, now)?;
     let session_id = format!(
         "session.{}",
         short_hash(&format!("{}:{}:{}:{}", request.project_id, now, std::process::id(), revision))
@@ -134,6 +124,70 @@ pub fn open_project(store: &mut Store, request: OpenRequest<'_>) -> Result<Value
     get_project(store, request.project_id)?.ok_or_else(|| {
         CoreError::Storage("opened project cannot be read back".to_string())
     })
+}
+
+/// Register the current workspace root for an existing project without
+/// creating a manager/expedition session. `archmeld index` and `archmeld init`
+/// use this so the read-only MCP `status`/`review` tools can resolve the
+/// project's active root on a real first run.
+pub fn register_project_root(
+    store: &mut Store,
+    project_id: &str,
+    workspace_root: &Path,
+    state_root: &Path,
+) -> Result<()> {
+    validate::require_id("project_id", project_id)?;
+    let workspace = canonical_dir(workspace_root)?;
+    let state = canonical_dir(state_root)?;
+    if inside(&state, &workspace) {
+        return Err(CoreError::invalid(
+            "state_root_inside_workspace: the external state root must not be inside the analyzed repository",
+        ));
+    }
+    if inside(&workspace, &state) {
+        return Err(CoreError::invalid(
+            "workspace_inside_state_root: refusing a workspace nested under the ledger root",
+        ));
+    }
+    let exists: Option<i64> = store
+        .conn
+        .query_row(
+            "SELECT 1 FROM projects WHERE project_id=?1",
+            (project_id,),
+            |row| row.get(0),
+        )
+        .ok();
+    if exists.is_none() {
+        return Err(CoreError::not_found(format!(
+            "project {project_id} is not registered; run archmeld index or archmeld init first"
+        )));
+    }
+    let workspace_text = path_text(&workspace);
+    let now = crate::store::now_unix();
+    let tx = store.conn.transaction()?;
+    upsert_project_root(&tx, project_id, &workspace_text, now)?;
+    tx.commit()?;
+    Ok(())
+}
+
+fn upsert_project_root(
+    conn: &rusqlite::Connection,
+    project_id: &str,
+    workspace_text: &str,
+    now: i64,
+) -> Result<()> {
+    conn.execute(
+        "UPDATE project_roots SET active=0 WHERE project_id=?1",
+        (project_id,),
+    )?;
+    conn.execute(
+        "INSERT INTO project_roots (project_id, root_path, first_seen, last_seen, active)
+         VALUES (?1, ?2, ?3, ?3, 1)
+         ON CONFLICT(project_id, root_path)
+         DO UPDATE SET last_seen=excluded.last_seen, active=1",
+        (project_id, workspace_text, now),
+    )?;
+    Ok(())
 }
 
 /// Open through a trusted workspace handle. The handle->project mapping is
