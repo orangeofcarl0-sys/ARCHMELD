@@ -1,0 +1,178 @@
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+  --> crates\codegraph-python\src\extractor.rs:14:5
+   |
+14 |     BODY_PREFIX_MAX_CHARS,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-python` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-python` to apply 1 suggestion)
+   Compiling codegraph-python v0.4.3 (<repo>\crates\codegraph-python)
+warning: `codegraph-python` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 09s
+     Running unittests src\lib.rs (target\debug\deps\codegraph_python-5e10f6c7a15122f9.exe)
+
+running 35 tests
+test config::tests::test_validate ... ok
+test config::tests::test_default_config ... ok
+test extractor::tests::test_accurate_line_numbers ... ok
+test extractor::tests::test_code_ir_new ... ok
+test extractor::tests::test_complexity_simple_function ... ok
+test config::tests::test_should_parse_extension ... ok
+test extractor::tests::test_extract_from_import_aliases ... ok
+test extractor::tests::test_extract_imports ... ok
+test extractor::tests::test_complexity_with_loops ... ok
+test config::tests::test_should_exclude_dir ... ok
+test extractor::tests::test_async_function ... ok
+test extractor::tests::test_complexity_with_logical_operators ... ok
+test parser::tests::test_parser_new ... ok
+test extractor::tests::test_extract_simple_function ... ok
+test extractor::tests::test_visibility_from_name ... ok
+test parser::tests::test_file_info_new ... ok
+test extractor::tests::test_extract_calls ... ok
+test extractor::tests::test_enum_detection ... ok
+test extractor::tests::test_complexity_with_try_except ... ok
+test extractor::tests::test_complexity_with_branches ... ok
+test extractor::tests::test_extract_inheritance ... ok
+test extractor::tests::test_extract_class_with_methods ... ok
+test parser_impl::tests::test_python_parser_can_parse ... ok
+test parser_impl::tests::test_python_parser_file_extensions ... ok
+test parser_impl::tests::test_metrics_initial_state ... ok
+test parser_impl::tests::test_python_parser_new ... ok
+test extractor::tests::test_abc_to_trait ... ok
+test parser::tests::test_project_info_success_rate ... ok
+test builder::tests::test_build_empty_module ... ok
+test builder::tests::test_build_with_class ... ok
+test parser_impl::tests::test_double_dot_relative_import_is_internal ... ok
+test parser_impl::tests::test_relative_import_is_internal ... ok
+test builder::tests::test_build_with_function ... ok
+test builder::tests::test_build_with_relationships ... ok
+test parser_impl::tests::test_implements_edge_creation ... ok
+
+test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests\integration_coverage_tests.rs (target\debug\deps\integration_coverage_tests-7fa081df929f7ef0.exe)
+
+running 16 tests
+test test_parse_file_with_encoding_declaration ... ok
+test test_parse_file_with_mixed_indentation ... ok
+test test_parse_very_long_line ... ok
+test test_parse_file_with_future_imports ... ok
+test test_graph_relationships_created ... ok
+test test_parse_unicode_identifiers ... ok
+test test_graph_contains_nodes ... ok
+test test_parse_deeply_nested_code ... ok
+test test_parse_real_python_module ... ok
+test test_parse_python_with_all_features ... ok
+test test_avg_parse_time_calculation ... ok
+test test_parse_with_circular_imports ... ok
+test test_project_info_success_rate ... ok
+test test_parse_large_file_performance ... ok
+test test_parallel_file_parsing ... ok
+test test_parse_project_structure ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests\integration_tests.rs (target\debug\deps\integration_tests-cacd16ced0919c48.exe)
+
+running 15 tests
+test test_error_message_format ... ok
+test test_graph_error ... ok
+test test_unsupported_feature ... ok
+test test_file_not_found ... ok
+test test_syntax_error ... ok
+test test_file_too_large ... ok
+test test_invalid_extension ... ok
+test test_parse_comments_only ... ok
+test test_parse_empty_file ... ok
+test test_parse_source_directly ... ok
+test test_parse_malformed_file ... ok
+test test_parse_with_custom_config ... ok
+test test_call_extraction ... ok
+test test_comprehensive_relationships ... ok
+test test_parse_simple_file ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests\parser_impl_tests.rs (target\debug\deps\parser_impl_tests-addcecdb439245ef.exe)
+
+running 32 tests
+test test_metrics_initial_state ... ok
+test test_file_size_limit_in_parse_source ... ok
+test test_parse_comments_only ... ok
+test test_parse_empty_source ... ok
+test test_metrics_after_failed_parse ... ok
+test test_parse_docstring_only ... ok
+test test_parse_from_import_alias_edge ... ok
+test test_parser_custom_config ... ok
+test test_parser_default_config ... ok
+test test_parse_file_not_found ... ok
+test test_parse_simple_function ... ok
+test test_parse_test_functions_excluded ... ok
+test test_parse_private_functions_excluded ... ok
+test test_metrics_reset ... ok
+test test_parse_test_functions_included ... ok
+test test_metrics_after_successful_parse ... ok
+test test_syntax_error_handling ... ok
+test test_parse_class_simple ... ok
+test test_parse_multiple_imports ... ok
+test test_complex_nested_structures ... ok
+test test_parse_private_functions_included ... ok
+test test_parse_async_function ... ok
+test test_parse_class_with_inheritance ... ok
+test test_metrics_accumulation ... ok
+test test_parse_decorators ... ok
+test test_parse_directory_empty ... ok
+test test_invalid_file_extension ... ok
+test test_parse_file_success ... ok
+test test_parse_file_too_large ... ok
+test test_parse_files_partial_failure ... ok
+test test_parse_directory_recursive ... ok
+test test_parse_files_all_success ... ok
+
+test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests\parser_trait_tests.rs (target\debug\deps\parser_trait_tests-865fef8f6d2c5a5f.exe)
+
+running 17 tests
+test test_python_parser_file_extensions ... ok
+test test_python_parser_language ... ok
+test test_python_parser_can_parse ... ok
+test test_parse_file_too_large ... ok
+test test_parse_file_with_syntax_error ... ok
+test test_empty_file ... ok
+test test_skip_private_functions ... ok
+test test_parser_reset_metrics ... ok
+test test_parse_class_with_methods ... ok
+test test_async_function_detection ... ok
+test test_parser_metrics ... ok
+test test_decorator_extraction ... ok
+test test_parse_simple_function ... ok
+test test_parse_with_imports ... ok
+test test_multiple_classes_and_functions ... ok
+test test_parse_multiple_files ... ok
+test test_parse_directory ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests\project_parsing_tests.rs (target\debug\deps\project_parsing_tests-4637375d013f44e8.exe)
+
+running 7 tests
+test test_parse_nonexistent_directory ... ok
+test test_project_info_statistics ... ok
+test test_parse_directory_parallel ... ok
+test test_parse_directory_with_custom_config ... ok
+test test_parse_directory_basic ... ok
+test test_parse_directory_excludes_pycache ... ok
+test test_parse_directory_collects_errors ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+   Doc-tests codegraph_python
+
+running 2 tests
+test crates\codegraph-python\src\lib.rs - (line 37) ... ignored
+test crates\codegraph-python\src\lib.rs - (line 19) - compile ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.26s
+

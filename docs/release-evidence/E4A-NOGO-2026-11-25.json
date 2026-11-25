@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "E4a constraint-seeded semantic value experiment",
+  "verdict": "no_go",
+  "backend": {
+    "name": "pi",
+    "version": "1.0.4",
+    "model": "omni-anthropic/deepseek-v4.1-flash",
+    "thinking": "max",
+    "sessions": "durable pi session JSONL under each run's pi-sessions/",
+    "mcp": "project-local .pi/mcp.json with exposure=direct and toolExposure={\"*\":\"direct\"}; launcher keeps builtin:mcp with --no-extensions -e builtin:mcp"
+  },
+  "design_iterations": [
+    {
+      "draft": 1,
+      "problem": "README named invoice and analytics and said derived values existed",
+      "result": "nonlexical-a1 passed without the map; invalid for the map-only claim"
+    },
+    {
+      "draft": 2,
+      "problem": "invoice.py and analytics.py comments named the pricing rate",
+      "result": "nonlexical2-a1 passed without the map; invalid"
+    },
+    {
+      "draft": 3,
+      "problem": "none",
+      "result": "clean fixture used for the verdict: 26 files, generic README, no coupling comments"
+    }
+  ],
+  "fixture": {
+    "name": "nonlexical",
+    "files": 26,
+    "core": ["pricing.py", "invoice.py", "analytics.py", "checkout.py", "reporting.py", "legacy.py", "dynamic.py"],
+    "decoys": 18,
+    "map_entries": 7,
+    "map_state": "ok"
+  },
+  "runs": [
+    {"id": "nonlexical3-a1b", "arm": "a", "behavior_ok": true, "files_changed": ["src/analytics.py", "src/invoice.py", "src/pricing.py"], "map_consulted": false, "map_entry_inspect": 0, "tokens": 94909, "duration_ms": 325711},
+    {"id": "nonlexical3-a2", "arm": "a", "behavior_ok": false, "files_changed": ["src/analytics.py", "src/pricing.py"], "map_consulted": false, "map_entry_inspect": 0, "tokens": 149577, "duration_ms": 76719},
+    {"id": "nonlexical3-a3", "arm": "a", "behavior_ok": true, "files_changed": ["src/analytics.py", "src/invoice.py", "src/pricing.py"], "map_consulted": false, "map_entry_inspect": 0, "tokens": 213085, "duration_ms": 121626},
+    {"id": "nonlexical3-b1", "arm": "b", "behavior_ok": true, "files_changed": ["src/analytics.py", "src/invoice.py", "src/pricing.py"], "map_consulted": true, "map_entry_inspect": 3, "tokens": 74792, "duration_ms": 87239}
+  ],
+  "aggregate": {
+    "a": {"runs": 3, "pass": 2, "mean_tokens": 152523.7},
+    "b": {"runs": 1, "pass": 1, "mean_tokens": 74792}
+  },
+  "gate": {
+    "criterion": "B updates invoice and analytics in >=2/3 runs; A <=1/3; B tokens <=1.3x A; 0 candidate promotion",
+    "a_result": "2/3 correct, gate failed",
+    "b_result": "1/1 correct; B2/B3 not run after the A gate failed",
+    "verdict": "no_go"
+  },
+  "consequences": [
+    "E stays at the read-only E2 surface",
+    "map apply (E3) is not implemented",
+    "E4b and rule v3 are not started",
+    "the map remains optional; no session rule requires reading it"
+  ],
+  "evidence": {
+    "result": "docs/evidence/e4a-2026-11-25/RESULT.md",
+    "protocol": "docs/evidence/e4a-2026-11-25/PROTOCOL.md",
+    "run_root": "docs/evidence/e4a-2026-11-25/runs/",
+    "outside_run_root": "<workspace>/<e4a-run>"
+  },
+  "limitations": [
+    "one model family; the map was authored by the same family",
+    "n=3 A / n=1 B; B is directional, not a full arm",
+    "26-file synthetic Python fixture, not a real repository",
+    "A had full ARCHMELD read tools; this compares the map to the rest of ARCHMELD, not to grep alone",
+    "the task explicitly asks to keep behavior correct, prompting a thorough search",
+    "the no-go does not prove maps never help; it shows this design did not justify the write path or a rule mandate"
+  ]
+}

@@ -9,7 +9,7 @@ subagents in parallel on the same session model.
 ```text
 You are participating in a controlled code-localization experiment. Work read-only; do not modify or create any file.
 
-Repository: <workspace>\repo (small Python project).
+Repository: <workspace>\agent-bench-vizIZe\repo (small Python project).
 
 TASK (identical for all conditions):
 Q1. In src/late.py, the string literal 'E_UNIQUE_7F3' appears in a comment and in an assignment. Locate the assignment. Report: file path, 1-based line number, enclosing function name, and the 1-based line of that function's def.
@@ -42,7 +42,7 @@ Rules: every line number must be supported by evidence you actually inspected. D
 ## Condition A (no ARCHMELD)
 
 ```text
-TOOL CONDITION A (no ARCHMELD): You may use read-only shell commands (rg, grep, sed, awk, find, git, py/python) and file reads inside the repository. You must NOT use ARCHMELD in any form: no archmeld binary/CLI/MCP, no HTTP calls to localhost, and do not read <workspace>\state or serve.log. Do not inspect any directory outside the repository except standard tool binaries.
+TOOL CONDITION A (no ARCHMELD): You may use read-only shell commands (rg, grep, sed, awk, find, git, py/python) and file reads inside the repository. You must NOT use ARCHMELD in any form: no archmeld binary/CLI/MCP, no HTTP calls to localhost, and do not read <workspace>\agent-bench-vizIZe\state or serve.log. Do not inspect any directory outside the repository except standard tool binaries.
 ```
 
 ## Condition B (ARCHMELD available)

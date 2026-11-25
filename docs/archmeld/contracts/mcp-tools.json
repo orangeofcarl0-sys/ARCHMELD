@@ -22,7 +22,8 @@
               "runtime_run",
               "report",
               "job",
-              "claim"
+              "claim",
+              "map_entry"
             ]
           },
           "id": {
@@ -2192,7 +2193,7 @@
     },
     {
       "name": "archmeld_brief",
-      "description": "Use when the user asks to summarize a project, review a change, or decide what to inspect next. Returns a one-screen read-only brief with counts, findings, unknowns and next actions. Candidate relations are not resolved calls; review never executes tests.",
+      "description": "Use when the user asks to summarize a project, review a change, report the evidence-bound cognition map, or decide what to inspect next. Returns a one-screen read-only brief with counts, findings, unknowns and next actions, plus a markdown content item a human or agent can read directly. Candidate relations are not resolved calls; review never executes tests.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2201,7 +2202,8 @@
             "enum": [
               "auto",
               "project",
-              "change"
+              "change",
+              "map"
             ],
             "default": "auto"
           },
@@ -2287,6 +2289,7 @@
       "archmeld_source",
       "archmeld_status",
       "archmeld_review",
+      "archmeld_brief",
       "archmeld_capabilities"
     ],
     "implemented_inspect_kinds": [
@@ -2299,7 +2302,8 @@
       "change",
       "verification",
       "claim",
-      "job"
+      "job",
+      "map_entry"
     ],
     "requires_grant_tools": [
       "archmeld_analyze",

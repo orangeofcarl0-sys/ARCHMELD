@@ -181,3 +181,189 @@ fn brief_returns_needs_init_without_a_snapshot() {
     assert_eq!(brief["state"], "needs_init");
     assert_eq!(brief["next_actions"][0]["tool"], "archmeld_init");
 }
+
+#[test]
+fn briefs_include_a_read_only_aoci_cognition_map() {
+    let fixture = setup();
+    fs::write(
+        fixture.root.join("aoci.txt"),
+        "#AOCI-ROOT-MANIFEST: 1\n\
+         #Volume: id=code kind=code path=aoci.code.txt format=object-fras-v2 depends=meta state=enabled\n",
+    )
+    .unwrap();
+    fs::write(
+        fixture.root.join("aoci.code.txt"),
+        "#AOCI-CODE-VOLUME: 1\n\
+         ===/<repository>/src/===\n\
+         a.py[CG5T]: F:Entry A | R:code:src/b.py | A:- | S:-\n\
+         b.py[CG7M]: F:Entry B | R:- | A:- | S:-\n",
+    )
+    .unwrap();
+
+    let project = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Project,
+        },
+    )
+    .unwrap();
+    assert_eq!(project["cognition"]["present"], true, "{project}");
+    assert_eq!(project["cognition"]["entries_total"], 2, "{project}");
+    let markdown = archmeld_core::brief::render_markdown(&project);
+    assert!(
+        markdown.contains("Cognition map (AOCI, optional)"),
+        "{markdown}"
+    );
+
+    fs::write(
+        fixture.root.join("src/a.py"),
+        "def a():\n    return b() + 1\n",
+    )
+    .unwrap();
+    let change = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+    )
+    .unwrap();
+    assert_eq!(change["cognition"]["present"], true, "{change}");
+    let affected = change["cognition"]["affected"].as_array().unwrap();
+    assert!(
+        affected.iter().any(|entry| entry["path"] == "src/a.py"),
+        "{change}"
+    );
+}
+
+#[test]
+fn map_recipe_and_cognition_map_are_read_only() {
+    let fixture = setup();
+    fs::write(
+        fixture.root.join("archmeld.map.txt"),
+        format!(
+            "#ARCHMELD-MAP: 1\n#snapshot: {}\n===src/===\n\
+             a.py[L1D2C5M]: F:Entry A | R:file:src/b.py | A:- | S:-\n\
+             b.py: F:Entry B | R:- | A:- | S:-\n",
+            fixture.snapshot_id
+        ),
+    )
+    .unwrap();
+
+    let map = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Map,
+        },
+    )
+    .unwrap();
+    assert_eq!(map["level"], "map", "{map}");
+    assert_eq!(map["state"], "ok", "{map}");
+    assert_eq!(map["map_state"], "ok", "{map}");
+    assert_eq!(map["map"]["state"], "ok", "{map}");
+    assert_eq!(map["semantic_claims"], "unverified", "{map}");
+    assert_eq!(map["map"]["entries"]["total"], 2, "{map}");
+    assert_eq!(map["map"]["freshness"], "latest", "{map}");
+    assert!(
+        map["map"]["map_digest"]
+            .as_str()
+            .unwrap()
+            .starts_with("sha256:"),
+        "{map}"
+    );
+
+    let project = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Project,
+        },
+    )
+    .unwrap();
+    assert_eq!(project["cognition_map"]["present"], true, "{project}");
+    assert_eq!(project["cognition_map"]["entries"], 2, "{project}");
+    assert_eq!(
+        project["cognition_map"]["semantic_claims"], "unverified",
+        "{project}"
+    );
+    assert_eq!(
+        project["cognition_map"]["validation"], "not_run",
+        "{project}"
+    );
+    assert_eq!(project["cognition_map"]["freshness"], "latest", "{project}");
+
+    fs::write(
+        fixture.root.join("src/a.py"),
+        "def a():\n    return b() + 1\n",
+    )
+    .unwrap();
+    let change = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+    )
+    .unwrap();
+    assert_eq!(change["cognition_map"]["present"], true, "{change}");
+    assert_eq!(change["cognition_map"]["state"], "ok", "{change}");
+    assert_eq!(change["cognition_map"]["snapshot_match"], true, "{change}");
+    assert!(
+        change["cognition_map"]["map_digest"]
+            .as_str()
+            .unwrap()
+            .starts_with("sha256:"),
+        "{change}"
+    );
+    assert!(
+        change["cognition_map"]["affected"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| entry["path"] == "src/a.py"),
+        "{change}"
+    );
+}
+
+#[test]
+fn a_map_brief_keeps_brief_state_separate_from_map_health() {
+    let fixture = setup();
+    fs::write(
+        fixture.root.join("archmeld.map.txt"),
+        format!(
+            "#ARCHMELD-MAP: 1\n#snapshot: {}\n===src/===\n\
+             a.py: F:Entry A | R:entity:function:src/a.py::missing | A:- | S:-\n\
+             b.py: F:Entry B | R:- | A:- | S:-\n",
+            fixture.snapshot_id
+        ),
+    )
+    .unwrap();
+    let brief = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Map,
+        },
+    )
+    .unwrap();
+    // The brief itself was produced; the map is still invalid. The two states
+    // must not collapse into one "ok".
+    assert_eq!(brief["state"], "ok", "{brief}");
+    assert_eq!(brief["map_state"], "invalid", "{brief}");
+    assert_eq!(brief["map"]["state"], "invalid", "{brief}");
+    assert_eq!(brief["semantic_claims"], "unverified", "{brief}");
+}

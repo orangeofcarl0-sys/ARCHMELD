@@ -42,6 +42,7 @@ const IMPLEMENTED_INSPECT_KINDS: &[&str] = &[
     "verification",
     "claim",
     "job",
+    "map_entry",
 ];
 /// The single source of truth for `tools/list`. A tool is advertised only when
 /// this process has a handler for it; the broader contract is reported by
@@ -202,8 +203,14 @@ impl Bridge {
                         }),
                     );
                 }
+                let mut content = vec![json!({"type": "text", "text": value.to_string()})];
+                // A one-screen card is the readable surface; the JSON item
+                // stays first so existing clients keep parsing the same shape.
+                if name == "archmeld_brief" && value["summary"].is_string() {
+                    content.push(json!({"type": "text", "text": render_markdown(&value)}));
+                }
                 Ok(json!({
-                    "content": [{"type": "text", "text": value.to_string()}],
+                    "content": content,
                     "isError": false,
                 }))
             }
@@ -446,6 +453,24 @@ impl Bridge {
             "claim" => get_claim(&self.store, &project, id)?,
             "job" => get_job(&self.store, &project, id)?
                 .ok_or_else(|| CoreError::not_found("job not found"))?,
+            "map_entry" => {
+                let root = self.store.active_project_root(&project)?.ok_or_else(|| {
+                    CoreError::unsupported(
+                        "project has no active workspace root; run archmeld init to register it",
+                    )
+                })?;
+                let snapshot = self.store.latest_snapshot_id(&project)?.ok_or_else(|| {
+                    CoreError::not_found("project has no snapshot; run archmeld init")
+                })?;
+                archmeld_core::cognition_map::entry_report(
+                    &self.store,
+                    &project,
+                    &root,
+                    Some(&snapshot),
+                    None,
+                    id,
+                )?
+            }
             "runtime_run" => {
                 return Err(CoreError::unsupported(
                     "runtime_run inspection is not exposed by this MCP surface yet",

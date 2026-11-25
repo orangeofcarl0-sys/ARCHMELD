@@ -1,0 +1,227 @@
+   Compiling archmeld-core v0.1.0 (<repo>\crates\archmeld-core)
+warning: unused import: `PathBuf`
+  --> crates\archmeld-core\src\drift.rs:20:23
+   |
+20 | use std::path::{Path, PathBuf};
+   |                       ^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> crates\archmeld-core\src\apply.rs:326:9
+    |
+326 |     let mut applying = append_state_with_journal(
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+  --> crates\archmeld-core\src\units.rs:75:13
+   |
+75 |         let mut registry = Self {
+   |             ----^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: field `session_id` is never read
+  --> crates\archmeld-core\src\lsp.rs:92:5
+   |
+85 | pub struct LspSession {
+   |            ---------- field in this struct
+...
+92 |     session_id: String,
+   |     ^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `next_event_sequence` is never used
+   --> crates\archmeld-core\src\store\mod.rs:953:19
+    |
+ 61 | impl Store {
+    | ---------- method in this implementation
+...
+953 |     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+   Compiling archmeld-api v0.1.0 (<repo>\crates\archmeld-api)
+warning: `archmeld-core` (lib) generated 5 warnings (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)
+warning: unused import: `Stdio`
+ --> crates\archmeld-api\tests\unix_socket.rs:9:29
+  |
+9 | use std::process::{Command, Stdio};
+  |                             ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `archmeld-api` (test "unix_socket") generated 1 warning (run `cargo fix --test "unix_socket" -p archmeld-api` to apply 1 suggestion)
+warning: field `dir` is never read
+  --> crates\archmeld-api\tests\http_contract.rs:23:5
+   |
+22 | struct Prepared {
+   |        -------- field in this struct
+23 |     dir: tempfile::TempDir,
+   |     ^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: calls to `std::mem::forget` with a value that implements `Copy` does nothing
+   --> crates\archmeld-api\src\memory_limit.rs:114:9
+    |
+114 |         std::mem::forget(job);
+    |         ^^^^^^^^^^^^^^^^^---^
+    |                          |
+    |                          argument has type `*mut c_void`
+    |
+    = note: `#[warn(forgetting_copy_types)]` on by default
+help: use `let _ = ...` to ignore the expression or result
+    |
+114 -         std::mem::forget(job);
+114 +         let _ = job;
+    |
+
+warning: `archmeld-api` (test "http_contract") generated 1 warning
+warning: `archmeld-api` (bin "archmeld") generated 1 warning
+warning: `archmeld-api` (bin "archmeld" test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 19s
+     Running unittests src\lib.rs (target\debug\deps\archmeld_api-ce8be035294d463e.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\cli.rs (target\debug\deps\archmeld-5c5b6dcf19a64bb3.exe)
+
+running 6 tests
+test memory_limit::tests::limit_validation_rejects_zero_and_overflow ... ok
+test status_tests::status_reports_the_latest_snapshot_and_workspace_freshness_without_mutation ... ok
+test diff_cli_tests::review_diff_cli_reports_changed_entity_and_not_run_verification ... ok
+test index_tests::index_parses_the_captured_snapshot_not_a_concurrent_save ... ok
+test index_tests::clean_workspace_reuses_the_indexed_snapshot ... ok
+test diff_cli_tests::refresh_creates_a_new_snapshot_and_diffs_from_the_base ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.75s
+
+     Running unittests src\mcp.rs (target\debug\deps\archmeld_mcp-49bc79575462df80.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\main.rs (target\debug\deps\archmeld_serve-eacf63cfd3cf3f78.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\http_contract.rs (target\debug\deps\http_contract-047b34c64f96f2f1.exe)
+
+running 3 tests
+test stale_event_cursor_is_resync_required_and_tokens_are_enforced ... ok
+test health_query_source_and_cancel_are_real_http_requests ... ok
+test lifecycle_routes_use_allowlisted_handles_and_idempotency ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.64s
+
+     Running tests\interpretation_http.rs (target\debug\deps\interpretation_http-20bfc35e980c520f.exe)
+
+running 1 test
+test claims_architectures_and_capabilities_are_real_http_routes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+     Running tests\mcp_stdio.rs (target\debug\deps\mcp_stdio-5f37de3ab39cfdaa.exe)
+
+running 1 test
+test mcp_has_no_approval_tool_and_refuses_writes_and_paths ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s
+
+     Running tests\named_pipe.rs (target\debug\deps\named_pipe-a648853f7864ef1d.exe)
+
+running 2 tests
+test malformed_named_pipe_name_is_refused ... ok
+test named_pipe_requires_the_bearer_token ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests\onboard.rs (target\debug\deps\onboard-4154b61f290863c9.exe)
+
+running 6 tests
+test state_inside_workspace_is_rejected ... ok
+test default_paths_are_stable_and_project_scoped ... ok
+test mcp_plans_render_real_client_commands ... ok
+test preflight_skips_vendor_and_metadata_directories ... ok
+test rule_block_is_previewed_written_and_idempotent ... ok
+test real_mcp_handshake_reports_root_and_tools ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+     Running tests\report_http.rs (target\debug\deps\report_http-49ab94d1302dcac2.exe)
+
+running 1 test
+test report_route_owns_the_output_directory_and_rejects_unsafe_names ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+
+     Running tests\scenario_http.rs (target\debug\deps\scenario_http-66948467d44152b1.exe)
+
+running 4 tests
+test status_and_workspace_review_are_read_only_http_entries ... ok
+test queries_do_not_wait_for_a_long_scenario_run ... ok
+test scenario_http_requires_grant_and_persists_the_run ... ok
+test scenario_http_sandbox_uses_the_snapshot_and_rejects_unknown_fields ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 36.29s
+
+     Running tests\security_http.rs (target\debug\deps\security_http-a2d6b4698886d617.exe)
+
+running 1 test
+test local_service_rejects_foreign_hosts_origins_and_url_tokens ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests\security_mcp.rs (target\debug\deps\security_mcp-b7ba729e87ca7aa3.exe)
+
+running 1 test
+test repository_instructions_remain_untrusted_and_are_not_executed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.90s
+
+     Running tests\trace_import_cli.rs (target\debug\deps\trace_import_cli-be106e5275fabd0b.exe)
+
+running 10 tests
+test trace_processor_backend_imports_the_fixture_through_the_cli ... ok
+test a_memory_ceiling_below_the_import_footprint_fails_the_process ... ok
+test cli_refuses_unbound_and_mismatched_traces ... ok
+test perfetto_import_runs_through_the_cli ... ok
+test normalized_trace_import_accepts_an_explicit_envelope ... ok
+test tracy_import_retains_the_native_capture_through_the_cli ... ok
+test numeric_check_cli_exposes_statistical_ulp_and_dimension_modes ... ok
+test ledger_migrate_cli_copies_and_refuses_an_existing_target ... ok
+test scenario_cli_runs_a_snapshot_copy_and_refuses_unpinned_containers ... ok
+test explicit_scenario_run_association_runs_through_the_cli ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.72s
+
+     Running tests\unix_socket.rs (target\debug\deps\unix_socket-59ba8b95428d124a.exe)
+
+running 1 test
+test unix_socket_mode_is_refused_explicitly_on_windows ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests\watch_cli.rs (target\debug\deps\watch_cli-9aa9184308bc63d8.exe)
+
+running 1 test
+test cli_watch_os_mode_runs_the_notify_watcher ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+   Doc-tests archmeld_api
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

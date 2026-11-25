@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "run_id": "nonlexical3-b1",
+  "fixture": "nonlexical",
+  "arm": "b",
+  "behavior_ok": true,
+  "behavior_stderr": "",
+  "files_changed": [
+    "src/analytics.py",
+    "src/invoice.py",
+    "src/pricing.py"
+  ],
+  "pricing_changed": true,
+  "invoice_changed": true,
+  "analytics_changed": true,
+  "map_present": true,
+  "map_consulted": true,
+  "map_entry_inspect": 3,
+  "brief_change": 2,
+  "map_before_first_edit": true,
+  "constraints_declared": [
+    "src/pricing.py",
+    "src/invoice.py",
+    "src/analytics.py"
+  ],
+  "answer_present": true,
+  "answer": {
+    "files_changed": [
+      "src/pricing.py",
+      "src/invoice.py",
+      "src/analytics.py"
+    ],
+    "rate_updated": true,
+    "constraints_applied": [
+      {
+        "file": "src/pricing.py",
+        "what": "Changed the apply_discount multiplier from 0.9 (10%) to 0.85 (15%)."
+      },
+      {
+        "file": "src/invoice.py",
+        "what": "Changed INVOICE_ADJUSTMENT_BPS from 1000 to 1500 so invoice totals mirror the 15% discount."
+      },
+      {
+        "file": "src/analytics.py",
+        "what": "Updated EXPECTED_TOTAL from 11110 to 10493, the rounded result of apply_discount(12345) at 15%."
+      }
+    ],
+    "map_used": true,
+    "notes": "Used ARCHMELD brief, map inspection, and review; verified the map's unverified constraint guidance against source. Other 0.9/1000/11110 occurrences are unrelated service constants or the legacy 50% helper and were left unchanged. Static review only: verification=not_run, no tests or repository commands executed, coverage=partial. Three static_call_candidate relations remain candidates, not resolved calls. archmeld.map.txt still describes the pre-change 1000/11110/10% constraint values as stale generated evidence; it and .pi/mcp.json are added files with no base entity mapping and predate this edit."
+  },
+  "tool_errors": 0,
+  "outcome": "pass"
+}

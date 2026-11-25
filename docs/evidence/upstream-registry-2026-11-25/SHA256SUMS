@@ -1,0 +1,12 @@
+f5351d805ff7d3232cab08cb7bdd846d6abd3e5181adda504cb0dbea505b8289 *docs/evidence/upstream-registry-2026-11-25/README.md
+280c0a1d57497ace348b3c760b7d3659bf1a0e8e6dd3f55eb07b7ae666c183c7 *docs/evidence/upstream-registry-2026-11-25/adapter-drill.log
+c7de24cdb914142aa3a1646aa632a5d457e986d510061b9ddf8a4bfd953cc76e *docs/evidence/upstream-registry-2026-11-25/bridge-tests.log
+65cd2d1954e890fb6d5df8abad87c50f26d913cdab6442ff65ad62520e55bd15 *docs/evidence/upstream-registry-2026-11-25/drill-prepare.json
+daaf1e5059ff40a818b224412d9d2a79d078357c970b4641c1b62669695e66f2 *docs/evidence/upstream-registry-2026-11-25/export-tests.log
+013edd3c6a223d7b2d9fe58f2232a2a35b049026d58ed712d9ed588cc55e0f10 *docs/evidence/upstream-registry-2026-11-25/patches-check.json
+7585d8fc6856a0dc64ea6a543a36c5c4bffd5989115f30d08f03bf4a44c262fa *docs/evidence/upstream-registry-2026-11-25/probe-tests.log
+ca90097a959a0e1dadcad6d1e3cff3eda6557cbfd8df20ef44b8a88c5d93109f *docs/evidence/upstream-registry-2026-11-25/record-dry-run.json
+d9df4ff798482eb34caf5dbebf6dc495b8740d14e6426db4be56f81337a5647b *docs/evidence/upstream-registry-2026-11-25/upstream-diff.json
+3e42b9173d315ac7f546de2d58e3d685600cf8d1e9b87887a80d8329b4345e43 *docs/evidence/upstream-registry-2026-11-25/upstream-status.json
+d91da9e457b988dcdaaa8f3eb0f2437448d0c8f50dbc76b9000b227447f3b17b *docs/evidence/upstream-registry-2026-11-25/upstream-tests.stderr.log
+32d8f3f63e5dc2732eee3593cb402ab4755f5e2720c2a89d3190500f90b3a7db *docs/evidence/upstream-registry-2026-11-25/upstream-verify.json.log

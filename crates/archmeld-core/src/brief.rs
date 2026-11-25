@@ -12,13 +12,16 @@ use crate::status::status_report;
 use crate::store::Store;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
-use std::path::Path;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BriefRecipe {
     Auto,
     Project,
     Change,
+    Map,
 }
 
 impl BriefRecipe {
@@ -27,8 +30,9 @@ impl BriefRecipe {
             "auto" => Ok(Self::Auto),
             "project" => Ok(Self::Project),
             "change" => Ok(Self::Change),
+            "map" => Ok(Self::Map),
             other => Err(CoreError::invalid(format!(
-                "recipe must be auto, project or change, got {other}"
+                "recipe must be auto, project, change or map, got {other}"
             ))),
         }
     }
@@ -38,6 +42,7 @@ impl BriefRecipe {
             Self::Auto => "auto",
             Self::Project => "project",
             Self::Change => "change",
+            Self::Map => "map",
         }
     }
 }
@@ -111,8 +116,87 @@ pub fn build_brief(store: &Store, request: &BriefRequest<'_>) -> Result<Value> {
 
     match recipe {
         BriefRecipe::Change => change_brief(store, request, &snapshot_id),
+        BriefRecipe::Map => map_brief(store, request, &snapshot_id),
         _ => project_brief(store, request, &snapshot_id),
     }
+}
+
+fn map_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Result<Value> {
+    let Some(workspace) = request.workspace else {
+        return Ok(json!({
+            "schema_version": "1.0",
+            "state": "needs_workspace",
+            "map_state": "needs_workspace",
+            "level": "map",
+            "semantic_claims": "none",
+            "verification": "not_run",
+            "summary": "map status needs an authorized workspace root",
+            "scope": {"project_id": request.project_id, "snapshot_id": snapshot_id, "coverage": "unknown"},
+            "counts": {"confirmed": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
+            "findings": [],
+            "unknowns": [{
+                "question": "Which workspace contains archmeld.map.txt?",
+                "why": "the request did not include a workspace root",
+                "how_to_resolve": "start archmeld-mcp with a registered project root, or pass --workspace to the CLI"
+            }],
+            "next_actions": [{"tool": "archmeld_brief", "args": {"recipe": "project"}, "why": "get the project summary first"}]
+        }));
+    };
+    let report = crate::cognition_map::check_map(
+        store,
+        request.project_id,
+        workspace,
+        Some(snapshot_id),
+        None,
+    )?;
+    let state = report["state"].as_str().unwrap_or("unknown");
+    let entries = report["entries"]["total"].as_u64().unwrap_or(0);
+    let refs = &report["refs"];
+    let confirmed = refs["confirmed"].as_u64().unwrap_or(0);
+    let candidate = refs["candidate"].as_u64().unwrap_or(0);
+    let unknown = refs["unknown"].as_u64().unwrap_or(0);
+    let missing = report["coverage"]["missing"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0);
+    let errors = report["errors"].as_array().map(Vec::len).unwrap_or(0);
+    let summary = match state {
+        "absent" => "no archmeld.map.txt in the workspace".to_string(),
+        "invalid" => format!("map invalid: {entries} entries, {errors} error(s)"),
+        "stale" => format!("map stale: {entries} entries, {missing} missing file(s)"),
+        _ => format!(
+            "map ok: {entries} entries, {confirmed} confirmed refs, {candidate} candidate, {unknown} unknown"
+        ),
+    };
+    Ok(json!({
+        "schema_version": "1.0",
+        "state": if state == "absent" { "no_map" } else { "ok" },
+        "map_state": state,
+        "level": "map",
+        "semantic_claims": if state == "absent" { "none" } else { "unverified" },
+        "verification": "not_run",
+        "summary": summary,
+        "scope": {
+            "project_id": request.project_id,
+            "snapshot_id": snapshot_id,
+            "coverage": if missing == 0 && errors == 0 { "complete" } else { "partial" },
+        },
+        "counts": {
+            "confirmed": confirmed,
+            "candidate": candidate,
+            "unknown": unknown,
+            "stale": if state == "stale" || state == "invalid" { 1 } else { 0 },
+            "findings": errors,
+        },
+        "map": report,
+        "findings": [],
+        "unknowns": [],
+        "next_actions": [
+            {"tool": "archmeld_brief", "args": {"recipe": "project"}, "why": "read the project summary"},
+            {"tool": "archmeld_review", "args": {}, "why": "compare the working tree with the snapshot"}
+        ],
+        "artifacts": {}
+    }))
 }
 
 fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Result<Value> {
@@ -173,7 +257,7 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
         relations,
         languages.len()
     );
-    Ok(json!({
+    let mut brief = json!({
         "schema_version": "1.0",
         "state": "ok",
         "level": "module",
@@ -213,7 +297,16 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
             }
         ],
         "artifacts": {}
-    }))
+    });
+    let cognition = crate::cognition::summarize(request.workspace);
+    if cognition["present"] == true {
+        brief["cognition"] = cognition;
+    }
+    let cognition_map = crate::cognition_map::summarize(request.workspace, Some(snapshot_id));
+    if cognition_map["present"] == true {
+        brief["cognition_map"] = cognition_map;
+    }
+    Ok(brief)
 }
 
 fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Result<Value> {
@@ -411,7 +504,12 @@ fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) ->
         "args": {},
         "why": "get the full per-file review and coverage"
     }));
-    Ok(json!({
+    let changed_paths = files
+        .iter()
+        .filter_map(|file| file["path"].as_str().map(str::to_string))
+        .collect::<Vec<_>>();
+    let cognition = crate::cognition::affected(request.workspace, &changed_paths);
+    let mut brief = json!({
         "schema_version": "1.0",
         "state": "ok",
         "level": "change",
@@ -433,7 +531,16 @@ fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) ->
         "unknowns": unknowns,
         "next_actions": next_actions,
         "artifacts": {}
-    }))
+    });
+    if cognition["present"] == true {
+        brief["cognition"] = cognition;
+    }
+    let cognition_map =
+        crate::cognition_map::affected(workspace, Some(snapshot_id), &changed_paths);
+    if cognition_map["present"] == true {
+        brief["cognition_map"] = cognition_map;
+    }
+    Ok(brief)
 }
 
 fn resolution_counts(store: &Store, project_id: &str, snapshot_id: &str) -> Result<(u64, u64)> {
@@ -558,6 +665,91 @@ pub fn render_markdown(brief: &Value) -> String {
         counts["stale"].as_u64().unwrap_or(0),
         counts["findings"].as_u64().unwrap_or(0),
     ));
+    if let Some(cognition) = brief.get("cognition") {
+        if cognition["present"] == true {
+            out.push_str("\n## Cognition map (AOCI, optional)\n\n");
+            out.push_str(&format!(
+                "- entries: {} (model-authored; not a parsed call graph)\n",
+                cognition["entries_total"].as_u64().unwrap_or(0)
+            ));
+            let affected = cognition["affected"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            if !affected.is_empty() {
+                out.push_str(&format!("- affected entries: {}\n", affected.len()));
+                for entry in affected.iter().take(5) {
+                    out.push_str(&format!(
+                        "  - `{}` [{}] {}\n",
+                        entry["path"].as_str().unwrap_or("?"),
+                        entry["tag"].as_str().unwrap_or(""),
+                        entry["function"].as_str().unwrap_or(""),
+                    ));
+                }
+            }
+            let unmapped = cognition["unmapped_changed_files"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            if !unmapped.is_empty() {
+                out.push_str(&format!(
+                    "- changed files without an entry: {}\n",
+                    unmapped.len()
+                ));
+            }
+            for warning in cognition["warnings"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default()
+            {
+                if let Some(warning) = warning.as_str() {
+                    out.push_str(&format!("- warning: {warning}\n"));
+                }
+            }
+        }
+    }
+    if let Some(map) = brief.get("cognition_map") {
+        if map["present"] == true {
+            out.push_str("\n## Cognition map (ARCHMELD, optional)\n\n");
+            out.push_str(&format!(
+                "- state: {} · entries: {}\n",
+                map["state"].as_str().unwrap_or("unknown"),
+                map["entries"]
+                    .as_u64()
+                    .or_else(|| map["entries_total"].as_u64())
+                    .unwrap_or(0),
+            ));
+            if let Some(matched) = map["snapshot_match"].as_bool() {
+                out.push_str(&format!("- snapshot match: {matched}\n"));
+            }
+            if let Some(freshness) = map["freshness"].as_str() {
+                out.push_str(&format!("- freshness: {freshness}\n"));
+            }
+            if let Some(digest) = map["map_digest"].as_str() {
+                out.push_str(&format!("- map digest: {digest}\n"));
+            }
+            out.push_str("- semantic claims: unverified · validation: not_run\n");
+            let affected = map["affected"].as_array().cloned().unwrap_or_default();
+            for entry in affected.iter().take(5) {
+                out.push_str(&format!(
+                    "  - `{}` [{}] {}\n",
+                    entry["path"].as_str().unwrap_or("?"),
+                    entry["tags"].as_str().unwrap_or(""),
+                    entry["function"].as_str().unwrap_or(""),
+                ));
+            }
+            let unmapped = map["unmapped_changed_files"]
+                .as_array()
+                .map(Vec::len)
+                .unwrap_or(0);
+            if unmapped > 0 {
+                out.push_str(&format!("- changed files without an entry: {unmapped}\n"));
+            }
+        }
+    }
+    if let Some(map) = brief.get("map") {
+        out.push_str(&crate::cognition_map::render_markdown(map));
+    }
     out.push_str("\n## Findings\n\n");
     let findings = brief["findings"].as_array().cloned().unwrap_or_default();
     if findings.is_empty() {
@@ -617,4 +809,132 @@ pub fn render_markdown(brief: &Value) -> String {
         ));
     }
     out
+}
+
+/// Marker that identifies a generated session card. A file without it is a
+/// user file and is never overwritten without `force`.
+pub const SESSION_CARD_MARKER: &str = "<!-- ARCHMELD SESSION CARD -->";
+
+/// Default location of the optional session card, relative to the workspace.
+pub fn session_card_path(workspace: &Path) -> PathBuf {
+    workspace.join(".archmeld").join("SESSION.md")
+}
+
+/// Write a session card. The card is a projection of the brief, not a new
+/// source of truth; it carries the snapshot id so `status` can report whether
+/// it is stale. A missing workspace is an error only when a card was requested.
+pub fn write_session_card(
+    workspace: &Path,
+    brief: &Value,
+    out: Option<&Path>,
+    force: bool,
+) -> Result<Value> {
+    let path = out
+        .map(Path::to_path_buf)
+        .unwrap_or_else(|| session_card_path(workspace));
+    if let Ok(existing) = fs::read_to_string(&path) {
+        if !force && !existing.starts_with(SESSION_CARD_MARKER) {
+            return Err(CoreError::invalid(format!(
+                "refusing to overwrite {}; it is not an ARCHMELD session card (use --force)",
+                path.display()
+            )));
+        }
+    }
+    if let Some(parent) = path.parent() {
+        if !parent.as_os_str().is_empty() {
+            fs::create_dir_all(parent).map_err(|error| {
+                CoreError::Storage(format!("cannot create {}: {error}", parent.display()))
+            })?;
+        }
+    }
+    let scope = &brief["scope"];
+    let counts = &brief["counts"];
+    let snapshot = scope["snapshot_id"].as_str().unwrap_or("none");
+    let commit = scope["commit"].as_str().unwrap_or("unknown");
+    let coverage = scope["coverage"].as_str().unwrap_or("unknown");
+    let stale = counts["stale"].as_u64().unwrap_or(0) > 0;
+    let generated_at = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
+        .unwrap_or(0);
+    let mut content = String::new();
+    content.push_str(SESSION_CARD_MARKER);
+    content.push_str("\n# ARCHMELD session card\n\n");
+    content.push_str(&format!("- snapshot: {snapshot}\n"));
+    content.push_str(&format!("- commit: {commit}\n"));
+    content.push_str(&format!("- coverage: {coverage}\n"));
+    content.push_str(&format!(
+        "- workspace: {}\n",
+        if stale { "dirty-or-stale" } else { "clean" }
+    ));
+    content.push_str(&format!(
+        "- counts: confirmed={} candidate={} unknown={} stale={} findings={}\n",
+        counts["confirmed"].as_u64().unwrap_or(0),
+        counts["candidate"].as_u64().unwrap_or(0),
+        counts["unknown"].as_u64().unwrap_or(0),
+        counts["stale"].as_u64().unwrap_or(0),
+        counts["findings"].as_u64().unwrap_or(0),
+    ));
+    content.push_str(&format!("- generated_at_unix: {generated_at}\n"));
+    content.push_str(
+        "- note: generated from the evidence snapshot; regenerate after changes. \
+         This card is a projection, not a source of truth and not a call graph.\n\n",
+    );
+    content.push_str(&render_markdown(brief));
+    fs::write(&path, content.as_bytes())
+        .map_err(|error| CoreError::Storage(format!("cannot write {}: {error}", path.display())))?;
+    Ok(json!({
+        "path": display_path(&path),
+        "written": true,
+        "bytes": content.len(),
+        "marker": true,
+    }))
+}
+
+/// Report whether a session card exists and whether it matches the current
+/// snapshot and working tree. This is cheap: it reads only the card header.
+pub fn session_card_status(workspace: &Path, current_snapshot: Option<&str>, dirty: bool) -> Value {
+    let path = session_card_path(workspace);
+    let text = match fs::read_to_string(&path) {
+        Ok(text) => text,
+        Err(_) => {
+            return json!({
+                "present": false,
+                "path": display_path(&path),
+                "stale": false,
+            })
+        }
+    };
+    let marker = text.starts_with(SESSION_CARD_MARKER);
+    let mut card_snapshot: Option<String> = None;
+    let mut generated_at: Option<u64> = None;
+    for line in text.lines().take(20) {
+        if let Some(value) = line.strip_prefix("- snapshot: ") {
+            card_snapshot = Some(value.trim().to_string());
+        }
+        if let Some(value) = line.strip_prefix("- generated_at_unix: ") {
+            generated_at = value.trim().parse().ok();
+        }
+    }
+    let snapshot_match = match (card_snapshot.as_deref(), current_snapshot) {
+        (Some(card), Some(current)) => card == current,
+        _ => false,
+    };
+    json!({
+        "present": true,
+        "path": display_path(&path),
+        "marker": marker,
+        "snapshot": card_snapshot,
+        "snapshot_match": snapshot_match,
+        "generated_at_unix": generated_at,
+        "stale": !snapshot_match || dirty,
+    })
+}
+
+fn display_path(path: &Path) -> String {
+    let text = path.to_string_lossy();
+    text.strip_prefix(r"\\?\")
+        .or_else(|| text.strip_prefix("//?/"))
+        .unwrap_or(&text)
+        .to_string()
 }

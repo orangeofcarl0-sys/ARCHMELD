@@ -1,0 +1,5 @@
+{"seq": 2, "tool": "archmeld_status", "args": {}}
+{"seq": 15, "tool": "archmeld_query", "args": {"query": "", "kind": "symbols", "max_nodes": 200, "project_id": "project.e4a"}}
+{"seq": 24, "tool": "archmeld_context", "args": {"objective": "Find every repository location that encodes or checks the 10% storefront discount rate, including indirect basis-point and expected-value encodings, and distinguish decoys.", "project_id": "project.e4a", "budget_tokens": 12000}}
+{"seq": 25, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.07800e82856fff5494dc15f5ce86d36986eba1dfebe638c578e89eb502f21471"], "max_depth": 2, "max_nodes": 100, "project_id": "project.e4a"}}
+{"seq": 32, "tool": "archmeld_review", "args": {}}

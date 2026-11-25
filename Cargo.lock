@@ -152,6 +152,7 @@ dependencies = [
 name = "archmeld-core"
 version = "0.1.0"
 dependencies = [
+ "globset",
  "notify",
  "ring",
  "rusqlite",
@@ -861,7 +862,7 @@ dependencies = [
 
 [[package]]
 name = "codegraph-harness"
-version = "0.21.0"
+version = "0.21.2"
 dependencies = [
  "anyhow",
  "clap",
@@ -969,7 +970,7 @@ dependencies = [
 
 [[package]]
 name = "codegraph-memory"
-version = "0.21.0"
+version = "0.21.2"
 dependencies = [
  "anyhow",
  "bincode",
@@ -981,6 +982,8 @@ dependencies = [
  "hf-hub",
  "instant-distance",
  "log",
+ "ndarray",
+ "ort",
  "parking_lot",
  "rmp-serde",
  "rocksdb",
@@ -1152,7 +1155,7 @@ dependencies = [
 
 [[package]]
 name = "codegraph-server"
-version = "0.21.0"
+version = "0.21.2"
 dependencies = [
  "clap",
  "codegraph",
@@ -1200,6 +1203,7 @@ dependencies = [
  "globset",
  "lru",
  "notify",
+ "rayon",
  "regex",
  "serde",
  "serde_json",

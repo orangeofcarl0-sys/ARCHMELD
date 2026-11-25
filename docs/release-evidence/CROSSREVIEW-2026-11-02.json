@@ -11,7 +11,7 @@
     "rustc": "1.94.1 (e408947bf 2026-03-25)",
     "cargo": "1.94.1 (29ea6fb6a 2026-03-24)",
     "python": "3.11.9",
-    "temp": "C:/Users/<user>/AppData/Local/Temp (writable)",
+    "temp": "<user>/AppData/Local/Temp (writable)",
     "note": "Python 3.14 and the non-writable system TEMP produce unrelated asyncio/JFR/gopls failures; the final run uses 3.11.9 and a writable TEMP/TMP."
   },
   "regression": {

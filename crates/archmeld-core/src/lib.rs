@@ -20,6 +20,8 @@ pub mod blueprint;
 pub mod bridge;
 pub mod brief;
 pub mod changeset;
+pub mod cognition;
+pub mod cognition_map;
 pub mod context;
 pub mod drift;
 pub mod encrypted_backup;

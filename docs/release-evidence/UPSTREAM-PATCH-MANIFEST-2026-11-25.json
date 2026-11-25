@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "path-level CodeGraph patch manifest and registry reconciliation",
+  "generated_by": "manual classification + tooling/upstream.py patches --check",
+  "upstream": "codegraph",
+  "base_commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "branch": "archmeld/initial",
+  "auto_follow_latest": false,
+  "patch_surface": {
+    "changed_paths": 18,
+    "entries": 10,
+    "modified_upstream_files": 14,
+    "new_files_in_upstream_trees": 4,
+    "unaccounted_paths": [],
+    "missing_paths": [],
+    "manifest_complete": true,
+    "diffstat": "18 files changed, 1638 insertions(+), 54 deletions(-)",
+    "conflict_hotspots": [
+      "Cargo.toml",
+      "crates/codegraph-server/src/main.rs",
+      "crates/codegraph-server/src/memory.rs",
+      "crates/codegraph-server/src/daemon.rs",
+      "crates/codegraph-server/src/crash_phase.rs",
+      "crates/codegraph-server/src/index_state.rs",
+      "crates/codegraph-server/src/watcher.rs",
+      "crates/codegraph/src/export/mod.rs",
+      "crates/codegraph/src/export/ndjson.rs"
+    ]
+  },
+  "hashes": {
+    "UPSTREAM_PATCHES.md": "a7f9d7e96becc2118a561181e3aa8a5133390a6b4f88421ac6c37b3ea711f884",
+    "patches/codegraph/manifest.json": "f4919e6736dae8717427214c3d6732cb6b32a2b6f31dea79e323669509742454",
+    "upstreams.lock.json": "8585d9e1e3dc78b659a2ea512eff3c183146584fd4f75e6be645c40f91229908",
+    "contracts/upstreams/archmeld-export-v1.md": "a12fb752ccc06b98ec2e1a0ed5ed49dd49a59396d4c6f987dee33076f0f326df",
+    "docs/upstream/README.md": "0c11894777199d0747627e8fdd8f43dee744a4a3974ed9d6391e1e3019f08ca0",
+    "docs/release-evidence/UPSTREAM-STATUS-2026-11-25.json": "32d8f3f63e5dc2732eee3593cb402ab4755f5e2720c2a89d3190500f90b3a7db"
+  },
+  "supersedes": {
+    "record": "docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json",
+    "note": "The 2026-11-24 pin_updates hashes describe AGENTS.md, UPSTREAM_PATCHES.md, toolchains.lock.json and third_party/NOTICE.md as they were at that merge. This record does not rewrite them; it records the 2026-11-25 UPSTREAM_PATCHES.md/hash change. toolchains.lock.json and third_party/NOTICE.md were not changed in this slice."
+  },
+  "commands": [
+    "u0-upstream-status",
+    "u0-upstream-tests",
+    "u0-upstream-verify",
+    "u0-upstream-verify-2",
+    "u0-upstream-verify-3",
+    "u0-bridge-tests",
+    "u0-export-tests",
+    "u0-probe-tests",
+    "u0-adapter-drill",
+    "u1-patches-check",
+    "u1-upstream-diff",
+    "u1-drill-prepare-2",
+    "u1-record-dry-run"
+  ],
+  "limitations": [
+    "path-level audit only; not a rebased patch series",
+    "no real upstream upgrade was merged or recorded",
+    "format-patch/range-diff remain deferred until topic branches exist",
+    "the sealed docs/archmeld pack and the core Producer schema were not edited"
+  ]
+}

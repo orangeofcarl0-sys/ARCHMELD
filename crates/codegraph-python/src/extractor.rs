@@ -652,47 +652,99 @@ fn extract_import(source: &[u8], node: Node, importer: &str) -> Vec<ImportRelati
     imports
 }
 
-/// Extract from import statement
+/// Collect from-import names, including parenthesized lists and `as` aliases.
+fn collect_import_symbols(
+    source: &[u8],
+    node: Node,
+    module_end: usize,
+    plain: &mut Vec<String>,
+    aliased: &mut Vec<(String, String)>,
+    is_wildcard: &mut bool,
+) {
+    let mut cursor = node.walk();
+    for child in node.children(&mut cursor) {
+        match child.kind() {
+            "wildcard_import" => {
+                *is_wildcard = true;
+            }
+            "dotted_name" | "identifier" => {
+                // Skip the module name part.
+                if child.start_byte() > module_end {
+                    let name = child.utf8_text(source).unwrap_or("").to_string();
+                    if !name.is_empty() {
+                        plain.push(name);
+                    }
+                }
+            }
+            "aliased_import" => {
+                let exported = child
+                    .child_by_field_name("name")
+                    .map(|node| node.utf8_text(source).unwrap_or("").to_string())
+                    .unwrap_or_default();
+                let local = child
+                    .child_by_field_name("alias")
+                    .map(|node| node.utf8_text(source).unwrap_or("").to_string())
+                    .unwrap_or_default();
+                if !exported.is_empty() {
+                    if local.is_empty() {
+                        plain.push(exported);
+                    } else {
+                        aliased.push((exported, local));
+                    }
+                }
+            }
+            "parenthesized_import" => {
+                collect_import_symbols(source, child, module_end, plain, aliased, is_wildcard)
+            }
+            _ => {}
+        }
+    }
+}
+
+/// Extract from import statement.
+///
+/// `symbols` always contains exported names. A Python `from m import name as
+/// local` becomes one relation with exactly one symbol and `alias = local`, so
+/// the graph edge carries both without a new parser-API field.
 fn extract_import_from(source: &[u8], node: Node, importer: &str) -> Vec<ImportRelation> {
     let from_module = node
         .child_by_field_name("module_name")
         .map(|n| n.utf8_text(source).unwrap_or(".").to_string())
         .unwrap_or_else(|| ".".to_string());
+    let module_end = node
+        .child_by_field_name("module_name")
+        .map_or(0, |node| node.end_byte());
 
-    let mut symbols = Vec::new();
+    let mut plain = Vec::new();
+    let mut aliased = Vec::new();
     let mut is_wildcard = false;
-
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        match child.kind() {
-            "wildcard_import" => {
-                is_wildcard = true;
-            }
-            "dotted_name" | "identifier" => {
-                // Skip the module name part
-                if child.start_byte()
-                    > node
-                        .child_by_field_name("module_name")
-                        .map_or(0, |n| n.end_byte())
-                {
-                    symbols.push(child.utf8_text(source).unwrap_or("").to_string());
-                }
-            }
-            "aliased_import" => {
-                if let Some(name_node) = child.child_by_field_name("name") {
-                    symbols.push(name_node.utf8_text(source).unwrap_or("").to_string());
-                }
-            }
-            _ => {}
-        }
-    }
+    collect_import_symbols(
+        source,
+        node,
+        module_end,
+        &mut plain,
+        &mut aliased,
+        &mut is_wildcard,
+    );
 
     if is_wildcard {
         vec![ImportRelation::new(importer, &from_module).wildcard()]
-    } else if !symbols.is_empty() {
-        vec![ImportRelation::new(importer, &from_module).with_symbols(symbols)]
     } else {
-        vec![ImportRelation::new(importer, &from_module)]
+        let mut relations = Vec::new();
+        if !plain.is_empty() {
+            relations.push(ImportRelation::new(importer, &from_module).with_symbols(plain));
+        }
+        for (exported, local) in aliased {
+            relations.push(
+                ImportRelation::new(importer, &from_module)
+                    .with_symbols(vec![exported])
+                    .with_alias(local),
+            );
+        }
+        if relations.is_empty() {
+            relations.push(ImportRelation::new(importer, &from_module));
+        }
+        relations
     }
 }
 
@@ -961,6 +1013,54 @@ def main():
             ir.imports.len() >= 4,
             "Should find at least 4 import statements"
         );
+    }
+
+    #[test]
+    fn test_extract_from_import_aliases() {
+        let source = r#"
+from pricing import apply_discount as discount, list_price
+from models import (Order as Invoice, User)
+from collections import *
+
+def main():
+    pass
+"#;
+        let path = Path::new("test.py");
+        let config = ParserConfig::default();
+        let ir = extract(source, path, &config).unwrap();
+
+        let alias = ir
+            .imports
+            .iter()
+            .find(|import| import.alias.as_deref() == Some("discount"))
+            .expect("discount alias relation");
+        assert_eq!(alias.imported, "pricing");
+        assert_eq!(alias.symbols, vec!["apply_discount"]);
+        assert!(!alias.is_wildcard);
+
+        let plain = ir
+            .imports
+            .iter()
+            .find(|import| import.imported == "pricing" && import.alias.is_none())
+            .expect("list_price relation");
+        assert_eq!(plain.symbols, vec!["list_price"]);
+
+        let parenthesized_alias = ir
+            .imports
+            .iter()
+            .find(|import| import.alias.as_deref() == Some("Invoice"))
+            .expect("Invoice alias relation");
+        assert_eq!(parenthesized_alias.imported, "models");
+        assert_eq!(parenthesized_alias.symbols, vec!["Order"]);
+
+        let parenthesized_plain = ir
+            .imports
+            .iter()
+            .find(|import| import.imported == "models" && import.alias.is_none())
+            .expect("User relation");
+        assert_eq!(parenthesized_plain.symbols, vec!["User"]);
+
+        assert!(ir.imports.iter().any(|import| import.is_wildcard));
     }
 
     #[test]

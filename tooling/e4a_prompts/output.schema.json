@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "files_changed": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "rate_updated": {"type": "boolean"},
+    "constraints_applied": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {"type": "string"},
+          "what": {"type": "string"}
+        },
+        "required": ["file", "what"],
+        "additionalProperties": false
+      }
+    },
+    "map_used": {"type": "boolean"},
+    "notes": {"type": "string"}
+  },
+  "required": [
+    "files_changed",
+    "rate_updated",
+    "constraints_applied",
+    "map_used",
+    "notes"
+  ],
+  "additionalProperties": false
+}

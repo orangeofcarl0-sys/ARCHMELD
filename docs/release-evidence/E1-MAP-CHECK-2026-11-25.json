@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "E1: read-only evidence-bound cognition map format, map check and map status",
+  "not_included": [
+    "E2: map maintain, brief(recipe=map), inspect(kind=map_entry)",
+    "E3: candidate file and map apply",
+    "E4: real-repository pilot",
+    "E: relation refs (deferred until the Python same-name binding is fixed)"
+  ],
+  "implementation": {
+    "core": "crates/archmeld-core/src/cognition_map.rs",
+    "cli": "crates/archmeld-api/src/cli.rs: archmeld map check|status --state --project [--workspace] [--snapshot] [--map] [--candidate] [--markdown]",
+    "module": "crates/archmeld-core/src/lib.rs: pub mod cognition_map",
+    "dependency": "globset for observe/exclude scope globs",
+    "writes": false,
+    "mcp_changes": false
+  },
+  "format": {
+    "path": "<workspace>/archmeld.map.txt (override with --map)",
+    "header": ["#ARCHMELD-MAP: 1", "#snapshot:", "#commit:", "#scope:", "#budget_tokens:", "#observe:", "#exclude:"],
+    "entry": "name[tags]: F:... | R:... | A:... | S:...",
+    "refs": ["file:<repo-relative-path>", "entity:<kind>:<path>::<name>"],
+    "suffixes": ["@candidate", "@unknown(reason)"],
+    "deferred": "relation: refs"
+  },
+  "checks": [
+    "header/version/snapshot binding",
+    "section and entry grammar; duplicate Entry",
+    "F/A/S length limits; R reference limit",
+    "file/entity resolution with orphan/ambiguous counts",
+    "candidate/unknown suffix classification",
+    "snapshot coverage missing/observe/exclude",
+    "budget estimate (chars/4, default 40000)",
+    "secret literal scan without echoing the value",
+    "stale header vs requested/latest snapshot"
+  ],
+  "tests": {
+    "cognition_map": {
+      "path": "crates/archmeld-core/tests/cognition_map.rs",
+      "passed": 8,
+      "failed": 0,
+      "cases": [
+        "valid file/entity refs",
+        "orphan entity ref is invalid",
+        "stale header resolves but reports stale",
+        "missing coverage and candidate/unknown suffixes",
+        "malformed entry and secret literal",
+        "CRLF and absent map",
+        "relation ref rejected in E1",
+        "secret literal not echoed"
+      ]
+    },
+    "cli_map": {
+      "path": "crates/archmeld-api/src/cli.rs (map_tests)",
+      "passed": 1,
+      "failed": 0,
+      "case": "canonical map check returns ok; absent map is not an error and status reports absent"
+    },
+    "full": {
+      "command": "cargo test --locked -p archmeld-core -p archmeld-api --no-fail-fast -j 2",
+      "passed": 235,
+      "failed": 0,
+      "ignored": 0,
+      "sections": 78,
+      "log": "docs/evidence/e1-map-check-2026-11-25/final-core-api.log",
+      "log_sha256": "29aedac40903591418d1547c4f905422b0e2d1e3aa26f2a37481647500b7f9e6"
+    }
+  },
+  "manual_end_to_end": {
+    "fixture": "M1 4-file fixture, snapshot sha256:9e43304f...",
+    "valid": {
+      "command": "archmeld map check --state <state> --project project.m1 --workspace <repo>",
+      "exit_code": 0,
+      "state": "ok",
+      "refs": {"confirmed": 3, "candidate": 0, "unknown": 0, "orphan": 0, "ambiguous": 0},
+      "coverage_missing": ["README.md", "main.py"],
+      "evidence": "docs/evidence/e1-map-check-2026-11-25/check-ok.json"
+    },
+    "orphan": {
+      "command": "archmeld map check ...",
+      "exit_code": 1,
+      "state": "invalid",
+      "refs": {"confirmed": 2, "orphan": 1},
+      "error": "ref_orphan: entity reference is not present in the snapshot",
+      "evidence": "docs/evidence/e1-map-check-2026-11-25/check-orphan.json"
+    },
+    "status": {
+      "command": "archmeld map status ... --markdown",
+      "exit_code": 1,
+      "result": "same invalid map; markdown report printed with state=invalid",
+      "evidence": "docs/evidence/e1-map-check-2026-11-25/status-orphan.md"
+    }
+  },
+  "boundaries": {
+    "semantic_claims": "unverified",
+    "candidate_promoted": false,
+    "map_is_evidence": false,
+    "mcp_surface": "8 read-only tools, unchanged",
+    "source_upload": false
+  },
+  "limitations": [
+    "E1 resolves only file/entity refs; relation refs are rejected with ref_relation_deferred",
+    "no map maintain, brief(recipe=map) or inspect(kind=map_entry)",
+    "no map apply / candidate promotion",
+    "ambiguous entity refs are implemented but not covered by a dedicated fixture",
+    "coverage missing is a warning, not an error; a partial map can still check ok",
+    "the manual end-to-end fixture uses an existing M1 snapshot; it is not a real-repository pilot"
+  ]
+}

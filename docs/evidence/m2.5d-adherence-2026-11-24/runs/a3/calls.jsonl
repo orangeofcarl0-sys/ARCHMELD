@@ -1,0 +1,26 @@
+{"ts_ms": 1795526985465, "tool": "archmeld_status", "args": {}, "ok": true, "response_chars": 2807, "duration_ms": 76}
+{"ts_ms": 1795527005399, "tool": "archmeld_query", "args": {"kind": "relations", "query": "apply_discount"}, "ok": true, "response_chars": 286, "duration_ms": 36}
+{"ts_ms": 1795527014782, "tool": "archmeld_capabilities", "args": {}, "ok": true, "response_chars": 4734, "duration_ms": 74}
+{"ts_ms": 1795527015252, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "apply_discount"}, "ok": true, "response_chars": 2631, "duration_ms": 32}
+{"ts_ms": 1795527023557, "tool": "archmeld_query", "args": {"kind": "neighbors", "query": "src/pricing.py::apply_discount"}, "ok": true, "response_chars": 203, "duration_ms": 29}
+{"ts_ms": 1795527023978, "tool": "archmeld_query", "args": {"kind": "impact", "query": "src/pricing.py::apply_discount"}, "ok": true, "response_chars": 203, "duration_ms": 35}
+{"ts_ms": 1795527033803, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "depth": 2, "direction": "in"}, "ok": true, "response_chars": 334, "duration_ms": 32}
+{"ts_ms": 1795527034247, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"]}, "ok": true, "response_chars": 6246, "duration_ms": 57}
+{"ts_ms": 1795527046071, "tool": "archmeld_query", "args": {"kind": "text", "query": "apply_discount"}, "ok": true, "response_chars": 2648, "duration_ms": 76}
+{"ts_ms": 1795527046583, "tool": "archmeld_review", "args": {}, "ok": true, "response_chars": 6722, "duration_ms": 90}
+{"ts_ms": 1795527070152, "tool": "archmeld_source", "args": {"entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 1122, "duration_ms": 39}
+{"ts_ms": 1795527077644, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "summarize_order"}, "ok": true, "response_chars": 1899, "duration_ms": 43}
+{"ts_ms": 1795527078229, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "checkout"}, "ok": true, "response_chars": 2617, "duration_ms": 37}
+{"ts_ms": 1795527084882, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "summarize_order"}, "ok": true, "response_chars": 1899, "duration_ms": 51}
+{"ts_ms": 1795527085365, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "checkout"}, "ok": true, "response_chars": 2617, "duration_ms": 37}
+{"ts_ms": 1795527095038, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2", "syn.00d69c5572eadd6fa1214abb8d02daccfcecf645bdf9cc1e4e6a89984ec8bb43"], "max_depth": 2}, "ok": true, "response_chars": 18118, "duration_ms": 60}
+{"ts_ms": 1795527095502, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.adc2825e4e08fa734579dd011f5c7cc51fd742c1921f63bf99d19ba00f0d1f4a"], "max_depth": 2}, "ok": true, "response_chars": 6557, "duration_ms": 33}
+{"ts_ms": 1795527109263, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"]}, "ok": true, "response_chars": 24636, "duration_ms": 46}
+{"ts_ms": 1795527109755, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "dynamic_discount"}, "ok": true, "response_chars": 1899, "duration_ms": 30}
+{"ts_ms": 1795527109915, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "build_report"}, "ok": true, "response_chars": 1900, "duration_ms": 34}
+{"ts_ms": 1795527124616, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"]}, "ok": true, "response_chars": 24636, "duration_ms": 69}
+{"ts_ms": 1795527133363, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"]}, "ok": true, "response_chars": 24636, "duration_ms": 36}
+{"ts_ms": 1795527148852, "tool": "archmeld_query", "args": {"kind": "path", "entity_ids": ["syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809", "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"]}, "ok": true, "response_chars": 1114, "duration_ms": 32}
+{"ts_ms": 1795527158378, "tool": "archmeld_query", "args": {"kind": "path", "entity_ids": ["syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809", "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 4}, "ok": true, "response_chars": 976, "duration_ms": 30}
+{"ts_ms": 1795527158806, "tool": "archmeld_query", "args": {"kind": "path", "entity_ids": ["syn.00d69c5572eadd6fa1214abb8d02daccfcecf645bdf9cc1e4e6a89984ec8bb43", "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 4}, "ok": true, "response_chars": 976, "duration_ms": 33}
+{"ts_ms": 1795527169445, "tool": "archmeld_query", "args": {"kind": "path", "entity_ids": ["syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809", "syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"], "max_depth": 4}, "ok": true, "response_chars": 5521, "duration_ms": 27}

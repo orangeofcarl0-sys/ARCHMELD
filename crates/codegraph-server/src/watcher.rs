@@ -10,7 +10,7 @@ use crate::memory::MemoryManager;
 use crate::parser_registry::ParserRegistry;
 use codegraph::CodeGraph;
 use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -384,17 +384,102 @@ impl GraphUpdater {
             .execute()
             .unwrap_or_default();
 
+        // File-path and module indexes. The global `symbol_map` below is a
+        // last-resort bare-name lookup; Python must first resolve a name
+        // through the importing file's own `from module import name` edge.
+        let mut file_by_path: HashMap<String, codegraph::NodeId> = HashMap::new();
+        let mut file_by_suffix: HashMap<String, Vec<codegraph::NodeId>> = HashMap::new();
+        let mut python_files: HashSet<codegraph::NodeId> = HashSet::new();
+        for &file_id in &file_nodes {
+            if let Ok(node) = graph.get_node(file_id) {
+                let path = node.properties.get_string("path").unwrap_or_default();
+                let normalized = normalize_graph_path(path);
+                if !normalized.is_empty() {
+                    file_by_path.insert(normalized.clone(), file_id);
+                    for suffix in path_suffixes(&normalized) {
+                        file_by_suffix.entry(suffix).or_default().push(file_id);
+                    }
+                }
+                let language = node.properties.get_string("language").unwrap_or_default();
+                if language == "python"
+                    || normalized.ends_with(".py")
+                    || normalized.ends_with(".pyi")
+                {
+                    python_files.insert(file_id);
+                }
+            }
+        }
+
+        // Module-level symbols per file (functions, classes, interfaces). A
+        // method is not a module export; a `from m import x` edge must not
+        // resolve to a same-named method of an unrelated class.
+        let mut symbols_by_file: HashMap<codegraph::NodeId, HashMap<String, codegraph::NodeId>> =
+            HashMap::new();
+        for node_type in [NodeType::Function, NodeType::Class, NodeType::Interface] {
+            if let Ok(symbols) = graph.query().node_type(node_type).execute() {
+                for symbol_id in symbols {
+                    if let Ok(node) = graph.get_node(symbol_id) {
+                        if node.properties.get_string("parent_class").is_some() {
+                            continue;
+                        }
+                        if let Some(name) = node.properties.get_string("name") {
+                            let path = normalize_graph_path(
+                                node.properties.get_string("path").unwrap_or_default(),
+                            );
+                            if let Some(&file_id) = file_by_path.get(&path) {
+                                symbols_by_file
+                                    .entry(file_id)
+                                    .or_default()
+                                    .insert(name.to_string(), symbol_id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let bindings = python_import_bindings(
+            graph,
+            &file_nodes,
+            &python_files,
+            &file_by_suffix,
+            &symbols_by_file,
+        );
+
         // Build a map of symbol name -> node ID for quick lookup.
         // When multiple symbols share a name (e.g. platform-specific stubs),
         // prefer the non-stub version (higher complexity / more lines).
         let mut symbol_map: std::collections::HashMap<String, codegraph::NodeId> =
+            std::collections::HashMap::new();
+        // Symbols that say exactly which declaration they are (`qualified_name`,
+        // e.g. PHP's `App\Screen::render`). A call recorded under such a name
+        // means that declaration and no other.
+        let mut qualified_map: std::collections::HashMap<String, codegraph::NodeId> =
+            std::collections::HashMap::new();
+        // Bare names shared by several functions, at least one of them a method.
+        // Methods of different classes are different symbols, so a call by the
+        // bare name alone cannot say which one it reaches.
+        let mut name_counts: std::collections::HashMap<String, (usize, bool)> =
             std::collections::HashMap::new();
 
         // Index all functions — prefer non-stub implementations over stubs
         if let Ok(functions) = graph.query().node_type(NodeType::Function).execute() {
             for func_id in functions {
                 if let Ok(node) = graph.get_node(func_id) {
+                    if let Some(qualified) = node.properties.get_string("qualified_name") {
+                        let keep = qualified_map.get(qualified).is_none_or(|&existing| {
+                            symbol_weight(graph, func_id) > symbol_weight(graph, existing)
+                        });
+                        if keep {
+                            qualified_map.insert(qualified.to_string(), func_id);
+                        }
+                    }
                     if let Some(name) = node.properties.get_string("name") {
+                        let is_method = node.properties.get_string("parent_class").is_some()
+                            || node.properties.get_string("is_method") == Some("true");
+                        let entry = name_counts.entry(name.to_string()).or_default();
+                        entry.0 += 1;
+                        entry.1 |= is_method;
                         let name = name.to_string();
                         if let Some(&existing_id) = symbol_map.get(&name) {
                             // Prefer the version with higher complexity (non-stub)
@@ -411,12 +496,19 @@ impl GraphUpdater {
             }
         }
 
+        // Where each type looks up methods it does not declare itself.
+        let mut inherits: std::collections::HashMap<String, Vec<String>> =
+            std::collections::HashMap::new();
+
         // Index all classes
         if let Ok(classes) = graph.query().node_type(NodeType::Class).execute() {
             for class_id in classes {
                 if let Ok(node) = graph.get_node(class_id) {
                     if let Some(name) = node.properties.get_string("name") {
                         symbol_map.insert(name.to_string(), class_id);
+                        if let Some(parents) = node.properties.get_string_list_compat("inherits") {
+                            inherits.insert(name.to_string(), parents);
+                        }
                     }
                 }
             }
@@ -432,6 +524,87 @@ impl GraphUpdater {
                 }
             }
         }
+
+        let ambiguous_methods: std::collections::HashSet<String> = name_counts
+            .iter()
+            .filter(|(_, (count, any_method))| *count > 1 && *any_method)
+            .map(|(name, _)| name.clone())
+            .collect();
+        let resolve_callee = |callee: &str,
+                              caller_file: Option<codegraph::NodeId>|
+         -> Option<codegraph::NodeId> {
+            if let Some(&id) = qualified_map.get(callee) {
+                return Some(id);
+            }
+            if let Some((class, method)) = callee.rsplit_once("::") {
+                if let Some(id) = resolve_inherited(&qualified_map, &inherits, class, method) {
+                    return Some(id);
+                }
+            }
+            if let Some(file_id) = caller_file {
+                // `from module import name` / `from module import name as local`:
+                // the importing file's local binding decides, before any global
+                // bare-name lookup.
+                if let Some(&id) = bindings.imported_locals.get(&(file_id, callee.to_string())) {
+                    return Some(id);
+                }
+                // An alias whose target is missing or ambiguous must stay
+                // unresolved; it must not borrow a global homonym.
+                if bindings
+                    .shadowed_locals
+                    .contains(&(file_id, callee.to_string()))
+                {
+                    return None;
+                }
+                if let Some((receiver, _)) = callee.split_once('.') {
+                    if bindings
+                        .shadowed_locals
+                        .contains(&(file_id, receiver.to_string()))
+                    {
+                        return None;
+                    }
+                }
+                // `import module` / `import module as alias` followed by
+                // `alias.name(...)`.
+                if let Some((alias, name)) = callee.split_once('.') {
+                    if let Some(target_files) =
+                        bindings.module_aliases.get(&(file_id, alias.to_string()))
+                    {
+                        let mut found = None;
+                        for target_file in target_files {
+                            if let Some(symbols) = symbols_by_file.get(target_file) {
+                                if let Some(&id) = symbols.get(name) {
+                                    if found.is_some() {
+                                        return None;
+                                    }
+                                    found = Some(id);
+                                }
+                            }
+                        }
+                        if found.is_some() {
+                            return found;
+                        }
+                    }
+                }
+            }
+            if ambiguous_methods.contains(callee) {
+                return None;
+            }
+            // Duplicate free functions: a bare Python call with no local
+            // or import binding is ambiguous. Leaving it unresolved is
+            // better than linking an unrelated homonym.
+            if let Some(file_id) = caller_file {
+                if python_files.contains(&file_id)
+                    && name_counts
+                        .get(callee)
+                        .map(|(count, _)| *count > 1)
+                        .unwrap_or(false)
+                {
+                    return None;
+                }
+            }
+            symbol_map.get(callee).copied()
+        };
 
         // Process each file's outgoing import edges
         let mut edges_to_add: Vec<(codegraph::NodeId, codegraph::NodeId, PropertyMap)> = Vec::new();
@@ -451,8 +624,18 @@ impl GraphUpdater {
                                     {
                                         for symbol in &symbols {
                                             let symbol = symbol.as_str();
-                                            // Look up the symbol in our map
-                                            if let Some(&symbol_id) = symbol_map.get(symbol) {
+                                            // Python: use the importing file's
+                                            // module binding, never a global
+                                            // same-name function.
+                                            let symbol_id = if python_files.contains(&file_id) {
+                                                bindings
+                                                    .imported_symbols
+                                                    .get(&(file_id, symbol.to_string()))
+                                                    .copied()
+                                            } else {
+                                                symbol_map.get(symbol).copied()
+                                            };
+                                            if let Some(symbol_id) = symbol_id {
                                                 // Check if we already have an edge to this symbol
                                                 let already_linked = graph
                                                     .get_edges_between(file_id, symbol_id)
@@ -499,35 +682,46 @@ impl GraphUpdater {
         let mut call_edges_to_add: Vec<(codegraph::NodeId, codegraph::NodeId, PropertyMap)> =
             Vec::new();
 
-        if let Ok(functions) = graph.query().node_type(NodeType::Function).execute() {
-            for func_id in functions {
-                if let Ok(node) = graph.get_node(func_id) {
-                    if let Some(unresolved) =
-                        node.properties.get_string_list_compat("unresolved_calls")
-                    {
-                        for callee_name in &unresolved {
-                            let callee_name = callee_name.as_str();
-                            if !callee_name.is_empty() {
-                                if let Some(&callee_id) = symbol_map.get(callee_name) {
-                                    // Check if we already have a call edge
-                                    let already_linked = graph
-                                        .get_edges_between(func_id, callee_id)
-                                        .map(|edges| {
-                                            edges.iter().any(|e| {
-                                                graph
-                                                    .get_edge(*e)
-                                                    .map(|edge| edge.edge_type == EdgeType::Calls)
-                                                    .unwrap_or(false)
-                                            })
+        // Files can call too: PHP records top-level calls (templates) on the
+        // file node.
+        let callers: Vec<_> = [NodeType::Function, NodeType::CodeFile]
+            .into_iter()
+            .flat_map(|t| graph.query().node_type(t).execute().unwrap_or_default())
+            .collect();
+        for func_id in callers {
+            if let Ok(node) = graph.get_node(func_id) {
+                let caller_file = if node.node_type == NodeType::CodeFile {
+                    Some(func_id)
+                } else {
+                    let path = normalize_graph_path(
+                        node.properties.get_string("path").unwrap_or_default(),
+                    );
+                    file_by_path.get(&path).copied()
+                };
+                if let Some(unresolved) = node.properties.get_string_list_compat("unresolved_calls")
+                {
+                    for callee_name in &unresolved {
+                        let callee_name = callee_name.as_str();
+                        if !callee_name.is_empty() {
+                            if let Some(callee_id) = resolve_callee(callee_name, caller_file) {
+                                // Check if we already have a call edge
+                                let already_linked = graph
+                                    .get_edges_between(func_id, callee_id)
+                                    .map(|edges| {
+                                        edges.iter().any(|e| {
+                                            graph
+                                                .get_edge(*e)
+                                                .map(|edge| edge.edge_type == EdgeType::Calls)
+                                                .unwrap_or(false)
                                         })
-                                        .unwrap_or(false);
+                                    })
+                                    .unwrap_or(false);
 
-                                    if !already_linked {
-                                        let props = PropertyMap::new()
-                                            .with("resolved_by", "cross_file_resolution")
-                                            .with("is_direct", "true");
-                                        call_edges_to_add.push((func_id, callee_id, props));
-                                    }
+                                if !already_linked {
+                                    let props = PropertyMap::new()
+                                        .with("resolved_by", "cross_file_resolution")
+                                        .with("is_direct", "true");
+                                    call_edges_to_add.push((func_id, callee_id, props));
                                 }
                             }
                         }
@@ -596,6 +790,43 @@ impl GraphUpdater {
     }
 }
 
+/// The declaration a `Class::method` call reaches when `Class` does not declare
+/// `method` itself: the first ancestor that does, searched breadth-first in
+/// each type's `inherits` order. `None` when no indexed ancestor declares it -
+/// the method may come from a vendor class outside the workspace, and guessing
+/// a same-named method elsewhere is how unrelated classes got linked.
+fn resolve_inherited(
+    qualified_map: &std::collections::HashMap<String, codegraph::NodeId>,
+    inherits: &std::collections::HashMap<String, Vec<String>>,
+    class: &str,
+    method: &str,
+) -> Option<codegraph::NodeId> {
+    const MAX_ANCESTORS: usize = 64;
+    let mut seen = std::collections::HashSet::from([class.to_string()]);
+    let mut queue: std::collections::VecDeque<&str> = inherits
+        .get(class)
+        .into_iter()
+        .flatten()
+        .map(String::as_str)
+        .collect();
+    while let Some(ancestor) = queue.pop_front() {
+        if !seen.insert(ancestor.to_string()) || seen.len() > MAX_ANCESTORS {
+            continue;
+        }
+        if let Some(&id) = qualified_map.get(&format!("{ancestor}::{method}")) {
+            return Some(id);
+        }
+        queue.extend(
+            inherits
+                .get(ancestor)
+                .into_iter()
+                .flatten()
+                .map(String::as_str),
+        );
+    }
+    None
+}
+
 /// Weight a symbol for deduplication: prefer non-stub implementations.
 /// Returns a score based on complexity and line count — stubs (empty body,
 /// single-line return) get low scores, real implementations get high scores.
@@ -612,6 +843,236 @@ fn symbol_weight(graph: &codegraph::CodeGraph, node_id: codegraph::NodeId) -> u3
     };
     // Complexity is the primary signal, lines break ties
     complexity * 100 + lines
+}
+
+fn normalize_graph_path(path: &str) -> String {
+    path.replace('\\', "/")
+}
+
+/// All path suffixes at directory boundaries, e.g.
+/// `repo/src/pricing.py` -> `repo/src/pricing.py`, `src/pricing.py`,
+/// `pricing.py`. Used to match a Python module name to its file.
+fn path_suffixes(path: &str) -> Vec<String> {
+    let parts = path
+        .split('/')
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>();
+    (0..parts.len())
+        .map(|index| parts[index..].join("/"))
+        .collect()
+}
+
+fn module_file_keys(module_name: &str) -> Vec<String> {
+    let module_path = module_name.trim_start_matches('.').replace('.', "/");
+    if module_path.is_empty() {
+        return Vec::new();
+    }
+    vec![
+        format!("{module_path}.py"),
+        format!("{module_path}.pyi"),
+        format!("{module_path}/__init__.py"),
+    ]
+}
+
+fn module_files(
+    module_name: &str,
+    file_by_suffix: &HashMap<String, Vec<codegraph::NodeId>>,
+) -> Vec<codegraph::NodeId> {
+    let mut result = Vec::new();
+    for key in module_file_keys(module_name) {
+        if let Some(ids) = file_by_suffix.get(&key) {
+            for &id in ids {
+                if !result.contains(&id) {
+                    result.push(id);
+                }
+            }
+        }
+    }
+    result
+}
+
+/// Python import bindings for each importing file:
+///
+/// - `from module import name` -> `(file, name) -> symbol in module`
+/// - `import module` / `import module as alias` -> `(file, alias) -> module files`
+///
+/// Only a unique target is recorded. Ambiguous modules/symbols stay
+/// unresolved rather than borrowing an unrelated same-named declaration.
+struct PythonImportBindings {
+    /// `(importer, exported)` -> target. Only Phase 1 import edges use this.
+    imported_symbols: HashMap<(codegraph::NodeId, String), codegraph::NodeId>,
+    /// `(importer, local)` -> target. Phase 2 calls use this.
+    imported_locals: HashMap<(codegraph::NodeId, String), codegraph::NodeId>,
+    /// `(importer, module alias)` -> candidate module files.
+    module_aliases: HashMap<(codegraph::NodeId, String), Vec<codegraph::NodeId>>,
+    /// Names an import binds (or claims to bind) that have no unique target.
+    /// A call to one of these must never fall back to a global homonym.
+    shadowed_locals: HashSet<(codegraph::NodeId, String)>,
+}
+
+fn push_unique_targets(
+    map: &mut HashMap<(codegraph::NodeId, String), Vec<codegraph::NodeId>>,
+    key: (codegraph::NodeId, String),
+    targets: &[codegraph::NodeId],
+) {
+    let entry = map.entry(key).or_default();
+    for &target in targets {
+        if !entry.contains(&target) {
+            entry.push(target);
+        }
+    }
+}
+
+fn symbol_targets(
+    symbol: &str,
+    candidates: &[codegraph::NodeId],
+    symbols_by_file: &HashMap<codegraph::NodeId, HashMap<String, codegraph::NodeId>>,
+) -> Vec<codegraph::NodeId> {
+    let mut targets = Vec::new();
+    for candidate in candidates {
+        if let Some(known) = symbols_by_file.get(candidate) {
+            if let Some(&target) = known.get(symbol) {
+                if !targets.contains(&target) {
+                    targets.push(target);
+                }
+            }
+        }
+    }
+    targets
+}
+
+fn python_import_bindings(
+    graph: &CodeGraph,
+    file_nodes: &[codegraph::NodeId],
+    python_files: &HashSet<codegraph::NodeId>,
+    file_by_suffix: &HashMap<String, Vec<codegraph::NodeId>>,
+    symbols_by_file: &HashMap<codegraph::NodeId, HashMap<String, codegraph::NodeId>>,
+) -> PythonImportBindings {
+    let mut exported_targets: HashMap<(codegraph::NodeId, String), Vec<codegraph::NodeId>> =
+        HashMap::new();
+    let mut local_targets: HashMap<(codegraph::NodeId, String), Vec<codegraph::NodeId>> =
+        HashMap::new();
+    let mut module_aliases: HashMap<(codegraph::NodeId, String), Vec<codegraph::NodeId>> =
+        HashMap::new();
+    let mut shadowed_locals: HashSet<(codegraph::NodeId, String)> = HashSet::new();
+    for &file_id in file_nodes {
+        if !python_files.contains(&file_id) {
+            continue;
+        }
+        let Ok(neighbors) = graph.get_neighbors(file_id, codegraph::Direction::Outgoing) else {
+            continue;
+        };
+        for module_id in neighbors {
+            let Ok(module_node) = graph.get_node(module_id) else {
+                continue;
+            };
+            // Phase 1 creates file -> symbol Imports edges; those targets are
+            // Functions/Classes, not module stubs. Do not read them back as
+            // module imports on the next resolution pass.
+            if module_node.node_type != codegraph::NodeType::Module {
+                continue;
+            }
+            let module_name = module_node
+                .properties
+                .get_string("name")
+                .unwrap_or_default()
+                .to_string();
+            let Ok(edge_ids) = graph.get_edges_between(file_id, module_id) else {
+                continue;
+            };
+            for edge_id in edge_ids {
+                let Ok(edge) = graph.get_edge(edge_id) else {
+                    continue;
+                };
+                if edge.edge_type != codegraph::EdgeType::Imports {
+                    continue;
+                }
+                let candidates = module_files(&module_name, file_by_suffix);
+                let symbols = edge
+                    .properties
+                    .get_string_list_compat("symbols")
+                    .unwrap_or_default();
+                let alias = edge.properties.get_string("alias").map(str::to_string);
+                if symbols.is_empty() {
+                    if candidates.is_empty() {
+                        continue;
+                    }
+                    let local = alias.unwrap_or_else(|| {
+                        module_name
+                            .rsplit('.')
+                            .next()
+                            .unwrap_or(module_name.as_str())
+                            .to_string()
+                    });
+                    let entry = module_aliases.entry((file_id, local)).or_default();
+                    for candidate in candidates {
+                        if !entry.contains(&candidate) {
+                            entry.push(candidate);
+                        }
+                    }
+                    continue;
+                }
+                if candidates.is_empty() {
+                    for symbol in &symbols {
+                        shadowed_locals.insert((file_id, symbol.clone()));
+                    }
+                    if symbols.len() == 1 {
+                        if let Some(alias) = &alias {
+                            shadowed_locals.insert((file_id, alias.clone()));
+                        }
+                    }
+                    continue;
+                }
+                if symbols.len() == 1 && alias.is_some() {
+                    // `from module import exported as local`.
+                    let exported = &symbols[0];
+                    let local = alias.as_ref().expect("alias checked");
+                    let targets = symbol_targets(exported, &candidates, symbols_by_file);
+                    push_unique_targets(
+                        &mut exported_targets,
+                        (file_id, exported.clone()),
+                        &targets,
+                    );
+                    push_unique_targets(&mut local_targets, (file_id, local.clone()), &targets);
+                    // The original name is not bound in this file.
+                    shadowed_locals.insert((file_id, exported.clone()));
+                } else {
+                    for symbol in symbols {
+                        let targets = symbol_targets(&symbol, &candidates, symbols_by_file);
+                        push_unique_targets(
+                            &mut exported_targets,
+                            (file_id, symbol.clone()),
+                            &targets,
+                        );
+                        push_unique_targets(&mut local_targets, (file_id, symbol), &targets);
+                    }
+                }
+            }
+        }
+    }
+
+    let mut imported_symbols = HashMap::new();
+    for (key, targets) in &exported_targets {
+        if targets.len() == 1 {
+            imported_symbols.insert(key.clone(), targets[0]);
+        } else {
+            shadowed_locals.insert(key.clone());
+        }
+    }
+    let mut imported_locals = HashMap::new();
+    for (key, targets) in &local_targets {
+        if targets.len() == 1 {
+            imported_locals.insert(key.clone(), targets[0]);
+        } else {
+            shadowed_locals.insert(key.clone());
+        }
+    }
+    PythonImportBindings {
+        imported_symbols,
+        imported_locals,
+        module_aliases,
+        shadowed_locals,
+    }
 }
 
 /// Result of a batch update operation.
@@ -921,6 +1382,74 @@ mod tests {
             has_import_edge,
             "MyClass should have an incoming import edge from main.ts"
         );
+    }
+
+    #[tokio::test]
+    async fn test_python_import_binds_call_to_module_not_same_name_homonym() {
+        use codegraph::{EdgeType, NodeType};
+
+        let graph = Arc::new(RwLock::new(CodeGraph::in_memory().unwrap()));
+        let parsers = Arc::new(ParserRegistry::new());
+        let files = vec![
+            (
+                PathBuf::from("/repo/pricing.py"),
+                "def apply_discount(value):\n    return value * 0.9\n".to_string(),
+            ),
+            (
+                PathBuf::from("/repo/legacy.py"),
+                "def apply_discount(value):\n    return value * 0.5\n".to_string(),
+            ),
+            (
+                PathBuf::from("/repo/checkout.py"),
+                "from pricing import apply_discount\n\n\
+                 def checkout(value):\n    return apply_discount(value) + 2\n"
+                    .to_string(),
+            ),
+        ];
+        let result = GraphUpdater::update_files(&graph, &parsers, &files).await;
+        assert!(result.all_succeeded(), "{:?}", result.failed);
+
+        let graph_guard = graph.read().await;
+        let functions: Vec<_> = graph_guard
+            .query()
+            .node_type(NodeType::Function)
+            .execute()
+            .unwrap_or_default();
+        let find = |name: &str, path_suffix: &str| -> Option<codegraph::NodeId> {
+            functions.iter().copied().find(|id| {
+                graph_guard
+                    .get_node(*id)
+                    .map(|node| {
+                        node.properties.get_string("name") == Some(name)
+                            && node
+                                .properties
+                                .get_string("path")
+                                .unwrap_or_default()
+                                .replace('\\', "/")
+                                .ends_with(path_suffix)
+                    })
+                    .unwrap_or(false)
+            })
+        };
+        let checkout = find("checkout", "checkout.py").expect("checkout");
+        let pricing = find("apply_discount", "pricing.py").expect("pricing.apply_discount");
+        let legacy = find("apply_discount", "legacy.py").expect("legacy.apply_discount");
+        assert!(
+            has_calls_edge(&graph_guard, checkout, pricing),
+            "checkout should call pricing.apply_discount"
+        );
+        assert!(
+            !has_calls_edge(&graph_guard, checkout, legacy),
+            "checkout must not call legacy.apply_discount"
+        );
+        assert!(graph_guard
+            .get_edges_between(checkout, pricing)
+            .unwrap_or_default()
+            .iter()
+            .any(|edge_id| graph_guard
+                .get_edge(*edge_id)
+                .map(|edge| edge.edge_type == EdgeType::Calls)
+                .unwrap_or(false)));
     }
 
     #[test]
@@ -1624,6 +2153,35 @@ void helper_func(int x) {
             })
     }
 
+    fn find_node_in_file(
+        graph: &CodeGraph,
+        node_type: codegraph::NodeType,
+        name: &str,
+        path_suffix: &str,
+    ) -> Option<codegraph::NodeId> {
+        graph
+            .query()
+            .node_type(node_type)
+            .execute()
+            .unwrap_or_default()
+            .into_iter()
+            .find(|&id| {
+                graph
+                    .get_node(id)
+                    .ok()
+                    .map(|node| {
+                        node.properties.get_string("name") == Some(name)
+                            && node
+                                .properties
+                                .get_string("path")
+                                .unwrap_or_default()
+                                .replace('\\', "/")
+                                .ends_with(path_suffix)
+                    })
+                    .unwrap_or(false)
+            })
+    }
+
     fn count_calls_edges_from(graph: &CodeGraph, node_id: codegraph::NodeId) -> usize {
         use codegraph::{Direction, EdgeType};
         graph
@@ -1657,5 +2215,323 @@ void helper_func(int x) {
                     .map(|e| e.edge_type == EdgeType::Calls)
                     .unwrap_or(false)
             })
+    }
+
+    /// PHP call resolution across files (#31). Each case parses real source
+    /// through the registered parser and runs the shared resolver.
+    mod php_resolution {
+        use super::*;
+
+        fn resolve(files: &[(&str, &str)]) -> CodeGraph {
+            let parsers = ParserRegistry::new();
+            let mut graph = CodeGraph::in_memory().unwrap();
+            for (path, source) in files {
+                let path = std::path::Path::new(path);
+                let parser = parsers.parser_for_path(path).expect("PHP parser");
+                parser
+                    .parse_source(source, path, &mut graph)
+                    .expect("parse");
+            }
+            GraphUpdater::resolve_cross_file_imports(&mut graph);
+            graph
+        }
+
+        fn by_qualified_name(graph: &CodeGraph, qualified: &str) -> codegraph::NodeId {
+            let key = |n: &codegraph::Node| {
+                n.properties
+                    .get_string("qualified_name")
+                    .or_else(|| n.properties.get_string("name"))
+                    .map(str::to_string)
+            };
+            graph
+                .query()
+                .node_type(codegraph::NodeType::Function)
+                .execute()
+                .unwrap_or_default()
+                .into_iter()
+                .find(|&id| graph.get_node(id).ok().and_then(key).as_deref() == Some(qualified))
+                .unwrap_or_else(|| panic!("{qualified} not in graph"))
+        }
+
+        fn file_node(graph: &CodeGraph, path: &str) -> codegraph::NodeId {
+            graph
+                .query()
+                .node_type(codegraph::NodeType::CodeFile)
+                .property("path", path.to_string())
+                .execute()
+                .unwrap_or_default()
+                .into_iter()
+                .next()
+                .unwrap_or_else(|| panic!("{path} not in graph"))
+        }
+
+        const SCREENS: [(&str, &str); 2] = [
+            (
+                "/ws/Alpha.php",
+                "<?php\nnamespace App\\Alpha;\nfinal class Screen {\n    public function render(): string { return 'a'; }\n}\n",
+            ),
+            (
+                "/ws/Beta.php",
+                "<?php\nnamespace App\\Beta;\nfinal class Screen {\n    public function render(bool $f = true): string {\n        if ($f) { return 'b'; }\n        return 'c';\n    }\n}\n",
+            ),
+        ];
+
+        #[test]
+        fn a_method_call_reaches_the_receivers_own_class() {
+            let caller = (
+                "/ws/CallAlpha.php",
+                "<?php\nnamespace App\\Alpha;\nfinal class Caller {\n    public function run(): string { return (new Screen())->render(); }\n}\n",
+            );
+            let graph = resolve(&[SCREENS[0], SCREENS[1], caller]);
+            let run = by_qualified_name(&graph, "App\\Alpha\\Caller::run");
+            let alpha = by_qualified_name(&graph, "App\\Alpha\\Screen::render");
+            let beta = by_qualified_name(&graph, "App\\Beta\\Screen::render");
+            assert!(has_calls_edge(&graph, run, alpha));
+            assert!(
+                !has_calls_edge(&graph, run, beta),
+                "the heavier same-named method must not win"
+            );
+        }
+
+        #[test]
+        fn typed_parameters_imports_and_properties_name_the_receiver() {
+            let caller = (
+                "/ws/Uses.php",
+                "<?php\nnamespace App\\Web;\nuse App\\Beta\\Screen;\nuse App\\Alpha\\{Screen as AlphaScreen};\nfinal class Page {\n    public function __construct(private AlphaScreen $alpha) {}\n    public function viaParam(Screen $s): string { return $s->render(); }\n    public function viaProperty(): string { return $this->alpha->render(); }\n    public function viaLocal(): string { $x = new AlphaScreen(); return $x->render(); }\n}\n",
+            );
+            let graph = resolve(&[SCREENS[0], SCREENS[1], caller]);
+            let alpha = by_qualified_name(&graph, "App\\Alpha\\Screen::render");
+            let beta = by_qualified_name(&graph, "App\\Beta\\Screen::render");
+            let page = |m: &str| by_qualified_name(&graph, &format!("App\\Web\\Page::{m}"));
+            assert!(has_calls_edge(&graph, page("viaParam"), beta));
+            assert!(has_calls_edge(&graph, page("viaProperty"), alpha));
+            assert!(has_calls_edge(&graph, page("viaLocal"), alpha));
+            assert!(!has_calls_edge(&graph, page("viaParam"), alpha));
+        }
+
+        #[test]
+        fn an_unknown_receiver_is_not_guessed() {
+            let caller = (
+                "/ws/Dynamic.php",
+                "<?php\nnamespace App;\nfunction show($screen): string { return $screen->render(); }\n",
+            );
+            let graph = resolve(&[SCREENS[0], SCREENS[1], caller]);
+            let show = by_qualified_name(&graph, "App\\show");
+            assert_eq!(count_calls_edges_from(&graph, show), 0);
+        }
+
+        #[test]
+        fn an_unknown_receiver_does_not_bind_a_same_named_global_function() {
+            let graph = resolve(&[
+                (
+                    "/ws/functions.php",
+                    "<?php\nfunction render(): string { return 'g'; }\n",
+                ),
+                SCREENS[0],
+                (
+                    "/ws/Dynamic.php",
+                    "<?php\nfunction show($screen): string { return $screen->render(); }\n",
+                ),
+            ]);
+            let show = by_qualified_name(&graph, "show");
+            let global = by_qualified_name(&graph, "render");
+            assert!(!has_calls_edge(&graph, show, global));
+            assert_eq!(count_calls_edges_from(&graph, show), 0);
+        }
+
+        #[test]
+        fn an_inherited_method_resolves_to_the_declaring_class() {
+            let base = (
+                "/ws/Base.php",
+                "<?php\nnamespace App\\Core;\nabstract class Base {\n    protected function helper(): int { return 1; }\n}\n",
+            );
+            let child = (
+                "/ws/Child.php",
+                "<?php\nnamespace App\\Web;\nuse App\\Core\\Base;\nfinal class Child extends Base {\n    public function run(): int { return $this->helper() + parent::helper(); }\n}\n",
+            );
+            let graph = resolve(&[base, child]);
+            let run = by_qualified_name(&graph, "App\\Web\\Child::run");
+            let helper = by_qualified_name(&graph, "App\\Core\\Base::helper");
+            assert!(has_calls_edge(&graph, run, helper));
+        }
+
+        #[test]
+        fn an_explicit_global_call_resolves() {
+            let graph = resolve(&[
+                ("/ws/functions.php", "<?php\nfunction helper(): string { return 'g'; }\n"),
+                (
+                    "/ws/callers.php",
+                    "<?php\nnamespace App {\n    function caller(): string { return \\helper(); }\n}\n",
+                ),
+            ]);
+            let caller = by_qualified_name(&graph, "App\\caller");
+            let helper = by_qualified_name(&graph, "helper");
+            assert!(has_calls_edge(&graph, caller, helper));
+        }
+
+        #[test]
+        fn a_file_scope_call_is_made_by_the_file() {
+            let graph = resolve(&[
+                (
+                    "/ws/functions.php",
+                    "<?php\nfunction helper(): string { return 't'; }\n",
+                ),
+                (
+                    "/ws/template.php",
+                    "<?php\nrequire_once __DIR__ . '/functions.php';\necho helper();\n",
+                ),
+            ]);
+            let template = file_node(&graph, "/ws/template.php");
+            let helper = by_qualified_name(&graph, "helper");
+            assert!(has_calls_edge(&graph, template, helper));
+        }
+    }
+
+    mod python_alias {
+        use super::*;
+        use codegraph::NodeType;
+
+        async fn parse(files: Vec<(&str, &str)>) -> Arc<RwLock<CodeGraph>> {
+            let files: Vec<(PathBuf, String)> = files
+                .into_iter()
+                .map(|(path, source)| (PathBuf::from(path), source.to_string()))
+                .collect();
+            let graph = Arc::new(RwLock::new(CodeGraph::in_memory().unwrap()));
+            let parsers = Arc::new(ParserRegistry::new());
+            let result = GraphUpdater::update_files(&graph, &parsers, &files).await;
+            assert!(result.all_succeeded(), "{:?}", result.failed);
+            graph
+        }
+
+        #[tokio::test]
+        async fn an_alias_binds_to_its_imported_symbol_not_a_global_homonym() {
+            let graph = parse(vec![
+                (
+                    "/repo/pricing.py",
+                    "def apply_discount(value):\n    return value * 0.9\n",
+                ),
+                (
+                    "/repo/legacy.py",
+                    "def discount(value):\n    return value * 0.5\n",
+                ),
+                (
+                    "/repo/checkout.py",
+                    "from pricing import apply_discount as discount\n\n\
+                     def checkout(value):\n    return discount(value) + 2\n",
+                ),
+            ])
+            .await;
+            let guard = graph.read().await;
+            let checkout = find_node_in_file(&guard, NodeType::Function, "checkout", "checkout.py")
+                .expect("checkout");
+            let pricing =
+                find_node_in_file(&guard, NodeType::Function, "apply_discount", "pricing.py")
+                    .expect("pricing.apply_discount");
+            let legacy = find_node_in_file(&guard, NodeType::Function, "discount", "legacy.py")
+                .expect("legacy.discount");
+            assert!(has_calls_edge(&guard, checkout, pricing));
+            assert!(!has_calls_edge(&guard, checkout, legacy));
+            assert_eq!(count_calls_edges_from(&guard, checkout), 1);
+        }
+
+        #[tokio::test]
+        async fn an_alias_to_a_class_resolves() {
+            let graph = parse(vec![
+                ("/repo/models.py", "class Order:\n    pass\n"),
+                (
+                    "/repo/app.py",
+                    "from models import Order as Invoice\n\n\
+                     def make():\n    return Invoice()\n",
+                ),
+            ])
+            .await;
+            let guard = graph.read().await;
+            let make =
+                find_node_in_file(&guard, NodeType::Function, "make", "app.py").expect("make");
+            let order =
+                find_node_in_file(&guard, NodeType::Class, "Order", "models.py").expect("Order");
+            assert!(has_calls_edge(&guard, make, order));
+        }
+
+        #[tokio::test]
+        async fn a_missing_alias_target_never_borrows_a_global_homonym() {
+            let graph = parse(vec![
+                ("/repo/m.py", "def present():\n    return 1\n"),
+                ("/repo/legacy.py", "def y():\n    return 2\n"),
+                (
+                    "/repo/app.py",
+                    "from m import missing as y\n\n\
+                     def f():\n    return y()\n",
+                ),
+            ])
+            .await;
+            let guard = graph.read().await;
+            let f = find_node_in_file(&guard, NodeType::Function, "f", "app.py").expect("f");
+            assert_eq!(count_calls_edges_from(&guard, f), 0);
+        }
+
+        #[tokio::test]
+        async fn an_ambiguous_alias_target_stays_unresolved() {
+            let graph = parse(vec![
+                (
+                    "/a/pricing.py",
+                    "def apply_discount(value):\n    return value * 0.9\n",
+                ),
+                (
+                    "/b/pricing.py",
+                    "def apply_discount(value):\n    return value * 0.8\n",
+                ),
+                (
+                    "/repo/legacy.py",
+                    "def discount(value):\n    return value * 0.5\n",
+                ),
+                (
+                    "/repo/checkout.py",
+                    "from pricing import apply_discount as discount\n\n\
+                     def checkout(value):\n    return discount(value)\n",
+                ),
+            ])
+            .await;
+            let guard = graph.read().await;
+            let checkout = find_node_in_file(&guard, NodeType::Function, "checkout", "checkout.py")
+                .expect("checkout");
+            assert_eq!(count_calls_edges_from(&guard, checkout), 0);
+        }
+
+        #[tokio::test]
+        async fn an_alias_shadow_is_file_scoped() {
+            let graph = parse(vec![
+                (
+                    "/repo/pricing.py",
+                    "def apply_discount(value):\n    return value * 0.9\n",
+                ),
+                (
+                    "/repo/legacy.py",
+                    "def discount(value):\n    return value * 0.5\n",
+                ),
+                (
+                    "/repo/app.py",
+                    "from pricing import apply_discount as discount\n\n\
+                     def app(value):\n    return discount(value)\n",
+                ),
+                (
+                    "/repo/other.py",
+                    "def other(value):\n    return discount(value)\n",
+                ),
+            ])
+            .await;
+            let guard = graph.read().await;
+            let app = find_node_in_file(&guard, NodeType::Function, "app", "app.py").expect("app");
+            let other =
+                find_node_in_file(&guard, NodeType::Function, "other", "other.py").expect("other");
+            let pricing =
+                find_node_in_file(&guard, NodeType::Function, "apply_discount", "pricing.py")
+                    .expect("pricing.apply_discount");
+            let legacy = find_node_in_file(&guard, NodeType::Function, "discount", "legacy.py")
+                .expect("legacy.discount");
+            assert!(has_calls_edge(&guard, app, pricing));
+            assert!(!has_calls_edge(&guard, app, legacy));
+            assert!(has_calls_edge(&guard, other, legacy));
+        }
     }
 }

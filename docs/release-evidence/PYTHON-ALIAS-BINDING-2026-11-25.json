@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "Python per-symbol import aliases: safety and full mapping",
+  "root_cause": "extract_import_from dropped the local alias of `from m import x as y`; python_import_bindings mapped only the exported name; a call to the alias could fall through to a unique global homonym.",
+  "design": {
+    "parser": "one ImportRelation per alias with symbols=[exported] and alias=local; plain names remain a multi-symbol relation; parenthesized imports are collected recursively",
+    "resolver": "PythonImportBindings separates imported_symbols (Phase 1), imported_locals (Phase 2), module_aliases, and shadowed_locals",
+    "safety": "resolve_callee checks imported_locals, then shadowed_locals (including dotted receiver), before module aliases, duplicate-free-function checks, and the global fallback",
+    "two_pass": "exported/local target lists are collected first; only a unique target becomes a binding, otherwise the name is shadowed"
+  },
+  "changes": {
+    "parser": "crates/codegraph-python/src/extractor.rs: collect_import_symbols + split relations",
+    "resolver": "crates/codegraph-server/src/watcher.rs: PythonImportBindings and resolve_callee order",
+    "tests": "extractor unit, parser_impl_tests, watcher python_alias module"
+  },
+  "tests": {
+    "extractor": {"passed": 1, "failed": 0, "log": "docs/evidence/python-alias-binding-2026-11-25/extractor-test.log", "log_sha256": "4a045e501a6755f593f948154d346791c5d7717abf444877c3357d15b262b124"},
+    "parser": {"passed": 1, "failed": 0, "log": "docs/evidence/python-alias-binding-2026-11-25/parser-test.log", "log_sha256": "ea76ca9471debc398bd5d221a88bc2ff150777e69c12042b56fd7bf764e08e59"},
+    "watcher": {"passed": 34, "failed": 0, "log": "docs/evidence/python-alias-binding-2026-11-25/watcher-tests.log", "log_sha256": "a232cd6661d187c0a2a25ba347bfd6f93577b21b9cd8163a7d3b13b0b0f70779"},
+    "codegraph_python": {"passed": 122, "failed": 0, "ignored": 1, "log": "docs/evidence/python-alias-binding-2026-11-25/codegraph-python-tests.log", "log_sha256": "889e2b8aa670c35544c20c3980775f93dd5cf0071d3ff9db670e87476130b33a"},
+    "codegraph_server_lib": {"passed": 408, "failed": 16, "ignored": 1, "log": "docs/evidence/python-alias-binding-2026-11-25/server-lib-tests.log", "log_sha256": "608043bb6bd3b057e3db90030bff48073109d2e953084cfef9878804b51978b9", "note": "16 known unrelated backend/handler/memory/performance failures; the ai_query performance test passed this run; watcher and cross-file tests pass"}
+  },
+  "alias_cases": [
+    "function alias binds to pricing, not a unique global discount",
+    "class alias resolves to the Class node",
+    "missing target never borrows a global homonym",
+    "ambiguous target (two pricing.py files) stays unresolved",
+    "shadow is file-scoped; another file still resolves its own global"
+  ],
+  "end_to_end": {
+    "export_example": "not rebuilt (~22 min); watcher tests cover parser + resolver",
+    "archmeld_impact": "not rerun for this slice"
+  },
+  "boundaries": {
+    "calls_remain_candidate": true,
+    "e_status": "E4a no-go; E stays at read-only E2",
+    "relation_refs": "still unimplemented",
+    "source_upload": false
+  },
+  "limitations": [
+    "re-exported symbols, relative-import package ambiguity, dotted import first-segment binding, star-import per-name binding and Python method parent_class marking remain separate",
+    "no ARCHMELD export/impact e2e in this slice",
+    "the full server suite still has 16 known unrelated failures"
+  ]
+}

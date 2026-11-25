@@ -20,18 +20,25 @@ pub fn export_ndjson_v1(graph: &CodeGraph) -> crate::Result<String> {
     let nodes: Vec<(u64, &crate::Node)> = graph.iter_nodes().collect();
     let edges: Vec<(u64, &crate::Edge)> = graph.iter_edges().collect();
 
+    let mut manifest = json!({
+        "type": "manifest",
+        "format": FORMAT,
+        "schema_version": "1.1",
+        "source": "codegraph",
+        "version": env!("CARGO_PKG_VERSION"),
+        "node_count": nodes.len(),
+        "edge_count": edges.len(),
+        "iteration": "real-iterators",
+    });
+    if let Some(commit) = producer_commit() {
+        manifest["producer_commit"] = json!(commit);
+        manifest["producer_dirty"] = json!(crate::metadata::GIT_HASH_SHORT.ends_with("-dirty"));
+    }
+
     let mut lines = Vec::with_capacity(nodes.len() + edges.len() + 1);
     lines.push(
-        serde_json::to_string(&json!({
-            "type": "manifest",
-            "format": FORMAT,
-            "source": "codegraph",
-            "version": env!("CARGO_PKG_VERSION"),
-            "node_count": nodes.len(),
-            "edge_count": edges.len(),
-            "iteration": "real-iterators",
-        }))
-        .map_err(|e| crate::GraphError::serialization("manifest", Some(e)))?,
+        serde_json::to_string(&manifest)
+            .map_err(|e| crate::GraphError::serialization("manifest", Some(e)))?,
     );
 
     for (id, node) in &nodes {
@@ -63,6 +70,19 @@ pub fn export_ndjson_v1(graph: &CodeGraph) -> crate::Result<String> {
     let mut out = lines.join("\n");
     out.push('\n');
     Ok(out)
+}
+
+/// Full upstream commit embedded by `build.rs`, when the build had a git
+/// checkout. Unknown/absent values are omitted rather than exported as
+/// `"unknown"`, so consumers can distinguish "no provenance" from a real hash.
+fn producer_commit() -> Option<&'static str> {
+    let hash = crate::metadata::GIT_HASH;
+    let valid_length = hash.len() == 40 || hash.len() == 64;
+    if valid_length && hash.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        Some(hash)
+    } else {
+        None
+    }
 }
 
 fn properties_to_json(properties: &PropertyMap) -> Value {
@@ -118,8 +138,17 @@ mod tests {
             match value["type"].as_str().unwrap() {
                 "manifest" => {
                     assert_eq!(value["format"], FORMAT);
+                    assert_eq!(value["schema_version"], "1.1");
                     assert_eq!(value["node_count"], 3);
                     assert_eq!(value["edge_count"], 2);
+                    if let Some(commit) = value.get("producer_commit") {
+                        let commit = commit.as_str().expect("producer_commit must be a string");
+                        assert!(
+                            commit.len() == 40 || commit.len() == 64,
+                            "producer_commit has unexpected length: {commit}"
+                        );
+                        assert!(value["producer_dirty"].is_boolean());
+                    }
                 }
                 "node" => {
                     node_ids.insert(value["id"].as_u64().unwrap());

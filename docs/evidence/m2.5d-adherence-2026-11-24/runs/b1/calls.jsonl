@@ -1,0 +1,34 @@
+{"ts_ms": 1795526244305, "tool": "archmeld_status", "args": {}, "ok": true, "response_chars": 2807, "duration_ms": 81}
+{"ts_ms": 1795526260234, "tool": "archmeld_brief", "args": {"recipe": "auto"}, "ok": true, "response_chars": 1072, "duration_ms": 64}
+{"ts_ms": 1795526279284, "tool": "archmeld_query", "args": {"kind": "impact", "query": "apply_discount"}, "ok": true, "response_chars": 203, "duration_ms": 28}
+{"ts_ms": 1795526299086, "tool": "archmeld_query", "args": {"kind": "symbols", "query": ""}, "ok": true, "response_chars": 32881, "duration_ms": 53}
+{"ts_ms": 1795526328325, "tool": "archmeld_query", "args": {"kind": "impact", "entity_id": "syn.dfd4add31a0898da86a0"}, "ok": true, "response_chars": 338, "duration_ms": 32}
+{"ts_ms": 1795526328717, "tool": "archmeld_capabilities", "args": {}, "ok": true, "response_chars": 4734, "duration_ms": 92}
+{"ts_ms": 1795526336567, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0"], "max_depth": 6}, "ok": true, "response_chars": 943, "duration_ms": 32}
+{"ts_ms": 1795526354643, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 6}, "ok": true, "response_chars": 6246, "duration_ms": 33}
+{"ts_ms": 1795526363751, "tool": "archmeld_query", "args": {"kind": "relations"}, "ok": true, "response_chars": 286, "duration_ms": 28}
+{"ts_ms": 1795526363885, "tool": "archmeld_query", "args": {"kind": "callers", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"]}, "ok": true, "response_chars": 284, "duration_ms": 30}
+{"ts_ms": 1795526373251, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 2}, "ok": true, "response_chars": 4504, "duration_ms": 43}
+{"ts_ms": 1795526373836, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "apply_discount"}, "ok": true, "response_chars": 2631, "duration_ms": 37}
+{"ts_ms": 1795526374015, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.448f77ea7ee3b5335eebc0d2b0b3a9a1f3a0d5df9cecbb0b8ff75b0ad2a93bd3"], "max_depth": 1}, "ok": true, "response_chars": 990, "duration_ms": 38}
+{"ts_ms": 1795526437842, "tool": "archmeld_source", "args": {"paths": ["src/pricing.py"]}, "ok": true, "response_chars": 198, "duration_ms": 66}
+{"ts_ms": 1795526449883, "tool": "archmeld_source", "args": {"entity_id": "syn.70329d32a20f024a8604fb294d01106e488b190925e8b9f4e7b7a5f27969a9bb"}, "ok": true, "response_chars": 1104, "duration_ms": 41}
+{"ts_ms": 1795526450267, "tool": "archmeld_source", "args": {"entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 1122, "duration_ms": 35}
+{"ts_ms": 1795526462502, "tool": "archmeld_source", "args": {"entity_id": "syn.00d69c5572eadd6fa121"}, "ok": true, "response_chars": 179, "duration_ms": 51}
+{"ts_ms": 1795526462678, "tool": "archmeld_source", "args": {"entity_id": "syn.448f77ea7ee3b5335eeb"}, "ok": true, "response_chars": 179, "duration_ms": 23}
+{"ts_ms": 1795526462839, "tool": "archmeld_source", "args": {"entity_id": "syn.78a8bc9a7c4079a6fe4e"}, "ok": true, "response_chars": 179, "duration_ms": 27}
+{"ts_ms": 1795526463000, "tool": "archmeld_source", "args": {"entity_id": "syn.152247be9960184f7614"}, "ok": true, "response_chars": 179, "duration_ms": 31}
+{"ts_ms": 1795526463145, "tool": "archmeld_source", "args": {"entity_id": "syn.7f0bb1995427f7dc6c1d"}, "ok": true, "response_chars": 179, "duration_ms": 31}
+{"ts_ms": 1795526463289, "tool": "archmeld_source", "args": {"entity_id": "syn.41cccfba8cae4ffae6dd"}, "ok": true, "response_chars": 179, "duration_ms": 38}
+{"ts_ms": 1795526463446, "tool": "archmeld_source", "args": {"entity_id": "syn.79c047bda562263d4d71"}, "ok": true, "response_chars": 179, "duration_ms": 26}
+{"ts_ms": 1795526472997, "tool": "archmeld_source", "args": {"entity_id": "syn.00d69c5572eadd6fa1214abb8d02daccfcecf645bdf9cc1e4e6a89984ec8bb43"}, "ok": true, "response_chars": 1128, "duration_ms": 91}
+{"ts_ms": 1795526473300, "tool": "archmeld_source", "args": {"entity_id": "syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2"}, "ok": true, "response_chars": 1139, "duration_ms": 85}
+{"ts_ms": 1795526473676, "tool": "archmeld_source", "args": {"entity_id": "syn.78a8bc9a7c4079a6fe4e8ee7c33a60cf2a25c8056b7d43fa81db7ce37cc38639"}, "ok": true, "response_chars": 1132, "duration_ms": 147}
+{"ts_ms": 1795526474047, "tool": "archmeld_source", "args": {"entity_id": "syn.152247be9960184f7614225bd581f3cb0b5f3f5ad0ca7028feafad9c34d0ad1f"}, "ok": true, "response_chars": 1220, "duration_ms": 48}
+{"ts_ms": 1795526474262, "tool": "archmeld_source", "args": {"entity_id": "syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809"}, "ok": true, "response_chars": 1135, "duration_ms": 56}
+{"ts_ms": 1795526474502, "tool": "archmeld_source", "args": {"entity_id": "syn.41cccfba8cae4ffae6dd8608751da2b38de77a0d8af99036e9fa1d63b15117c1"}, "ok": true, "response_chars": 1135, "duration_ms": 50}
+{"ts_ms": 1795526474787, "tool": "archmeld_source", "args": {"entity_id": "syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"}, "ok": true, "response_chars": 1120, "duration_ms": 38}
+{"ts_ms": 1795526484553, "tool": "archmeld_query", "args": {"kind": "path", "entity_ids": ["syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809", "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 6}, "ok": true, "response_chars": 976, "duration_ms": 61}
+{"ts_ms": 1795526484717, "tool": "archmeld_query", "args": {"kind": "path", "entity_ids": ["syn.00d69c5572eadd6fa1214abb8d02daccfcecf645bdf9cc1e4e6a89984ec8bb43", "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 6}, "ok": true, "response_chars": 976, "duration_ms": 25}
+{"ts_ms": 1795526499090, "tool": "archmeld_review", "args": {}, "ok": true, "response_chars": 6722, "duration_ms": 70}
+{"ts_ms": 1795526506680, "tool": "archmeld_brief", "args": {"recipe": "change"}, "ok": true, "response_chars": 3206, "duration_ms": 51}

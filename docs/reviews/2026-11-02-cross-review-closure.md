@@ -40,8 +40,8 @@ VS Code 扩展 **37 passed / 0 failed**。
 ## 回归命令
 
 ```text
-TEMP/TMP = C:/Users/<user>/AppData/Local/Temp
-PATH     = C:/Users/<user>/AppData/Local/Programs/Python/Python311;...
+TEMP/TMP = <user>/AppData/Local/Temp
+PATH     = <user>/AppData/Local/Programs/Python/Python311;...
 toolchain = 1.94.1-x86_64-pc-windows-gnu
 cwd      = <repo>
 argv     = cargo test --offline --no-fail-fast -p archmeld-core -p archmeld-api

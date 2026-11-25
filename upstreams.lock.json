@@ -1,0 +1,404 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-11-25",
+  "generated_by": "hand-maintained; checked by tooling/upstream.py verify",
+  "notes": "Single source of truth for upstream reuse. This file never triggers a merge, fetch, push or pin update by itself. Historical research records remain historical; see docs/upstream/README.md.",
+  "upstreams": [
+    {
+      "id": "codegraph",
+      "display_name": "CodeGraph",
+      "reuse_mode": "thin_fork",
+      "source": {
+        "url": "https://github.com/codegraph-ai/CodeGraph.git",
+        "remote": "upstream",
+        "ref": "refs/heads/main"
+      },
+      "pin": {
+        "kind": "commit",
+        "commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+        "version": "0.21.2",
+        "recorded_by": "docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json",
+        "checked_at": "2026-11-24"
+      },
+      "license": {
+        "spdx": "Apache-2.0",
+        "attribution_file": "NOTICE",
+        "attribution_preserved": true
+      },
+      "contract": {
+        "id": "archmeld-export-v1",
+        "version": "1.1",
+        "format_field": "format",
+        "schema_field": "schema_version",
+        "producer": "crates/codegraph/src/export/ndjson.rs",
+        "consumer": "crates/archmeld-core/src/bridge.rs",
+        "fail_closed_on_major": true
+      },
+      "update_policy": {
+        "mode": "manual_merge_with_drill",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "patch_manifest": "patches/codegraph/manifest.json",
+      "last_checked": "2026-11-24",
+      "last_drill": {
+        "path": "docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json",
+        "date": "2026-11-24",
+        "result": "passed",
+        "acceptance": ["AT077"]
+      },
+      "tests": [
+        "archmeld_core_bridge",
+        "archmeld_core_api",
+        "php",
+        "server_state_root",
+        "export_contract"
+      ],
+      "pin_records": [
+        {
+          "path": "toolchains.lock.json",
+          "kind": "json",
+          "pointer": "/pinned/codegraph_commit",
+          "role": "canonical"
+        },
+        {
+          "path": "AGENTS.md",
+          "kind": "text",
+          "contains": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+          "role": "human"
+        },
+        {
+          "path": "UPSTREAM_PATCHES.md",
+          "kind": "text",
+          "contains": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+          "role": "human"
+        },
+        {
+          "path": "third_party/NOTICE.md",
+          "kind": "text",
+          "contains": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+          "role": "human"
+        },
+        {
+          "path": "tooling/lock_toolchains.py",
+          "kind": "python_const",
+          "regex": "\"codegraph_commit\":\\s*\"([0-9a-f]{40})\"",
+          "role": "generator"
+        },
+        {
+          "path": "docs/archmeld/research/upstream-selection.json",
+          "kind": "json",
+          "pointer": "/primary/commit",
+          "role": "historical_superseded",
+          "ignore": true
+        },
+        {
+          "path": "dist/release-manifest.json",
+          "kind": "json",
+          "pointer": "/upstream_commit",
+          "role": "generated",
+          "optional": true,
+          "warn_only": true
+        }
+      ],
+      "owner": "ARCHMELD core"
+    },
+    {
+      "id": "codeboarding",
+      "display_name": "CodeBoarding",
+      "reuse_mode": "artifact_import",
+      "source": {
+        "url": "https://github.com/CodeBoarding/CodeBoarding.git",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "commit",
+        "commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+        "version": "0.15.3",
+        "recorded_by": "docs/release-evidence/B017-model-interpretation.json",
+        "checked_at": "2026-10-30"
+      },
+      "license": {
+        "spdx": "MIT",
+        "scope": "engine_cli_only",
+        "attribution_file": "third_party/NOTICE.md"
+      },
+      "contract": {
+        "id": "analysis.json",
+        "version": "unversioned",
+        "version_field": "analysis_schema_version",
+        "producer": "external CodeBoarding process",
+        "consumer": "crates/archmeld-core/src/interpret.rs",
+        "fail_closed_on_major": false
+      },
+      "update_policy": {
+        "mode": "regenerate_artifact_and_run_contract_tests",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-10-30",
+      "last_drill": {
+        "path": "docs/release-evidence/B017-model-interpretation.json",
+        "date": "2026-10-30",
+        "result": "passed",
+        "acceptance": ["AT076"]
+      },
+      "tests": ["codeboarding_import_contract"],
+      "pin_records": [
+        {
+          "path": "toolchains.lock.json",
+          "kind": "json",
+          "pointer": "/pinned/codeboarding_commit",
+          "role": "canonical"
+        },
+        {
+          "path": "third_party/NOTICE.md",
+          "kind": "text",
+          "contains": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+          "role": "human"
+        },
+        {
+          "path": "tooling/lock_toolchains.py",
+          "kind": "python_const",
+          "regex": "\"codeboarding_commit\":\\s*\"([0-9a-f]{40})\"",
+          "role": "generator"
+        }
+      ],
+      "owner": "ARCHMELD core"
+    },
+    {
+      "id": "scip",
+      "display_name": "SCIP indexers and format",
+      "reuse_mode": "artifact_import",
+      "source": {
+        "url": "https://github.com/sourcegraph/scip",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "version",
+        "version": "format scip-protobuf-v0.3; scip-clang v0.4.1; scip-python 0.6.8",
+        "recorded_by": "crates/archmeld-core/src/scip.rs; docs/release-evidence/B030-cpp-scip.json"
+      },
+      "license": {
+        "spdx": "Apache-2.0",
+        "scope": "format_and_tools_reviewed_separately"
+      },
+      "contract": {
+        "id": "scip-protobuf",
+        "version": "v0.3",
+        "producer": "external scip-clang / scip-python",
+        "consumer": "crates/archmeld-core/src/scip.rs",
+        "fail_closed_on_major": true
+      },
+      "update_policy": {
+        "mode": "regenerate_fixture_and_run_decoder_tests",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-11-25",
+      "last_drill": {
+        "path": "docs/release-evidence/B030-cpp-scip.json",
+        "date": "2026-11-25",
+        "result": "passed",
+        "acceptance": ["B030"]
+      },
+      "tests": ["scip_decoder", "cpp_scip_real", "python_scip_real"],
+      "pin_records": [],
+      "owner": "ARCHMELD core"
+    },
+    {
+      "id": "lsp",
+      "display_name": "Language servers",
+      "reuse_mode": "process_adapter",
+      "source": {
+        "url": "multiple upstream language servers",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "lockfile",
+        "path": "adapters/languages/tools.lock.json",
+        "version": "pyright 1.1.408; typescript-language-server 4.3.4; clangd 18.1.8; rust-analyzer 1.94.1; jdtls 1.64.0; csharp-ls 0.14.0; gopls 0.20.0",
+        "recorded_by": "adapters/languages/tools.lock.json"
+      },
+      "license": {
+        "spdx": "mixed",
+        "scope": "per_tool_reviewed"
+      },
+      "contract": {
+        "id": "lsp",
+        "version": "stdio-jsonrpc",
+        "producer": "external language servers",
+        "consumer": "crates/archmeld-core/src/lsp.rs",
+        "fail_closed_on_major": false
+      },
+      "update_policy": {
+        "mode": "version_probe_and_capability_profile",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-11-25",
+      "last_drill": null,
+      "tests": ["lsp_session_audit", "language_profiles"],
+      "pin_records": [],
+      "owner": "ARCHMELD language adapters"
+    },
+    {
+      "id": "traces",
+      "display_name": "Perfetto / Tracy / VizTracer",
+      "reuse_mode": "artifact_import",
+      "source": {
+        "url": "multiple trace producers",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "lockfile",
+        "path": "adapters/traces/fixtures.lock.json",
+        "version": "Perfetto v59.1; Tracy 0.13.1; VizTracer fixtures",
+        "recorded_by": "adapters/traces/fixtures.lock.json"
+      },
+      "license": {
+        "spdx": "mixed",
+        "scope": "per_tool_reviewed"
+      },
+      "contract": {
+        "id": "trace-artifact",
+        "version": "format-specific",
+        "producer": "external trace tools",
+        "consumer": "crates/archmeld-core/src/trace_adapters.rs",
+        "fail_closed_on_major": false
+      },
+      "update_policy": {
+        "mode": "regenerate_fixture_and_record_loss",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-11-25",
+      "last_drill": null,
+      "tests": ["trace_fixtures", "loss_notes"],
+      "pin_records": [],
+      "owner": "ARCHMELD runtime adapters"
+    },
+    {
+      "id": "aoci",
+      "display_name": "AOCI-CODE",
+      "reuse_mode": "text_interop",
+      "source": {
+        "url": "aoci-spec/aoci-code",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "version",
+        "version": "0.2.0-rc4",
+        "recorded_by": "docs/adr/ADR-057-session-start-adherence-and-aoci-interop.md"
+      },
+      "license": {
+        "spdx": "review_required",
+        "scope": "text_format_only_no_code_bundled"
+      },
+      "contract": {
+        "id": "aoci-text",
+        "version": "0.2.0-rc4",
+        "producer": "external AOCI producer",
+        "consumer": "crates/archmeld-core/src/cognition.rs",
+        "fail_closed_on_major": false
+      },
+      "update_policy": {
+        "mode": "tolerant_text_fixture",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-11-25",
+      "last_drill": null,
+      "tests": ["aoci_fixture"],
+      "pin_records": [],
+      "owner": "ARCHMELD cognition adapters"
+    },
+    {
+      "id": "cytoscape",
+      "display_name": "Cytoscape.js",
+      "reuse_mode": "vendored_asset",
+      "source": {
+        "url": "https://github.com/cytoscape/cytoscape.js",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "version",
+        "version": "3.30.2",
+        "artifact": "archmeld-vscode/media/cytoscape.min.js",
+        "recorded_by": "docs/adr/ADR-017-workbench-extension-slice.md"
+      },
+      "license": {
+        "spdx": "MIT",
+        "attribution_file": "archmeld-vscode/media/CYTOSCAPE_LICENSE.txt"
+      },
+      "contract": {
+        "id": "static-asset",
+        "version": "3.30.2",
+        "producer": "vendored JS",
+        "consumer": "archmeld-vscode webview",
+        "fail_closed_on_major": false
+      },
+      "update_policy": {
+        "mode": "manual_vendor_with_license_hash",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-11-25",
+      "last_drill": null,
+      "tests": ["webview_render"],
+      "pin_records": [],
+      "owner": "ARCHMELD workbench"
+    },
+    {
+      "id": "toolchain",
+      "display_name": "Build and language toolchains",
+      "reuse_mode": "environment_pin",
+      "source": {
+        "url": "local toolchains",
+        "remote": null,
+        "ref": null
+      },
+      "pin": {
+        "kind": "lockfile",
+        "path": "toolchains.lock.json",
+        "version": "rust 1.94.1; node 24.14.1; python 3.11.9; gcc 13.2; jdk 25.0.5; go 1.27.3; dotnet 8.0.427",
+        "recorded_by": "toolchains.lock.json"
+      },
+      "license": {
+        "spdx": "mixed",
+        "scope": "per_tool_reviewed"
+      },
+      "contract": {
+        "id": "toolchain-lock",
+        "version": "1.0",
+        "producer": "tooling/lock_toolchains.py",
+        "consumer": "all builds",
+        "fail_closed_on_major": true
+      },
+      "update_policy": {
+        "mode": "doctor_and_relock",
+        "auto_follow": false,
+        "auto_merge": false,
+        "auto_pin_update": false
+      },
+      "last_checked": "2026-11-24",
+      "last_drill": null,
+      "tests": ["doctor"],
+      "pin_records": [],
+      "owner": "ARCHMELD build"
+    }
+  ]
+}

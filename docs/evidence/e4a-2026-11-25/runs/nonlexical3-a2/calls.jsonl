@@ -1,0 +1,12 @@
+{"seq": 1, "tool": "archmeld_status", "args": {}}
+{"seq": 6, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "apply_discount", "project_id": "project.e4a"}}
+{"seq": 7, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["project.e4a"], "project_id": "project.e4a"}}
+{"seq": 8, "tool": "archmeld_query", "args": {"kind": "neighbors", "project_id": "project.e4a", "entity_ids": ["syn.07800e82856fff5494dc15f5ce86d36986eba1dfebe638c578e89eb502f21471"], "relation_kinds": ["contains", "declares", "imports", "references", "static_call_candidate", "resolved_call", "implements", "owns"], "max_depth": 3, "max_nodes": 200}}
+{"seq": 9, "tool": "archmeld_query", "args": {"kind": "symbols", "project_id": "project.e4a", "query": "EXPECTED_TOTAL"}}
+{"seq": 10, "tool": "archmeld_query", "args": {"kind": "symbols", "project_id": "project.e4a", "query": "11110"}}
+{"seq": 11, "tool": "archmeld_context", "args": {"objective": "Identify every repository dependency on the storefront discount rate and any tests or constants that assert the old 10% rate.", "project_id": "project.e4a", "entity_ids": ["syn.07800e82856fff5494dc15f5ce86d36986eba1dfebe638c578e89eb502f21471"], "budget_tokens": 8000}}
+{"seq": 12, "tool": "archmeld_brief", "args": {"format": "human", "project_id": "project.e4a", "recipe": "project"}}
+{"seq": 13, "tool": "archmeld_query", "args": {"kind": "source", "project_id": "project.e4a", "query": "src/invoice.py"}}
+{"seq": 14, "tool": "archmeld_query", "args": {"kind": "text", "project_id": "project.e4a", "query": "0.9"}}
+{"seq": 15, "tool": "archmeld_query", "args": {"kind": "text", "project_id": "project.e4a", "query": "11110"}}
+{"seq": 19, "tool": "archmeld_review", "args": {}}

@@ -19,6 +19,7 @@ thiserror.workspace = true
 sha2 = "0.10"
 similar = "2"
 notify.workspace = true
+globset.workspace = true
 rusqlite = { version = "0.32", features = ["bundled"] }
 
 [dev-dependencies]

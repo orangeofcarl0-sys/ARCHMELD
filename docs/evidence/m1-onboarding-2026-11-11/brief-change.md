@@ -26,3 +26,4 @@
 - `archmeld_source` — read the exact changed source range
 - `archmeld_query` — reverse-traverse incoming relations for this entity
 - `archmeld_review` — get the full per-file review and coverage
+

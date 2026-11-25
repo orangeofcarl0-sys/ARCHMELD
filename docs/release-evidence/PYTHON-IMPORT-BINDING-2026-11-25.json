@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "Python cross-module same-name call binding found by the M2.5-D experiment",
+  "root_cause": "codegraph-server's resolve_cross_file_imports built one global name -> NodeId map. Duplicate free functions were collapsed to the highest-weight/first declaration, and import-symbol edges also used that global map. `from pricing import apply_discount` therefore resolved to legacy.apply_discount.",
+  "fix": {
+    "file": "crates/codegraph-server/src/watcher.rs",
+    "behavior": [
+      "index CodeFile paths, path suffixes, Python files, and module-level symbols per file",
+      "build per-file import bindings for `from module import name` and `import module [as alias]`",
+      "Python call resolution order: qualified/inherited -> imported symbol -> module alias -> ambiguous method -> duplicate free function unresolved -> global fallback",
+      "Python import edges use the same binding; ambiguous symbols get no edge",
+      "non-Python resolution keeps the previous global fallback"
+    ],
+    "not_fixed": [
+      "per-symbol aliases (`from m import x as y`) were not extracted at this commit; a call could stay unresolved or bind a unique global homonym named `y` (fixed by PYTHON-ALIAS-BINDING-2026-11-25)",
+      "`relation:` refs in archmeld.map.txt remain unimplemented; the binding prerequisite is now met, but the syntax/resolution is a separate E3/E5 task"
+    ]
+  },
+  "tests": {
+    "focused": {
+      "command": "cargo test --offline -p codegraph-server --lib test_python_import_binds_call_to_module_not_same_name_homonym -j 2",
+      "passed": 1,
+      "failed": 0,
+      "log": "docs/evidence/python-binding-2026-11-25/focused-test.log",
+      "log_sha256": "4a469bc3309da81bb40cdf105c299ed64aad08b29867dfacc7be68dc18aa120f"
+    },
+    "watcher": {
+      "command": "cargo test --offline -p codegraph-server --lib watcher::tests -j 2",
+      "passed": 29,
+      "failed": 0,
+      "log": "docs/evidence/python-binding-2026-11-25/watcher-tests.log",
+      "log_sha256": "bfe100585e3a3748ffaf6e31531ad3e387643be0e5e5e7964e207301172f3eb9"
+    },
+    "server_lib": {
+      "command": "cargo test --offline -p codegraph-server --lib -j 2",
+      "passed": 402,
+      "failed": 17,
+      "ignored": 1,
+      "log": "docs/evidence/python-binding-2026-11-25/server-lib-tests.log",
+      "log_sha256": "7d73e54a26250fc7e76174e033f0b3374cacb762b5e1ce1e463bcbe263dfec51",
+      "note": "the 17 failures are in backend workspace-path helpers, handlers, the ai_query performance threshold and the memory path format; none are watcher or cross-file resolution tests, and the watcher module is 29/29"
+    }
+  },
+  "end_to_end": {
+    "minimal_fixture": {
+      "path": "docs/evidence/python-binding-2026-11-25/fixture",
+      "files": ["pricing.py", "legacy.py", "checkout.py"],
+      "export": "docs/evidence/python-binding-2026-11-25/export.ndjson",
+      "assertion": "docs/evidence/python-binding-2026-11-25/assert.json",
+      "checkout_call_target": 6,
+      "pricing_apply_discount": 6,
+      "legacy_apply_discount": 4,
+      "state": "ok"
+    },
+    "m2.5d_fixture": {
+      "path": "<workspace>/_archmeld_experiment_2026-11-24/fixture",
+      "export": "docs/evidence/python-binding-2026-11-25/m2.5d-export.ndjson",
+      "bindings": "docs/evidence/python-binding-2026-11-25/m2.5d-bindings.json",
+      "pricing_apply_discount": 15,
+      "legacy_apply_discount": 13,
+      "checkout": [15],
+      "summarize_order": [15],
+      "check_price": [15],
+      "state": "ok"
+    },
+    "archmeld_impact": {
+      "pricing": "src/pricing.py::apply_discount",
+      "callers": [
+        "src/analytics.py::check_price",
+        "src/checkout.py::checkout",
+        "src/pricing.py::list_price",
+        "src/wrapper.py::summarize_order"
+      ],
+      "legacy_caller": false,
+      "state": "ok",
+      "init": "docs/evidence/python-binding-2026-11-25/e2e-init.json",
+      "impact": "docs/evidence/python-binding-2026-11-25/e2e-impact.json",
+      "summary": "docs/evidence/python-binding-2026-11-25/e2e-impact-summary.json"
+    }
+  },
+  "environment": {
+    "toolchain": "1.94.1-x86_64-pc-windows-gnu",
+    "python": "3.11",
+    "LIBCLANG_PATH": "<workspace>/_archmeld_tools/pylibclang/clang/native",
+    "BINDGEN_EXTRA_CLANG_ARGS": "MinGW GCC 13.2.0 include paths"
+  },
+  "boundaries": {
+    "static_calls_remain_candidate": true,
+    "runtime_evidence": false,
+    "source_upload": false
+  },
+  "limitations": [
+    "the fix changes the cross-file resolver, not the Python parser; per-symbol aliases remain for the follow-up PYTHON-ALIAS-BINDING slice",
+    "the full codegraph-server lib suite has 17 unrelated/environmental failures (402 passed / 1 ignored); the watcher module is 29/29 and the export fixtures pass",
+    "archmeld relation refs are still unimplemented even though the Python binding prerequisite is now met"
+  ]
+}

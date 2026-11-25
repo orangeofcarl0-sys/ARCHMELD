@@ -18,7 +18,12 @@ pub struct ImportRelation {
     /// Is this a wildcard import?
     pub is_wildcard: bool,
 
-    /// Import alias (if any)
+    /// Import alias (if any).
+    ///
+    /// For a whole-module import (`import m as x`) this is the module alias.
+    /// The Python parser also emits one relation with exactly one symbol for
+    /// `from m import name as local`; in that case this is the symbol's local
+    /// name and `symbols` still contains the exported name.
     pub alias: Option<String>,
 }
 

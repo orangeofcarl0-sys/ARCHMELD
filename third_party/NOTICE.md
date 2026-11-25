@@ -6,7 +6,8 @@ substitute for the license texts shipped with each component.
 ## Upstream source: CodeGraph
 
 - Repository: https://github.com/codegraph-ai/CodeGraph
-- Pinned commit: `590c2ca7dd7b37bd1d41caf45fac535b6522f969`
+- Pinned commit: `ae4b2e54fc8ce1c074523943fc750b20f68bf8aa` (upstream 0.21.2;
+  previous pin `590c2ca7dd7b37bd1d41caf45fac535b6522f969`)
 - License: Apache-2.0
 - `LICENSE` and `NOTICE` are preserved at the repository root and were not
   modified.

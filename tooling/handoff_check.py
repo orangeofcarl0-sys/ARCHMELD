@@ -17,6 +17,22 @@ PROGRESS = ROOT / "docs/archmeld-progress.md"
 OUT = ROOT / "docs/release-evidence/B032-handoff.json"
 
 
+def latest_at077() -> dict:
+    """Read AT077 from the newest real upstream-merge evidence."""
+    for path in sorted((ROOT / "docs/release-evidence").glob("UPSTREAM-*.json"), reverse=True):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        at077 = data.get("AT077")
+        if isinstance(at077, dict) and at077.get("status"):
+            return {
+                "status": at077["status"],
+                "path": str(path.relative_to(ROOT)),
+            }
+    return {"status": "not_run", "path": None}
+
+
 def run(*argv: str) -> str:
     return subprocess.run(argv, cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
 
@@ -33,14 +49,16 @@ def main() -> int:
         "",
     )
     next_task = next_line.split("：", 1)[1] if "：" in next_line else next_line
+    upstream_state = latest_at077()
+    at077 = upstream_state["status"]
     required_truths = {
         "B030_gate_passed": "AT066 passed；AT067 passed" in text,
         "AT066_passed": "AT066 passed" in text,
         "AT067_passed": "AT067 passed" in text,
-        "B031_delivery": "AT068 passed；AT069 passed；AT077 partial" in text,
+        "B031_delivery": "AT068 passed；AT069 passed" in text and f"AT077 {at077}" in text,
         "AT068_passed": "AT068 passed" in text,
         "AT069_passed": "AT069 passed" in text,
-        "AT077_partial": "AT077 partial" in text,
+        f"AT077_{at077}": f"AT077 {at077}" in text,
         "release_gate_deferred": "项目测试阶段" in text and "延后" in text,
     }
     missing_truths = [name for name, present in required_truths.items() if not present]
@@ -74,7 +92,8 @@ def main() -> int:
     do_not_redo = [
         "do not rebuild a general indexer or replace the pinned CodeGraph fork",
         "do not re-audit closed B020-B029 acceptance paths",
-        "do not turn deferred release items (AT077, C++ SCIP WSL, Ubuntu GUI) into current test blockers",
+        "do not turn deferred release items (C++ SCIP WSL, Ubuntu GUI, macOS) into current test blockers",
+        "do not reopen a passed AT077 without new upstream merge evidence",
         "do not treat a fixture execution as a runtime-linkage verification",
         "do not lower tolerances, delete failing tests or hide partial coverage",
     ]
@@ -86,6 +105,7 @@ def main() -> int:
         "status_porcelain": status[:50],
         "recent_commits": log,
         "next_task": next_task,
+        "upstream_state": upstream_state,
         "required_truths": required_truths,
         "missing_truths": missing_truths,
         "evidence_checks": evidence_checks,

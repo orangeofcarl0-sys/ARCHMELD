@@ -1,0 +1,32 @@
+{
+  "pricing": [
+    15
+  ],
+  "legacy": [
+    13
+  ],
+  "calls": {
+    "checkout": [
+      {
+        "id": 15,
+        "name": "apply_discount",
+        "path": "//?/<workspace>/_archmeld_experiment_2026-11-24/fixture/src/pricing.py"
+      }
+    ],
+    "summarize_order": [
+      {
+        "id": 15,
+        "name": "apply_discount",
+        "path": "//?/<workspace>/_archmeld_experiment_2026-11-24/fixture/src/pricing.py"
+      }
+    ],
+    "check_price": [
+      {
+        "id": 15,
+        "name": "apply_discount",
+        "path": "//?/<workspace>/_archmeld_experiment_2026-11-24/fixture/src/pricing.py"
+      }
+    ]
+  },
+  "state": "ok"
+}

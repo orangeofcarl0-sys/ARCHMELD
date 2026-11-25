@@ -6,7 +6,10 @@
 
 use archmeld_api::onboard;
 use archmeld_core::bridge::{import_codegraph_export, BridgeConfig};
-use archmeld_core::brief::{build_brief, render_markdown, BriefRecipe, BriefRequest};
+use archmeld_core::brief::{
+    build_brief, render_markdown, write_session_card, BriefRecipe, BriefRequest,
+};
+use archmeld_core::cognition_map::{check_map, maintain, render_markdown as render_map_markdown};
 use archmeld_core::encrypted_backup::{
     create_encrypted_backup, restore_encrypted_backup, retain_encrypted_backup,
     rotate_encrypted_backup, verify_encrypted_backup,
@@ -89,6 +92,8 @@ enum Commands {
     Mcp(McpArgs),
     /// Build a one-screen project or change brief from the current snapshot.
     Brief(BriefArgs),
+    /// Validate or report a committed evidence-bound cognition map (read-only).
+    Map(MapArgs),
 }
 
 #[derive(clap::Args)]
@@ -179,6 +184,54 @@ struct BriefArgs {
     #[arg(long, default_value = "auto")]
     recipe: String,
     /// Print a markdown one-screen instead of JSON.
+    #[arg(long)]
+    markdown: bool,
+    /// Write the session card to `<workspace>/.archmeld/SESSION.md` (or --out).
+    #[arg(long)]
+    write: bool,
+    /// Write the session card to this path; implies --write.
+    #[arg(long)]
+    out: Option<PathBuf>,
+    /// Overwrite an existing file that is not an ARCHMELD session card.
+    #[arg(long)]
+    force: bool,
+}
+
+#[derive(clap::Args)]
+struct MapArgs {
+    #[command(subcommand)]
+    action: MapAction,
+}
+
+#[derive(clap::Subcommand)]
+enum MapAction {
+    /// Validate a map and report orphan/ambiguous/stale items.
+    Check(MapCheckArgs),
+    /// Report map coverage, refs and budget without failing on warnings.
+    Status(MapCheckArgs),
+    /// List stale/orphan/missing entries without writing the map.
+    Maintain(MapCheckArgs),
+}
+
+#[derive(clap::Args)]
+struct MapCheckArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    project: String,
+    /// Workspace containing the map; defaults to the registered root.
+    #[arg(long)]
+    workspace: Option<PathBuf>,
+    /// Snapshot to resolve against; defaults to the latest snapshot.
+    #[arg(long)]
+    snapshot: Option<String>,
+    /// Map path; defaults to <workspace>/archmeld.map.txt.
+    #[arg(long)]
+    map: Option<PathBuf>,
+    /// Validate this candidate file instead of the canonical map.
+    #[arg(long)]
+    candidate: Option<PathBuf>,
+    /// Print a markdown report instead of JSON.
     #[arg(long)]
     markdown: bool,
 }
@@ -934,7 +987,7 @@ fn run_brief(args: BriefArgs) -> Result<Value, String> {
             .active_project_root(&args.project)
             .map_err(|error| error.to_string())?,
     };
-    let brief = build_brief(
+    let mut brief = build_brief(
         &store,
         &BriefRequest {
             project_id: &args.project,
@@ -944,11 +997,66 @@ fn run_brief(args: BriefArgs) -> Result<Value, String> {
         },
     )
     .map_err(|error| error.to_string())?;
+    if args.write || args.out.is_some() {
+        let Some(root) = workspace.as_deref() else {
+            return Err(
+                "brief --write requires --workspace or a registered project root".to_string(),
+            );
+        };
+        let card = write_session_card(root, &brief, args.out.as_deref(), args.force)
+            .map_err(|error| error.to_string())?;
+        brief["session_card"] = card;
+    }
     if args.markdown {
         Ok(Value::String(render_markdown(&brief)))
     } else {
         Ok(brief)
     }
+}
+
+fn run_map_command(args: MapArgs) -> Result<Value, String> {
+    let (check, command) = match args.action {
+        MapAction::Check(args) => (args, "check"),
+        MapAction::Status(args) => (args, "status"),
+        MapAction::Maintain(args) => (args, "maintain"),
+    };
+    let store = Store::open(&check.state).map_err(|error| error.to_string())?;
+    let workspace = match check.workspace {
+        Some(path) => Some(
+            path.canonicalize()
+                .map_err(|error| format!("workspace {}: {error}", path.display()))?,
+        ),
+        None => store
+            .active_project_root(&check.project)
+            .map_err(|error| error.to_string())?,
+    };
+    let Some(workspace) = workspace else {
+        return Err("map check requires --workspace or a registered project root".to_string());
+    };
+    let path = check.candidate.as_deref().or(check.map.as_deref());
+    let mut value = if command == "maintain" {
+        maintain(
+            &store,
+            &check.project,
+            &workspace,
+            check.snapshot.as_deref(),
+            path,
+        )
+    } else {
+        check_map(
+            &store,
+            &check.project,
+            &workspace,
+            check.snapshot.as_deref(),
+            path,
+        )
+    }
+    .map_err(|error| error.to_string())?;
+    value["command"] = json!(command);
+    if check.markdown {
+        value["markdown"] = json!(render_map_markdown(&value));
+    }
+    Ok(value)
 }
 
 fn run_review_diff(args: ReviewDiffArgs) -> Result<Value, String> {
@@ -1155,6 +1263,9 @@ fn run_index_with(
             "skipped_nodes": bridge.skipped_nodes,
             "unresolved": bridge.unresolved,
             "coverage": bridge.coverage,
+            "export_schema_version": bridge.export_schema_version,
+            "producer_commit": bridge.producer_commit,
+            "producer_dirty": bridge.producer_dirty,
         },
         "ledger": {
             "entities": counts.entities,
@@ -1836,15 +1947,23 @@ fn main() -> ExitCode {
         Commands::Init(args) => run_init(args),
         Commands::Mcp(args) => run_mcp_command(args),
         Commands::Brief(args) => run_brief(args),
+        Commands::Map(args) => run_map_command(args),
     };
+    let invalid = matches!(&result, Ok(value) if value["state"] == "invalid");
     match result {
         Ok(value) => {
             if let Some(text) = value.as_str() {
                 println!("{text}");
+            } else if let Some(text) = value["markdown"].as_str() {
+                println!("{text}");
             } else {
                 println!("{value}");
             }
-            ExitCode::SUCCESS
+            if invalid {
+                ExitCode::FAILURE
+            } else {
+                ExitCode::SUCCESS
+            }
         }
         Err(error) => {
             eprintln!("{}", json!({"error": error}));
@@ -2097,5 +2216,73 @@ mod diff_cli_tests {
                 .ends_with("::beta")));
         let store = Store::open(&state).unwrap();
         assert_eq!(store.snapshot_count("project.refresh").unwrap(), 2);
+    }
+}
+
+#[cfg(test)]
+mod map_tests {
+    use super::*;
+
+    fn args(state: PathBuf, root: PathBuf) -> MapCheckArgs {
+        MapCheckArgs {
+            state,
+            project: "project.mapcli".to_string(),
+            workspace: Some(root),
+            snapshot: None,
+            map: None,
+            candidate: None,
+            markdown: false,
+        }
+    }
+
+    #[test]
+    fn map_check_reads_the_canonical_map_and_absent_is_not_an_error() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().join("repo");
+        fs::create_dir_all(&root).unwrap();
+        fs::write(root.join("a.py"), "x = 1\n").unwrap();
+        let state = dir.path().join("state");
+        let mut store = Store::open(&state).unwrap();
+        store
+            .ensure_project("project.mapcli", "expedition")
+            .unwrap();
+        let captured = capture_snapshot(
+            &mut store,
+            "project.mapcli",
+            &root,
+            &SnapshotInputs {
+                build_config: json!({"variant": "mapcli"}),
+                environment: json!({"os": "test"}),
+            },
+            &SnapshotOptions {
+                include_untracked: true,
+                ..SnapshotOptions::default()
+            },
+        )
+        .unwrap();
+        fs::write(
+            root.join("archmeld.map.txt"),
+            format!(
+                "#ARCHMELD-MAP: 1\n#snapshot: {}\n===./===\n\
+                 a.py: F:Returns one. | R:file:a.py | A:- | S:-\n",
+                captured.snapshot_id
+            ),
+        )
+        .unwrap();
+
+        let checked = run_map_command(MapArgs {
+            action: MapAction::Check(args(state.clone(), root.clone())),
+        })
+        .unwrap();
+        assert_eq!(checked["state"], "ok", "{checked}");
+        assert_eq!(checked["refs"]["confirmed"], 1, "{checked}");
+
+        fs::remove_file(root.join("archmeld.map.txt")).unwrap();
+        let absent = run_map_command(MapArgs {
+            action: MapAction::Status(args(state, root)),
+        })
+        .unwrap();
+        assert_eq!(absent["state"], "absent", "{absent}");
+        assert_eq!(absent["command"], "status", "{absent}");
     }
 }

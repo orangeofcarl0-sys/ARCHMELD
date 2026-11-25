@@ -1,0 +1,6 @@
+#ARCHMELD-MAP: 1
+#snapshot: sha256:9e43304f09e25de7bde38172ad7ca9a141d584b064acfa3b10d0830d7bddd4fc
+#scope: code
+===src/===
+a.py: F:Returns b(). | R:entity:function:src/a.py::missing,file:src/b.py | A:- | S:-
+b.py: F:Returns one. | R:file:src/a.py | A:- | S:-

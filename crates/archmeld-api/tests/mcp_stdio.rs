@@ -83,7 +83,15 @@ impl Drop for Server {
     }
 }
 
-fn setup() -> (tempfile::TempDir, PathBuf, PathBuf, String, String) {
+fn setup() -> (
+    tempfile::TempDir,
+    PathBuf,
+    PathBuf,
+    String,
+    String,
+    String,
+    String,
+) {
     let dir = tempfile::tempdir().unwrap();
     let root = dir.path().join("repo");
     fs::create_dir_all(root.join("src")).unwrap();
@@ -168,7 +176,15 @@ fn setup() -> (tempfile::TempDir, PathBuf, PathBuf, String, String) {
                 .is_some_and(|name| name.ends_with("::a1"))
         })
         .expect("a1 entity");
-    (dir, state, root, captured.snapshot_id, entity_id)
+    (
+        dir,
+        state,
+        root,
+        captured.snapshot_id,
+        entity_id,
+        export,
+        config_digest,
+    )
 }
 
 fn text_of(response: &Value) -> Value {
@@ -180,7 +196,54 @@ fn text_of(response: &Value) -> Value {
 
 #[test]
 fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
-    let (dir, state, root, snapshot_id, entity_id) = setup();
+    let (dir, state, root, snapshot_id, entity_id, export, _config_digest) = setup();
+    fs::write(
+        root.join("archmeld.map.txt"),
+        format!(
+            "#ARCHMELD-MAP: 1\n#snapshot: {snapshot_id}\n===src/===\n\
+             a.py: F:Entry A | R:file:src/a.py | A:- | S:-\n\
+             b.py: F:Entry B | R:- | A:- | S:-\n"
+        ),
+    )
+    .unwrap();
+    // The map is committed before the snapshot in real use; capture a second
+    // snapshot so the map file itself is not reported as workspace drift.
+    let mut store = Store::open(&state).unwrap();
+    let captured = capture_snapshot(
+        &mut store,
+        "project.mcp",
+        &root,
+        &SnapshotInputs {
+            build_config: json!({"variant": "mcp-map"}),
+            environment: json!({"os": "test"}),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    let map_config_digest = captured.snapshot["config_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    import_codegraph_export(
+        &mut store,
+        &BridgeConfig {
+            project_id: "project.mcp",
+            snapshot_id: &captured.snapshot_id,
+            config_digest: &map_config_digest,
+            run_id: "run.mcp.002",
+            workspace_root: Some(&root),
+            max_entities_per_batch: 500,
+            max_relations_per_batch: 2000,
+        },
+        &captured.files,
+        &export,
+    )
+    .unwrap();
+    let snapshot_id = captured.snapshot_id;
+    drop(store);
     let source_before = hash::digest_bytes(&fs::read(root.join("src/a.py")).unwrap());
     let audit = dir.path().join("mcp-audit.jsonl");
     let mut server = Server::start(&state, &audit);
@@ -276,9 +339,21 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
     assert_eq!(review["verification"]["state"], "not_run");
     assert_eq!(review["source_mutation"], "none");
 
-    let brief = server.call(13, "archmeld_brief", json!({"recipe": "project"}));
-    assert_eq!(brief["result"]["isError"], false, "{brief}");
-    let brief = text_of(&brief);
+    let brief_result = server.call(13, "archmeld_brief", json!({"recipe": "project"}));
+    assert_eq!(brief_result["result"]["isError"], false, "{brief_result}");
+    let content = brief_result["result"]["content"].as_array().unwrap();
+    assert!(
+        content.len() >= 2,
+        "brief must carry a one-screen card and JSON: {brief_result}"
+    );
+    assert!(
+        content[1]["text"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("# ARCHMELD brief"),
+        "second content item is not the markdown card: {brief_result}"
+    );
+    let brief = text_of(&brief_result);
     assert_eq!(brief["level"], "module");
     assert!(brief["summary"].is_string());
     assert!(brief["next_actions"].is_array());
@@ -295,6 +370,22 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
         .as_str()
         .unwrap_or_default()
         .contains("# ARCHMELD brief"));
+
+    let map_entry = server.call(
+        99,
+        "archmeld_inspect",
+        json!({"kind": "map_entry", "id": "src/a.py"}),
+    );
+    assert_eq!(map_entry["result"]["isError"], false, "{map_entry}");
+    let map_entry = text_of(&map_entry);
+    assert_eq!(
+        map_entry["object"]["entry"]["path"], "src/a.py",
+        "{map_entry}"
+    );
+    assert_eq!(
+        map_entry["object"]["entry"]["refs"][0]["kind"], "file",
+        "{map_entry}"
+    );
 
     let query_defaults = server.call(
         15,

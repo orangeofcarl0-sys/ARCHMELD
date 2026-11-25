@@ -1,0 +1,8 @@
+
+running 3 tests
+test probe_sparse_ids_after_delete_and_reinsert ... ok
+test probe_sparse_edges_after_delete_and_reinsert ... ok
+test export_ndjson_v1_matches_real_iterators ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

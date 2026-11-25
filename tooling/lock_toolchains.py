@@ -184,7 +184,7 @@ def rust_entries() -> list[dict]:
 
 
 def libclang_entry() -> dict:
-    path = Path(r"<workspace>/_tools\pylibclang\clang\native")
+    path = Path(r"<workspace>\_archmeld_tools\pylibclang\clang\native")
     dll = None
     for candidate in ("libclang.dll", "libclang.so", "libclang.dylib"):
         if (path / candidate).exists():
@@ -236,7 +236,7 @@ def main() -> int:
             "rust_channel": "1.94.1",
             "rust_host": "x86_64-pc-windows-gnu",
             "reason": "upstream rust-toolchain.toml pins 1.94.1; the MSVC host has no linker on this machine",
-            "codegraph_commit": "590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+            "codegraph_commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
             "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
         },
         "tools": [tool_entry(name, *spec) for name, spec in TOOLS.items()] + rust_entries() + [libclang_entry()],

@@ -20,9 +20,33 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 EVIDENCE = ROOT / "docs/release-evidence/B031-install-tests.json"
 NOTES = ROOT / "docs/release-evidence/B031-release-notes.md"
-TEMP_BASE = Path("<workspace>/_archmeld_temp")
+TEMP_BASE = Path("<temp>")
 VERSION = "0.1.0"
 PREVIOUS = "0.0.9"
+
+
+def latest_at077() -> dict:
+    """Read AT077 from the newest real upstream-merge evidence, not a literal."""
+    evidence_dir = ROOT / "docs/release-evidence"
+    for path in sorted(evidence_dir.glob("UPSTREAM-*.json"), reverse=True):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001 - evidence is optional here
+            continue
+        at077 = data.get("AT077")
+        if isinstance(at077, dict) and at077.get("status"):
+            return {
+                "status": at077["status"],
+                "reason": at077.get("reason", ""),
+                "path": str(path.relative_to(ROOT)),
+                "commit": data.get("to_commit") or data.get("upstream_commit"),
+            }
+    return {
+        "status": "not_run",
+        "reason": "no real upstream-merge evidence found",
+        "path": None,
+        "commit": None,
+    }
 
 
 def sha256(path: Path) -> str:
@@ -370,12 +394,25 @@ def main() -> int:
 
         # Release notes with exact hashes and explicit unsupported platforms.
         artifacts = manifest["artifacts"]
+        upstream_state = latest_at077()
+        at077 = upstream_state["status"]
+        if at077 == "passed":
+            at077_sentence = "AT077 passed for the real newer-upstream upgrade."
+            at077_limit = (
+                f"- AT077 real newer-upstream upgrade: passed "
+                f"({upstream_state['path']})."
+            )
+        else:
+            at077_sentence = f"AT077 is {at077}: {upstream_state['reason']}."
+            at077_limit = (
+                f"- AT077 real newer-upstream upgrade is {at077}: "
+                f"{upstream_state['reason']}."
+            )
         lines = [
             f"# ARCHMELD {VERSION} release notes",
             "",
             "Status: **packaging evidence only; R1 is not declared complete.** "
-            "AT067 passed for the seven-language gate; AT077 remains partial "
-            "because upstream HEAD still equals the pinned commit.",
+            f"AT067 passed for the seven-language gate; {at077_sentence}",
             "",
             "## Artifacts",
             "",
@@ -406,8 +443,7 @@ def main() -> int:
             "browser check ran on Windows Chrome headless.",
             "- The upgrade drill uses a locally built 0.0.9 bundle, not a published "
             "historical release.",
-            "- AT077 real newer-upstream upgrade is blocked: `git ls-remote upstream "
-            "HEAD` still returns the pinned commit. The synthetic interface drill passed.",
+            at077_limit,
             "",
             "## Verification",
             "",
@@ -436,9 +472,10 @@ def main() -> int:
             "linux_browser_render": "not_run",
         }
         evidence["acceptance"]["AT077"] = {
-            "status": "partial",
-            "reason": "no newer upstream commit exists; upstream HEAD equals the pinned commit, so a real upgrade cannot be executed. The synthetic interface-change drill passed.",
+            "status": at077,
+            "reason": upstream_state["reason"],
             "upstream_commit": manifest["upstream_commit"],
+            "evidence": upstream_state["path"],
         }
         EVIDENCE.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(json.dumps({

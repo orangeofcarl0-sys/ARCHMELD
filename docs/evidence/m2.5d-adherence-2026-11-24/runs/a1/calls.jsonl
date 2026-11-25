@@ -1,0 +1,24 @@
+{"ts_ms": 1795526137051, "tool": "archmeld_status", "args": {}, "ok": true, "response_chars": 2807, "duration_ms": 40}
+{"ts_ms": 1795526146923, "tool": "archmeld_source", "args": {"file": "src/pricing.py"}, "ok": true, "response_chars": 198, "duration_ms": 38}
+{"ts_ms": 1795526158564, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "apply_discount"}, "ok": true, "response_chars": 2631, "duration_ms": 33}
+{"ts_ms": 1795526165531, "tool": "archmeld_capabilities", "args": {}, "ok": true, "response_chars": 4734, "duration_ms": 71}
+{"ts_ms": 1795526165987, "tool": "archmeld_query", "args": {"kind": "symbols", "query": ""}, "ok": true, "response_chars": 32881, "duration_ms": 39}
+{"ts_ms": 1795526181579, "tool": "archmeld_query", "args": {"kind": "relations", "query": "apply_discount"}, "ok": true, "response_chars": 286, "duration_ms": 33}
+{"ts_ms": 1795526182019, "tool": "archmeld_inspect", "args": {"kind": "entity", "entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 170, "duration_ms": 34}
+{"ts_ms": 1795526190708, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 338, "duration_ms": 32}
+{"ts_ms": 1795526191130, "tool": "archmeld_inspect", "args": {"kind": "entity", "id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 1322, "duration_ms": 28}
+{"ts_ms": 1795526199826, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 2, "max_nodes": 100}, "ok": true, "response_chars": 13593, "duration_ms": 36}
+{"ts_ms": 1795526200237, "tool": "archmeld_query", "args": {"kind": "impact", "query": "src/pricing.py::apply_discount", "max_depth": 3, "max_nodes": 100}, "ok": true, "response_chars": 203, "duration_ms": 39}
+{"ts_ms": 1795526212031, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 4, "max_nodes": 200}, "ok": true, "response_chars": 28740, "duration_ms": 48}
+{"ts_ms": 1795526212582, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "summarize_order"}, "ok": true, "response_chars": 1899, "duration_ms": 26}
+{"ts_ms": 1795526220587, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 4, "max_nodes": 200}, "ok": true, "response_chars": 28740, "duration_ms": 68}
+{"ts_ms": 1795526232541, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 4, "max_nodes": 200}, "ok": true, "response_chars": 28740, "duration_ms": 42}
+{"ts_ms": 1795526246163, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2"], "max_depth": 2}, "ok": true, "response_chars": 18252, "duration_ms": 40}
+{"ts_ms": 1795526271684, "tool": "archmeld_query", "args": {"kind": "text", "query": "0.9"}, "ok": true, "response_chars": 895, "duration_ms": 26}
+{"ts_ms": 1795526288988, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "dynamic_discount"}, "ok": true, "response_chars": 1899, "duration_ms": 25}
+{"ts_ms": 1795526311560, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.152247be9960184f7614225bd581f3cb0b5f3f5ad0ca7028feafad9c34d0ad1f"]}, "ok": true, "response_chars": 3178, "duration_ms": 36}
+{"ts_ms": 1795526330865, "tool": "archmeld_source", "args": {"entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 1122, "duration_ms": 48}
+{"ts_ms": 1795526331289, "tool": "archmeld_context", "args": {"entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd", "syn.78a8bc9a7c4079a6fe4e8ee7c33a60cf2a25c8056b7d43fa81db7ce37cc38639", "syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2", "syn.00d69c5572eadd6fa1214abb8d02daccfcecf645bdf9cc1e4e6a89984ec8bb43", "syn.adc2825e4e08fa734579dd011f5c7cc51fd742c1921f63bf99d19ba00f0d1f4a", "syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809"], "objective": "explain call paths reaching apply_discount and any hardcoded 0.9 assumptions"}, "ok": true, "response_chars": 15931, "duration_ms": 130}
+{"ts_ms": 1795526351261, "tool": "archmeld_review", "args": {}, "ok": true, "response_chars": 10995, "duration_ms": 59}
+{"ts_ms": 1795526387765, "tool": "archmeld_brief", "args": {"recipe": "change"}, "ok": true, "response_chars": 4056, "duration_ms": 58}
+{"ts_ms": 1795526388358, "tool": "archmeld_status", "args": {}, "ok": true, "response_chars": 6589, "duration_ms": 40}

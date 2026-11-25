@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "generated_by": "tooling/upstream.py drill",
+  "upstream": "codegraph",
+  "ref": "upstream/main",
+  "to_commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "from": "461f82441d15ebd63c57fa8647687d883311810d",
+  "base_pin": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "merge_exit_code": 0,
+  "conflicts": [],
+  "matrix": "not_run",
+  "tests": [],
+  "status": "passed",
+  "auto_follow_latest": false,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:27:40.329632+00:00",
+      "finished_at": "2026-11-25T13:27:40.387880+00:00",
+      "duration_s": 0.058,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "<temp>\\upstream-drill-fsau1kiz\\worktree",
+        "HEAD"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:27:40.392477+00:00",
+      "finished_at": "2026-11-25T13:27:44.547954+00:00",
+      "duration_s": 4.155,
+      "stdout": "HEAD is now at 461f8244 chore: record failed drill attempt before tempfile fix\n",
+      "stderr": "Preparing worktree (detached HEAD 461f8244)\nUpdating files:  22% (396/1800)\rUpdating files:  23% (414/1800)\rUpdating files:  24% (432/1800)\rUpdating files:  25% (450/1800)\rUpdating files:  26% (468/1800)\rUpdating files:  27% (486/1800)\rUpdating files:  28% (504/1800)\rUpdating files:  29% (522/1800)\rUpdating files:  30% (540/1800)\rUpdating files:  31% (558/1800)\rUpdating files:  32% (576/1800)\rUpdating files:  33% (594/1800)\rUpdating files:  34% (612/1800)\rUpdating files:  35% (630/1800)\rUpdating files:  36% (648/1800)\rUpdating files:  37% (666/1800)\rUpdating files:  38% (684/1800)\rUpdating files:  39% (702/1800)\rUpdating files:  40% (720/1800)\rUpdating files:  41% (738/1800)\rUpdating files:  42% (756/1800)\rUpdating files:  43% (774/1800)\rUpdating files:  44% (792/1800)\rUpdating files:  45% (810/1800)\rUpdating files:  46% (828/1800)\rUpdating files:  47% (846/1800)\rUpdating files:  48% (864/1800)\rUpdating files:  48% (872/1800)\rUpdating files:  49% (882/1800)\rUpdating files:  50% (900/1800)\rUpdating files:  51% (918/1800)\rUpdating files:  52% (936/1800)\rUpdating files:  53% (954/1800)\rUpdating files:  54% (972/1800)\rUpdating files:  55% (990/1800)\rUpdating files:  56% (1008/1800)\rUpdating files:  57% (1026/1800)\rUpdating files:  58% (1044/1800)\rUpdating files:  59% (1062/1800)\rUpdating files:  60% (1080/1800)\rUpdating files:  61% (1098/1800)\rUpdating files:  62% (1116/1800)\rUpdating files:  63% (1134/1800)\rUpdating files:  64% (1152/1800)\rUpdating files:  65% (1170/1800)\rUpdating files:  66% (1188/1800)\rUpdating files:  67% (1206/1800)\rUpdating files:  68% (1224/1800)\rUpdating files:  69% (1242/1800)\rUpdating files:  70% (1260/1800)\rUpdating files:  71% (1278/1800)\rUpdating files:  72% (1296/1800)\rUpdating files:  73% (1314/1800)\rUpdating files:  74% (1332/1800)\rUpdating files:  75% (1350/1800)\rUpdating files:  76% (1368/1800)\rUpdating files:  76% (1382/1800)\rUpdating files:  77% (1386/1800)\rUpdating files:  78% (1404/1800)\rUpdating files:  79% (1422/1800)\rUpdating files:  80% (1440/1800)\rUpdating files:  81% (1458/1800)\rUpdating files:  82% (1476/1800)\rUpdating files:  83% (1494/1800)\rUpdating files:  84% (1512/1800)\rUpdating files:  85% (1530/1800)\rUpdating files:  86% (1548/1800)\rUpdating files:  87% (1566/1800)\rUpdating files:  88% (1584/1800)\rUpdating files:  89% (1602/1800)\rUpdating files:  90% (1620/1800)\rUpdating files:  91% (1638/1800)\rUpdating files:  92% (1656/1800)\rUpdating files:  93% (1674/1800)\rUpdating files:  94% (1692/1800)\rUpdating files:  95% (1710/1800)\rUpdating files:  96% (1728/1800)\rUpdating files:  97% (1746/1800)\rUpdating files:  98% (1764/1800)\rUpdating files:  99% (1782/1800)\rUpdating files: 100% (1800/1800)\rUpdating files: 100% (1800/1800), done.\n",
+      "stdout_sha256": "c826c5d0031dbb57e3a7f4540eb6c3d75ffa589e6f4e82113a70814ea554034d",
+      "stderr_sha256": "ae995f9301cc7a93676f0d929c3cbc0cdae555b830537c5bc0db2e316128cab1"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "upstream/main^{commit}"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:27:44.548295+00:00",
+      "finished_at": "2026-11-25T13:27:44.589306+00:00",
+      "duration_s": 0.041,
+      "stdout": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa\n",
+      "stderr": "",
+      "stdout_sha256": "7ceb161897a4e2bfd391ceda01582ccaa04abce2ca912257a34c4a4a3596da3e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "merge",
+        "--no-commit",
+        "--no-ff",
+        "upstream/main"
+      ],
+      "cwd": "<temp>\\upstream-drill-fsau1kiz\\worktree",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:27:44.589732+00:00",
+      "finished_at": "2026-11-25T13:27:44.677452+00:00",
+      "duration_s": 0.088,
+      "stdout": "Already up to date.\n",
+      "stderr": "",
+      "stdout_sha256": "e5d6c99aec87ec07a2d1b5c1222d8b690d0a61c3548a55c795fff56db9450d0d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "worktree_kept": false
+}

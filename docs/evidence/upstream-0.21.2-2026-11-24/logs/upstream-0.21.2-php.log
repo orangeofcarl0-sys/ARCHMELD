@@ -1,0 +1,127 @@
+   Compiling bindgen v0.72.1
+   Compiling bindgen v0.69.5
+   Compiling lz4-sys v1.11.1+lz4-1.10.0
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling libz-sys v1.1.25
+   Compiling librocksdb-sys v0.16.0+8.10.0
+   Compiling aho-corasick v1.1.4
+   Compiling regex-syntax v0.8.10
+   Compiling regex-automata v0.4.14
+   Compiling serde_json v1.0.149
+   Compiling tree-sitter v0.25.10
+   Compiling regex v1.12.3
+   Compiling tree-sitter-php v0.24.2
+   Compiling criterion v0.5.1
+   Compiling rocksdb v0.22.0
+   Compiling codegraph v0.2.0 (<repo>\crates\codegraph)
+   Compiling codegraph-parser-api v0.2.1 (<repo>\crates\codegraph-parser-api)
+   Compiling codegraph-php v0.2.1 (<repo>\crates\codegraph-php)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 25m 54s
+     Running unittests src\lib.rs (target\debug\deps\codegraph_php-88e8ca237a288935.exe)
+
+running 68 tests
+test mapper::tests::test_ir_to_graph_with_module ... ok
+test mapper::tests::test_ir_to_graph_empty ... ok
+test mapper::tests::test_ir_to_graph_function_properties ... ok
+test mapper::tests::test_ir_to_graph_with_interface ... ok
+test mapper::tests::test_ir_to_graph_with_imports ... ok
+test extractor::tests::test_extract_namespace_and_use ... ok
+test mapper::tests::test_ir_to_graph_with_function ... ok
+test mapper::tests::test_ir_to_graph_with_implementation ... ok
+test extractor::tests::test_extract_simple_function ... ok
+test extractor::tests::test_extract_module_info ... ok
+test extractor::tests::test_extract_enum ... ok
+test mapper::tests::test_ir_to_graph_include_require_is_local ... ok
+test extractor::tests::test_extract_class ... ok
+test mapper::tests::test_ir_to_graph_include_suffix_match ... ok
+test extractor::tests::test_extract_function_with_return_type ... ok
+test mapper::tests::test_property_types ... ok
+test parser_impl::tests::test_file_extensions ... ok
+test mapper::tests::test_ir_to_graph_with_class ... ok
+test mapper::tests::test_ir_to_graph_with_inheritance ... ok
+test parser_impl::tests::test_can_parse ... ok
+test extractor::tests::test_extract_interface ... ok
+test extractor::tests::test_extract_trait ... ok
+test extractor::tests::test_extract_inheritance ... ok
+test extractor::tests::test_extract_method ... ok
+test extractor::tests::test_extract_calls ... ok
+test mapper::tests::test_ir_to_graph_with_methods ... ok
+test parser_impl::tests::test_language ... ok
+test visitor::tests::file_scope_calls_belong_to_the_file ... ok
+test visitor::tests::group_use_imports_keep_their_prefix ... ok
+test visitor::tests::test_visitor_basics ... ok
+test visitor::tests::test_visitor_abstract_class ... ok
+test visitor::tests::test_visitor_class_extraction ... ok
+test visitor::tests::test_visitor_call_line_numbers ... ok
+test visitor::tests::test_visitor_complexity_simple_function ... ok
+test visitor::tests::test_visitor_enum ... ok
+test extractor::tests::test_extract_multiple_entities ... ok
+test visitor::tests::test_visitor_function_call_extraction ... ok
+test visitor::tests::test_visitor_function_extraction ... ok
+test visitor::tests::test_visitor_implements ... ok
+test visitor::tests::test_visitor_include_concat_constant_with_path ... ok
+test visitor::tests::test_visitor_include_concat_constants ... ok
+test visitor::tests::test_visitor_include_and_use_combined ... ok
+test visitor::tests::calls_are_named_the_way_php_resolves_them ... ok
+test visitor::tests::test_visitor_include_concat_dir_magic ... ok
+test visitor::tests::test_visitor_include_concat_multiple_strings ... ok
+test visitor::tests::test_visitor_include_concat_variable ... ok
+test visitor::tests::test_visitor_include_concat_dir_no_slash ... ok
+test visitor::tests::test_visitor_include_concat_dirname_file ... ok
+test visitor::tests::test_visitor_complexity_try_catch ... ok
+test visitor::tests::test_visitor_include_fully_dynamic ... ok
+test visitor::tests::test_visitor_include_concat_with_parens ... ok
+test visitor::tests::test_visitor_include_require ... ok
+test visitor::tests::test_visitor_include_with_parens ... ok
+test visitor::tests::test_visitor_complexity_if_elseif_else_foreach ... ok
+test visitor::tests::test_visitor_include_with_relative_path ... ok
+test visitor::tests::test_visitor_inheritance ... ok
+test visitor::tests::test_visitor_interface_extraction ... ok
+test visitor::tests::test_visitor_method_call_extraction ... ok
+test visitor::tests::test_visitor_namespace ... ok
+test visitor::tests::test_visitor_method_extraction ... ok
+test visitor::tests::test_visitor_static_call_extraction ... ok
+test visitor::tests::test_visitor_static_method ... ok
+test visitor::tests::test_visitor_trait_extraction ... ok
+test visitor::tests::test_visitor_trait_use ... ok
+test visitor::tests::test_visitor_use_extraction ... ok
+test visitor::tests::test_visitor_nested_calls ... ok
+test visitor::tests::test_visitor_use_with_alias ... ok
+test visitor::tests::test_visitor_visibility_modifiers ... ok
+
+test result: ok. 68 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests\integration_tests.rs (target\debug\deps\integration_tests-ef40c17d1bb36e19.exe)
+
+running 20 tests
+test test_parser_file_extensions ... ok
+test test_parser_with_config ... ok
+test test_parser_language ... ok
+test test_parser_can_parse ... ok
+test test_syntax_error ... ok
+test test_static_method ... ok
+test test_parse_source_directly ... ok
+test test_calls_edges ... ok
+test test_implements_edges ... ok
+test test_inheritance_edges ... ok
+test test_abstract_class ... ok
+test test_parse_simple_functions ... ok
+test test_visibility_modifiers ... ok
+test test_parse_interfaces ... ok
+test test_parse_traits ... ok
+test test_parse_classes ... ok
+test test_parse_files_batch ... ok
+test test_parser_metrics ... ok
+test test_parse_namespaces ... ok
+test test_parse_php8_features ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+   Doc-tests codegraph_php
+
+running 1 test
+test crates\codegraph-php\src\lib.rs - (line 17) - compile ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+

@@ -21,7 +21,7 @@
     "shell": "Git Bash",
     "rust_toolchain": "1.94.1-x86_64-pc-windows-gnu",
     "python_on_path": "3.11.9",
-    "temp": "C:/Users/<user>/AppData/Local/Temp (writable)",
+    "temp": "<user>/AppData/Local/Temp (writable)",
     "rust_analyzer": "component rust-analyzer installed for 1.94.1-x86_64-pc-windows-gnu; required by the pre-existing language_rename_apply test",
     "binaries": {
       "archmeld": "sha256:aa3ce6e98653ce6bd2b37dcff4cbaa567899dd6c82f15e93bee4bdb6693dd2a3",
@@ -29,7 +29,7 @@
       "archmeld_index_helper": "sha256:0c7c8db147014408c97ea1a68935cff0e719cfe16a97ddf398cbdd913b5db5d7"
     },
     "fixture": {
-      "root": "<workspace>/repo",
+      "root": "<workspace>/_archmeld_m1_fixture/repo",
       "files": {
         "main.py": "sha256:94763662f1cce3cfa796985a016f0b236f4113f6853d6582a0989c111212fb3e",
         "src/a.py": "sha256:d311953cc9e6d8278be8e1184e001feee322b1f860a5dc849eec71e3be694096",
@@ -44,9 +44,9 @@
       "archmeld",
       "init",
       "--workspace",
-      "<workspace>/repo",
+      "<workspace>/_archmeld_m1_fixture/repo",
       "--state",
-      "<workspace>/state",
+      "<workspace>/_archmeld_m1_fixture/state",
       "--project",
       "project.m1",
       "--client",
@@ -136,7 +136,7 @@
   },
   "mcp_install": {
     "client": "codex",
-    "plan_command": "codex mcp add archmeld -- <repo>/target/debug/archmeld-mcp.exe --state <workspace>/state --project project.m1",
+    "plan_command": "codex mcp add archmeld -- <repo>/target/debug/archmeld-mcp.exe --state <workspace>/_archmeld_m1_fixture/state --project project.m1",
     "plan_read_only": true,
     "health": {
       "state": "ok",
@@ -224,9 +224,9 @@
         "archmeld",
         "init",
         "--workspace",
-        "<workspace>/repo",
+        "<workspace>/_archmeld_m1_fixture/repo",
         "--state",
-        "<workspace>/state",
+        "<workspace>/_archmeld_m1_fixture/state",
         "--project",
         "project.m1",
         "--client",
@@ -242,7 +242,7 @@
         "archmeld",
         "brief",
         "--state",
-        "<workspace>/state",
+        "<workspace>/_archmeld_m1_fixture/state",
         "--project",
         "project.m1",
         "--markdown"
@@ -256,7 +256,7 @@
         "archmeld",
         "brief",
         "--state",
-        "<workspace>/state",
+        "<workspace>/_archmeld_m1_fixture/state",
         "--project",
         "project.m1",
         "--markdown"
@@ -273,7 +273,7 @@
         "--client",
         "codex",
         "--state",
-        "<workspace>/state",
+        "<workspace>/_archmeld_m1_fixture/state",
         "--project",
         "project.m1",
         "--check"
@@ -287,9 +287,9 @@
         "archmeld",
         "init",
         "--workspace",
-        "<workspace>/repo-rules",
+        "<workspace>/_archmeld_m1_fixture/repo-rules",
         "--state",
-        "<workspace>/state-rules",
+        "<workspace>/_archmeld_m1_fixture/state-rules",
         "--project",
         "project.m1r",
         "--write",

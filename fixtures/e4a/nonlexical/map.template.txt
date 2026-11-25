@@ -1,0 +1,13 @@
+#ARCHMELD-MAP: 1
+#snapshot: {{SNAPSHOT}}
+#scope: code
+#budget_tokens: 40000
+#observe: README.md,src/services/**
+===src/===
+pricing.py[L1D1C9M]: F:Computes the contractual order discount and the list price. | R:file:src/invoice.py,file:src/analytics.py | A:apply_discount(value)->float | S:invoice.INVOICE_ADJUSTMENT_BPS (1000) and analytics.EXPECTED_TOTAL (11110) encode the 10% rate; changing the rate requires updating both.
+invoice.py[L1D2C7M]: F:Computes invoice totals from the adjustment basis points. | R:file:src/pricing.py | A:invoice_total(value)->float | S:INVOICE_ADJUSTMENT_BPS is the invoice-side copy of the pricing rate.
+analytics.py[L1D2C7M]: F:Checks the contractual basket total for analytics. | R:file:src/pricing.py | A:check_total()->bool | S:EXPECTED_TOTAL is derived from the 10% rate and must move with it.
+checkout.py[L1D2C5M]: F:Adds a handling fee on top of the discounted price. | R:file:src/pricing.py | A:checkout(value)->float | S:-
+reporting.py[L1D2C5M]: F:Builds a one-line report from checkout totals. | R:file:src/checkout.py | A:build_report(value)->str | S:-
+legacy.py[L1D2C4M]: F:Legacy pricing helper kept for old callers. | R:- | A:apply_discount(value)->float | S:Unrelated to the storefront rate; do not change it.
+dynamic.py[L1D2C4M]: F:Resolves the pricing function dynamically. | R:file:src/pricing.py | A:dynamic_discount(value)->float | S:The call target is resolved at runtime; static graphs may report unknown.

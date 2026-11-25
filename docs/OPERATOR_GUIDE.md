@@ -2,7 +2,8 @@
 
 This guide is for the local operator of the current ARCHMELD work tree. AT067
 passed for the seven-language gate; R1 is still not named complete because
-AT068 clean-machine delivery and AT077 real-upstream upgrade remain partial. See
+Ubuntu GUI/VS Code host and macOS release runs remain open. AT068 clean-machine
+delivery and the real 0.21.2 upstream upgrade (AT077) passed. See
 `docs/REMAINING_BLOCKERS.md`.
 
 ## 1. Build and test (Windows reference machine)
@@ -20,7 +21,7 @@ Release binaries:
 RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
 PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
 cargo build --release -p archmeld-api --bins
-RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH LIBCLANG_PATH=<workspace>/_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
+RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH LIBCLANG_PATH=<workspace>/_archmeld_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
 ```
 
 Offline clean-machine flow (installed bundle; no Cargo, model or network):
@@ -332,7 +333,7 @@ MCP read-only server:
 
 ```sh
 target/release/archmeld-mcp.exe --state <workspace>/_archmeld_state \
-  --project <project_id> --audit <workspace>/_archmeld_temp/mcp-audit.jsonl
+  --project <project_id> --audit <temp>/mcp-audit.jsonl
 ```
 
 The MCP surface advertises only handlers this build can execute:
@@ -343,10 +344,43 @@ The MCP surface advertises only handlers this build can execute:
 by `archmeld_capabilities`. Content returned from a repository is `untrusted`
 data and is never executed.
 
+`archmeld_brief` returns the JSON result plus a one-screen markdown card. If
+the workspace has an AOCI-CODE map (`aoci.txt`/`aoci.code.txt`), the brief also
+includes a read-only `cognition` block with entry counts and the entries
+matched by the change. ARCHMELD never writes that map and never treats its
+entries as parsed relations; a missing or malformed map is a warning, not an
+error.
+
+`archmeld brief --write` writes the same card to
+`<workspace>/.archmeld/SESSION.md` (or `--out <path>`), with a header carrying
+the snapshot, commit, coverage, workspace state and counts. `archmeld status`
+reports `session_card.present`, `marker`, `snapshot_match` and `stale` for the
+active workspace; a missing card is not stale. The card is a projection, not a
+source of truth; an existing non-ARCHMELD file is only overwritten with
+`--force`.
+
+E1/E2 map commands are read-only:
+
+```sh
+archmeld map check --state <state> --project <id> --workspace <repo>
+archmeld map status --state <state> --project <id> --workspace <repo> --markdown
+archmeld map maintain --state <state> --project <id> --workspace <repo>
+archmeld brief --state <state> --project <id> --workspace <repo> --recipe map
+```
+
+`map check`/`status`/`maintain` exit 1 when the map state is `invalid`;
+`absent`/`stale` exit 0. `archmeld status` adds a `map` summary and
+`archmeld_inspect(kind=map_entry, id=<path>)` reads one Entry. `map apply`
+(E3) is not implemented; nothing here writes the map.
+
 ## 3. Data locations and safety
 
 - State root: explicit `--state` directory; contains `state.sqlite3` and
   `objects/sha256/`.
+- Workspace card: `<workspace>/.archmeld/SESSION.md` when `brief --write` is
+  used; `.archmeld/` is skipped by the snapshot and drift walkers, so the card
+  never counts as source drift. It is generated metadata, not a source of
+  truth.
 - Staging: `<state>/staging/<project>/<changeset>/`; the active workspace is not
   written during preparation.
 - Reports: core/API exports; the HTTP route places them under
@@ -387,14 +421,15 @@ and never call a partial/unsupported check accepted.
   repository script.
 - Clang/libclang build errors: use the locked toolchain paths in `AGENTS.md`.
 - C: drive pressure: set `TMP/TEMP` and benchmark/temp roots to
-  `<workspace>/_archmeld_temp`; `target-linux/` and `dist/` are ignored.
+  `<temp>`; `target-linux/` and `dist/` are ignored.
 
 ## 6. Current release status
 
-- B030: AT066 passed; **AT067 failed**. No per-language runtime linkage/medium
-  real projects; R1 naming is blocked.
-- B031: AT068 partial, AT069 passed, AT077 partial. Packaging/install evidence
-  exists; clean-machine indexing, packaged offline report opening, Ubuntu VS Code
-  host and a real newer-upstream upgrade remain open.
+- B030: AT066 and **AT067 passed** for the seven-language gate; C/C++ full SCIP
+  is exercised on the WSL worker and Ubuntu GUI/macOS host runs remain
+  release-level items.
+- B031: AT068 passed, AT069 passed, **AT077 passed (2026-11-24)**. Packaging,
+  clean-machine indexing, offline report opening and the real 0.21.2 upstream
+  upgrade have evidence; the Ubuntu VS Code host run remains open.
 - B017/B018/B016/B014 residuals and B022/B025 residuals are listed in
   `docs/archmeld-progress.md`.

@@ -145,5 +145,5 @@
     "--debounce-ms",
     "150"
   ],
-  "cwd": "<workspace>/_archmeld_temp/b016_trace_evidence"
+  "cwd": "<temp>/b016_trace_evidence"
 }

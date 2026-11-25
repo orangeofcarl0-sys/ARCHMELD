@@ -51,17 +51,8 @@ fn fixture() -> (
     (dir, store, captured.snapshot_id, config_digest, root, captured.files)
 }
 
-fn export(root: &Path, nodes: Vec<Value>, edges: Vec<Value>) -> String {
-    let mut lines = vec![json!({
-        "type": "manifest",
-        "format": "archmeld-export-v1",
-        "source": "codegraph",
-        "version": "0.2.0",
-        "node_count": nodes.len(),
-        "edge_count": edges.len(),
-        "iteration": "real-iterators",
-    })
-    .to_string()];
+fn export_with_manifest(nodes: Vec<Value>, edges: Vec<Value>, manifest: Value) -> String {
+    let mut lines = vec![manifest.to_string()];
     for node in nodes {
         lines.push(node.to_string());
     }
@@ -69,6 +60,34 @@ fn export(root: &Path, nodes: Vec<Value>, edges: Vec<Value>) -> String {
         lines.push(edge.to_string());
     }
     lines.join("\n") + "\n"
+}
+
+fn export(_root: &Path, nodes: Vec<Value>, edges: Vec<Value>) -> String {
+    let manifest = json!({
+        "type": "manifest",
+        "format": "archmeld-export-v1",
+        "source": "codegraph",
+        "version": "0.2.0",
+        "node_count": nodes.len(),
+        "edge_count": edges.len(),
+        "iteration": "real-iterators",
+    });
+    export_with_manifest(nodes, edges, manifest)
+}
+
+fn manifest_v11(node_count: usize, edge_count: usize, commit: &str) -> Value {
+    json!({
+        "type": "manifest",
+        "format": "archmeld-export-v1",
+        "schema_version": "1.1",
+        "source": "codegraph",
+        "version": "0.2.0",
+        "producer_commit": commit,
+        "producer_dirty": false,
+        "node_count": node_count,
+        "edge_count": edge_count,
+        "iteration": "real-iterators",
+    })
 }
 
 fn node(root: &Path, id: u64, node_type: &str, path: &str, name: &str, lines: Option<(u64, u64)>) -> Value {
@@ -218,4 +237,140 @@ fn repeated_import_is_idempotent_and_conflicting_payload_is_rejected() {
         )
         .expect_err("different payload for the same sequence must conflict");
     assert!(err.to_string().contains("different payload digest"), "{err}");
+}
+
+#[test]
+fn legacy_manifest_defaults_to_schema_1_0() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let text = export(
+        &root,
+        vec![node(&root, 1, "Function", "src/app.py", "main", Some((1, 2)))],
+        vec![],
+    );
+    let config = BridgeConfig {
+        project_id: PROJECT,
+        snapshot_id: &snapshot_id,
+        config_digest: &config_digest,
+        run_id: RUN,
+        workspace_root: Some(&root),
+        max_entities_per_batch: 500,
+        max_relations_per_batch: 2000,
+    };
+    let report = import_codegraph_export(&mut store, &config, &files, &text).expect("import");
+    assert_eq!(report.export_schema_version, "1.0");
+    assert_eq!(report.producer_commit, None);
+    assert_eq!(report.producer_dirty, None);
+}
+
+#[test]
+fn schema_1_1_reports_producer_commit_and_dirty() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let commit = "0123456789abcdef0123456789abcdef01234567";
+    let text = export_with_manifest(
+        vec![node(&root, 1, "Function", "src/app.py", "main", Some((1, 2)))],
+        vec![],
+        manifest_v11(1, 0, commit),
+    );
+    let config = BridgeConfig {
+        project_id: PROJECT,
+        snapshot_id: &snapshot_id,
+        config_digest: &config_digest,
+        run_id: RUN,
+        workspace_root: Some(&root),
+        max_entities_per_batch: 500,
+        max_relations_per_batch: 2000,
+    };
+    let report = import_codegraph_export(&mut store, &config, &files, &text).expect("import");
+    assert_eq!(report.export_schema_version, "1.1");
+    assert_eq!(report.producer_commit.as_deref(), Some(commit));
+    assert_eq!(report.producer_dirty, Some(false));
+    assert_eq!(report.entities, 1);
+}
+
+#[test]
+fn unknown_schema_minor_is_accepted() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let mut manifest = manifest_v11(0, 0, "0123456789abcdef0123456789abcdef01234567");
+    manifest["schema_version"] = json!("1.9");
+    let text = export_with_manifest(vec![], vec![], manifest);
+    let config = BridgeConfig {
+        project_id: PROJECT,
+        snapshot_id: &snapshot_id,
+        config_digest: &config_digest,
+        run_id: RUN,
+        workspace_root: Some(&root),
+        max_entities_per_batch: 500,
+        max_relations_per_batch: 2000,
+    };
+    let report = import_codegraph_export(&mut store, &config, &files, &text).expect("import");
+    assert_eq!(report.export_schema_version, "1.9");
+}
+
+#[test]
+fn schema_major_two_is_rejected() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let mut manifest = manifest_v11(0, 0, "0123456789abcdef0123456789abcdef01234567");
+    manifest["schema_version"] = json!("2.0");
+    let text = export_with_manifest(vec![], vec![], manifest);
+    let config = BridgeConfig {
+        project_id: PROJECT,
+        snapshot_id: &snapshot_id,
+        config_digest: &config_digest,
+        run_id: RUN,
+        workspace_root: Some(&root),
+        max_entities_per_batch: 500,
+        max_relations_per_batch: 2000,
+    };
+    let error = import_codegraph_export(&mut store, &config, &files, &text)
+        .expect_err("schema major 2 must be rejected");
+    assert!(
+        error.to_string().contains("schema version 2.0"),
+        "unexpected error: {error}"
+    );
+}
+
+#[test]
+fn malformed_producer_commit_is_rejected() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let mut manifest = manifest_v11(0, 0, "0123456789abcdef0123456789abcdef01234567");
+    manifest["producer_commit"] = json!("not-a-sha");
+    let text = export_with_manifest(vec![], vec![], manifest);
+    let config = BridgeConfig {
+        project_id: PROJECT,
+        snapshot_id: &snapshot_id,
+        config_digest: &config_digest,
+        run_id: RUN,
+        workspace_root: Some(&root),
+        max_entities_per_batch: 500,
+        max_relations_per_batch: 2000,
+    };
+    let error = import_codegraph_export(&mut store, &config, &files, &text)
+        .expect_err("invalid producer_commit must be rejected");
+    assert!(
+        error.to_string().contains("producer_commit"),
+        "unexpected error: {error}"
+    );
+}
+
+#[test]
+fn unknown_manifest_fields_are_ignored() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let mut manifest = manifest_v11(1, 0, "0123456789abcdef0123456789abcdef01234567");
+    manifest["future_field"] = json!({"additive": true});
+    let text = export_with_manifest(
+        vec![node(&root, 1, "Function", "src/app.py", "main", Some((1, 2)))],
+        vec![],
+        manifest,
+    );
+    let config = BridgeConfig {
+        project_id: PROJECT,
+        snapshot_id: &snapshot_id,
+        config_digest: &config_digest,
+        run_id: RUN,
+        workspace_root: Some(&root),
+        max_entities_per_batch: 500,
+        max_relations_per_batch: 2000,
+    };
+    let report = import_codegraph_export(&mut store, &config, &files, &text).expect("import");
+    assert_eq!(report.entities, 1);
 }

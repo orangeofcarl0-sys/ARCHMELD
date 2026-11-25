@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "generated_by": "tooling/upstream.py diff",
+  "upstream": "codegraph",
+  "from": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "from_pin": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "to": "upstream/main",
+  "to_commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "update_available": false,
+  "commits": [],
+  "diffstat": [],
+  "changed_paths": [],
+  "conflicts": [],
+  "conflict_hotspots": [],
+  "merge_exit_code": 0,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "upstream/main^{commit}"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:22:21.062205+00:00",
+      "finished_at": "2026-11-25T13:22:21.102454+00:00",
+      "duration_s": 0.04,
+      "stdout": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa\n",
+      "stderr": "",
+      "stdout_sha256": "7ceb161897a4e2bfd391ceda01582ccaa04abce2ca912257a34c4a4a3596da3e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "log",
+        "--oneline",
+        "--no-merges",
+        "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa..upstream/main"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:22:21.102812+00:00",
+      "finished_at": "2026-11-25T13:22:21.139363+00:00",
+      "duration_s": 0.037,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--stat",
+        "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa..upstream/main"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:22:21.139667+00:00",
+      "finished_at": "2026-11-25T13:22:21.174463+00:00",
+      "duration_s": 0.035,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-status",
+        "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa..upstream/main"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:22:21.174778+00:00",
+      "finished_at": "2026-11-25T13:22:21.209143+00:00",
+      "duration_s": 0.034,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "--name-only",
+        "HEAD",
+        "upstream/main"
+      ],
+      "cwd": "<repo>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-25T13:22:21.209439+00:00",
+      "finished_at": "2026-11-25T13:22:21.336515+00:00",
+      "duration_s": 0.127,
+      "stdout": "8ea374970d408860a2265952da2b7184e0acbc2e\n",
+      "stderr": "",
+      "stdout_sha256": "6a839b4cb6f3ca456469624519a6a8122492c7f6eec8ce8f005f271987a31f5e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "auto_follow_latest": false
+}

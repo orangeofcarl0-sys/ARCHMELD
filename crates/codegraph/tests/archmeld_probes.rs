@@ -126,7 +126,15 @@ fn export_ndjson_v1_matches_real_iterators() {
     for line in text.lines() {
         let value: Value = serde_json::from_str(line).unwrap();
         match value["type"].as_str().unwrap() {
-            "manifest" => {}
+            "manifest" => {
+                assert_eq!(value["format"], "archmeld-export-v1");
+                assert_eq!(value["schema_version"], "1.1");
+                if let Some(commit) = value.get("producer_commit") {
+                    let commit = commit.as_str().expect("producer_commit must be a string");
+                    assert!(commit.len() == 40 || commit.len() == 64);
+                    assert!(value["producer_dirty"].is_boolean());
+                }
+            }
             "node" => {
                 exported_nodes.insert(value["id"].as_u64().unwrap());
             }

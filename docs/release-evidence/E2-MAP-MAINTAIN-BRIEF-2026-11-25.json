@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "E2: read-only map maintain, brief(recipe=map), status map summary and inspect(kind=map_entry)",
+  "not_included": [
+    "E3: candidate file and map apply",
+    "E4: real-repository pilot",
+    "E5: commit-review integration, HTML/VS Code, scoped writer",
+    "E: relation refs (deferred until the Python same-name binding is fixed)"
+  ],
+  "implementation": {
+    "core": "crates/archmeld-core/src/cognition_map.rs: summarize/affected/maintain/entry_report",
+    "brief": "crates/archmeld-core/src/brief.rs: BriefRecipe::Map, map_brief, cognition_map blocks",
+    "status": "crates/archmeld-core/src/status.rs: per-project map summary",
+    "mcp": "archmeld_inspect kind=map_entry; brief recipe=map; contract enums updated",
+    "cli": "archmeld map maintain; map check|status already read-only",
+    "writes": false,
+    "mcp_tools": 8
+  },
+  "tests": {
+    "cognition_map": {
+      "passed": 10,
+      "failed": 0,
+      "added": ["summarize/affected/entry_report", "maintain marks changed files after a new snapshot"]
+    },
+    "brief": {
+      "passed": 5,
+      "failed": 0,
+      "added": ["map recipe and cognition_map in project/change briefs"]
+    },
+    "mcp_stdio": {
+      "passed": 1,
+      "failed": 0,
+      "added": ["inspect map_entry through the real process"]
+    },
+    "full": {
+      "command": "cargo test --locked -p archmeld-core -p archmeld-api --no-fail-fast -j 2",
+      "passed": 238,
+      "failed": 0,
+      "ignored": 0,
+      "sections": 78,
+      "log": "docs/evidence/e2-map-maintain-brief-2026-11-25/final-core-api.log",
+      "log_sha256": "e336d86a25cbf8e8bdcae5f269a67e92e04a7d39d96fdb9aa152760113105140"
+    }
+  },
+  "manual_end_to_end": {
+    "fixture": "M1 4-file fixture; map authored against sha256:9e43304f...",
+    "map_maintain": {
+      "exit_code": 0,
+      "state": "ok",
+      "entries": {"total": 2, "unchanged": 2, "stale": 0, "orphan": 0, "missing": 2},
+      "check_state": "ok",
+      "map_dirty": false,
+      "map_tracked": false,
+      "evidence": "docs/evidence/e2-map-maintain-brief-2026-11-25/maintain.json"
+    },
+    "brief_map": {
+      "exit_code": 0,
+      "state": "ok",
+      "level": "map",
+      "summary": "map ok: 2 entries, 3 confirmed refs, 0 candidate, 0 unknown",
+      "evidence": "docs/evidence/e2-map-maintain-brief-2026-11-25/brief-map.json"
+    },
+    "status_map": {
+      "exit_code": 0,
+      "present": true,
+      "entries": 2,
+      "snapshot_match": true,
+      "state": "ok",
+      "tokens_estimate": 63,
+      "evidence": "docs/evidence/e2-map-maintain-brief-2026-11-25/status.json"
+    }
+  },
+  "boundaries": {
+    "semantic_claims": "unverified",
+    "candidate_promoted": false,
+    "map_is_evidence": false,
+    "map_written": false,
+    "mcp_surface": "8 read-only tools",
+    "source_upload": false
+  },
+  "limitations": [
+    "map maintain compares snapshots, not uncommitted working-tree edits",
+    "coverage missing is a warning; a partial map can still state ok",
+    "map_dirty only applies when the map is tracked in the snapshot",
+    "relation refs remain rejected",
+    "E3 apply and E4 pilot are not implemented"
+  ]
+}

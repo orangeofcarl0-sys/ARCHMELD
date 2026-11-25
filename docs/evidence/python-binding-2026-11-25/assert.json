@@ -1,0 +1,9 @@
+{
+  "checkout": 1,
+  "pricing_apply_discount": 6,
+  "legacy_apply_discount": 4,
+  "calls": [
+    6
+  ],
+  "state": "ok"
+}

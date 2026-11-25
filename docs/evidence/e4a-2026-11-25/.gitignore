@@ -1,0 +1,4 @@
+smoke/
+runs/*/repo/
+runs/*/state/
+__pycache__/

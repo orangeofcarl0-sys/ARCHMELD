@@ -26,7 +26,28 @@ except ModuleNotFoundError:  # Python 3.10 fallback
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 VERSION = os.environ.get("ARCHMELD_VERSION", "0.1.0")
-UPSTREAM = "590c2ca7dd7b37bd1d41caf45fac535b6522f969"
+
+
+def upstream_commit() -> str:
+    """Read the CodeGraph pin from the registry, falling back to the tool lock."""
+    registry = ROOT / "upstreams.lock.json"
+    if registry.is_file():
+        data = json.loads(registry.read_text(encoding="utf-8"))
+        for entry in data.get("upstreams", []):
+            if entry.get("id") == "codegraph":
+                commit = entry.get("pin", {}).get("commit")
+                if commit:
+                    return commit
+    lock = ROOT / "toolchains.lock.json"
+    if lock.is_file():
+        data = json.loads(lock.read_text(encoding="utf-8"))
+        commit = data.get("pinned", {}).get("codegraph_commit")
+        if commit:
+            return commit
+    raise SystemExit("cannot determine the CodeGraph pin from upstreams.lock.json or toolchains.lock.json")
+
+
+UPSTREAM = upstream_commit()
 TOOLCHAIN = "rust 1.94.1; node 24.14.1"
 PLATFORMS = {
     "windows-x64": {

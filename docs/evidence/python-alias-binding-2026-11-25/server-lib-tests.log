@@ -1,0 +1,778 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling codegraph-server v0.21.2 (<repo>\crates\codegraph-server)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+  --> crates\codegraph-rust\src\visitor.rs:12:33
+   |
+12 |     TraitEntity, TypeReference, BODY_PREFIX_MAX_CHARS,
+   |                                 ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-rust` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-rust` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-cpp\src\visitor.rs:9:5
+  |
+9 |     BODY_PREFIX_MAX_CHARS,
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-cpp` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-cpp` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-csharp\src\visitor.rs:9:5
+  |
+9 |     BODY_PREFIX_MAX_CHARS,
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-csharp` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-csharp` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-typescript\src\visitor.rs:9:20
+  |
+9 |     TypeReference, BODY_PREFIX_MAX_CHARS,
+  |                    ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-typescript` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-typescript` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-java\src\visitor.rs:9:5
+  |
+9 |     BODY_PREFIX_MAX_CHARS,
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-java` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-java` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-ruby\src\visitor.rs:9:5
+  |
+9 |     BODY_PREFIX_MAX_CHARS,
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-ruby` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-ruby` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-go\src\visitor.rs:8:60
+  |
+8 |     ImportRelation, Parameter, TraitEntity, TypeReference, BODY_PREFIX_MAX_CHARS,
+  |                                                            ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-go` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-go` to apply 1 suggestion)
+   Compiling codegraph-python v0.4.3 (<repo>\crates\codegraph-python)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+  --> crates\codegraph-c\src\visitor.rs:14:16
+   |
+14 |     Parameter, BODY_PREFIX_MAX_CHARS,
+   |                ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-c` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-c` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-swift\src\visitor.rs:9:5
+  |
+9 |     BODY_PREFIX_MAX_CHARS,
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-swift` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-swift` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+  --> crates\codegraph-verilog\src\visitor.rs:12:32
+   |
+12 |     ImportRelation, Parameter, BODY_PREFIX_MAX_CHARS,
+   |                                ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-verilog` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-verilog` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+ --> crates\codegraph-kotlin\src\visitor.rs:9:5
+  |
+9 |     BODY_PREFIX_MAX_CHARS,
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-kotlin` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-kotlin` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+  --> crates\codegraph-tcl\src\visitor.rs:13:5
+   |
+13 |     BODY_PREFIX_MAX_CHARS,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-tcl` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-tcl` to apply 1 suggestion)
+warning: unused import: `BODY_PREFIX_MAX_CHARS`
+  --> crates\codegraph-python\src\extractor.rs:14:5
+   |
+14 |     BODY_PREFIX_MAX_CHARS,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codegraph-python` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-python` to apply 1 suggestion)
+warning: unused import: `Path`
+  --> crates\codegraph-server\src\daemon.rs:18:17
+   |
+18 | use std::path::{Path, PathBuf};
+   |                 ^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `super::*`
+   --> crates\codegraph-server\src\handlers\metrics.rs:121:9
+    |
+121 |     use super::*;
+    |         ^^^^^^^^
+
+warning: unused import: `super::server::McpServer`
+  --> crates\codegraph-server\src\mcp\engine.rs:23:5
+   |
+23 | use super::server::McpServer;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+    --> crates\codegraph-server\src\mcp\server.rs:1508:13
+     |
+1508 |         let mut tool_call_count = 0u64;
+     |             ----^^^^^^^^^^^^^^^
+     |             |
+     |             help: remove this `mut`
+     |
+     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable `total_indexed` is assigned to, but never used
+    --> crates\codegraph-server\src\backend.rs:1230:13
+     |
+1230 |         let mut total_indexed = 0;
+     |             ^^^^^^^^^^^^^^^^^
+     |
+     = note: consider using `_total_indexed` instead
+     = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `total_indexed` is never read
+    --> crates\codegraph-server\src\backend.rs:1315:13
+     |
+1315 |             total_indexed = result.total_files;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: maybe it is overwritten before being read?
+     = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `FindUnusedCodeParams` is never constructed
+  --> crates\codegraph-server\src\domain\unused_code.rs:17:19
+   |
+17 | pub(crate) struct FindUnusedCodeParams {
+   |                   ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `UnusedCodeCandidate` is never constructed
+  --> crates\codegraph-server\src\domain\unused_code.rs:26:19
+   |
+26 | pub(crate) struct UnusedCodeCandidate {
+   |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: struct `FindUnusedCodeResult` is never constructed
+  --> crates\codegraph-server\src\domain\unused_code.rs:36:19
+   |
+36 | pub(crate) struct FindUnusedCodeResult {
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `find_unused_code` is never used
+  --> crates\codegraph-server\src\domain\unused_code.rs:52:21
+   |
+52 | pub(crate) async fn find_unused_code(
+   |                     ^^^^^^^^^^^^^^^^
+
+warning: function `is_build_output_path` is never used
+   --> crates\codegraph-server\src\domain\unused_code.rs:298:4
+    |
+298 | fn is_build_output_path(path: &str) -> bool {
+    |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `has_called_child_methods` is never used
+   --> crates\codegraph-server\src\domain\unused_code.rs:305:4
+    |
+305 | fn has_called_child_methods(graph: &CodeGraph, node_id: NodeId) -> bool {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `has_active_same_file_functions` is never used
+   --> crates\codegraph-server\src\domain\unused_code.rs:351:4
+    |
+351 | fn has_active_same_file_functions(graph: &CodeGraph, node_id: NodeId) -> bool {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `is_framework_entry_point` is never used
+   --> crates\codegraph-server\src\domain\unused_code.rs:394:4
+    |
+394 | fn is_framework_entry_point(name: &str) -> bool {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `is_trait_impl_method` is never used
+   --> crates\codegraph-server\src\domain\unused_code.rs:458:4
+    |
+458 | fn is_trait_impl_method(name: &str) -> bool {
+    |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `compute_unused_confidence` is never used
+   --> crates\codegraph-server\src\domain\unused_code.rs:527:4
+    |
+527 | fn compute_unused_confidence(name: &str, is_exported: bool, _node: &codegraph::Node) -> f64 {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `set_shared_engine` and `handle_request_shared` are never used
+    --> crates\codegraph-server\src\mcp\server.rs:1371:25
+     |
+1268 | impl McpServer {
+     | -------------- methods in this implementation
+...
+1371 |     pub(crate) async fn set_shared_engine(
+     |                         ^^^^^^^^^^^^^^^^^
+...
+1591 |     pub(crate) async fn handle_request_shared(
+     |                         ^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codegraph-server` (lib test) generated 17 warnings (run `cargo fix --lib -p codegraph-server --tests` to apply 4 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 50s
+     Running unittests src\lib.rs (target\debug\deps\codegraph_server-daae320ba0970c5e.exe)
+
+running 425 tests
+test ai_query::engine::tests::a_live_daemon_s_project_may_not_be_taken_by_another_process ... ok
+test ai_query::engine::tests::embed_memory_pressured_low_reading_is_pressure ... ok
+test ai_query::engine::tests::embed_memory_pressured_at_or_above_floor_is_not_pressure ... ok
+test ai_query::engine::tests::embed_memory_pressured_zero_reading_is_detection_failure_not_pressure ... ok
+test ai_query::engine::tests::needs_word_split_only_when_words_are_not_already_separated ... ok
+test ai_query::engine::tests::build_embed_text_splits_camel_case_but_leaves_snake_case_alone ... ok
+test ai_query::engine::tests::build_embed_text_prepends_split_name_only_when_enabled ... ok
+test ai_query::engine::tests::split_identifier_words_handles_camel_and_snake ... ok
+test ai_query::engine::tests::no_save_writes_into_a_project_nobody_has_claimed ... ok
+test ai_query::engine::tests::a_pre_0_21_set_is_never_adopted_by_a_save ... ok
+test ai_query::engine::tests::a_save_never_deletes_work_another_writer_stored ... ok
+test ai_query::engine::tests::an_empty_store_is_distinguishable_from_a_foreign_one ... ok
+test ai_query::engine::tests::checkpoints_survive_a_crash_while_migrating_an_older_index ... ok
+test ai_query::engine::tests::an_unwatched_project_can_be_claimed_and_rebuilt ... ok
+test ai_query::engine::tests::switching_the_embedding_model_invalidates_the_stored_set ... ok
+test ai_query::engine::tests::no_save_may_replace_a_set_another_embed_text_owns ... ok
+test ai_query::engine::tests::checkpoints_survive_a_crash_on_a_first_index ... ok
+test ai_query::engine::tests::claiming_is_how_a_rebuild_takes_a_project_over ... ok
+test ai_query::engine::tests::test_engine_creation ... ok
+test ai_query::engine::tests::symbol_search_status_names_mismatched_daemon_vectors_not_a_build ... ok
+test ai_query::engine::tests::test_find_entry_points ... ok
+test ai_query::engine::tests::test_get_callers ... ok
+test ai_query::engine::tests::test_detect_entry_type_cli_command ... ok
+test ai_query::engine::tests::test_detect_entry_type_event_handler ... ok
+test ai_query::engine::tests::test_detect_entry_type_http_handler ... ok
+test ai_query::engine::tests::test_find_by_signature_return_type ... ok
+test ai_query::engine::tests::test_find_by_signature_modifiers ... ok
+test ai_query::engine::tests::test_get_symbol_info ... ok
+test ai_query::engine::tests::test_find_entry_points_all_types ... ok
+test ai_query::engine::tests::test_symbol_search_empty ... ok
+test ai_query::engine::tests::test_find_by_signature_combined_filters ... ok
+test ai_query::engine::tests::test_find_by_signature_return_type_normalized ... ok
+test ai_query::engine::tests::test_find_by_signature_param_count ... ok
+test ai_query::engine::tests::test_symbol_search_with_data ... ok
+test ai_query::engine::tests::test_traverse_graph ... ok
+test ai_query::engine::tests::unstamped_0_20_1_vectors_are_a_mismatch_not_an_empty_store ... ok
+test ai_query::engine::tests::test_traverse_graph_node_type_filter ... ok
+test ai_query::engine::tests::test_traverse_graph_edge_type_filter ... ok
+test ai_query::engine::tests::test_symbol_search_with_type_filter ... ok
+test ai_query::engine::tests::vectors_round_trip_under_the_configuration_that_stored_them ... ok
+test ai_query::primitives::tests::test_import_match_mode_default ... ok
+test ai_query::primitives::tests::test_search_options_builder ... ok
+test ai_query::primitives::tests::test_search_options_defaults ... ok
+test ai_query::primitives::tests::test_search_scope_default ... ok
+test ai_query::primitives::tests::test_signature_pattern_builder ... ok
+test ai_query::primitives::tests::test_traversal_filter_builder ... ok
+test ai_query::primitives::tests::truncate_string_never_splits_a_multibyte_char ... ok
+test ai_query::primitives::tests::truncate_string_passes_short_input_through ... ok
+test ai_query::text_index::tests::test_build_empty ... ok
+test ai_query::text_index::tests::test_build_multiple_documents ... ok
+test ai_query::text_index::tests::test_build_single_document ... ok
+test ai_query::text_index::tests::test_builder_add_document_with_comments ... ok
+test ai_query::text_index::tests::test_builder_add_document_with_docstring ... ok
+test ai_query::text_index::tests::test_builder_add_single_document ... ok
+test ai_query::text_index::tests::test_builder_new ... ok
+test ai_query::text_index::tests::test_duplicate_terms_in_document ... ok
+test ai_query::text_index::tests::test_empty_symbol_name ... ok
+test ai_query::text_index::tests::test_idf_calculation ... ok
+test ai_query::text_index::tests::test_match_reason_symbol_name ... ok
+test ai_query::text_index::tests::test_search_case_insensitive ... ok
+test ai_query::text_index::tests::test_search_empty_query ... ok
+test ai_query::text_index::tests::test_search_exact_match ... ok
+test ai_query::text_index::tests::test_search_limit ... ok
+test ai_query::text_index::tests::test_search_multi_term ... ok
+test ai_query::text_index::tests::test_search_no_match ... ok
+test ai_query::text_index::tests::test_search_partial_match ... ok
+test ai_query::text_index::tests::test_search_ranking_by_term_frequency ... ok
+test ai_query::text_index::tests::test_search_symbol_name_weight ... ok
+test ai_query::text_index::tests::test_tokenize_camel_case ... ok
+test ai_query::text_index::tests::test_tokenize_filters_short_tokens ... ok
+test ai_query::text_index::tests::test_tokenize_mixed_case ... ok
+test ai_query::text_index::tests::test_tokenize_empty ... ok
+test ai_query::text_index::tests::test_tokenize_snake_case ... ok
+test ai_query::text_index::tests::test_tokenize_special_chars ... ok
+test ai_query::text_index::tests::test_tokenize_simple ... ok
+test ai_query::text_index::tests::test_unicode_handling ... ok
+test backend::tests::launch_options::a_client_limit_wins_over_the_engine_flag ... ok
+test backend::tests::launch_options::engine_excludes_add_to_the_defaults ... ok
+test ai_query::engine::tests::test_find_by_signature_only_matches_functions ... ok
+test backend::tests::launch_options::a_settings_push_keeps_the_engine_flag ... ok
+test ai_query::engine::tests::test_find_by_signature_match_reason ... ok
+test backend::tests::launch_options::the_engine_flag_sets_the_limit_when_the_client_has_none ... ok
+test ai_query::engine::tests::test_find_by_signature_name_pattern ... ok
+test ai_query::engine::tests::test_find_by_signature_no_matches ... ok
+test backend::tests::workspace_paths::empty_folder_list_is_treated_as_absent ... FAILED
+test backend::tests::workspace_paths::falls_back_to_root_path_when_that_is_all_there_is ... ok
+test backend::tests::workspace_paths::falls_back_to_root_uri ... FAILED
+test backend::tests::workspace_paths::keeps_every_workspace_folder ... FAILED
+test backend::tests::workspace_paths::nothing_at_all_yields_no_paths ... ok
+test backend::tests::test_backend_creation ... ok
+test backend::tests::workspace_paths::prefers_workspace_folders ... FAILED
+test backend::tests::launch_options::initialize_reads_max_files_from_the_client ... ok
+test backend::tests::test_get_node_source_code_from_property ... ok
+test backend::tests::test_get_connected_edges_both ... ok
+test backend::tests::test_find_node_at_position_empty_graph ... ok
+test backend::tests::test_find_nearest_node_exact_match ... ok
+test backend::tests::test_extract_node_id_from_item_valid ... ok
+test cache::tests::test_cache_default ... ok
+test cache::tests::test_cache_new_with_zero_capacity_uses_default ... ok
+test backend::tests::test_find_node_at_position_with_indexed_symbol ... ok
+test cache::tests::test_call_hierarchy_cache_miss ... ok
+test cache::tests::test_ai_context_cache_set_and_get ... ok
+test cache::tests::test_ai_context_cache_different_types ... ok
+test cache::tests::test_call_hierarchy_cache_set_and_get ... ok
+test backend::tests::test_extract_node_id_from_item_missing_data ... ok
+test backend::tests::test_query_cache_invalidation ... ok
+test backend::tests::test_extract_node_id_from_item_invalid_node_id ... ok
+test cache::tests::test_definition_cache_different_positions ... ok
+test backend::tests::test_get_connected_edges_incoming ... ok
+test backend::tests::test_node_to_location_missing_path ... ok
+test backend::tests::test_symbol_index_integration ... ok
+test cache::tests::test_definition_cache_set_and_get ... ok
+test cache::tests::test_cache_new_with_valid_capacity ... ok
+test cache::tests::test_dependency_graph_cache_set_and_get ... ok
+test backend::tests::test_get_connected_edges_outgoing ... ok
+test cache::tests::test_dependency_graph_cache_different_depths ... ok
+test cache::tests::test_definition_cache_miss ... ok
+test cache::tests::test_invalidate_file_clears_references ... ok
+test backend::tests::test_file_cache_operations ... ok
+test cache::tests::test_invalidate_all ... ok
+test backend::tests::test_node_to_location ... FAILED
+test cache::tests::test_invalidate_file_removes_definitions ... ok
+test backend::tests::test_find_nearest_node_fallback ... ok
+test cache::tests::test_lru_eviction_for_call_hierarchies ... ok
+test cache::tests::test_references_cache_set_and_get ... ok
+test cache::tests::test_references_cache_miss ... ok
+test cache::tests::test_stats_reflects_cache_contents ... ok
+test ai_query::engine::tests::a_set_larger_than_one_write_batch_round_trips ... ok
+test crash_phase::tests::missing_directory_is_not_an_error ... ok
+test daemon::tests::fresh_heartbeat_is_live_stale_is_not ... ok
+test daemon::tests::mark_indexed_advances_both_timestamps ... ok
+test domain::ai_context::tests::test_detect_layer_tests ... ok
+test domain::ai_context::tests::test_detect_layer_controllers ... ok
+test domain::ai_context::tests::test_detect_layer_repository ... ok
+test domain::ai_context::tests::test_detect_layer_domain ... ok
+test domain::ai_context::tests::test_generate_usage_description_basic ... ok
+test domain::ai_context::tests::test_detect_layer_by_filename ... ok
+test domain::ai_context::tests::test_detect_layer_unknown ... ok
+test domain::ai_context::tests::test_detect_layer_utility ... ok
+test cache::tests::test_concurrent_access_definitions ... ok
+test domain::ai_context::tests::test_detect_layer_infrastructure ... ok
+test domain::ai_context::tests::test_generate_usage_description_conditional ... ok
+test domain::ai_context::tests::test_detect_layer_services ... ok
+test domain::ai_context::tests::test_generate_usage_description_empty_caller ... ok
+test domain::ai_context::tests::test_generate_usage_description_async ... ok
+test domain::ai_context::tests::test_generate_usage_description_error_handling ... ok
+test domain::callers::tests::copies_of_one_free_function_are_variants ... ok
+test domain::error_search::tests::test_role_rank_ordering ... ok
+test domain::callers::tests::methods_of_different_classes_are_not_variants ... ok
+test domain::error_search::tests::test_throw_patterns_non_empty ... ok
+test domain::module_summary::tests::test_path_matches_empty_prefix ... ok
+test domain::module_summary::tests::test_path_matches_child ... ok
+test domain::module_summary::tests::test_path_matches_exact ... ok
+test domain::module_summary::tests::test_path_matches_no_partial_dir ... ok
+test domain::module_summary::tests::test_path_matches_trailing_separator_prefix ... ok
+test domain::module_summary::tests::test_path_matches_windows_separators ... ok
+test domain::module_summary::tests::test_path_no_match ... ok
+test domain::node_props::tests::test_name_matches_at_word_boundaries ... ok
+test domain::node_props::tests::test_name_rejects_harness_helpers ... ok
+test domain::node_props::tests::test_path_matches_suffix_conventions ... ok
+test domain::node_props::tests::test_path_matches_unix_separators ... ok
+test domain::node_props::tests::test_path_matches_windows_separators ... ok
+test domain::node_props::tests::test_path_rejects_production_paths ... ok
+test domain::pattern_search::tests::test_truncate_long ... ok
+test domain::pattern_search::tests::test_truncate_short ... ok
+test domain::pattern_search::tests::test_invalid_pattern_returns_empty ... ok
+test error::tests::test_from_io_error ... ok
+test error::tests::test_io_error_jsonrpc_conversion ... ok
+test error::tests::test_jsonrpc_error_conversion_cache_error_internal ... ok
+test error::tests::test_jsonrpc_error_conversion_file_not_indexed ... ok
+test error::tests::test_jsonrpc_error_conversion_graph_error_internal ... ok
+test error::tests::test_jsonrpc_error_conversion_invalid_uri ... ok
+test error::tests::test_jsonrpc_error_conversion_node_not_found ... ok
+test error::tests::test_jsonrpc_error_conversion_symbol_not_found ... ok
+test crash_phase::tests::never_touches_recovery_breadcrumbs ... ok
+test error::tests::test_jsonrpc_error_conversion_unsupported_language ... ok
+test error::tests::test_lsp_error_display_cache_error ... ok
+test error::tests::test_lsp_error_display_file_not_indexed ... ok
+test error::tests::test_lsp_error_display_graph_error ... ok
+test error::tests::test_lsp_error_display_invalid_uri ... ok
+test error::tests::test_lsp_error_display_node_not_found ... ok
+test error::tests::test_lsp_error_display_symbol_not_found ... ok
+test error::tests::test_lsp_error_display_unsupported_language ... ok
+test error::tests::test_lsp_result_type_err ... ok
+test crash_phase::tests::keeps_recent_markers_even_from_dead_processes ... ok
+test error::tests::test_lsp_result_type_ok ... ok
+test crash_phase::tests::keeps_markers_belonging_to_live_processes ... ok
+test git_mining::miner::tests::test_mining_config_default ... ok
+test git_mining::parser::tests::test_detect_breaking_change ... ok
+test git_mining::parser::tests::test_detect_lazy_docs ... ok
+test git_mining::parser::tests::test_detect_lazy_feature ... ok
+test crash_phase::tests::sweeps_old_markers_from_dead_processes ... ok
+test git_mining::parser::tests::test_detect_lazy_refactor ... ok
+test git_mining::parser::tests::test_detect_lazy_test ... ok
+test git_mining::parser::tests::test_unknown_commit_stays_other ... ok
+test handlers::ai_context::tests::test_detect_layer_controllers ... ok
+test handlers::ai_context::tests::test_detect_layer_by_filename ... ok
+test ai_query::engine::tests::test_type_matches_wildcard ... ok
+test crash_phase::tests::ignores_files_that_are_not_markers ... ok
+test handlers::ai_context::tests::test_detect_layer_domain ... ok
+test handlers::ai_context::tests::test_detect_layer_infrastructure ... ok
+test handlers::ai_context::tests::test_detect_layer_repository ... ok
+test handlers::ai_context::tests::test_detect_layer_services ... ok
+test handlers::ai_context::tests::test_detect_layer_tests ... ok
+test handlers::ai_context::tests::test_detect_layer_unknown ... ok
+test handlers::ai_context::tests::test_detect_layer_utility ... ok
+test handlers::ai_context::tests::test_generate_usage_description_async ... ok
+test handlers::ai_context::tests::test_generate_usage_description_conditional ... ok
+test handlers::ai_context::tests::test_generate_usage_description_basic ... ok
+test handlers::ai_context::tests::test_generate_usage_description_empty_caller ... ok
+test handlers::ai_context::tests::test_generate_usage_description_error_handling ... ok
+test backend::tests::test_get_node_source_code_from_file ... ok
+test handlers::ai_query::tests::test_handle_find_by_imports ... ok
+test handlers::ai_query::tests::test_handle_find_by_imports_fuzzy ... ok
+test handlers::ai_query::tests::test_handle_find_by_signature_param_count ... ok
+test handlers::ai_query::tests::test_handle_find_by_signature_with_modifiers ... ok
+test handlers::ai_query::tests::test_handle_find_entry_points_main ... ok
+test handlers::ai_query::tests::test_handle_find_entry_points_http_handler ... ok
+test handlers::ai_query::tests::test_handle_find_entry_points_all ... ok
+test handlers::ai_query::tests::test_handle_get_detailed_symbol_info_with_callers ... ok
+test handlers::ai_query::tests::test_handle_symbol_search_basic ... ok
+test handlers::ai_query::tests::test_handle_get_callers ... ok
+test handlers::ai_query::tests::test_handle_get_callees ... ok
+test handlers::ai_query::tests::test_handle_get_detailed_symbol_info ... ok
+test handlers::ai_query::tests::test_handle_symbol_search_with_type_filter ... ok
+test handlers::ai_query::tests::test_handle_symbol_search_with_limit ... ok
+test handlers::custom::tests::test_handle_analyze_impact_no_node ... FAILED
+test handlers::ai_query::tests::test_handle_traverse_graph ... ok
+test handlers::ai_query::tests::test_handle_traverse_graph_with_type_filter ... ok
+test handlers::custom::tests::test_handle_find_related_tests_invalid_uri ... ok
+test handlers::ai_query::tests::test_resolve_node_id_invalid ... ok
+test handlers::ai_query::tests::test_resolve_node_id_missing_params ... ok
+test handlers::custom::tests::test_handle_analyze_impact_invalid_uri ... ok
+test handlers::custom::tests::test_handle_analyze_impact_with_references ... FAILED
+test handlers::custom::tests::test_is_not_test_node ... ok
+test handlers::custom::tests::test_handle_get_dependency_graph_invalid_uri ... ok
+test handlers::custom::tests::test_is_test_node_by_name ... ok
+test handlers::custom::tests::test_handle_find_related_tests_no_node ... FAILED
+test handlers::custom::tests::test_handle_get_call_graph_invalid_uri ... ok
+test handlers::custom::tests::test_handle_find_related_tests_with_test_caller ... FAILED
+test handlers::custom::tests::test_handle_get_call_graph_with_calls ... FAILED
+test handlers::custom::tests::test_is_test_node_by_path ... ok
+test handlers::custom::tests::test_node_to_range ... ok
+test handlers::custom::tests::test_handle_get_dependency_graph_no_file_node ... FAILED
+test handlers::custom::tests::test_handle_get_dependency_graph_with_imports ... FAILED
+test handlers::ai_query::tests::test_handle_find_by_signature_name_pattern ... ok
+test handlers::memory::tests::test_code_link_param_camel_case ... ok
+test handlers::memory::tests::test_context_memory_serialize ... ok
+test handlers::memory::tests::test_memory_get_response_serialize ... ok
+test handlers::memory::tests::test_memory_invalidate_params ... ok
+test handlers::memory::tests::test_memory_context_params ... ok
+test handlers::memory::tests::test_memory_list_params_defaults ... ok
+test handlers::custom::tests::test_handle_get_parser_metrics_all ... ok
+test handlers::custom::tests::test_handle_get_call_graph_no_node_at_position ... FAILED
+test handlers::memory::tests::test_memory_search_params_defaults ... ok
+test handlers::memory::tests::test_memory_search_params_full ... ok
+test handlers::custom::tests::test_handle_get_parser_metrics_filtered ... ok
+test handlers::memory::tests::test_memory_search_response_serialize ... ok
+test handlers::custom::tests::test_handle_get_parser_metrics_unknown_language ... ok
+test handlers::memory::tests::test_memory_search_result_serializes_agent_source_when_set ... ok
+test handlers::memory::tests::test_memory_store_params_accepts_agent_source ... ok
+test handlers::memory::tests::test_memory_store_params_minimal ... ok
+test handlers::memory::tests::test_memory_store_params_deserialize ... ok
+test handlers::memory::tests::test_memory_store_response_serialize ... ok
+test handlers::memory::tests::test_memory_update_params ... ok
+test handlers::metrics::tests::test_complexity_grade ... ok
+test handlers::metrics::tests::test_file_grade ... ok
+test index::tests::test_index_range_debug ... ok
+test index::tests::test_find_file_for_node ... ok
+test handlers::navigation::tests::test_get_document_code_lens_invalid_uri_errors ... ok
+test handlers::navigation::tests::test_handle_get_node_location_no_path ... ok
+test handlers::navigation::tests::test_handle_get_node_location_invalid_id ... ok
+test handlers::navigation::tests::test_get_document_code_lens_counts_callers_tests_complexity ... FAILED
+test index::tests::test_index_range_clone ... ok
+test index::tests::test_index_range_equality ... ok
+test handlers::navigation::tests::test_handle_get_workspace_symbols_no_match ... ok
+test index::tests::test_range_contains_inside ... ok
+test index::tests::test_range_contains_outside ... ok
+test index::tests::test_range_contains_single_line ... ok
+test index::tests::test_range_to_lsp_range ... ok
+test handlers::navigation::tests::test_handle_get_node_location_nonexistent_node ... ok
+test index::tests::test_range_to_lsp_range_saturating_sub ... ok
+test handlers::navigation::tests::test_handle_get_node_location_valid ... FAILED
+test index::tests::test_symbol_index_default ... ok
+test index::tests::test_symbol_index_clear ... ok
+test index::tests::test_symbol_index_find_at_position_nested ... ok
+test index::tests::test_symbol_index_find_at_position_single ... ok
+test handlers::navigation::tests::test_handle_get_workspace_symbols_all ... ok
+test handlers::navigation::tests::test_handle_get_workspace_symbols_with_query ... ok
+test handlers::navigation::tests::test_handle_get_workspace_symbols_empty_query ... ok
+test index::tests::test_symbol_index_get_file_symbols ... ok
+test index::tests::test_symbol_index_get_by_type ... ok
+test handlers::navigation::tests::test_symbol_info_structure ... ok
+test index::tests::test_symbol_index_find_at_position_none ... ok
+test git_mining::parser::tests::test_detect_bug_fix ... ok
+test index::tests::test_symbol_index_get_node_range ... ok
+test index::tests::test_symbol_index_remove_nonexistent_file ... ok
+test index::tests::test_symbol_index_new ... ok
+test index::tests::test_symbol_index_remove_file ... ok
+test index::tests::test_symbol_index_search_by_name ... ok
+test index::tests::test_symbol_index_stats ... ok
+test indexer::tests::default_config_has_default_exclude_patterns ... ok
+test indexer::tests::default_exclude_dirs_includes_python_node_and_credential_dirs ... ok
+test indexer::tests::default_exclude_patterns_includes_binary_archives ... ok
+test lsp_exit::tests::does_not_resolve_before_the_grace_period ... ok
+test mcp::protocol::tests::test_error_response ... ok
+test lsp_exit::tests::resolves_after_shutdown_plus_grace ... ok
+test mcp::protocol::tests::test_parse_request ... ok
+test lsp_exit::tests::waits_for_shutdown_before_resolving ... ok
+test lsp_exit::tests::signal_sent_before_waiting_is_not_lost ... ok
+test mcp::protocol::tests::test_serialize_response ... ok
+test mcp::resources::tests::test_get_all_resources ... ok
+test mcp::server::quarantine_tests::compact_serialization_drops_whitespace_losslessly ... ok
+test indexer::tests::build_exclude_set_matches_default_archive_patterns ... ok
+test git_mining::parser::tests::test_extract_issue_reference ... ok
+test indexer::tests::build_exclude_set_filters_secret_file_extensions ... ok
+test ai_query::engine::tests::test_query_performance ... ok
+test mcp::tools::tests::test_profile_all_includes_every_tool ... ok
+test mcp::tools::tests::test_get_all_tools_count ... ok
+test mcp::tools::tests::test_profile_core_includes_expected_tools_only ... ok
+test mcp::tools::tests::test_profile_graph_excludes_admin_and_memory ... ok
+test mcp::tools::tests::test_profile_memory_includes_only_memory_tools ... ok
+test mcp::tools::tests::test_tool_profile_from_str ... ok
+test mcp::tools::tests::test_profile_security_filters_community_to_empty ... ok
+test mcp::transport::tests::test_error_response_serialization ... ok
+test mcp::transport::tests::test_response_serialization ... ok
+test memory::tests::gate_bypass_forces_load_regardless_of_reading ... ok
+test mcp::tools::tests::test_tool_names_are_unique ... ok
+test mcp::tools::tests::test_tools_have_required_fields ... ok
+test memory::tests::gate_loads_exactly_at_threshold ... ok
+test memory::tests::gate_loads_when_ample_memory ... ok
+test memory::tests::gate_proceeds_on_zero_reading_as_detection_failure ... ok
+test memory::tests::gate_skips_when_genuinely_low ... ok
+test mcp::server::quarantine_tests::recycled_pid_with_wrong_start_time_is_dead ... ok
+test memory::tests::test_memory_manager_lifecycle ... ignored, requires model files
+test memory::tests::generation_zero_maps_to_historical_path ... ok
+test memory::tests::nonzero_generations_get_suffixed_dirs ... ok
+test memory::tests::test_memory_manager_uninitialized ... ok
+test parser_registry::tests::test_all_metrics ... ok
+test parser_registry::tests::test_get_parser_case_insensitive ... ok
+test parser_registry::tests::test_get_parser_javascript_variants ... ok
+test indexer::tests::extend_from_codegraphignore_no_op_when_file_missing ... ok
+test parser_registry::tests::test_get_parser_unknown_language ... ok
+test parser_registry::tests::test_can_parse ... ok
+test parser_registry::tests::test_language_for_path ... ok
+test memory::tests::test_project_data_dir_same_name_different_parent ... ok
+test memory::tests::test_project_data_dir_different_paths_different_hashes ... ok
+test parser_registry::tests::test_parse_source_unsupported ... ok
+test memory::tests::test_project_data_dir_format ... FAILED
+test parser_registry::tests::test_parser_for_path_cpp_variants ... ok
+test parser_registry::tests::test_parser_for_path ... ok
+test parser_registry::tests::test_parser_registry_default ... ok
+test parser_registry::tests::test_parser_registry_new ... ok
+test parser_registry::tests::test_parser_registry_with_config ... ok
+test parser_registry::tests::test_supported_extensions ... ok
+test runtime_deps::test_normalize_route ... ok
+test runtime_deps::test_route_pattern_matches ... ok
+test runtime_deps::tests::test_detect_route_handlers_ignores_non_route ... ok
+test runtime_deps::tests::test_detect_route_handlers_multiple_decorators ... ok
+test runtime_deps::tests::test_detect_route_handlers_sets_properties ... ok
+test runtime_deps::tests::test_extract_first_string_arg ... ok
+test runtime_deps::tests::test_extract_http_method_from_name ... ok
+test runtime_deps::tests::test_parse_route_decorator_fastapi_router ... ok
+test runtime_deps::tests::test_parse_route_decorator_flask_get ... ok
+test runtime_deps::tests::test_parse_route_decorator_flask_post ... ok
+test runtime_deps::tests::test_parse_route_decorator_flask_route ... ok
+test runtime_deps::tests::test_parse_route_decorator_nestjs ... ok
+test runtime_deps::tests::test_parse_route_decorator_no_match ... ok
+test indexer::tests::workspace_filter_enforces_max_depth ... ok
+test runtime_deps::tests::test_parse_route_decorator_single_quotes ... ok
+test runtime_deps::tests::test_parse_route_decorator_spring ... ok
+test runtime_deps::tests::test_parse_route_decorator_spring_request_mapping ... ok
+test runtime_deps::tests::test_parse_route_decorator_with_extra_args ... ok
+test ai_query::text_index::tests::test_performance_large_index ... ok
+test git_mining::parser::tests::test_conventional_higher_confidence_than_keyword ... ok
+test runtime_deps::test_extract_url_paths_from_source ... ok
+test git_mining::parser::tests::test_detect_lazy_bug_fix ... ok
+test watcher::tests::php_resolution::a_file_scope_call_is_made_by_the_file ... ok
+test watcher::tests::php_resolution::an_explicit_global_call_resolves ... ok
+test watcher::tests::php_resolution::an_unknown_receiver_does_not_bind_a_same_named_global_function ... ok
+test mcp::server::quarantine_tests::dead_pid_sentinel_is_classified_dead ... ok
+test mcp::server::quarantine_tests::quarantine_on_missing_db_is_a_noop ... ok
+test watcher::tests::php_resolution::an_unknown_receiver_is_not_guessed ... ok
+test watcher::tests::php_resolution::a_method_call_reaches_the_receivers_own_class ... ok
+test watcher::tests::python_alias::a_missing_alias_target_never_borrows_a_global_homonym ... ok
+test watcher::tests::test_batch_update_result_all_succeeded_empty ... ok
+test watcher::tests::php_resolution::an_inherited_method_resolves_to_the_declaring_class ... ok
+test watcher::tests::python_alias::an_alias_binds_to_its_imported_symbol_not_a_global_homonym ... ok
+test parser_registry::tests::test_parse_file_unsupported ... ok
+test watcher::tests::test_batch_update_result_has_failures ... ok
+test mcp::server::quarantine_tests::legacy_bare_sentinel_is_poison_evidence ... ok
+test watcher::tests::python_alias::an_alias_to_a_class_resolves ... ok
+test watcher::tests::test_batch_update_result_all_succeeded_with_files ... ok
+test mcp::server::quarantine_tests::own_pid_and_malformed_sentinels_are_ignored ... ok
+test watcher::tests::test_batch_update_result_mixed ... ok
+test watcher::tests::test_graph_updater_unsupported_file_skipped ... ok
+test indexer::tests::workspace_filter_excludes_what_the_indexer_excludes ... ok
+test watcher::tests::test_graph_updater_update_files_python ... ok
+test watcher::tests::python_alias::an_ambiguous_alias_target_stays_unresolved ... ok
+test watcher::tests::test_graph_updater_mixed_files ... ok
+test watcher::tests::php_resolution::typed_parameters_imports_and_properties_name_the_receiver ... ok
+test watcher::tests::test_success_rate_all_failure ... ok
+test indexer::tests::extend_from_codegraphignore_appends_patterns ... ok
+test watcher::tests::test_graph_updater_updates_remove_old_nodes ... ok
+test watcher::tests::test_cross_file_import_resolution ... ok
+test watcher::tests::python_alias::an_alias_shadow_is_file_scoped ... ok
+test watcher::tests::test_parse_real_ts_file_calls_edges ... ok
+test watcher::tests::test_success_rate_empty ... ok
+test watcher::tests::test_same_file_calls_edges_preserved ... ok
+test watcher::tests::test_graph_updater_update_multiple_files ... ok
+test watcher::tests::test_cross_file_resolution_after_didopen ... ok
+test watcher::tests::test_success_rate_half ... ok
+test watcher::tests::test_success_rate_all_success ... ok
+test watcher::tests::test_python_import_binds_call_to_module_not_same_name_homonym ... ok
+test watcher::tests::test_typescript_type_references_edges ... ok
+test watcher::tests::test_success_rate_two_thirds ... ok
+test watcher::tests::test_typescript_this_method_calls_edges ... ok
+test indexer::tests::workspace_filter_prefers_the_most_specific_root ... ok
+test indexer::tests::workspace_filter_reads_codegraphignore_per_root ... ok
+test mcp::server::quarantine_tests::sweep_removes_old_generations_keeps_current ... ok
+test mcp::server::quarantine_tests::quarantine_moves_db_dir_aside_to_fixed_name ... ok
+test parser_registry::tests::test_parse_file ... ok
+test mcp::server::quarantine_tests::quarantine_reuses_fixed_name_without_accumulating ... ok
+test git_mining::executor::tests::test_git_executor_creation ... ok
+test watcher::tests::test_parse_real_file_calls_edges ... ok
+
+failures:
+
+---- backend::tests::workspace_paths::empty_folder_list_is_treated_as_absent stdout ----
+
+thread 'backend::tests::workspace_paths::empty_folder_list_is_treated_as_absent' (62312) panicked at crates\codegraph-server\src\backend.rs:4299:39:
+test path must be absolute: ()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- backend::tests::workspace_paths::falls_back_to_root_uri stdout ----
+
+thread 'backend::tests::workspace_paths::falls_back_to_root_uri' (19864) panicked at crates\codegraph-server\src\backend.rs:4299:39:
+test path must be absolute: ()
+
+---- backend::tests::workspace_paths::keeps_every_workspace_folder stdout ----
+
+thread 'backend::tests::workspace_paths::keeps_every_workspace_folder' (62428) panicked at crates\codegraph-server\src\backend.rs:4299:39:
+test path must be absolute: ()
+
+---- backend::tests::workspace_paths::prefers_workspace_folders stdout ----
+
+thread 'backend::tests::workspace_paths::prefers_workspace_folders' (61892) panicked at crates\codegraph-server\src\backend.rs:4299:39:
+test path must be absolute: ()
+
+---- backend::tests::test_node_to_location stdout ----
+
+thread 'backend::tests::test_node_to_location' (15816) panicked at crates\codegraph-server\src\backend.rs:4608:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_analyze_impact_no_node stdout ----
+
+thread 'handlers::custom::tests::test_handle_analyze_impact_no_node' (40880) panicked at crates\codegraph-server\src\handlers\custom.rs:1034:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_analyze_impact_with_references stdout ----
+
+thread 'handlers::custom::tests::test_handle_analyze_impact_with_references' (26552) panicked at crates\codegraph-server\src\handlers\custom.rs:1058:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_find_related_tests_no_node stdout ----
+
+thread 'handlers::custom::tests::test_handle_find_related_tests_no_node' (36156) panicked at crates\codegraph-server\src\handlers\custom.rs:1106:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_find_related_tests_with_test_caller stdout ----
+
+thread 'handlers::custom::tests::test_handle_find_related_tests_with_test_caller' (57428) panicked at crates\codegraph-server\src\handlers\custom.rs:1191:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_get_call_graph_with_calls stdout ----
+
+thread 'handlers::custom::tests::test_handle_get_call_graph_with_calls' (31792) panicked at crates\codegraph-server\src\handlers\custom.rs:990:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_get_dependency_graph_no_file_node stdout ----
+
+thread 'handlers::custom::tests::test_handle_get_dependency_graph_no_file_node' (53520) panicked at crates\codegraph-server\src\handlers\custom.rs:901:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_get_dependency_graph_with_imports stdout ----
+
+thread 'handlers::custom::tests::test_handle_get_dependency_graph_with_imports' (36120) panicked at crates\codegraph-server\src\handlers\custom.rs:920:9:
+assertion failed: result.is_ok()
+
+---- handlers::custom::tests::test_handle_get_call_graph_no_node_at_position stdout ----
+
+thread 'handlers::custom::tests::test_handle_get_call_graph_no_node_at_position' (30248) panicked at crates\codegraph-server\src\handlers\custom.rs:966:9:
+assertion failed: result.is_ok()
+
+---- handlers::navigation::tests::test_get_document_code_lens_counts_callers_tests_complexity stdout ----
+
+thread 'handlers::navigation::tests::test_get_document_code_lens_counts_callers_tests_complexity' (23628) panicked at crates\codegraph-server\src\handlers\navigation.rs:623:52:
+called `Result::unwrap()` on an `Err` value: ()
+
+---- handlers::navigation::tests::test_handle_get_node_location_valid stdout ----
+
+thread 'handlers::navigation::tests::test_handle_get_node_location_valid' (63832) panicked at crates\codegraph-server\src\handlers\navigation.rs:381:9:
+assertion failed: result.is_ok()
+
+---- memory::tests::test_project_data_dir_format stdout ----
+
+thread 'memory::tests::test_project_data_dir_format' (47840) panicked at crates\codegraph-server\src\memory.rs:778:9:
+assertion failed: dir_str.contains(".codegraph/projects/")
+
+
+failures:
+    backend::tests::test_node_to_location
+    backend::tests::workspace_paths::empty_folder_list_is_treated_as_absent
+    backend::tests::workspace_paths::falls_back_to_root_uri
+    backend::tests::workspace_paths::keeps_every_workspace_folder
+    backend::tests::workspace_paths::prefers_workspace_folders
+    handlers::custom::tests::test_handle_analyze_impact_no_node
+    handlers::custom::tests::test_handle_analyze_impact_with_references
+    handlers::custom::tests::test_handle_find_related_tests_no_node
+    handlers::custom::tests::test_handle_find_related_tests_with_test_caller
+    handlers::custom::tests::test_handle_get_call_graph_no_node_at_position
+    handlers::custom::tests::test_handle_get_call_graph_with_calls
+    handlers::custom::tests::test_handle_get_dependency_graph_no_file_node
+    handlers::custom::tests::test_handle_get_dependency_graph_with_imports
+    handlers::navigation::tests::test_get_document_code_lens_counts_callers_tests_complexity
+    handlers::navigation::tests::test_handle_get_node_location_valid
+    memory::tests::test_project_data_dir_format
+
+test result: FAILED. 408 passed; 16 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+error: test failed, to rerun pass `-p codegraph-server --lib`

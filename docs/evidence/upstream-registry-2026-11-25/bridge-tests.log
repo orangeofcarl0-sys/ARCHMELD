@@ -1,0 +1,14 @@
+
+running 9 tests
+test legacy_manifest_defaults_to_schema_1_0 ... ok
+test unknown_schema_minor_is_accepted ... ok
+test import_maps_nodes_and_edges_without_using_backend_ids_as_identity ... ok
+test unknown_manifest_fields_are_ignored ... ok
+test schema_major_two_is_rejected ... ok
+test malformed_producer_commit_is_rejected ... ok
+test repeated_import_is_idempotent_and_conflicting_payload_is_rejected ... ok
+test schema_1_1_reports_producer_commit_and_dirty ... ok
+test unresolved_endpoint_and_heuristic_runtime_edge_stay_visible_but_unimported ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+

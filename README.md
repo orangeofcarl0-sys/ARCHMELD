@@ -103,13 +103,12 @@ The server indexes the current working directory automatically.
 Install the VSIX:
 
 ```bash
-code --install-extension codegraph-0.21.0.vsix
+code --install-extension codegraph-0.21.2.vsix
 ```
 
 One VSIX serves every platform.
-The analysis engine is not bundled: on first activation the extension offers to download the engine built for your platform, verifies it against the published checksum, and installs it into `~/.codegraph/bin` - the same location the JetBrains plugin uses, so one download serves both.
-The download is offered rather than performed automatically, because it is a native binary that runs with your permissions.
-Decline it and run **CodeGraph: Download Analysis Engine** from the command palette whenever you are ready.
+The analysis engine is not bundled: on first activation the extension downloads the engine built for your platform, verifies it against the published checksum, and installs it into `~/.codegraph/bin` - the same location the JetBrains plugin uses, so one download serves both.
+If the download fails, run **CodeGraph: Download Analysis Engine** from the command palette to try again.
 
 Once an engine is present, the extension starts it automatically and registers all tools as Language Model Tools for Copilot.
 
@@ -190,9 +189,10 @@ Pass `--split-identifiers=false` to keep the old behaviour.
 | `--embedding-model <model>` | `bge-small` | `bge-small` (384d, fast), `jina-code-v2` (768d, 6× slower), `granite-97m` (384d, 32K ctx, ~3× slower), or `static` (model2vec, 256d — ~100× faster indexing, no ONNX; needs a local model dir, see below) |
 | `--full-body-embedding` | `true` | Embed full function body (~50 lines) for better semantic search and duplicate detection. Takes a value: `--full-body-embedding=false` turns it off |
 | `--split-identifiers` | `true` | Also embed the word-split form of identifiers whose words are run together, so `getUserById` embeds as "get user by id" too. Names already separated by `_` or `-` are left alone, since they tokenise into the same words; a leading or trailing delimiter separates nothing, so `_handleClick` is split like `handleClick`. Takes a value: `--split-identifiers=false` embeds raw names, as releases up to 0.20.1 did |
-| `--max-files <n>` | 5000 | Maximum files to index |
+| `--max-files <n>` | 5000 | Maximum files to index (in LSP mode, a positive `codegraph.maxFiles` setting wins) |
+| `--max-threads <n>` | half the CPUs | Most threads the engine computes on: the embedding model's pool, the pool tokenizing for it, and the async runtime. Also read from `CODEGRAPH_MAX_THREADS`. Lower it to keep the machine responsive while a large workspace embeds |
 | `--profile <name>` | `all` | Filter the exposed MCP tool surface to a named subset (see below) |
-| `--graph-only` | off | Skip embedding generation — build the graph and serve structural tools only. No ONNX model load, 10-50× faster indexing. Semantic search and memory tools unavailable. For CI / one-shot graph queries. |
+| `--graph-only` | off | Skip embedding generation — build the graph and serve structural tools only. No ONNX model load, 10-50× faster indexing. Semantic search and memory tools unavailable. For CI / one-shot graph queries. Not applied in LSP mode. |
 | `--run-tool <name>` | — | One-shot mode: index, run a single tool, print its result, exit. No MCP handshake. Pair with `--tool-args '<json>'`. |
 
 `--split-identifiers` and `--full-body-embedding` both change the text every symbol is embedded from, and vectors built from different text cannot be ranked against each other.

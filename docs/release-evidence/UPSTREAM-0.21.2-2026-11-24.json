@@ -1,0 +1,236 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-24",
+  "record": "real newer-upstream upgrade drill for AT077",
+  "from_commit": "590c2ca7dd7b37bd1d41caf45fac535b6522f969",
+  "to_commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "to_version": "0.21.2",
+  "upstream_commits": [
+    {
+      "commit": "008cb5d8",
+      "summary": "fix: cap engine CPU threads and harden VS Code engine download (#34)"
+    },
+    {
+      "commit": "16c9aa0b",
+      "summary": "fix(lsp): honour --max-files and --exclude in LSP mode (#35)"
+    },
+    {
+      "commit": "064befd2",
+      "summary": "fix(php): resolve method calls to the receiver's class, not any same-named method (#36)"
+    },
+    {
+      "commit": "ae4b2e54",
+      "summary": "chore(release): bump version to 0.21.2 (#37)"
+    }
+  ],
+  "upstream_delta": {
+    "command": "git diff --shortstat 590c2ca7dd7b37bd1d41caf45fac535b6522f969..ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+    "result": "40 files changed, 2991 insertions(+), 457 deletions(-)",
+    "new_upstream_head": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+    "auto_follow_latest": false
+  },
+  "merge": {
+    "command": "git merge --no-ff upstream/main",
+    "merge_commit": "1ca0ae8b85a013ce9ce85af78a39d257d6332c0d",
+    "first_parent": "903bfe0a888e290a8618c714ffc1a11d27390261",
+    "conflicts": [
+      {
+        "path": "crates/codegraph-server/src/main.rs",
+        "reason": "upstream moved Args::parse() into main() so the thread budget is known before any pool exists; the local patch parsed arguments and installed ARCHMELD_STATE_ROOT inside run()",
+        "resolution": "keep upstream's parse-in-main structure; install the state root immediately after Args::parse() and before the startup crash marker; pass args/budget into run(); DaemonConfig carries upstream's max_files"
+      }
+    ],
+    "auto_merged": [
+      "Cargo.toml",
+      "Cargo.lock",
+      "crates/codegraph-server/src/daemon.rs",
+      "crates/codegraph-php/src/{extractor,mapper,visitor}.rs",
+      "crates/codegraph-server/src/{backend,indexer,watcher}.rs",
+      "crates/codegraph-memory/src/embedding/*"
+    ],
+    "local_flags_unchanged": [
+      "--archmeld-export-v1",
+      "--archmeld-state-root",
+      "run_archmeld_export",
+      "bridge root registration"
+    ]
+  },
+  "pin_updates": {
+    "AGENTS.md": "0c795d719e9cb76f8e2f8103ce1714f6a3f5ff4bb65e803964be4ad2090aa785",
+    "UPSTREAM_PATCHES.md": "b5d836e8c16ffb9513c69269d237806eb13778849996ac2d379e30fa96fdd90e",
+    "toolchains.lock.json": "d0692ed90b5fdfebbe805616a879b38f48b5db9ce830d5c1dd9fec06507f1c9e",
+    "third_party/NOTICE.md": "6d9baa4c23df1756fb95ce47ec06742937163f4c9a596493d3f35d3f75c6761c",
+    "notice_preserves_codegraph_attribution": true
+  },
+  "commands": [
+    {
+      "id": "upstream-check",
+      "cwd": "<repo>",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "codegraph-server",
+        "-p",
+        "codegraph-php",
+        "-p",
+        "codegraph-memory",
+        "--locked",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "elapsed": "21m 23s",
+      "log": "docs/evidence/upstream-0.21.2-2026-11-24/logs/upstream-0.21.2-check.log",
+      "log_sha256": "3b7a42fa009cb7852dad53d083f267ccca2b5b8d369ebf34061b43b2168645ec"
+    },
+    {
+      "id": "core-api-regression",
+      "cwd": "<repo>",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "archmeld-core",
+        "-p",
+        "archmeld-api",
+        "--no-fail-fast",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": 211,
+      "failed": 0,
+      "ignored": 0,
+      "sections": 75,
+      "environment": "PATH included Python 3.11.9 and the pinned rust-analyzer component; TEMP/TMP on F:",
+      "log": "docs/evidence/upstream-0.21.2-2026-11-24/logs/upstream-0.21.2-core-api.log",
+      "log_sha256": "839e4eed53b5fa6ad5b04b4973f0323fff66b752a8425351dd2a46f373f0cd6a"
+    },
+    {
+      "id": "php-regression",
+      "cwd": "<repo>",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codegraph-php",
+        "--no-fail-fast",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": 89,
+      "failed": 0,
+      "breakdown": {
+        "lib": 68,
+        "integration_tests": 20,
+        "doctests": 1
+      },
+      "log": "docs/evidence/upstream-0.21.2-2026-11-24/logs/upstream-0.21.2-php.log",
+      "log_sha256": "51aa752cfbc897e361556bd0b1403ccb1851c3ee8340cb3dacef563534cbe708"
+    },
+    {
+      "id": "server-contract-tests",
+      "cwd": "<repo>",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--test",
+        "archmeld_state_root",
+        "--test",
+        "parser_graph_properties_test",
+        "--no-fail-fast",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": 13,
+      "failed": 0,
+      "breakdown": {
+        "archmeld_state_root": 1,
+        "parser_graph_properties_test": 12
+      },
+      "assertion": "the state root precedes the startup crash marker and no ~/.codegraph is created; PHP graph properties include the receiver-class method identity",
+      "log": "docs/evidence/upstream-0.21.2-2026-11-24/logs/upstream-0.21.2-server-contract.log",
+      "log_sha256": "bda1dca9ce2dfb86b3c7449c311d135a4b89c0efd07586850253a94285472b6c"
+    },
+    {
+      "id": "export-helper-build",
+      "cwd": "<repo>",
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--example",
+        "archmeld_export",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "elapsed": "1m 12s"
+    },
+    {
+      "id": "end-to-end-export",
+      "cwd": "<repo>",
+      "argv": [
+        "target/debug/examples/archmeld_export.exe",
+        "<fixture>",
+        "<fixture>/export.ndjson",
+        "<fixture>/state",
+        "100"
+      ],
+      "exit_code": 0,
+      "result": {
+        "format": "archmeld-export-v1",
+        "files_total": 3,
+        "files_parsed": 3,
+        "files_skipped": 0,
+        "by_language": {
+          "python": 2,
+          "php": 1
+        },
+        "nodes": 9,
+        "edges": 9,
+        "parser_errors": {},
+        "storage": "in_memory",
+        "elapsed_ms": 84
+      },
+      "php_qualified_name": "Thing::render",
+      "no_home_state_leak": true,
+      "artifacts": {
+        "export.json": "docs/evidence/upstream-0.21.2-2026-11-24/export.json",
+        "export.json_sha256": "3fcfb6eacf0c7bd18990d50f2167c88402eed4b8ad24d784decc56df8d507757",
+        "export.ndjson": "docs/evidence/upstream-0.21.2-2026-11-24/export.ndjson",
+        "export.ndjson_sha256": "48f8dffc57819616bad4ef674861679be57b44d3d9f5d611c651aab0cb2f7863",
+        "export.err": "docs/evidence/upstream-0.21.2-2026-11-24/export.err",
+        "export.err_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "AT077": {
+    "status": "passed",
+    "given": "upstream advanced from the pinned 590c2ca7 to ae4b2e54 and changed a reused module interface (server argument parsing/thread budget and DaemonConfig)",
+    "when": "real merge, compile check, adapter contract tests and end-to-end export were run",
+    "then": [
+      "the merge conflict surfaced the reusable-interface change; it was resolved explicitly",
+      "the state-root contract test and parser graph property tests pass",
+      "the upstream NOTICE attribution is preserved and the pin is recorded deliberately",
+      "no silent version swap: AGENTS.md, UPSTREAM_PATCHES.md, toolchains.lock.json and third_party/NOTICE.md name ae4b2e54"
+    ],
+    "synthetic_drill_alone": false
+  },
+  "limitations": [
+    "the build used Windows GNU with RocksDB and -j 2; a full 24-way build hit a transient compiler file error under memory pressure",
+    "the PHP test target is not part of ARCHMELD's seven-language acceptance gate; it is additional upstream regression evidence",
+    "the end-to-end export fixture is small and validates the bridge contract, not real-repository semantic accuracy",
+    "the Ubuntu 24.04 upstream suite was not re-run for 0.21.2 in this slice"
+  ]
+}

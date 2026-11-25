@@ -4,7 +4,7 @@
 //! Unit tests specifically for parser_impl.rs
 //! Testing the PythonParser implementation details
 
-use codegraph::CodeGraph;
+use codegraph::{CodeGraph, EdgeType};
 use codegraph_parser_api::{CodeParser, ParserConfig, ParserError};
 use codegraph_python::PythonParser;
 use std::path::Path;
@@ -268,6 +268,33 @@ import numpy as np
 
     let file_info = result.unwrap();
     assert_eq!(file_info.imports.len(), 5);
+}
+
+#[test]
+fn test_parse_from_import_alias_edge() {
+    let parser = PythonParser::new();
+    let mut graph = CodeGraph::in_memory().unwrap();
+
+    let result = parser.parse_source(
+        "from pricing import apply_discount as discount\n",
+        Path::new("checkout.py"),
+        &mut graph,
+    );
+    let file_info = result.unwrap();
+    assert_eq!(file_info.imports.len(), 1);
+    let module_id = file_info.imports[0];
+    let edge = graph
+        .get_edges_between(file_info.file_id, module_id)
+        .unwrap()
+        .into_iter()
+        .filter_map(|edge_id| graph.get_edge(edge_id).ok())
+        .find(|edge| edge.edge_type == EdgeType::Imports)
+        .expect("import edge");
+    assert_eq!(
+        edge.properties.get_string_list_compat("symbols"),
+        Some(vec!["apply_discount".to_string()])
+    );
+    assert_eq!(edge.properties.get_string("alias"), Some("discount"));
 }
 
 #[test]

@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-24",
+  "scope": [
+    "M2.5-A: session-start agent rules and the one-screen markdown brief content item",
+    "M2.5-B: optional .archmeld/SESSION.md card with snapshot/commit/counts and status freshness",
+    "M2.5-C: read-only AOCI-CODE cognition-map interop in archmeld_brief",
+    "M2.5-D: three-pair adherence experiment without a call sheet"
+  ],
+  "not_included": [
+    "E: evidence-bound cognition map (eligible after D, not started)"
+  ],
+  "implementation": {
+    "rules": [
+      "docs/agent-rules/AGENTS.md",
+      "docs/agent-rules/claude.md"
+    ],
+    "mcp": "crates/archmeld-api/src/mcp.rs appends render_markdown as a second text content item for archmeld_brief; JSON stays first",
+    "cognition": "crates/archmeld-core/src/cognition.rs reads aoci.txt and the declared code Volume; it never writes the map and never treats an Entry as a parsed relation",
+    "brief": "crates/archmeld-core/src/brief.rs adds a cognition block only when a map is present; session_card_path/write_session_card/session_card_status implement the optional card",
+    "cli": "archmeld brief --write [--out PATH] [--force] writes the card; archmeld status reports session_card.present/marker/snapshot_match/stale",
+    "exclusions": "the default snapshot and drift walkers skip .archmeld/ so a generated card does not make the workspace stale"
+  },
+  "tests": {
+    "cognition": {
+      "path": "crates/archmeld-core/tests/cognition.rs",
+      "passed": 5,
+      "failed": 0
+    },
+    "brief": {
+      "path": "crates/archmeld-core/tests/brief.rs",
+      "passed": 4,
+      "failed": 0
+    },
+    "session_card": {
+      "path": "crates/archmeld-core/tests/session_card.rs",
+      "passed": 5,
+      "failed": 0,
+      "cases": [
+        "write + snapshot match/mismatch + dirty",
+        "user file is not overwritten without --force",
+        "missing card is not stale",
+        "explicit --out path",
+        "the card itself does not make the workspace stale"
+      ]
+    },
+    "mcp_stdio": {
+      "path": "crates/archmeld-api/tests/mcp_stdio.rs",
+      "passed": 1,
+      "failed": 0,
+      "case": "spawns the real archmeld-mcp process and asserts two content items for archmeld_brief"
+    },
+    "cli_end_to_end": {
+      "fixture": "<temp>/m2.5b-clean",
+      "result": "brief --write created .archmeld/SESSION.md; status reported session_card.present=true, snapshot_match=true, stale=false on a clean tree and stale=true after a source edit",
+      "evidence": "docs/evidence/m2.5b-session-card-2026-11-24/"
+    },
+    "core_full": {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "archmeld-core",
+        "-p",
+        "archmeld-api",
+        "--no-fail-fast",
+        "-j",
+        "2"
+      ],
+      "passed": 184,
+      "failed": 0,
+      "ignored": 0,
+      "api_passed": 38,
+      "sections": 77,
+      "log": "docs/evidence/m2.5b-session-card-2026-11-24/final-core-api.log",
+      "log_sha256": "c6f4fe1d1d078d51ed1844bf0fd231eff3db3c4f6b7bedfe7086de616c4f724d"
+    }
+  },
+  "adherence_experiment": {
+    "path": "docs/evidence/m2.5d-adherence-2026-11-24/",
+    "answers": "docs/evidence/m2.5d-adherence-2026-11-24/answers.md",
+    "protocol": "same model, same task, same real archmeld-mcp shim; no call sheet; 3 runs per condition",
+    "aggregate": {
+      "A": {
+        "full_ritual": "0/3",
+        "brief_before_edit": "1/3",
+        "impact_before_edit": "2/3",
+        "brief_change_after_edit": "1/3",
+        "mean_tokens": 722590,
+        "mean_calls": 39.0,
+        "mean_calls_before_edit": 12.7,
+        "mean_calls_after_edit": 26.3
+      },
+      "B": {
+        "full_ritual": "3/3",
+        "brief_before_edit": "3/3",
+        "impact_before_edit": "3/3",
+        "brief_change_after_edit": "3/3",
+        "mean_tokens": 680358,
+        "mean_calls": 25.0,
+        "mean_calls_before_edit": 18.7,
+        "mean_calls_after_edit": 6.3
+      }
+    },
+    "success_line": {
+      "brief_before_edit": "3/3 vs 1/3",
+      "token_ratio_b_over_a": 0.942,
+      "correctness": "6/6 runs reported the five real callers and the dynamic unknown; no run claimed a confirmed call edge",
+      "verdict": "passed"
+    },
+    "finding": "Python cross-module same-name binding: from pricing import apply_discount is attributed to legacy.apply_discount (a homonym), so impact on pricing.apply_discount returns only list_price. 5/6 runs detected it. Recorded in docs/REMAINING_BLOCKERS.md as a product gap; not counted as an agent error."
+  },
+  "boundaries": {
+    "mcp_surface": "8 read-only tools; no approve/apply/write tool added",
+    "aoci_writes": false,
+    "aoci_binary_executed": false,
+    "map_is_evidence": false,
+    "session_card_is_authoritative": false,
+    "verification": "not_run",
+    "candidate_relations_remain_candidate": true
+  },
+  "limitations": [
+    "AOCI-CODE is at v0.2.0-rc4; the parser targets the documented Volumes v1 / object-fras-v2 text and tolerates malformed lines as warnings",
+    "archmeld_status exposes session_card but not cognition_map; only brief exposes the AOCI block",
+    "the AOCI R relations are not resolved to ARCHMELD entities",
+    "the adherence experiment is n=3 per arm and one model; it is directional, not a general benchmark",
+    "both arms were told ARCHMELD was available, so this is not a no-tool baseline; status-before-edit is 3/3 in both arms",
+    "one B run took 2,082,769 ms (an outlier); the median B duration is 405,483 ms",
+    "E is eligible but has no design, implementation or acceptance"
+  ]
+}

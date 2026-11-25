@@ -1,0 +1,7 @@
+{"seq": 1, "tool": "archmeld_brief", "args": {"recipe": "change"}}
+{"seq": 2, "tool": "archmeld_status", "args": {}}
+{"seq": 6, "tool": "archmeld_inspect", "args": {"kind": "map_entry", "id": "src/pricing.py"}}
+{"seq": 7, "tool": "archmeld_inspect", "args": {"kind": "map_entry", "id": "src/invoice.py"}}
+{"seq": 8, "tool": "archmeld_inspect", "args": {"kind": "map_entry", "id": "src/analytics.py"}}
+{"seq": 19, "tool": "archmeld_review", "args": {}}
+{"seq": 20, "tool": "archmeld_brief", "args": {"recipe": "change"}}

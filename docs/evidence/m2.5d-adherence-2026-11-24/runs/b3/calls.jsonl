@@ -1,0 +1,22 @@
+{"ts_ms": 1795526989906, "tool": "archmeld_status", "args": {}, "ok": true, "response_chars": 2807, "duration_ms": 73}
+{"ts_ms": 1795527000569, "tool": "archmeld_brief", "args": {"recipe": "auto"}, "ok": true, "response_chars": 1072, "duration_ms": 69}
+{"ts_ms": 1795527116626, "tool": "archmeld_query", "args": {"kind": "impact", "symbol": "apply_discount"}, "ok": true, "response_chars": 335, "duration_ms": 38}
+{"ts_ms": 1795527350723, "tool": "archmeld_capabilities", "args": {}, "ok": true, "response_chars": 4734, "duration_ms": 95}
+{"ts_ms": 1795527485762, "tool": "archmeld_query", "args": {"kind": "impact", "query": "apply_discount"}, "ok": true, "response_chars": 203, "duration_ms": 98}
+{"ts_ms": 1795527614303, "tool": "archmeld_query", "args": {"kind": "symbols", "query": ""}, "ok": true, "response_chars": 32881, "duration_ms": 53}
+{"ts_ms": 1795527629538, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"], "max_depth": 5}, "ok": true, "response_chars": 6246, "duration_ms": 66}
+{"ts_ms": 1795527892792, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.00d69c5572eadd6fa1214abb8d02daccfcecf645bdf9cc1e4e6a89984ec8bb43"], "max_depth": 2}, "ok": true, "response_chars": 14317, "duration_ms": 107}
+{"ts_ms": 1795528017431, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "", "relation_kinds": ["static_call_candidate", "calls", "imports", "contains"], "max_nodes": 200}, "ok": true, "response_chars": 472, "duration_ms": 79}
+{"ts_ms": 1795528029547, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "", "relation_kinds": ["static_call_candidate", "imports", "contains"], "max_nodes": 200}, "ok": true, "response_chars": 32881, "duration_ms": 52}
+{"ts_ms": 1795528378156, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2"], "max_depth": 3}, "ok": true, "response_chars": 16921, "duration_ms": 109}
+{"ts_ms": 1795528378381, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.78a8bc9a7c4079a6fe4e8ee7c33a60cf2a25c8056b7d43fa81db7ce37cc38639"], "max_depth": 3}, "ok": true, "response_chars": 14315, "duration_ms": 38}
+{"ts_ms": 1795528378528, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.152247be9960184f7614225bd581f3cb0b5f3f5ad0ca7028feafad9c34d0ad1f"], "max_depth": 3}, "ok": true, "response_chars": 3178, "duration_ms": 47}
+{"ts_ms": 1795528378690, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.7f0bb1995427f7dc6c1d833a4ef26d057360a5d1b003f6e1a42620d8d1e80809"], "max_depth": 3}, "ok": true, "response_chars": 18116, "duration_ms": 34}
+{"ts_ms": 1795528378843, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.adc2825e4e08fa734579dd011f5c7cc51fd742c1921f63bf99d19ba00f0d1f4a"], "max_depth": 3}, "ok": true, "response_chars": 6557, "duration_ms": 40}
+{"ts_ms": 1795528379004, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.41cccfba8cae4ffae6dd8608751da2b38de77a0d8af99036e9fa1d63b15117c1"], "max_depth": 3}, "ok": true, "response_chars": 3176, "duration_ms": 33}
+{"ts_ms": 1795528408781, "tool": "archmeld_source", "args": {"entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 1122, "duration_ms": 35}
+{"ts_ms": 1795528416086, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"], "max_depth": 5}, "ok": true, "response_chars": 26646, "duration_ms": 44}
+{"ts_ms": 1795528565734, "tool": "archmeld_review", "args": {}, "ok": true, "response_chars": 6722, "duration_ms": 486}
+{"ts_ms": 1795528573973, "tool": "archmeld_brief", "args": {"recipe": "change"}, "ok": true, "response_chars": 3206, "duration_ms": 49}
+{"ts_ms": 1795528583788, "tool": "archmeld_source", "args": {"entity_id": "syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2"}, "ok": true, "response_chars": 1139, "duration_ms": 40}
+{"ts_ms": 1795528583942, "tool": "archmeld_source", "args": {"entity_id": "syn.152247be9960184f7614225bd581f3cb0b5f3f5ad0ca7028feafad9c34d0ad1f"}, "ok": true, "response_chars": 1220, "duration_ms": 34}

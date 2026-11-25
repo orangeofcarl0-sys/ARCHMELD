@@ -1,0 +1,7 @@
+{
+  "baseline": 0,
+  "mutated": 101,
+  "restored": 0,
+  "detected": true,
+  "out": "docs\\release-evidence\\ADAPTER-DRILL-2026-11-25.json"
+}

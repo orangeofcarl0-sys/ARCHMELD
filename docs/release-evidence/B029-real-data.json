@@ -11,15 +11,15 @@
     "recorded_at": "2026-11-01"
   },
   "source": {
-    "name": "joint_RF_statistics.json",
-    "sha256": "sha256:2b7cda9a4ab9f7d8672c888c5c803b872a98125dbaec8194d24ce14db8de0201",
-    "bytes": 738737,
-    "rows": 342,
+    "name": "<private-recorded-file>",
+    "sha256": "sha256:<redacted>",
+    "bytes": "<redacted>",
+    "rows": "<redacted>",
     "selected_columns": [
-      "model.conditional_SD_mm",
-      "MC.all_output_SD_mm",
-      "model.bias_mm",
-      "MC.all_output_bias_mm"
+      "<redacted-column>",
+      "<redacted-column>",
+      "<redacted-column>",
+      "<redacted-column>"
     ]
   },
   "extraction": {
@@ -59,11 +59,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\statistical.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -172,11 +172,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\statistical_sample.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\statistical_sample.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -277,11 +277,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\ulp.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\ulp.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -348,11 +348,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\matlab_eps.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\matlab_eps.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -423,11 +423,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\dimension.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -498,11 +498,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_custom.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\dimension_custom.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -575,11 +575,11 @@
         "<repo>\\target\\debug\\archmeld.exe",
         "numeric-check",
         "--state",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\state",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
         "--root",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\artifacts",
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
         "--predicate",
-        "C:\\Users\\<user>\\AppData\\Local\\Temp\\archmeld-b029-real\\work3\\predicates\\dimension_negative.json"
+        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\dimension_negative.json"
       ],
       "cwd": "<repo>",
       "exit_code": 0,
@@ -642,17 +642,17 @@
     "reason": "the model and the Monte Carlo estimator are different estimators; no frozen tolerance exists, so the difference is reported only",
     "sd_mm_model_vs_mc": {
       "count": 342,
-      "mean_abs_error": "0.40937056371841574",
+      "mean_abs_error": "<redacted>",
       "rms_error": "1.9913509250813881",
       "p95_abs_error": "4.491015143916547",
-      "max_abs_error": "13.907340398982468"
+      "max_abs_error": "<redacted>"
     },
     "bias_mm_model_vs_mc": {
       "count": 342,
-      "mean_abs_error": "0.000863412938404859",
+      "mean_abs_error": "<redacted>",
       "rms_error": "0.005015919252837724",
       "p95_abs_error": "0.002297657186469248",
-      "max_abs_error": "0.04688110172316613"
+      "max_abs_error": "<redacted>"
     }
   },
   "limitations": [

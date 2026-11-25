@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "E2.1: explicit semantic-boundary labels on map read surfaces; no new map features or writes",
+  "not_included": [
+    "E4a: constraint-seeded semantic value experiment",
+    "E3: candidate file and map apply",
+    "AOCI import into the formal map",
+    "relation references"
+  ],
+  "why": [
+    "ADR-058 and the E plan required semantic_claims=unverified, but no map read surface emitted it; a green map check could be read as semantic verification.",
+    "brief(recipe=map) returned state=ok while map.state was invalid or stale, so 'brief ok' could be read as 'map ok'.",
+    "summarize/status parsed the header but did not resolve refs, so status.map.state=ok could be read as 'refs validated'."
+  ],
+  "changes": {
+    "check_map": "semantic_claims=unverified (none when absent); verification=not_run; validation=not_run|refs_checked",
+    "entry_report": "semantic_claims=unverified; verification=not_run; validation=refs_checked",
+    "summarize": "semantic_claims=unverified; verification=not_run; validation=not_run",
+    "affected": "semantic_claims=unverified; verification=not_run; validation=not_run",
+    "maintain": "semantic_claims=unverified; verification=not_run; validation=refs_checked",
+    "brief_map": "top-level map_state separate from the brief state; semantic_claims/verification top-level",
+    "markdown": "semantic claims / verification / validation line in map markdown"
+  },
+  "tests": {
+    "targeted": {
+      "command": "cargo test --offline -p archmeld-core --test cognition_map --test brief -j 2",
+      "cognition_map": {"passed": 10, "failed": 0},
+      "brief": {"passed": 6, "failed": 0},
+      "exit_code": 0
+    },
+    "full": {
+      "command": "cargo test --locked -p archmeld-core -p archmeld-api --no-fail-fast -j 2",
+      "passed": 239,
+      "failed": 0,
+      "ignored": 0,
+      "sections": 78,
+      "exit_code": 0,
+      "log": "docs/evidence/e2.1-semantic-labels-2026-11-25/final-core-api.log",
+      "log_sha256": "f9bdf218f1ba3766b066c05aeee6d19650de11a7191517d6a63d6ca6df1771ce"
+    }
+  },
+  "environment": {
+    "toolchain": "1.94.1-x86_64-pc-windows-gnu",
+    "python": "3.11 on PATH for verification/scenario tests",
+    "LIBCLANG_PATH": "<workspace>/_archmeld_tools/pylibclang/clang/native"
+  },
+  "invalid_first_run": "An earlier full run without Python 3.11 and libclang on PATH failed 17 spawn-dependent targets (verification/scenario/language/benchmark). It was discarded; the recorded run uses the full environment.",
+  "boundaries": {
+    "semantic_claims": "unverified",
+    "verification": "not_run",
+    "candidate_promoted": false,
+    "map_written": false,
+    "mcp_tools": 8,
+    "mcp_surface": "read-only",
+    "source_upload": false
+  },
+  "limitations": [
+    "the labels do not make F/A/S semantically correct; they only prevent a green structural check from claiming semantic verification",
+    "summarize still does not resolve refs; validation=not_run is the explicit marker",
+    "E4a, E3 and E4b are not started"
+  ]
+}

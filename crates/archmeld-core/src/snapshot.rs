@@ -43,6 +43,7 @@ impl Default for SnapshotOptions {
                 ".git".into(),
                 ".hg".into(),
                 ".svn".into(),
+                ".archmeld".into(),
                 "node_modules".into(),
                 "target".into(),
                 ".venv".into(),
@@ -357,7 +358,14 @@ fn coverage_for(files: &[FileEntry], omitted: &[OmittedFile]) -> Coverage {
 fn walk(root: &Path, options: &SnapshotOptions) -> Result<WalkResult> {
     let mut result = WalkResult::default();
     let excluded: HashSet<&str> = options.excluded_dirs.iter().map(String::as_str).collect();
-    walk_dir(root, root, &excluded, 0, options.max_file_bytes, &mut result)?;
+    walk_dir(
+        root,
+        root,
+        &excluded,
+        0,
+        options.max_file_bytes,
+        &mut result,
+    )?;
     let mut seen_lower: HashSet<String> = HashSet::new();
     for file in &result.files {
         let lower = file.path.to_ascii_lowercase();
@@ -639,7 +647,16 @@ fn media_type_for(path: &str) -> &'static str {
 /// is not an error: content hashes still describe the bytes.
 fn git_sets(root: &Path) -> (BTreeSet<String>, BTreeSet<String>, Option<String>) {
     let tracked = git_z(root, &["ls-files", "-z"]);
-    let ignored = git_z(root, &["ls-files", "-z", "--others", "--ignored", "--exclude-standard"]);
+    let ignored = git_z(
+        root,
+        &[
+            "ls-files",
+            "-z",
+            "--others",
+            "--ignored",
+            "--exclude-standard",
+        ],
+    );
     let commit = std::process::Command::new("git")
         .arg("-C")
         .arg(root)
@@ -658,8 +675,7 @@ fn is_git_repository(root: &Path) -> bool {
         .args(["rev-parse", "--is-inside-work-tree"])
         .output()
         .map(|output| {
-            output.status.success()
-                && String::from_utf8_lossy(&output.stdout).trim() == "true"
+            output.status.success() && String::from_utf8_lossy(&output.stdout).trim() == "true"
         })
         .unwrap_or(false)
 }

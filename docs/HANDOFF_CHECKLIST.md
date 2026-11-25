@@ -43,11 +43,13 @@ fixture-only run is not a release gate. Partial completion stays explicit.
 - B030 is **passed** for the seven-language gate: AT066 and AT067 passed and
   `docs/release-evidence/B030-language-matrix.json` records
   `r1_naming_allowed=true` with no blockers. Explicit limitations remain: C/C++
-  full SCIP needs a Linux/WSL worker; Ubuntu GUI/VS Code host, macOS and AT077
-  are release-level items.
-- B031 is **partial**: Windows/Ubuntu install/upgrade/rollback/uninstall and
-  VSIX install were tested; clean-machine indexing, packaged offline report,
-  Ubuntu VS Code host and a real newer-upstream upgrade are not.
+  full SCIP needs a Linux/WSL worker; Ubuntu GUI/VS Code host and macOS are
+  release-level items. The real 0.21.2 upstream upgrade (AT077) passed on
+  2026-11-24.
+- B031 is **partial**: Windows/Ubuntu install/upgrade/rollback/uninstall,
+  VSIX install, clean-machine indexing, the packaged offline report and the
+  real 0.21.2 upstream upgrade (AT077, 2026-11-24) were tested; the Ubuntu
+  VS Code host run remains.
 - B028 gates are verified for this testing phase: contract-check and scenario
   snapshot-copy/OCI container isolation, the Unix 0600 socket, and the Windows
   named pipe with a protected custom DACL read back from the live handle.
@@ -93,7 +95,21 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   upstream suite passed 141/0/1 on Ubuntu 24.04 with RocksDB
   (`docs/release-evidence/B000-ubuntu-24.04.json`); Windows MSVC remains a
   platform limitation. Remaining release families: Ubuntu GUI/VS Code host,
-  macOS, and AT077 upstream upgrade.
+  macOS.
+- M2.5-A/B/C/D are implemented: session-start rules, one-screen markdown
+  brief, read-only AOCI map block, optional `.archmeld/SESSION.md` with
+  freshness, and the 3-pair adherence experiment (full ritual B 3/3 vs A 0/3;
+  tokens 0.942x; 6/6 correct). E1/E2 are implemented: read-only
+  `archmeld.map.txt` format, `map check|status|maintain`,
+  `brief(recipe=map)`, status map and `inspect(kind=map_entry)`; E2.1/E2.2
+  add semantic labels and the read surfaces; full 240/0/0. E4a ran on `pi`
+  and is **no-go** (A 2/3 vs B 1/1; gate A <=1/3 failed), so E stays at
+  E2 read-only; E3/E4b/rule v3 are not promoted. Evidence:
+  `docs/release-evidence/M2.5-ADHERENCE-2026-11-24.json`,
+  `docs/release-evidence/E1-MAP-CHECK-2026-11-25.json`,
+  `docs/release-evidence/E2-MAP-MAINTAIN-BRIEF-2026-11-25.json`,
+  `docs/release-evidence/E4A-NOGO-2026-11-25.json`,
+  `docs/evidence/m2.5d-adherence-2026-11-24/`.
 - Public snapshot publication: `public-snapshot-next` was pushed fast-forward
   to `origin/main` as `fb94e36` (parent `91e4d6d`), including B000 Ubuntu
   24.04 evidence. Identifier scans were clean before publication; evidence is
@@ -105,8 +121,8 @@ fixture-only run is not a release gate. Partial completion stays explicit.
 ## 5. Next executable work (do not ask for a new plan each step)
 
 1. Ubuntu GUI/VS Code host and macOS release runs.
-2. AT077 real newer-upstream upgrade drill; B000 Windows RocksDB/MSVC or a
-   full Ubuntu suite environment.
+2. B000 Windows RocksDB/MSVC or a full Ubuntu suite environment; the real
+   0.21.2 upgrade drill is closed (AT077 passed 2026-11-24).
 3. If public publication is authorized, push the prepared sanitized
    `public-snapshot-next` branch.
 

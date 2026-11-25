@@ -1,0 +1,18 @@
+{
+  "pricing": "src/pricing.py::apply_discount",
+  "pricing_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd",
+  "callers": [
+    "src/analytics.py::check_price",
+    "src/checkout.py::checkout",
+    "src/pricing.py::list_price",
+    "src/wrapper.py::summarize_order"
+  ],
+  "expected": [
+    "src/analytics.py::check_price",
+    "src/checkout.py::checkout",
+    "src/pricing.py::list_price",
+    "src/wrapper.py::summarize_order"
+  ],
+  "legacy_caller": false,
+  "state": "ok"
+}

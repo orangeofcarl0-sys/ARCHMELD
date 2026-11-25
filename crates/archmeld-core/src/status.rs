@@ -67,15 +67,13 @@ pub fn status_report(
                 "diagnostics": counts.diagnostics,
             });
             let languages = store.language_counts(&project, snapshot_id)?;
-            entry["languages"] = json!(
-                languages
-                    .into_iter()
-                    .map(|(language, entities)| json!({
-                        "language": language,
-                        "entities": entities,
-                    }))
-                    .collect::<Vec<_>>()
-            );
+            entry["languages"] = json!(languages
+                .into_iter()
+                .map(|(language, entities)| json!({
+                    "language": language,
+                    "entities": entities,
+                }))
+                .collect::<Vec<_>>());
             if let Some(root) = workspace {
                 match analyze_drift(store, &project, snapshot_id, root, None) {
                     Ok(report) => {
@@ -114,6 +112,15 @@ pub fn status_report(
                 "state": "unknown",
                 "reason": "no snapshot registered for this project",
             });
+        }
+        if let Some(root) = workspace {
+            let dirty = entry["freshness"]["state"] == "changed";
+            entry["session_card"] =
+                crate::brief::session_card_status(root, latest_snapshot_id.as_deref(), dirty);
+            let map = crate::cognition_map::summarize(Some(root), latest_snapshot_id.as_deref());
+            if map["present"] == true {
+                entry["map"] = map;
+            }
         }
         projects.push(entry);
     }

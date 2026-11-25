@@ -41,6 +41,9 @@ pub struct BridgeReport {
     pub merged_nodes: u64,
     pub unresolved: u64,
     pub coverage: Value,
+    pub export_schema_version: String,
+    pub producer_commit: Option<String>,
+    pub producer_dirty: Option<bool>,
 }
 
 struct NodeRec {
@@ -408,11 +411,17 @@ pub fn import_codegraph_export(
         merged_nodes,
         unresolved,
         coverage: coverage.to_json(),
+        export_schema_version: parsed.schema_version,
+        producer_commit: parsed.producer_commit,
+        producer_dirty: parsed.producer_dirty,
     })
 }
 
 struct ParsedExport {
     version: String,
+    schema_version: String,
+    producer_commit: Option<String>,
+    producer_dirty: Option<bool>,
     manifest_node_count: u64,
     nodes: Vec<NodeRec>,
     edges: Vec<EdgeRec>,
@@ -420,6 +429,9 @@ struct ParsedExport {
 
 fn parse_export(text: &str) -> Result<ParsedExport> {
     let mut version: Option<String> = None;
+    let mut schema_version: Option<String> = None;
+    let mut producer_commit: Option<String> = None;
+    let mut producer_dirty: Option<bool> = None;
     let mut manifest_node_count: Option<u64> = None;
     let mut nodes = Vec::new();
     let mut edges = Vec::new();
@@ -444,6 +456,22 @@ fn parse_export(text: &str) -> Result<ParsedExport> {
                     )));
                 }
                 version = value["version"].as_str().map(str::to_string);
+                schema_version = Some(
+                    value["schema_version"]
+                        .as_str()
+                        .unwrap_or("1.0")
+                        .to_string(),
+                );
+                if let Some(commit) = value["producer_commit"].as_str() {
+                    let valid_length = commit.len() == 40 || commit.len() == 64;
+                    if !valid_length || !commit.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+                        return Err(CoreError::invalid(format!(
+                            "manifest producer_commit {commit:?} is not a 40/64-character hex commit"
+                        )));
+                    }
+                    producer_commit = Some(commit.to_string());
+                }
+                producer_dirty = value["producer_dirty"].as_bool();
                 manifest_node_count = value["node_count"].as_u64();
             }
             "node" => {
@@ -493,8 +521,18 @@ fn parse_export(text: &str) -> Result<ParsedExport> {
     if !seen_manifest {
         return Err(CoreError::invalid("export has no manifest line"));
     }
+    let schema_version = schema_version.unwrap_or_else(|| "1.0".to_string());
+    let major = schema_version.split('.').next().unwrap_or("");
+    if major != "1" {
+        return Err(CoreError::unsupported(format!(
+            "export schema version {schema_version} is not supported; expected 1.x"
+        )));
+    }
     Ok(ParsedExport {
         version: version.ok_or_else(|| CoreError::invalid("manifest has no version"))?,
+        schema_version,
+        producer_commit,
+        producer_dirty,
         manifest_node_count: manifest_node_count
             .ok_or_else(|| CoreError::invalid("manifest has no node_count"))?,
         nodes,

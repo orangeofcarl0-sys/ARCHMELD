@@ -1,0 +1,19 @@
+{"ts_ms": 1795526600020, "tool": "archmeld_status", "args": {}, "ok": true, "response_chars": 2807, "duration_ms": 83}
+{"ts_ms": 1795526608941, "tool": "archmeld_brief", "args": {"recipe": "auto"}, "ok": true, "response_chars": 1072, "duration_ms": 69}
+{"ts_ms": 1795526616951, "tool": "archmeld_query", "args": {"kind": "impact", "query": "apply_discount"}, "ok": true, "response_chars": 203, "duration_ms": 45}
+{"ts_ms": 1795526625714, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "apply_discount"}, "ok": true, "response_chars": 2631, "duration_ms": 43}
+{"ts_ms": 1795526626177, "tool": "archmeld_capabilities", "args": {}, "ok": true, "response_chars": 4734, "duration_ms": 84}
+{"ts_ms": 1795526633374, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"]}, "ok": true, "response_chars": 6246, "duration_ms": 102}
+{"ts_ms": 1795526646883, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "summarize_order"}, "ok": true, "response_chars": 1899, "duration_ms": 35}
+{"ts_ms": 1795526653905, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.448f77ea7ee3b5335eeb31a76e18e5ededb8426d9a77fa86d69a2e31c564cdd2"]}, "ok": true, "response_chars": 12631, "duration_ms": 59}
+{"ts_ms": 1795526670152, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"]}, "ok": true, "response_chars": 24636, "duration_ms": 46}
+{"ts_ms": 1795526670708, "tool": "archmeld_query", "args": {"kind": "symbols", "query": "dynamic_discount"}, "ok": true, "response_chars": 1899, "duration_ms": 36}
+{"ts_ms": 1795526678989, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"]}, "ok": true, "response_chars": 24636, "duration_ms": 54}
+{"ts_ms": 1795526679426, "tool": "archmeld_query", "args": {"kind": "symbols", "query": ""}, "ok": true, "response_chars": 32881, "duration_ms": 40}
+{"ts_ms": 1795526695434, "tool": "archmeld_query", "args": {"kind": "impact", "entity_ids": ["syn.79c047bda562263d4d714c4a41978b74aa8674f8cd358b0af70ac5cdbd2e7406"]}, "ok": true, "response_chars": 24636, "duration_ms": 57}
+{"ts_ms": 1795526695623, "tool": "archmeld_query", "args": {"kind": "symbols", "query": ""}, "ok": true, "response_chars": 32881, "duration_ms": 53}
+{"ts_ms": 1795526718715, "tool": "archmeld_review", "args": {}, "ok": true, "response_chars": 6722, "duration_ms": 90}
+{"ts_ms": 1795526728004, "tool": "archmeld_brief", "args": {"recipe": "change"}, "ok": true, "response_chars": 3206, "duration_ms": 74}
+{"ts_ms": 1795526728842, "tool": "archmeld_source", "args": {"entity_id": "syn.dfd4add31a0898da86a0e601ad58a1f923e63dbea05d6bf63a65437e7294fefd"}, "ok": true, "response_chars": 1122, "duration_ms": 50}
+{"ts_ms": 1795526752067, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.152247be9960184f7614225bd581f3cb0b5f3f5ad0ca7028feafad9c34d0ad1f"], "max_depth": 1}, "ok": true, "response_chars": 3178, "duration_ms": 39}
+{"ts_ms": 1795526763713, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["ext.a2fd7738c6f4ef087465e0efb9e662e21bea2c85de4a68135f5b0d77545f8655"], "max_depth": 1}, "ok": true, "response_chars": 7038, "duration_ms": 43}

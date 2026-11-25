@@ -635,7 +635,14 @@ fn snapshot_files(
 }
 
 fn walk_disk(root: &Path) -> Result<BTreeMap<String, String>> {
-    let excluded = [".git", "node_modules", "target", ".venv", "__pycache__"];
+    let excluded = [
+        ".git",
+        ".archmeld",
+        "node_modules",
+        "target",
+        ".venv",
+        "__pycache__",
+    ];
     let mut files = BTreeMap::new();
     fn walk(
         root: &Path,

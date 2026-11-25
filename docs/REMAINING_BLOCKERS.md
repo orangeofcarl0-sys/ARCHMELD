@@ -20,12 +20,13 @@ closure condition.
 | B031 AT068 clean-machine indexing | Installed `archmeld` + `archmeld-index` index a workspace on Windows 11 and Ubuntu 24.04 with no Cargo/model/network | `docs/release-evidence/B031-install-tests.json` |
 | B031 AT068 offline report | Installed CLI exports/verifies a 4-file bundle; Windows headless Chrome renders it with DNS disabled; Ubuntu static HTML checked | `docs/release-evidence/B031-install-tests.json` |
 | M1 agent onboarding | `archmeld init` / `mcp install` / `brief`; index registers the workspace root; 8 read-only MCP tools; README, agent rules and ADR-056 | `docs/release-evidence/M1-AGENT-ONBOARDING-2026-11-11.json` |
+| M2.5-A/C adherence | Session-start rules, one-screen markdown brief, read-only AOCI map block; core 179/0/0, API 38/0/0 | `docs/release-evidence/M2.5-ADHERENCE-2026-11-24.json` |
 
 `AT067` is now `passed` in the language matrix with `r1_naming_allowed: true`
-for the seven-language gate. AT068 clean-machine indexing/report is now closed.
-R1 is still not declared complete: AT077's real upstream upgrade is externally
-blocked; the C++ WSL reference index is verified, while Ubuntu GUI/macOS host
-runs remain external.
+for the seven-language gate. AT068 clean-machine indexing/report is closed, and
+the real 0.21.2 upstream upgrade (AT077) passed on 2026-11-24. R1 is still not
+declared complete because Ubuntu GUI/VS Code host and macOS release runs remain
+external; the C++ WSL reference index is verified.
 
 ## 2. Release-time items (deferred in the test phase)
 
@@ -57,16 +58,26 @@ runs remain external.
 
 ### 2.3 B031 / AT077 · real newer-upstream upgrade
 
-- Status: **deferred release item / blocked external** (not a current test blocker).
-- What exists: pinned `590c2ca7dd7b37bd1d41caf45fac535b6522f969`, NOTICE
-  attribution, synthetic interface-rename drill (baseline 0, mutated 101,
-  restored 0).
-- Live check:
-  `git ls-remote upstream HEAD` and `refs/heads/main` both return the pinned
-  `590c2ca…`. There is no newer upstream commit to upgrade to.
-- Closure condition: upstream advances; then run the adapter contract tests and
-  a real delta drill against that checkout, update the lock deliberately, and
-  keep the synthetic drill only as an additional early warning.
+- Status: **closed for the testing phase** (2026-11-24).
+- What exists: a real merge from the previous pin
+  `590c2ca7dd7b37bd1d41caf45fac535b6522f969` to upstream 0.21.2
+  `ae4b2e54fc8ce1c074523943fc750b20f68bf8aa` (4 commits, 40 files,
+  +2,991/−457), NOTICE attribution, and the earlier synthetic
+  interface-rename drill (baseline 0, mutated 101, restored 0).
+- Interface change found: upstream moved `Args::parse()` into `main()` so the
+  thread budget is known before any pool exists, and added `max_files` to
+  `DaemonConfig`. The only content conflict was
+  `crates/codegraph-server/src/main.rs`; the local state root is now installed
+  immediately after `Args::parse()` and before the startup crash marker.
+- Contract evidence: `archmeld_state_root` 1/1, parser graph properties 12/12,
+  PHP 89/89, core/API 211/0/0 (75 sections), and an end-to-end export with
+  3 files / 9 nodes / 9 edges and PHP `qualified_name=Thing::render`.
+- Pin records updated deliberately: `AGENTS.md`, `UPSTREAM_PATCHES.md`,
+  `toolchains.lock.json`, `tooling/lock_toolchains.py`,
+  `third_party/NOTICE.md`.
+- Evidence: `docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json`,
+  `docs/evidence/upstream-0.21.2-2026-11-24/logs/`,
+  `docs/evidence/upstream-0.21.2-2026-11-24/`.
 - Do not silently move the pin or claim a real upgrade happened.
 
 ### 2.4 B030 · C/C++ full SCIP
@@ -185,12 +196,57 @@ closes the usability/entry gap, not the commit-supervision or scoped
 multi-agent work (M3/M4). Evidence:
 `docs/release-evidence/M1-AGENT-ONBOARDING-2026-11-11.json` and ADR-056.
 
+AOCI-CODE assessment (2026-11-24): the model-adherence gap is a workflow
+problem, not a graph-accuracy problem. The 2026-11-03 experiment gave both arms
+a full call sheet, so it measured evidence correctness, not whether an agent
+chooses ARCHMELD on its own. AOCI-CODE makes a Git-versioned cognition map the
+first thing every run reads and makes maintenance part of done; it is not a
+call graph and costs about 140k tokens per session in a reported ERP case.
+Decision: do not vendor or fork it; add a session-start rule contract and a
+one-screen markdown brief, keep optional read-only AOCI interop, and gate the
+evidence-bound cognition map on an adherence experiment. Implementation is
+M2.5-A/B/C/D in `docs/assessments/AOCI-CODE-2026-11-24.md`; ADR-057 records the
+boundary. This is a decision, not yet a closed product gap.
+
+Python cross-module same-name binding (2026-11-24, found by M2.5-D; **closed
+2026-11-25**): in the adherence fixture, `from pricing import apply_discount`
+in `checkout.py`, `wrapper.py` and `analytics.py` was bound by the graph to
+`legacy.py::apply_discount` (an unrelated function returning `value * 0.5`),
+while `pricing.py::apply_discount` got only the same-file `list_price` edge.
+`impact` on the real function therefore under-reported callers. The resolver
+used one global bare-name map for both import-symbol edges and unresolved
+calls, so duplicate free functions collapsed to one declaration. Fix:
+`codegraph-server` now builds per-file Python import bindings
+(`from module import name`, `import module [as alias]`) and resolves imports
+before the global fallback; a duplicate free-function name with no local/import
+binding stays unresolved instead of guessing a homonym. Focused test 1/1,
+watcher module 29/29; the M2.5-D export now binds `checkout`,
+`summarize_order`, and `check_price` to `pricing.apply_discount` (15), not
+`legacy` (13). `relation:` refs remain unimplemented; this was a prerequisite,
+not the implementation. Evidence:
+`docs/release-evidence/PYTHON-IMPORT-BINDING-2026-11-25.json` and
+`docs/evidence/python-binding-2026-11-25/`.
+
+Per-symbol import alias (2026-11-25, closed): `from m import x as y` was
+dropped by the extractor; a call to `y` could stay unresolved or bind a
+unique global homonym named `y`. The parser now emits one relation per alias
+(`symbols=[x]`, `alias=y`), the resolver keeps exported and local bindings
+separate, and an unresolved/ambiguous alias is shadowed so it cannot fall
+back to a global name. Extractor 1/1, parser edge 1/1, watcher 34/34,
+`codegraph-python` 122/0/1; the 16 remaining server-lib failures are the known
+unrelated set. Evidence:
+`docs/release-evidence/PYTHON-ALIAS-BINDING-2026-11-25.json` and
+`docs/evidence/python-alias-binding-2026-11-25/`.
+
 | Area | Missing | Closure condition |
 |---|---|---|
 | B000 | Closed for the Linux worker path: full Ubuntu 24.04 suite passed; Windows RocksDB/MSVC remains a platform limitation | Run the same suite on Windows with MSVC if that platform path is required |
 | F09 | Closed for testing phase; residual span-parent containment is not confirmed call semantics and component view needs an explicit architecture | Only promote span relations if trace evidence supports call semantics; keep projections labeled candidate |
 | F10 | Closed for testing phase; `review-diff` is static and the same-agent comparison recorded a ceiling-effect null result | Execute tests separately before claiming correctness; a larger or multi-run benchmark is needed to measure real accuracy differences |
+| Python same-name cross-module calls | **Closed 2026-11-25**: per-file Python import bindings resolve `from pricing import apply_discount` to `pricing.apply_discount`; duplicate free functions without a binding stay unresolved. Focused 1/1, watcher 29/29, M2.5-D export binds checkout/wrapper/analytics to pricing (15), not legacy (13) | Evidence `docs/release-evidence/PYTHON-IMPORT-BINDING-2026-11-25.json`; `relation:` refs remain a separate unimplemented feature |
+| M2.5 adherence | A-D are implemented and tested (session rules, markdown card, AOCI block, session card, 3-pair experiment). D met the success line (full ritual B 3/3 vs A 0/3; tokens 0.942x; 6/6 correct). E1/E2 are implemented (map check/status/maintain, brief(recipe=map), status map, inspect map_entry). E2.1 adds semantic labels and `map_state`; E2.2 adds `S/A/refs` to `affected()`, `map_digest`/`freshness`, and clean absent/needs_snapshot states; core/API 240/0/0. E4a ran on `pi` 1.0.4 + `omni-anthropic/deepseek-v4.1-flash` with a 26-file nonlexical fixture: A (no map) 2/3 correct, B (map) 1/1 correct; the gate required A <=1/3, so it is **no-go**. E stays at E2 read-only; `map apply` (E3), E4b and rule v3 are not promoted | Closed for the testing phase at E2. Reopen E only with a different task/fixture and a new ADR; do not build `map apply` from this result. The Python same-name binding and per-symbol alias are closed; `relation:` refs remain a separate unimplemented item; all writes CLI-only |
 | M3 commit supervision | Not implemented; `watch` observes workspace bytes and snapshots record HEAD, but there is no commit trigger, commit-range review or commit gate | Add `commit-review` CLI and a non-blocking post-commit hook; test merge/empty/rename/binary/submodule/shallow/detached cases |
+| Upstream update hygiene | Pin/evidence records are scattered; `tooling/upstream_delta_drill.py` still hardcodes `590c2ca7` and AT077 partial; `docs/archmeld/research/upstream-selection.json` is stale; there is no unified `upstream status` | U0: `upstreams.lock.json` + read-only `archmeld upstream status`; U1: real-mode `upstream drill codegraph`; keep no auto-merge, no auto-pin |
 | M4 multi-agent authority | One bearer token, caller-supplied `actor` and one project writer lease; no scoped read/propose/apply/verify tokens or proposer≠approver enforcement | Add scoped tokens and separation-of-duties tests; keep one writer lease and never self-approve through MCP |
 
 B018 is closed for the declared scope: four executable rule checkers and three `custom_contract` assertions cover the current requirements, and arbitrary user scripts are never executed. Adding another assertion is a normal code change with tests, not an open defect; there is no active assertion requirement.
@@ -229,11 +285,15 @@ C++ WSL scip-clang v0.4.1 reference index was generated and imported; the
 Ubuntu 24.04 upstream suite passed 141/0/1; the same-agent with/without
 ARCHMELD comparison was executed and recorded a ceiling-effect null accuracy
 result; M1 agent onboarding (`init`/`mcp install`/`brief`, eight read-only MCP
-tools) was implemented and verified with a real MCP handshake; commit
-supervision (M3) and scoped multi-agent authority (M4) remain future work;
-AT077 real-upstream upgrade and Ubuntu GUI/macOS host runs remain deferred
-release items.” Do not claim R1 complete or “real upstream upgrade verified”. The
-deferred items are not current test blockers.
+tools) was implemented and verified with a real MCP handshake; the real
+upstream 0.21.2 upgrade drill (AT077) was executed and passed on 2026-11-24
+(merge `1ca0ae8b`, core/API 211/0/0, PHP 89/0/0, contract tests 13/0/0,
+end-to-end export 3 files/9 nodes/9 edges); commit supervision (M3) and scoped
+multi-agent authority (M4) remain future work; the M2.5-A/B/C/D adherence
+slices are implemented (session rules, markdown card, AOCI block, session card,
+3-pair experiment), and E is eligible but not started; Ubuntu GUI/macOS host
+runs remain deferred release items.” Do not claim R1 complete or a full release
+acceptance. The deferred host items are not current test blockers.
 
 ## 5. Reproduce the open state
 
@@ -247,16 +307,16 @@ archmeld index --workspace <repo> --state <state> --project project.clean
 archmeld report --state <state> --project project.clean --snapshot <snapshot_id> --out <state>/report
 archmeld verify-report --dir <state>/report
 
-# no newer upstream
+# current upstream head
 git ls-remote upstream HEAD
-# expected: 590c2ca7dd7b37bd1d41caf45fac535b6522f969
+# expected: ae4b2e54fc8ce1c074523943fc750b20f68bf8aa
 ```
 
 ## 6. Reproduce the same-agent comparison
 
 The fixture, both exact prompts and the raw arm outputs are archived under
 `docs/evidence/agent-comparison-2026-11-03/`. The origin fixture was at
-`<workspace>/repo`, git `df2a5d13…`, with an
+`<workspace>/agent-bench-vizIZe/repo`, git `df2a5d13…`, with an
 uncommitted `src/change.py` line 2 change from `value * 0.9` to `value * 0.8`.
 
 ```text

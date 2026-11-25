@@ -3,7 +3,7 @@
   "platform": "win32",
   "version": "0.1.0",
   "previous_version": "0.0.9",
-  "temp_root": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81",
+  "temp_root": "<temp>\\b031-release-s44d5p81",
   "acceptance": {
     "windows_cli": {
       "status": "passed",
@@ -12,7 +12,7 @@
       },
       "serve_help": {
         "argv": [
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-cur\\bin\\archmeld-serve.exe",
+          "<temp>\\b031-release-s44d5p81\\win-cur\\bin\\archmeld-serve.exe",
           "--help"
         ],
         "cwd": null,
@@ -24,7 +24,7 @@
       },
       "mcp_help": {
         "argv": [
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-cur\\bin\\archmeld-mcp.exe",
+          "<temp>\\b031-release-s44d5p81\\win-cur\\bin\\archmeld-mcp.exe",
           "--help"
         ],
         "cwd": null,
@@ -41,13 +41,13 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prev\\install.ps1",
+          "<temp>\\b031-release-s44d5p81\\win-prev\\install.ps1",
           "-Prefix",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix"
+          "<temp>\\b031-release-s44d5p81\\win-prefix"
         ],
         "cwd": null,
         "exit_code": 0,
-        "stdout": "installed 0.0.9 to <workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\n",
+        "stdout": "installed 0.0.9 to <temp>\\b031-release-s44d5p81\\win-prefix\n",
         "stderr": "",
         "stdout_sha256": "cc6d2d64788879a1ea07902a59d4a250bc97bee9d850f9c4007842c82988a228",
         "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -59,13 +59,13 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-cur\\install.ps1",
+          "<temp>\\b031-release-s44d5p81\\win-cur\\install.ps1",
           "-Prefix",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix"
+          "<temp>\\b031-release-s44d5p81\\win-prefix"
         ],
         "cwd": null,
         "exit_code": 0,
-        "stdout": "installed 0.1.0 to <workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\n",
+        "stdout": "installed 0.1.0 to <temp>\\b031-release-s44d5p81\\win-prefix\n",
         "stderr": "",
         "stdout_sha256": "c1a3c48ea0d6595bc812262c90056d1411236c4aa595d10ecb2f009984f56dd0",
         "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -79,14 +79,14 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-cur\\install.ps1",
+          "<temp>\\b031-release-s44d5p81\\win-cur\\install.ps1",
           "-Prefix",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix",
+          "<temp>\\b031-release-s44d5p81\\win-prefix",
           "-Rollback"
         ],
         "cwd": null,
         "exit_code": 0,
-        "stdout": "rolled back from <workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\\backup\n",
+        "stdout": "rolled back from <temp>\\b031-release-s44d5p81\\win-prefix\\backup\n",
         "stderr": "",
         "stdout_sha256": "23d19e1b1534e3a86b4b1728823ca3ea73fc003ea21489f309420a1ab543137d",
         "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -98,9 +98,9 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-cur\\install.ps1",
+          "<temp>\\b031-release-s44d5p81\\win-cur\\install.ps1",
           "-Prefix",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix",
+          "<temp>\\b031-release-s44d5p81\\win-prefix",
           "-Uninstall"
         ],
         "cwd": null,
@@ -112,22 +112,22 @@
       },
       "project_data_preserved": true,
       "clean_machine": {
-        "workspace": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-workspace",
-        "state": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state",
+        "workspace": "<temp>\\b031-release-s44d5p81\\clean-workspace",
+        "state": "<temp>\\b031-release-s44d5p81\\clean-state",
         "index": {
           "argv": [
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld.exe",
+            "<temp>\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld.exe",
             "index",
             "--workspace",
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-workspace",
+            "<temp>\\b031-release-s44d5p81\\clean-workspace",
             "--state",
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state",
+            "<temp>\\b031-release-s44d5p81\\clean-state",
             "--project",
             "project.clean"
           ],
           "cwd": null,
           "exit_code": 0,
-          "stdout": "{\"bridge\":{\"batches\":1,\"coverage\":{\"expected_count\":11,\"limitations\":[\"line-only anchors; upstream exposes no byte ranges\",\"call/reference edges are syntax candidates, not resolved semantics\"],\"observed_count\":11,\"omitted_count\":0,\"scope\":\"codegraph structural export over the declared snapshot\",\"state\":\"complete\",\"unresolved_count\":0},\"diagnostics\":0,\"entities\":11,\"relations\":7,\"skipped_nodes\":0,\"unresolved\":0},\"command\":\"index\",\"config_digest\":\"sha256:d5dcf03db3aaf02abbf5920ab70bc38cfbfdd4d86c27588d7f428ac1cfa593a4\",\"export\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-state\\\\index-runs\\\\run.project.clean.index.1793452047.ndjson\",\"export_digest\":\"sha256:c3fc72090606a908f4cc4439e49dcafd5deafff9df96b9f14ba3bfbcc500c0dc\",\"helper\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\win-prefix\\\\bin\\\\archmeld-index.exe\",\"helper_elapsed_ms\":151,\"helper_summary\":{\"by_language\":{\"python\":4,\"toml\":1},\"edges\":7,\"elapsed_ms\":57,\"files_parsed\":5,\"files_skipped\":0,\"files_total\":5,\"format\":\"archmeld-export-v1\",\"nodes\":11,\"parser_errors\":{},\"path\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-state\\\\index-runs\\\\run.project.clean.index.1793452047.ndjson\",\"storage\":\"in_memory\"},\"ledger\":{\"backend_mappings\":11,\"entities\":11,\"evidence\":1,\"relation_evidence\":7,\"relations\":7},\"project_id\":\"project.clean\",\"run_id\":\"run.project.clean.index.1793452047\",\"snapshot_files\":5,\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\",\"state\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-state\",\"workspace\":\"\\\\\\\\?\\\\<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-workspace\"}\n",
+          "stdout": "{\"bridge\":{\"batches\":1,\"coverage\":{\"expected_count\":11,\"limitations\":[\"line-only anchors; upstream exposes no byte ranges\",\"call/reference edges are syntax candidates, not resolved semantics\"],\"observed_count\":11,\"omitted_count\":0,\"scope\":\"codegraph structural export over the declared snapshot\",\"state\":\"complete\",\"unresolved_count\":0},\"diagnostics\":0,\"entities\":11,\"relations\":7,\"skipped_nodes\":0,\"unresolved\":0},\"command\":\"index\",\"config_digest\":\"sha256:d5dcf03db3aaf02abbf5920ab70bc38cfbfdd4d86c27588d7f428ac1cfa593a4\",\"export\":\"<temp>\\\\b031-release-s44d5p81\\\\clean-state\\\\index-runs\\\\run.project.clean.index.1793452047.ndjson\",\"export_digest\":\"sha256:c3fc72090606a908f4cc4439e49dcafd5deafff9df96b9f14ba3bfbcc500c0dc\",\"helper\":\"<temp>\\\\b031-release-s44d5p81\\\\win-prefix\\\\bin\\\\archmeld-index.exe\",\"helper_elapsed_ms\":151,\"helper_summary\":{\"by_language\":{\"python\":4,\"toml\":1},\"edges\":7,\"elapsed_ms\":57,\"files_parsed\":5,\"files_skipped\":0,\"files_total\":5,\"format\":\"archmeld-export-v1\",\"nodes\":11,\"parser_errors\":{},\"path\":\"<temp>\\\\b031-release-s44d5p81\\\\clean-state\\\\index-runs\\\\run.project.clean.index.1793452047.ndjson\",\"storage\":\"in_memory\"},\"ledger\":{\"backend_mappings\":11,\"entities\":11,\"evidence\":1,\"relation_evidence\":7,\"relations\":7},\"project_id\":\"project.clean\",\"run_id\":\"run.project.clean.index.1793452047\",\"snapshot_files\":5,\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\",\"state\":\"<temp>\\\\b031-release-s44d5p81\\\\clean-state\",\"workspace\":\"\\\\\\\\?\\\\<temp>\\\\b031-release-s44d5p81\\\\clean-workspace\"}\n",
           "stderr": "",
           "stdout_sha256": "6ff04b2e39b644325ba8390e161144dde8c02bbf87ac366eb109f56b38d33081",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -155,9 +155,9 @@
           },
           "command": "index",
           "config_digest": "sha256:d5dcf03db3aaf02abbf5920ab70bc38cfbfdd4d86c27588d7f428ac1cfa593a4",
-          "export": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state\\index-runs\\run.project.clean.index.1793452047.ndjson",
+          "export": "<temp>\\b031-release-s44d5p81\\clean-state\\index-runs\\run.project.clean.index.1793452047.ndjson",
           "export_digest": "sha256:c3fc72090606a908f4cc4439e49dcafd5deafff9df96b9f14ba3bfbcc500c0dc",
-          "helper": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld-index.exe",
+          "helper": "<temp>\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld-index.exe",
           "helper_elapsed_ms": 151,
           "helper_summary": {
             "by_language": {
@@ -172,7 +172,7 @@
             "format": "archmeld-export-v1",
             "nodes": 11,
             "parser_errors": {},
-            "path": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state\\index-runs\\run.project.clean.index.1793452047.ndjson",
+            "path": "<temp>\\b031-release-s44d5p81\\clean-state\\index-runs\\run.project.clean.index.1793452047.ndjson",
             "storage": "in_memory"
           },
           "ledger": {
@@ -186,39 +186,39 @@
           "run_id": "run.project.clean.index.1793452047",
           "snapshot_files": 5,
           "snapshot_id": "sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776",
-          "state": "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state",
-          "workspace": "\\\\?\\<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-workspace"
+          "state": "<temp>\\b031-release-s44d5p81\\clean-state",
+          "workspace": "\\\\?\\<temp>\\b031-release-s44d5p81\\clean-workspace"
         },
         "report": {
           "argv": [
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld.exe",
+            "<temp>\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld.exe",
             "report",
             "--state",
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state",
+            "<temp>\\b031-release-s44d5p81\\clean-state",
             "--project",
             "project.clean",
             "--snapshot",
             "sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776",
             "--out",
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state\\report"
+            "<temp>\\b031-release-s44d5p81\\clean-state\\report"
           ],
           "cwd": null,
           "exit_code": 0,
-          "stdout": "{\"command\":\"report\",\"output_dir\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-state\\\\report\",\"project_id\":\"project.clean\",\"report\":{\"bundle_digest\":\"sha256:3fddb5a2e7368ac669fa11a7c530653f52620beb3a21e19273a10a56a3fa4600\",\"manifest\":{\"attachments\":[{\"digest\":\"sha256:6ff412d4878ca5c1c0fd57750d0584e46169d4151b8eff880afaabc6daf8ad6f\",\"media_type\":\"application/json\",\"path\":\"evidence/index.json\",\"size\":1078},{\"digest\":\"sha256:37c990e7dda62fe06659be9dd1a5874c2f5bfa6269037afb73a7bba9dff863e8\",\"media_type\":\"application/json\",\"path\":\"model.json\",\"size\":17045},{\"digest\":\"sha256:264d9af4c6956376e341015fc281b7dbd7b714da5e834da0c3aff5ad0c5c1a10\",\"media_type\":\"text/html\",\"path\":\"report.html\",\"size\":4509},{\"digest\":\"sha256:5e2c107854f7e39708fbfe33b0e92e9d31fdc3b612b4ee170a8e950551d9493c\",\"media_type\":\"application/json\",\"path\":\"report.json\",\"size\":21332}],\"bundle_digest\":\"sha256:3fddb5a2e7368ac669fa11a7c530653f52620beb3a21e19273a10a56a3fa4600\",\"external_urls\":0,\"files\":[{\"digest\":\"sha256:6ff412d4878ca5c1c0fd57750d0584e46169d4151b8eff880afaabc6daf8ad6f\",\"media_type\":\"application/json\",\"path\":\"evidence/index.json\",\"size\":1078},{\"digest\":\"sha256:37c990e7dda62fe06659be9dd1a5874c2f5bfa6269037afb73a7bba9dff863e8\",\"media_type\":\"application/json\",\"path\":\"model.json\",\"size\":17045},{\"digest\":\"sha256:264d9af4c6956376e341015fc281b7dbd7b714da5e834da0c3aff5ad0c5c1a10\",\"media_type\":\"text/html\",\"path\":\"report.html\",\"size\":4509},{\"digest\":\"sha256:5e2c107854f7e39708fbfe33b0e92e9d31fdc3b612b4ee170a8e950551d9493c\",\"media_type\":\"application/json\",\"path\":\"report.json\",\"size\":21332}],\"generated_at\":1793452048,\"offline\":true,\"project_id\":\"project.clean\",\"raw_traces_included\":false,\"report_kind\":\"archmeld.offline_review\",\"schema_version\":\"1.0\",\"scripts\":0,\"secrets_included\":false,\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\",\"source_included\":false,\"verification\":\"each file digest is checked again before publication\"},\"offline\":true,\"output_dir\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-state\\\\report\",\"raw_traces_included\":false,\"report_id\":\"report.3ee1142edd5a4442\",\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\",\"source_included\":false},\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\"}\n",
+          "stdout": "{\"command\":\"report\",\"output_dir\":\"<temp>\\\\b031-release-s44d5p81\\\\clean-state\\\\report\",\"project_id\":\"project.clean\",\"report\":{\"bundle_digest\":\"sha256:3fddb5a2e7368ac669fa11a7c530653f52620beb3a21e19273a10a56a3fa4600\",\"manifest\":{\"attachments\":[{\"digest\":\"sha256:6ff412d4878ca5c1c0fd57750d0584e46169d4151b8eff880afaabc6daf8ad6f\",\"media_type\":\"application/json\",\"path\":\"evidence/index.json\",\"size\":1078},{\"digest\":\"sha256:37c990e7dda62fe06659be9dd1a5874c2f5bfa6269037afb73a7bba9dff863e8\",\"media_type\":\"application/json\",\"path\":\"model.json\",\"size\":17045},{\"digest\":\"sha256:264d9af4c6956376e341015fc281b7dbd7b714da5e834da0c3aff5ad0c5c1a10\",\"media_type\":\"text/html\",\"path\":\"report.html\",\"size\":4509},{\"digest\":\"sha256:5e2c107854f7e39708fbfe33b0e92e9d31fdc3b612b4ee170a8e950551d9493c\",\"media_type\":\"application/json\",\"path\":\"report.json\",\"size\":21332}],\"bundle_digest\":\"sha256:3fddb5a2e7368ac669fa11a7c530653f52620beb3a21e19273a10a56a3fa4600\",\"external_urls\":0,\"files\":[{\"digest\":\"sha256:6ff412d4878ca5c1c0fd57750d0584e46169d4151b8eff880afaabc6daf8ad6f\",\"media_type\":\"application/json\",\"path\":\"evidence/index.json\",\"size\":1078},{\"digest\":\"sha256:37c990e7dda62fe06659be9dd1a5874c2f5bfa6269037afb73a7bba9dff863e8\",\"media_type\":\"application/json\",\"path\":\"model.json\",\"size\":17045},{\"digest\":\"sha256:264d9af4c6956376e341015fc281b7dbd7b714da5e834da0c3aff5ad0c5c1a10\",\"media_type\":\"text/html\",\"path\":\"report.html\",\"size\":4509},{\"digest\":\"sha256:5e2c107854f7e39708fbfe33b0e92e9d31fdc3b612b4ee170a8e950551d9493c\",\"media_type\":\"application/json\",\"path\":\"report.json\",\"size\":21332}],\"generated_at\":1793452048,\"offline\":true,\"project_id\":\"project.clean\",\"raw_traces_included\":false,\"report_kind\":\"archmeld.offline_review\",\"schema_version\":\"1.0\",\"scripts\":0,\"secrets_included\":false,\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\",\"source_included\":false,\"verification\":\"each file digest is checked again before publication\"},\"offline\":true,\"output_dir\":\"<temp>\\\\b031-release-s44d5p81\\\\clean-state\\\\report\",\"raw_traces_included\":false,\"report_id\":\"report.3ee1142edd5a4442\",\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\",\"source_included\":false},\"snapshot_id\":\"sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776\"}\n",
           "stderr": "",
           "stdout_sha256": "166f87f17c2cf27940ece242a9793ec27756d318917908a6e9fbf5f904982d66",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "verify": {
           "argv": [
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld.exe",
+            "<temp>\\b031-release-s44d5p81\\win-prefix\\bin\\archmeld.exe",
             "verify-report",
             "--dir",
-            "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\clean-state\\report"
+            "<temp>\\b031-release-s44d5p81\\clean-state\\report"
           ],
           "cwd": null,
           "exit_code": 0,
-          "stdout": "{\"command\":\"verify-report\",\"dir\":\"<workspace>\\\\_archmeld_temp\\\\b031-release-s44d5p81\\\\clean-state\\\\report\",\"verified\":{\"bundle_digest\":\"sha256:3fddb5a2e7368ac669fa11a7c530653f52620beb3a21e19273a10a56a3fa4600\",\"checked_files\":4}}\n",
+          "stdout": "{\"command\":\"verify-report\",\"dir\":\"<temp>\\\\b031-release-s44d5p81\\\\clean-state\\\\report\",\"verified\":{\"bundle_digest\":\"sha256:3fddb5a2e7368ac669fa11a7c530653f52620beb3a21e19273a10a56a3fa4600\",\"checked_files\":4}}\n",
           "stderr": "",
           "stdout_sha256": "3be500490cd0c7982e743da91ca71e0518fe13a4147c0faffc26e2977cbee94d",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -229,10 +229,10 @@
             "--headless=new",
             "--disable-gpu",
             "--no-sandbox",
-            "--user-data-dir=<workspace>\\_archmeld_temp\\b031-chrome-kp7_mg3a",
+            "--user-data-dir=<temp>\\b031-chrome-kp7_mg3a",
             "--host-resolver-rules=MAP * ~NOTFOUND",
             "--dump-dom",
-            "file:///<workspace>/_archmeld_temp/b031-release-s44d5p81/clean-state/report/report.html"
+            "file:///<temp>/b031-release-s44d5p81/clean-state/report/report.html"
           ],
           "exit_code": 0,
           "stdout": "<!DOCTYPE html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>ARCHMELD offline review · project.clean · sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776</title><style>:root{color-scheme:light}body{font:14px/1.5 system-ui,sans-serif;margin:0;color:#17202a;background:#f7f9fb}main{max-width:1100px;margin:0 auto;padding:28px}header{border-bottom:3px solid #0f766e;padding-bottom:16px;margin-bottom:24px}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;margin-top:28px;border-bottom:1px solid #cbd5e1;padding-bottom:6px}code{background:#e2e8f0;padding:1px 4px;border-radius:3px;word-break:break-all}table{width:100%;border-collapse:collapse;background:#fff;margin:8px 0 16px}th,td{border:1px solid #cbd5e1;padding:6px 8px;text-align:left;vertical-align:top}th{background:#e2e8f0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card{background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:12px}.muted{color:#475569}.warn{background:#fff7ed;border-left:4px solid #c2410c;padding:10px 12px}footer{margin-top:36px;color:#475569;font-size:12px}</style></head><body><main><header><h1>ARCHMELD offline review</h1><p class=\"muted\">One explicit snapshot, generated for offline inspection. No scripts, no remote assets, no source bytes.</p><div class=\"grid\"><div class=\"card\"><strong>Project</strong><br><code>project.clean</code></div><div class=\"card\"><strong>Mode</strong><br><code>expedition</code></div><div class=\"card\"><strong>Snapshot</strong><br><code>sha256:87c053840a7cb17896cd080204d6652ba783a367763a76d5109579c79dda3776</code></div><div class=\"card\"><strong>Config digest</strong><br><code>sha256:d5dcf03db3aaf02abbf5920ab70bc38cfbfdd4d86c27588d7f428ac1cfa593a4</code></div><div class=\"card\"><strong>Generated</strong><br><code>1793452048</code></div></div></header><section><h2>Coverage and limitations</h2><p>Snapshot coverage: <code>{\"expected_count\":5,\"limitations\":[],\"observed_count\":5,\"omitted_count\":0,\"scope\":\"workspace manifest under the declared root; content only\",\"state\":\"complete\",\"unresolved_count\":0}</code></p><div class=\"warn\"><ul><li>static candidate relations are not resolved calls</li><li>source bytes and raw trace payloads are excluded from this bundle</li><li>bounded entity/relation lists are flagged as omissions, not silent completeness</li><li>verification states are copied from the frozen contract runs bound to their own snapshots</li><li>the HTML report executes no project code and loads no remote assets</li></ul></div><h3>Omissions</h3><table><thead><tr><th>What</th><th>Omitted</th><th>Reason</th></tr></thead><tbody><tr><td colspan=\"3\">none</td></tr></tbody></table></section><section><h2>Architecture</h2><table><thead><tr><th>Architecture</th><th>Component</th><th>Name</th><th>Purpose</th><th>Members</th></tr></thead><tbody><tr><td colspan=\"5\">none</td></tr></tbody></table><h3>Dependencies (candidate unless otherwise marked)</h3><table><thead><tr><th>Architecture</th><th>Source</th><th>Target</th><th>Status</th><th>Reason</th></tr></thead><tbody><tr><td colspan=\"5\">none</td></tr></tbody></table></section><section><h2>Claims</h2><table><thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Text</th></tr></thead><tbody><tr><td colspan=\"4\">none</td></tr></tbody></table><h3>Unknowns</h3><table><thead><tr><th>Source</th><th>Question</th></tr></thead><tbody><tr><td colspan=\"2\">none</td></tr></tbody></table></section><section><h2>Verification</h2><table><thead><tr><th>Verification</th><th>Check</th><th>Kind</th><th>Required</th><th>State</th></tr></thead><tbody><tr><td colspan=\"5\">none</td></tr></tbody></table></section><section><h2>Evidence index</h2><table><thead><tr><th>ID</th><th>Kind</th><th>Artifact digest</th><th>Available</th><th>Freshness</th></tr></thead><tbody><tr><td>evidence.codegraph.export.run.project.clean.index.1793452047</td><td>syntax</td><td>sha256:c3fc72090606a908f4cc4439e49dcafd5deafff9df96b9f14ba3bfbcc500c0dc</td><td>true</td><td>current</td></tr></tbody></table><p class=\"muted\">Artifact bytes are not embedded. A reader can compare the digest with an independently held copy.</p></section><footer>Generated by ARCHMELD. Static report: opening it does not execute repository code or contact a network service. Verify manifest.json before trusting copied files.</footer></main></body></html>\n",
@@ -256,7 +256,7 @@
           "run",
           "--rm",
           "-v",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\linux-mnt:/mnt",
+          "<temp>\\b031-release-s44d5p81\\linux-mnt:/mnt",
           "-e",
           "ARCHMELD_PREFIX=/mnt/prefix",
           "ubuntu:24.04",
@@ -279,7 +279,7 @@
           "run",
           "--rm",
           "-v",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\linux-mnt:/mnt",
+          "<temp>\\b031-release-s44d5p81\\linux-mnt:/mnt",
           "-e",
           "ARCHMELD_PREFIX=/mnt/prefix",
           "ubuntu:24.04",
@@ -301,7 +301,7 @@
           "run",
           "--rm",
           "-v",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\linux-mnt:/mnt",
+          "<temp>\\b031-release-s44d5p81\\linux-mnt:/mnt",
           "ubuntu:24.04",
           "/mnt/cur/bin/archmeld-mcp",
           "--help"
@@ -325,9 +325,9 @@
           "--install-extension",
           "<repo>\\dist\\archmeld-workbench-0.1.0.vsix",
           "--extensions-dir",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\vscode-ext",
+          "<temp>\\b031-release-s44d5p81\\vscode-ext",
           "--user-data-dir",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\vscode-user",
+          "<temp>\\b031-release-s44d5p81\\vscode-user",
           "--force"
         ],
         "cwd": null,
@@ -344,9 +344,9 @@
           "D:\\Program Files\\Microsoft VS Code\\bin\\code.cmd",
           "--list-extensions",
           "--extensions-dir",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\vscode-ext",
+          "<temp>\\b031-release-s44d5p81\\vscode-ext",
           "--user-data-dir",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\vscode-user"
+          "<temp>\\b031-release-s44d5p81\\vscode-user"
         ],
         "cwd": null,
         "exit_code": 0,
@@ -363,9 +363,9 @@
           "--uninstall-extension",
           "archmeld.archmeld-workbench",
           "--extensions-dir",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\vscode-ext",
+          "<temp>\\b031-release-s44d5p81\\vscode-ext",
           "--user-data-dir",
-          "<workspace>\\_archmeld_temp\\b031-release-s44d5p81\\vscode-user"
+          "<temp>\\b031-release-s44d5p81\\vscode-user"
         ],
         "cwd": null,
         "exit_code": 0,

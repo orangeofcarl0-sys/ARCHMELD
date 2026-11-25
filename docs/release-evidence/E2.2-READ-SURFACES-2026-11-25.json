@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "E2.2: read surfaces needed by E4a and E3; no map writes",
+  "not_included": [
+    "E4a execution",
+    "E3 map apply",
+    "E4b entries/health/pilot",
+    "relation references"
+  ],
+  "changes": {
+    "affected": "entries now carry api/constraint/refs; top level carries state/snapshot_match/map_digest/binding",
+    "map_digest": "check_map/summarize/maintain/entry_report expose the sha256 of the map bytes",
+    "freshness": "latest|behind|unknown on check/summarize/maintain",
+    "entry_report": "absent returns state=absent and present=false instead of a storage error; needs_snapshot returns a state object",
+    "maintain": "needs_snapshot returns a state object with command=maintain instead of failing",
+    "markdown": "maintain uses map_snapshot/current_snapshot and its own entries block; no fake snapshot/0-token line",
+    "contract": "implementation.implemented_tools now includes archmeld_brief"
+  },
+  "why": [
+    "brief(recipe=change) could not show the Entry's S constraint, so E4a's B arm had no way to see the map-only obligation before editing.",
+    "E3's --expected-hash had no map digest to consume.",
+    "A green map check could hide an absent map behind a storage error, and maintain --markdown reported none/0 tokens for a valid map."
+  ],
+  "tests": {
+    "targeted": {
+      "command": "cargo test --offline -p archmeld-core --test cognition_map --test brief -j 2",
+      "cognition_map": {"passed": 11, "failed": 0},
+      "brief": {"passed": 6, "failed": 0},
+      "mcp_stdio": {"passed": 1, "failed": 0},
+      "cli_map_tests": {"passed": 1, "failed": 0}
+    },
+    "full": {
+      "command": "cargo test --locked -p archmeld-core -p archmeld-api --no-fail-fast -j 2",
+      "passed": 240,
+      "failed": 0,
+      "ignored": 0,
+      "sections": 78,
+      "exit_code": 0,
+      "log": "docs/evidence/e2.2-read-surfaces-2026-11-25/final-core-api.log",
+      "log_sha256": "19048831b0569660f7239d4a3003503514765ecd301d8c165e2bbfa085b8f4b8"
+    }
+  },
+  "manual_end_to_end": {
+    "fixture": "fixtures/e4a/nonlexical with a snapshot-bound map",
+    "map_check": {"state": "ok", "entries": 7, "confirmed_refs": 7, "freshness": "latest"},
+    "map_maintain_markdown": "state ok; 7 total/7 unchanged; map digest and freshness printed",
+    "brief_change_before_edit": "cognition_map.affected is empty because no code has changed yet; map_digest and state=ok are visible",
+    "map_entry_inspect": "returns the pricing Entry with S and the invoice/analytics refs"
+  },
+  "boundaries": {
+    "semantic_claims": "unverified",
+    "verification": "not_run",
+    "map_written": false,
+    "mcp_tools": 8,
+    "mcp_surface": "read-only",
+    "source_upload": false
+  },
+  "limitations": [
+    "affected still only lists entries for files already changed; before the first edit, the B arm must inspect the target file's Entry",
+    "map_digest is over exact bytes; line-ending normalization is not applied",
+    "E4a has not been run; Claude Code is installed but not authenticated in this environment"
+  ]
+}

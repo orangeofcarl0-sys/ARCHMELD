@@ -21,3 +21,4 @@ None declared.
 - `archmeld_query` — list indexed symbols in the current snapshot
 - `archmeld_context` — build a bounded, evidence-backed project context
 - `archmeld_review` — compare the working tree with this snapshot
+

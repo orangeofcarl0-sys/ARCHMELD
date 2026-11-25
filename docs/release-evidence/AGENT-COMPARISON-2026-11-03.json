@@ -14,7 +14,7 @@
       "launch": "two subagents launched in parallel by the host Agent tool"
     },
     "fixture": {
-      "repo": "<workspace>/repo",
+      "repo": "<workspace>/agent-bench-vizIZe/repo",
       "git_head": "df2a5d13e7a67c9e460517b7f6a859bc909d16d2",
       "tracked_files": 7,
       "tracked_python_files": 6,
@@ -54,7 +54,7 @@
     "archmeld_head": "b5bb8a44a92db873114599093684e1d9b53e4239",
     "server_binary": "target/debug/archmeld-serve.exe",
     "server_binary_sha256": "sha256:2da6615873b862776efc9f9d80f47bf7ffbf446f58f9d7f27b1e3a7126641c8d",
-    "state_dir": "<workspace>/state",
+    "state_dir": "<workspace>/agent-bench-vizIZe/state",
     "state_db_sha256": "sha256:23e68696f7c1250870a1df949da70ca88d4f7de6af5bbe89c8ef8907d41d01b8",
     "fixture_base_change_sha256": "sha256:f0103cfe7d4b1b4e4e61eca5986394926f4121f331aa489a3419b78d18ca7531",
     "fixture_live_change_sha256": "sha256:538bcbb739f07002809bf5d9c12737a44711fd35ccc6c658c71425601d94ade9",
@@ -75,7 +75,7 @@
       "archmeld": "0.1.0"
     },
     "server_log": {
-      "path": "<workspace>/serve.log",
+      "path": "<workspace>/agent-bench-vizIZe/serve.log",
       "sha256": "sha256:d5dbd3e5dfeac400d0481235b06106e0d35bad259f40f2e0d61c7aa97778c7f9",
       "contains_token": false,
       "note": "The only line is the announcement with token:null and the workspace handle."
@@ -191,7 +191,7 @@
     {
       "purpose": "start local evidence API",
       "cwd": "<repo>",
-      "argv": ["./target/debug/archmeld-serve.exe", "--state", "<workspace>/state", "--allow-workspace", "<workspace>/repo", "--no-auth", "--port", "0"],
+      "argv": ["./target/debug/archmeld-serve.exe", "--state", "<workspace>/agent-bench-vizIZe/state", "--allow-workspace", "<workspace>/agent-bench-vizIZe/repo", "--no-auth", "--port", "0"],
       "exit_code": null,
       "state": "background process; announcement captured, still serving during the run",
       "endpoint": "http://127.0.0.1:6778"

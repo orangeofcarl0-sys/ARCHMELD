@@ -1,0 +1,5 @@
+{"seq": 2, "tool": "archmeld_status", "args": {}}
+{"seq": 12, "tool": "archmeld_query", "args": {"query": "apply_discount", "kind": "symbols", "max_nodes": 100}}
+{"seq": 13, "tool": "archmeld_query", "args": {"query": "INVOICE_ADJUSTMENT_BPS", "kind": "symbols", "max_nodes": 100}}
+{"seq": 15, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.07800e82856fff5494dc15f5ce86d36986eba1dfebe638c578e89eb502f21471"], "max_depth": 3, "max_nodes": 100}}
+{"seq": 23, "tool": "archmeld_review", "args": {}}

@@ -1142,5 +1142,5 @@
     "provider_version": "0.15.3"
   },
   "schema_version": "1.0",
-  "target_repo": "<workspace>/_archmeld_temp/b017-codeboarding-target"
+  "target_repo": "<temp>/b017-codeboarding-target"
 }

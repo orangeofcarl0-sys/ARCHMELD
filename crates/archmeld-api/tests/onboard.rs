@@ -56,10 +56,14 @@ fn rule_block_is_previewed_written_and_idempotent() {
 
     let preview = onboard::install_rules(&root, "AGENTS.md", false).unwrap();
     assert_eq!(preview["written"], false);
-    assert!(preview["content"]
-        .as_str()
-        .unwrap()
-        .contains("<!-- ARCHMELD:BEGIN -->"));
+    let preview_text = preview["content"].as_str().unwrap();
+    assert!(preview_text.contains("<!-- ARCHMELD:BEGIN -->"));
+    assert!(
+        preview_text.contains("### Session start"),
+        "rules must install the session-start contract"
+    );
+    assert!(preview_text.contains("archmeld_status"));
+    assert!(preview_text.contains("### Before you finish"));
 
     let written = onboard::install_rules(&root, "AGENTS.md", true).unwrap();
     assert_eq!(written["written"], true);
