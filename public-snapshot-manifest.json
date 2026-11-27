@@ -3,7 +3,7 @@
   "generated_by": "tooling/public_snapshot.py export",
   "recorded_at": "2026-11-27",
   "ref": "HEAD",
-  "file_count": 1893,
+  "file_count": 1898,
   "skipped": [
     "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.deps.json",
     "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.dll",
@@ -40,8 +40,20 @@
       "sha256": "21fad676dd83bdd0a0af3147eceb6396451c3f3fb6fb75e1f58169ca0c21415c"
     },
     {
+      "path": ".githooks/pre-push",
+      "sha256": "6cf61dd8a9f8ba5a8766d26311115a7a2b91d59a9e95d1cb87d01a528b863589"
+    },
+    {
+      "path": ".githooks/README.md",
+      "sha256": "96f7cdde0bd03c4454e5cc9040d06499e5f1e758945741eb4778e86c747ee49d"
+    },
+    {
       "path": ".github/FUNDING.yml",
       "sha256": "e7f8aab324e549ad9e146dc053e727d7f9c5662b4445b89ac8ad7b22237eb364"
+    },
+    {
+      "path": ".github/workflows/archmeld-public-branch-guard.yml",
+      "sha256": "9fdc99955631ebbc95e6abf5ae407f1790e09cd20ae576ddb7083b768cd91d06"
     },
     {
       "path": ".github/workflows/archmeld-upstream.yml",
@@ -349,7 +361,7 @@
     },
     {
       "path": "AGENTS.md",
-      "sha256": "6e2714c0ce2695cf5b746444a059c5271e2f44842a6601dd768737395f2e70b2"
+      "sha256": "26f4fb605dc3fe2c7b2eb4bbf203ea0aefaeb6eaefe8634d60a65a8f7d7e03e6"
     },
     {
       "path": "archmeld-vscode/media/cytoscape.min.js",
@@ -6341,7 +6353,7 @@
     },
     {
       "path": "docs/OPERATOR_GUIDE.md",
-      "sha256": "752493e39e66af5b1020774eaead18d74f1acf6b54e0d9c0fa64536026ffea59"
+      "sha256": "befffebd2b6d480f4c74a0b48a65c05de420b50232f7c2dcc62bec854da7395e"
     },
     {
       "path": "docs/release-evidence/ADAPTER-DRILL-2026-11-25.json",
@@ -7276,6 +7288,10 @@
       "sha256": "6084f37a8bda089c35cceaa0ac8b2d3383952023c7a2c01e3e1d0e1430fdc9af"
     },
     {
+      "path": "tooling/publication_guard.py",
+      "sha256": "bbec29963072ffea6d9c742a36152ece7f938f4a456561fa9beca2bb441d43da"
+    },
+    {
       "path": "tooling/reseal_pack.py",
       "sha256": "251ad7a88adb8c124cc091816d439af541dcb92ab8e6c8a2d388ca3d70238b07"
     },
@@ -7298,6 +7314,10 @@
     {
       "path": "tooling/test_public_snapshot.py",
       "sha256": "2c5651f5b0a45f8f120763369cdbc51abfc73d2f37cf96d2453c94655c528725"
+    },
+    {
+      "path": "tooling/test_publication_guard.py",
+      "sha256": "a59fce2f1ac1126db4ef5c366bfbeb1eca6706a79599a06f21377185f6fc0c72"
     },
     {
       "path": "tooling/test_release.py",

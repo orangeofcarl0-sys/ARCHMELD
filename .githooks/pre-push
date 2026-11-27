@@ -1,0 +1,20 @@
+#!/bin/sh
+# Block private-history branches from being pushed to the public fork.
+# Enable once per clone with:
+#   py -3.11 tooling/publication_guard.py --install
+set -eu
+
+ROOT=$(git rev-parse --show-toplevel)
+
+if command -v python3 >/dev/null 2>&1; then
+    PYTHON=python3
+elif command -v python >/dev/null 2>&1; then
+    PYTHON=python
+elif command -v py >/dev/null 2>&1; then
+    PYTHON="py -3.11"
+else
+    echo "pre-push: python is required for the public branch guard" >&2
+    exit 1
+fi
+
+exec $PYTHON "$ROOT/tooling/publication_guard.py" --hook "$@"

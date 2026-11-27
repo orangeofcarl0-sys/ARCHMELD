@@ -420,7 +420,7 @@ ARCHMELD_VERSION=0.1.0 python tooling/package_release.py
 python tooling/test_release.py
 python tooling/upstream.py status --remote --json
 python tooling/upstream.py verify --skip-cargo --json
-python tooling/upstream.py drill codegraph --ref <candidate-ref> --run --matrix quick --json
+python tooling/upstream.py drill codegraph --ref <release-tag-or-release-commit> --run --matrix quick --json
 python tooling/upstream.py rollback-drill codegraph --to 903bfe0a --run --matrix full \
   --probe-revert 1ca0ae8b --json
 ```
@@ -432,6 +432,32 @@ Upgrade and rollback procedures are in
 `dist/` is ignored by Git; release-evidence files record exact artifact hashes.
 Artifacts are local and must not be uploaded without an explicit release
 decision.
+
+### Public remote push guard
+
+The public fork only accepts `main` and `public-snapshot-*` branches. Enable
+the tracked pre-push hook once per clone:
+
+```sh
+py -3.11 tooling/publication_guard.py --install
+```
+
+The hook reads Git's pre-push ref list and blocks private branches such as
+`archmeld/initial` on the public fork. It allows branch deletion for cleanup
+and is a no-op for a private remote. The same check runs on pushes through
+`.github/workflows/archmeld-public-branch-guard.yml`. Override only for an
+explicit cleanup:
+
+```sh
+ARCHMELD_ALLOW_PUBLIC_BRANCH_PUSH=1 git push origin --delete archmeld/initial
+```
+
+Publication still requires a sanitized snapshot:
+
+```sh
+python tooling/public_snapshot.py export --out <dir> --ref HEAD
+python tooling/public_snapshot.py verify-export <dir>
+```
 
 ## 2. Run the local services
 
