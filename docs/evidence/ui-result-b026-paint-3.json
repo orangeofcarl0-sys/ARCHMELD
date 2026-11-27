@@ -11,7 +11,7 @@
     "archmeld.openSource",
     "archmeld.back"
   ],
-  "screenshot": "<repo>\\docs\\evidence\\b026-workbench-paint-3.png",
+  "screenshot": "<path>",
   "capture_method": "cdp",
   "capture_target": "page:[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
   "captured_at": "2026-10-31T19:25:27.159Z",
@@ -383,7 +383,7 @@
       {
         "type": "page",
         "title": "[Extension Development Host] ARCHMELD Graph - fixture - Visual Studio Code",
-        "url": "vscode-file://vscode-app/d:/Program%20Files/Microsoft%20VS%20Code/2a59476c9b/resources/app/out/vs/code/electron-browser/workbench/workbench.html"
+        "url": "vscode-file://<path><path>"
       },
       {
         "type": "iframe",

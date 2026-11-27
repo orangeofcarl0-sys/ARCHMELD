@@ -1,4 +1,4 @@
-   Compiling archmeld-core v0.1.0 (<repo>\crates\archmeld-core)
+   Compiling archmeld-core v0.1.0 (<path>
 warning: unused import: `PathBuf`
   --> crates\archmeld-core\src\drift.rs:20:23
    |
@@ -46,7 +46,7 @@ warning: method `next_event_sequence` is never used
     |                   ^^^^^^^^^^^^^^^^^^^
 
 warning: `archmeld-core` (lib test) generated 5 warnings (3 duplicates)
-   Compiling archmeld-api v0.1.0 (<repo>\crates\archmeld-api)
+   Compiling archmeld-api v0.1.0 (<path>
 warning: `archmeld-core` (lib) generated 5 warnings (2 duplicates) (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)
 warning: unused import: `Stdio`
  --> crates\archmeld-api\tests\unix_socket.rs:9:29
@@ -290,7 +290,7 @@ test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
      Running tests\apply_recovery.rs (target\debug\deps\apply_recovery-a2107d3f7a12e319.exe)
 
 running 5 tests
-Îª <temp>\.tmpOUpKFQ\repo\src <<===>> <temp>\.tmpOUpKFQ\outside ´´½¨µÄÁª½Ó
+Îª <path> <<===>> <path> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 test path_and_link_races_are_rechecked_before_any_write ... ok
 test recovery_preserves_a_later_user_edit_of_an_updated_file ... ok
 test case_only_move_new_file_and_delete_are_recoverable ... ok

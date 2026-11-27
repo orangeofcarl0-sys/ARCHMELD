@@ -6,13 +6,15 @@
 //! when that binary is absent.
 
 use archmeld_core::language::{preview_workspace_edit, PreviewRequest};
-use archmeld_core::lsp::{file_uri, LspServerSpec, LspSession, SpawnPermission};
+use archmeld_core::lsp::{LspServerSpec, LspSession, SpawnPermission};
 use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
 use archmeld_core::store::Store;
 use serde_json::{json, Value};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+
+mod support;
 
 const PROJECT: &str = "project.lsp";
 
@@ -23,10 +25,7 @@ fn rust_analyzer() -> Option<PathBuf> {
             return Some(path);
         }
     }
-    let home = std::env::var_os("USERPROFILE").or_else(|| std::env::var_os("HOME"))?;
-    let candidate = PathBuf::from(home)
-        .join(".rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe");
-    candidate.is_file().then_some(candidate)
+    support::rust_tool("rust-analyzer")
 }
 
 fn copy_fixture(destination: &Path) {
@@ -34,6 +33,15 @@ fn copy_fixture(destination: &Path) {
     fs::create_dir_all(destination.join("src")).unwrap();
     fs::copy(source.join("Cargo.toml"), destination.join("Cargo.toml")).unwrap();
     fs::copy(source.join("src/lib.rs"), destination.join("src/lib.rs")).unwrap();
+}
+
+fn expected_rust_analyzer_version() -> Option<String> {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../adapters/languages/tools.lock.json");
+    let value: Value = serde_json::from_str(&fs::read_to_string(path).ok()?).ok()?;
+    value["rust-analyzer"]["version"]
+        .as_str()
+        .map(str::to_string)
 }
 
 fn spec(program: &Path, root: &Path) -> LspServerSpec {
@@ -112,6 +120,15 @@ fn real_rename_roundtrip_feeds_the_preview_and_leaves_no_orphans() {
     )
     .expect("granted spawn");
     session.initialize(&root).expect("initialize");
+    let expected_version = expected_rust_analyzer_version();
+    let probe = session
+        .capability_probe(expected_version.as_deref())
+        .expect("initialize probe");
+    assert!(probe.server_info.is_some(), "{probe:?}");
+    assert!(probe.definition, "{probe:?}");
+    assert!(probe.references, "{probe:?}");
+    assert!(probe.rename, "{probe:?}");
+    assert_eq!(probe.version_match, Some(true), "{probe:?}");
     session
         .did_open(&source_path, "rust", &source)
         .expect("didOpen");

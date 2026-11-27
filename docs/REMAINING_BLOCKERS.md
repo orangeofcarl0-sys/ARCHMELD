@@ -1,8 +1,8 @@
 # ARCHMELD remaining blockers
 
-Audit date: 2026-11-03. Current phase: **project testing**. Full release-level
+Audit date: 2026-11-27. Current phase: **project testing**. Full release-level
 acceptance is not required in this phase; release-time items are recorded but do
-not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the F01–F10 cross-review closure and the 2026-11-03 same-agent comparison; upstream HEAD was rechecked and is still `590c2ca7dd7b37bd1d41caf45fac535b6522f969`).
+not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the 2026-11-27 P01–P25 repairs; upstream pin is `ae4b2e54fc8ce1c074523943fc750b20f68bf8aa`, 0.21.2).
 This file separates **closed** work from **still-blocking** work. A blocker is
 only closed when the evidence path below exists and a real command produced it.
 It is not a roadmap wish list: every open item names a reproduction and a
@@ -12,9 +12,9 @@ closure condition.
 
 | Item | Result | Evidence |
 |---|---|---|
-| B030 AT067 runtime linkage | Seven groups captured with VizTracer, V8, clangd probe, JFR, EventPipe, Go pprof and a Rust probe; each trace imported into a bound snapshot and mapped to declared entities | `docs/release-evidence/B030-runtime-linkage.json`, command `#b030-runtime-linkage` |
-| B030 AT067 medium real projects | Lua 5.4.7, CPython asyncio, npm lib, OpenJDK `java.util.concurrent`, Newtonsoft.Json 13.0.3, Go `net/http`, CodeGraph crate; archive/source digests and builds verified | `docs/release-evidence/B030-medium-projects.json`, `adapters/languages/fixtures.lock.json`, command `#b030-medium-projects` |
-| B030 AT067 controlled rename | Seven real LSP renames applied to staging only, approved by exact prepared digest, journaled apply, rebuilt/rerun with identical output; same-named symbols untouched | `docs/release-evidence/B030-rename-apply.json`, command `#b030-rename-apply` |
+| B030 AT067 runtime linkage | Seven groups captured with VizTracer, V8, clangd probe, JFR, EventPipe, Go pprof and a Rust probe; each trace imported into a bound snapshot and mapped to declared entities | `docs/release-evidence/B030-runtime-linkage.json`, command `#b030-language_runtime_linkage-perf-20261127-111213` |
+| B030 AT067 medium real projects | Lua 5.4.7, CPython asyncio, npm lib, OpenJDK `java.util.concurrent`, Newtonsoft.Json 13.0.3, Go `net/http`, CodeGraph crate; archive/source digests and builds verified | `docs/release-evidence/B030-medium-projects.json`, `adapters/languages/fixtures.lock.json`, command `#b030-language_medium_projects-perf-20261127-111213` |
+| B030 AT067 controlled rename | Seven real LSP renames applied to staging only, approved by exact prepared digest, journaled apply, rebuilt/rerun with identical output; same-named symbols untouched | `docs/release-evidence/B030-rename-apply.json`, command `#b030-language_rename_apply-perf-20261127-111213` |
 | B030 AT066 scenarios | normal, slow consumer, bounded-queue backpressure, cancellation, simulated disconnect | `docs/release-evidence/B030-case-b-scenarios.json`, command `#b030-case-b-scenarios` |
 | B014 Rust runtime trace | Explicit Rust probe, 4001 spans, 4001 mapped, 2 observed relations | `docs/release-evidence/B030-runtime-linkage.json` |
 | B031 AT068 clean-machine indexing | Installed `archmeld` + `archmeld-index` index a workspace on Windows 11 and Ubuntu 24.04 with no Cargo/model/network | `docs/release-evidence/B031-install-tests.json` |
@@ -38,12 +38,15 @@ external; the C++ WSL reference index is verified.
   and writes `archmeld-export-v1` NDJSON; `archmeld index` captures the
   snapshot and imports the export through the evidence bridge.
 - Windows 11 and Ubuntu 24.04 container clean-prefix runs both produced a
-  ledger (11 entities / 7 relations on the fixture), with no Cargo, model or
-  network in the installed flow.
+  ledger (11 entities / 8 relations on the fixture). The installed flow invokes
+  no Cargo or model; network is not instrumented, and PATH is inherited from the
+  developer host unless the separate clean-PATH check is used.
 - Evidence: `docs/release-evidence/B031-install-tests.json`
   (`windows_cli.clean_machine`, `linux_cli.clean_machine_index_report`).
 - Product note: the helper is a full structural parse per run; it does not use
-  the crashing `codegraph-server` wrapper or RocksDB.
+  the persistent `codegraph-server` wrapper and does not open RocksDB. The
+  historical Windows `0xC0000005` was a Strawberry/winlibs GCC 13.2.0 runtime
+  mismatch, not a current limitation.
 
 ### 2.2 B031 / AT068 · offline report opening from the packaged bundle
 
@@ -206,7 +209,8 @@ Decision: do not vendor or fork it; add a session-start rule contract and a
 one-screen markdown brief, keep optional read-only AOCI interop, and gate the
 evidence-bound cognition map on an adherence experiment. Implementation is
 M2.5-A/B/C/D in `docs/assessments/AOCI-CODE-2026-11-24.md`; ADR-057 records the
-boundary. This is a decision, not yet a closed product gap.
+boundary. This is a decision; M2.5-B/D and E1/E2 were implemented later, and
+E4a was a no-go, so E stays at the read-only E2 surface.
 
 Python cross-module same-name binding (2026-11-24, found by M2.5-D; **closed
 2026-11-25**): in the adherence fixture, `from pricing import apply_discount`
@@ -240,13 +244,13 @@ unrelated set. Evidence:
 
 | Area | Missing | Closure condition |
 |---|---|---|
-| B000 | Closed for the Linux worker path: full Ubuntu 24.04 suite passed; Windows RocksDB/MSVC remains a platform limitation | Run the same suite on Windows with MSVC if that platform path is required |
+| B000 | Closed for the Linux worker path: full Ubuntu 24.04 suite passed. Windows GNU/UCRT64 `codegraph --lib` now passes 59/59 including RocksDB; the historical 0xC0000005 was a Strawberry/winlibs GCC 13.2.0 mismatch. MSVC is unexercised but optional. Summary: `docs/release-evidence/WINDOWS-VERIFICATION-2026-11-27.json` | Run the full Windows suite with MSVC only if an MSVC-native delivery is required |
 | F09 | Closed for testing phase; residual span-parent containment is not confirmed call semantics and component view needs an explicit architecture | Only promote span relations if trace evidence supports call semantics; keep projections labeled candidate |
 | F10 | Closed for testing phase; `review-diff` is static and the same-agent comparison recorded a ceiling-effect null result | Execute tests separately before claiming correctness; a larger or multi-run benchmark is needed to measure real accuracy differences |
 | Python same-name cross-module calls | **Closed 2026-11-25**: per-file Python import bindings resolve `from pricing import apply_discount` to `pricing.apply_discount`; duplicate free functions without a binding stay unresolved. Focused 1/1, watcher 29/29, M2.5-D export binds checkout/wrapper/analytics to pricing (15), not legacy (13) | Evidence `docs/release-evidence/PYTHON-IMPORT-BINDING-2026-11-25.json`; `relation:` refs remain a separate unimplemented feature |
 | M2.5 adherence | A-D are implemented and tested (session rules, markdown card, AOCI block, session card, 3-pair experiment). D met the success line (full ritual B 3/3 vs A 0/3; tokens 0.942x; 6/6 correct). E1/E2 are implemented (map check/status/maintain, brief(recipe=map), status map, inspect map_entry). E2.1 adds semantic labels and `map_state`; E2.2 adds `S/A/refs` to `affected()`, `map_digest`/`freshness`, and clean absent/needs_snapshot states; core/API 240/0/0. E4a ran on `pi` 1.0.4 + `omni-anthropic/deepseek-v4.1-flash` with a 26-file nonlexical fixture: A (no map) 2/3 correct, B (map) 1/1 correct; the gate required A <=1/3, so it is **no-go**. E stays at E2 read-only; `map apply` (E3), E4b and rule v3 are not promoted | Closed for the testing phase at E2. Reopen E only with a different task/fixture and a new ADR; do not build `map apply` from this result. The Python same-name binding and per-symbol alias are closed; `relation:` refs remain a separate unimplemented item; all writes CLI-only |
 | M3 commit supervision | Not implemented; `watch` observes workspace bytes and snapshots record HEAD, but there is no commit trigger, commit-range review or commit gate | Add `commit-review` CLI and a non-blocking post-commit hook; test merge/empty/rename/binary/submodule/shallow/detached cases |
-| Upstream update hygiene | Pin/evidence records are scattered; `tooling/upstream_delta_drill.py` still hardcodes `590c2ca7` and AT077 partial; `docs/archmeld/research/upstream-selection.json` is stale; there is no unified `upstream status` | U0: `upstreams.lock.json` + read-only `archmeld upstream status`; U1: real-mode `upstream drill codegraph`; keep no auto-merge, no auto-pin |
+| Upstream update hygiene | **Closed 2026-11-25 by U0/U1**: registry pin `ae4b2e54`, `upstream.py status/verify/check/probes/patches/diff/drill/rollback-drill/record`, patch manifest 0 unaccounted, weekly read-only workflow; `upstream_delta_drill.py` reads the registry and no longer decides AT077 | Keep the sealed `docs/archmeld/research/upstream-selection.json` as historical; no auto-merge/pin/push |
 | M4 multi-agent authority | One bearer token, caller-supplied `actor` and one project writer lease; no scoped read/propose/apply/verify tokens or proposer≠approver enforcement | Add scoped tokens and separation-of-duties tests; keep one writer lease and never self-approve through MCP |
 
 B018 is closed for the declared scope: four executable rule checkers and three `custom_contract` assertions cover the current requirements, and arbitrary user scripts are never executed. Adding another assertion is a normal code change with tests, not an open defect; there is no active assertion requirement.
@@ -257,7 +261,7 @@ B027 is closed for this testing phase: opt-in source/trace export with explicit 
 
 B028 is closed for this testing phase: contract checks and scenario runs have snapshot-copy/OCI container modes (ADR-043, ADR-050, ADR-051), the Unix socket is 0600 with a bearer token (ADR-047), and the Windows named pipe uses a protected custom DACL read back from the live handle (ADR-048).
 
-B000 is closed for the supported Linux worker path: the full upstream `codegraph` suite ran in Ubuntu 24.04 with RocksDB, Rust 1.94.1, GCC 13.3 and Clang 18 — 141 passed (58 lib + 5 probes + 72 integration + 6 doctests), 0 failed, 1 ignored, exit 0. Evidence: `docs/release-evidence/B000-ubuntu-24.04.json` and `baseline/logs/b000-ubuntu-24.04.log`. Windows RocksDB/MSVC remains an explicit platform limitation, not a current test blocker.
+B000 is closed for the supported Linux worker path: the full upstream `codegraph` suite ran in Ubuntu 24.04 with RocksDB, Rust 1.94.1, GCC 13.3 and Clang 18 — 141 passed (58 lib + 5 probes + 72 integration + 6 doctests), 0 failed, 1 ignored, exit 0. Evidence: `docs/release-evidence/B000-ubuntu-24.04.json` and `baseline/logs/b000-ubuntu-24.04.log`. On Windows GNU/UCRT64, `codegraph --lib` now passes 59/59 including `storage::rocksdb_backend::tests::test_delete`; the old `0xC0000005` was a Strawberry/winlibs GCC 13.2.0 runtime mismatch, not a current platform limitation. Windows MSVC is unexercised but not required for the RocksDB path.
 
 B016 trace-processor closure (2026-10-31): `--format perfetto --trace-processor
 `<path>` now queries the pinned `trace_processor_shell` with explicit SQL and
@@ -291,9 +295,7 @@ upstream 0.21.2 upgrade drill (AT077) was executed and passed on 2026-11-24
 end-to-end export 3 files/9 nodes/9 edges); commit supervision (M3) and scoped
 multi-agent authority (M4) remain future work; the M2.5-A/B/C/D adherence
 slices are implemented (session rules, markdown card, AOCI block, session card,
-3-pair experiment), and E is eligible but not started; Ubuntu GUI/macOS host
-runs remain deferred release items.” Do not claim R1 complete or a full release
-acceptance. The deferred host items are not current test blockers.
+3-pair experiment), and E1/E2 are implemented; E4a ran and was no-go, so E3/E4b are not promoted. The P01–P25 self-analysis repairs are recorded in `SELF-ANALYSIS-FIX-2026-11-27.json`; B000 Ubuntu and B030 evidence predates 0.21.2 and the P01–P25 repairs. B031 was regenerated on 2026-11-27 but validates binaries built at `dd124ca1` (Windows), `af8fa2f9` (Linux CLI) and `49683c1d` dirty (Linux helper), so its package remains provisional until a rebuild from HEAD. Ubuntu GUI/macOS host runs remain deferred release items.” Do not claim R1 complete or a full release acceptance. The deferred host items are not current test blockers.
 
 ## 5. Reproduce the open state
 
@@ -316,7 +318,7 @@ git ls-remote upstream HEAD
 
 The fixture, both exact prompts and the raw arm outputs are archived under
 `docs/evidence/agent-comparison-2026-11-03/`. The origin fixture was at
-`<workspace>/agent-bench-vizIZe/repo`, git `df2a5d13…`, with an
+`<path> git `df2a5d13…`, with an
 uncommitted `src/change.py` line 2 change from `value * 0.9` to `value * 0.8`.
 
 ```text

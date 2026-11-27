@@ -17,16 +17,30 @@ fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("build_info.rs");
 
-    let git_hash = run_cmd("git", &["rev-parse", "HEAD"]);
-    let git_hash_short = run_cmd("git", &["rev-parse", "--short", "HEAD"]);
-
-    let git_dirty = Command::new("git")
-        .args(["status", "--porcelain"])
-        .output()
+    println!("cargo:rerun-if-env-changed=ARCHMELD_BUILD_COMMIT");
+    println!("cargo:rerun-if-env-changed=ARCHMELD_BUILD_COMMIT_SHORT");
+    println!("cargo:rerun-if-env-changed=ARCHMELD_BUILD_DIRTY");
+    let git_hash = env::var("ARCHMELD_BUILD_COMMIT")
         .ok()
-        .filter(|o| o.status.success())
-        .map(|o| !o.stdout.is_empty())
-        .unwrap_or(false);
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| run_cmd("git", &["rev-parse", "HEAD"]));
+    let git_hash_short = env::var("ARCHMELD_BUILD_COMMIT_SHORT")
+        .ok()
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| run_cmd("git", &["rev-parse", "--short", "HEAD"]));
+
+    let git_dirty = env::var("ARCHMELD_BUILD_DIRTY")
+        .ok()
+        .map(|value| value == "1" || value.eq_ignore_ascii_case("true"))
+        .unwrap_or_else(|| {
+            Command::new("git")
+                .args(["status", "--porcelain"])
+                .output()
+                .ok()
+                .filter(|o| o.status.success())
+                .map(|o| !o.stdout.is_empty())
+                .unwrap_or(false)
+        });
 
     let dirty_suffix = if git_dirty { "-dirty" } else { "" };
     let rustc_version = run_cmd("rustc", &["--version"]);
@@ -57,9 +71,10 @@ pub const BUILD_TIMESTAMP: &str = "{build_timestamp}";
 
     fs::write(&dest_path, contents).unwrap();
 
-    // Re-run if git HEAD changes (new commit)
-    println!("cargo:rerun-if-changed=../.git/HEAD");
-    println!("cargo:rerun-if-changed=../.git/refs/");
+    // Re-run if git HEAD changes (new commit). Build scripts run from the
+    // package directory, so the repository .git is two levels up.
+    println!("cargo:rerun-if-changed=../../.git/HEAD");
+    println!("cargo:rerun-if-changed=../../.git/refs/");
 }
 
 fn run_cmd(cmd: &str, args: &[&str]) -> String {

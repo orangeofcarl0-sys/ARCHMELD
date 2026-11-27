@@ -14,23 +14,16 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+mod support;
+
 const PROJECT: &str = "project.langpack";
 
-fn tool(env: &str, default: &str) -> Option<PathBuf> {
-    let path = std::env::var(env).unwrap_or_else(|_| default.to_string());
-    let path = PathBuf::from(path);
-    path.is_file().then_some(path)
+fn tool(env: &str, relative: &str) -> Option<PathBuf> {
+    support::tool(env, relative)
 }
 
 fn node() -> Option<PathBuf> {
-    if let Some(path) = tool("ARCHMELD_NODE", "C:/Program Files/nodejs/node.exe") {
-        return Some(path);
-    }
-    std::env::var_os("PATH").and_then(|paths| {
-        std::env::split_paths(&paths)
-            .map(|dir| dir.join("node.exe"))
-            .find(|candidate| candidate.is_file())
-    })
+    support::tool("ARCHMELD_NODE", "node.exe").or_else(|| support::which("node"))
 }
 
 fn copy_dir(source: &Path, destination: &Path) {
@@ -212,7 +205,7 @@ fn evidence(name: &str, language: &str, server: &str, result: &PackResult) {
 fn python_alias_imports_same_names_and_dynamic_getattr() {
     let Some(server) = tool(
         "ARCHMELD_PYRIGHT",
-        "<workspace>/_archmeld_tools/lang-servers/node_modules/pyright/langserver.index.js",
+        "lang-servers/node_modules/pyright/langserver.index.js",
     ) else {
         eprintln!("pyright missing; skipping Python pack");
         return;
@@ -246,7 +239,7 @@ fn python_alias_imports_same_names_and_dynamic_getattr() {
 fn typescript_alias_imports_same_names_and_dynamic_index() {
     let Some(server) = tool(
         "ARCHMELD_TS_SERVER",
-        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
+        "lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
     ) else {
         eprintln!("typescript-language-server missing; skipping TypeScript pack");
         return;
@@ -287,7 +280,7 @@ fn typescript_alias_imports_same_names_and_dynamic_index() {
 fn javascript_alias_imports_same_names_and_dynamic_index() {
     let Some(server) = tool(
         "ARCHMELD_TS_SERVER",
-        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
+        "lang-servers/node_modules/typescript-language-server/lib/cli.mjs",
     ) else {
         eprintln!("typescript-language-server missing; skipping JavaScript pack");
         return;

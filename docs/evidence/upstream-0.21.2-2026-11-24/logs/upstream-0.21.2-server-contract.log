@@ -5,13 +5,13 @@
    Compiling esaxx-rs v0.1.10
    Compiling tokenizers v0.21.4
    Compiling fastembed v4.9.1
-   Compiling codegraph-server v0.21.2 (<repo>\crates\codegraph-server)
+   Compiling codegraph-server v0.21.2 (<path>
    Compiling rocksdb v0.22.0
-   Compiling codegraph v0.2.0 (<repo>\crates\codegraph)
-   Compiling codegraph-memory v0.21.2 (<repo>\crates\codegraph-memory)
-   Compiling codegraph-parser-api v0.2.1 (<repo>\crates\codegraph-parser-api)
-   Compiling codegraph-haskell v0.1.0 (<repo>\crates\codegraph-haskell)
-   Compiling codegraph-go v0.1.6 (<repo>\crates\codegraph-go)
+   Compiling codegraph v0.2.0 (<path>
+   Compiling codegraph-memory v0.21.2 (<path>
+   Compiling codegraph-parser-api v0.2.1 (<path>
+   Compiling codegraph-haskell v0.1.0 (<path>
+   Compiling codegraph-go v0.1.6 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-go\src\visitor.rs:8:60
   |
@@ -21,8 +21,8 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `codegraph-go` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-go` to apply 1 suggestion)
-   Compiling codegraph-groovy v0.1.0 (<repo>\crates\codegraph-groovy)
-   Compiling codegraph-kotlin v0.1.2 (<repo>\crates\codegraph-kotlin)
+   Compiling codegraph-groovy v0.1.0 (<path>
+   Compiling codegraph-kotlin v0.1.2 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-kotlin\src\visitor.rs:9:5
   |
@@ -32,8 +32,8 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `codegraph-kotlin` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-kotlin` to apply 1 suggestion)
-   Compiling codegraph-yaml v0.1.0 (<repo>\crates\codegraph-yaml)
-   Compiling codegraph-csharp v0.1.2 (<repo>\crates\codegraph-csharp)
+   Compiling codegraph-yaml v0.1.0 (<path>
+   Compiling codegraph-csharp v0.1.2 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-csharp\src\visitor.rs:9:5
   |
@@ -43,7 +43,7 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `codegraph-csharp` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-csharp` to apply 1 suggestion)
-   Compiling codegraph-rust v0.2.1 (<repo>\crates\codegraph-rust)
+   Compiling codegraph-rust v0.2.1 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
   --> crates\codegraph-rust\src\visitor.rs:12:33
    |
@@ -52,11 +52,11 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
    |
    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-   Compiling codegraph-erlang v0.2.1 (<repo>\crates\codegraph-erlang)
+   Compiling codegraph-erlang v0.2.1 (<path>
 warning: `codegraph-rust` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-rust` to apply 1 suggestion)
-   Compiling codegraph-dockerfile v0.1.0 (<repo>\crates\codegraph-dockerfile)
-   Compiling codegraph-python v0.4.3 (<repo>\crates\codegraph-python)
-   Compiling codegraph-scala v0.2.1 (<repo>\crates\codegraph-scala)
+   Compiling codegraph-dockerfile v0.1.0 (<path>
+   Compiling codegraph-python v0.4.3 (<path>
+   Compiling codegraph-scala v0.2.1 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
   --> crates\codegraph-python\src\extractor.rs:14:5
    |
@@ -65,7 +65,7 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
    |
    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-   Compiling codegraph-ruby v0.2.1 (<repo>\crates\codegraph-ruby)
+   Compiling codegraph-ruby v0.2.1 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-ruby\src\visitor.rs:9:5
   |
@@ -75,14 +75,14 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `codegraph-python` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-python` to apply 1 suggestion)
-   Compiling codegraph-toml v0.1.0 (<repo>\crates\codegraph-toml)
+   Compiling codegraph-toml v0.1.0 (<path>
 warning: `codegraph-ruby` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-ruby` to apply 1 suggestion)
-   Compiling codegraph-clojure v0.2.1 (<repo>\crates\codegraph-clojure)
-   Compiling codegraph-elixir v0.1.0 (<repo>\crates\codegraph-elixir)
-   Compiling codegraph-elm v0.2.1 (<repo>\crates\codegraph-elm)
-   Compiling codegraph-css v0.2.1 (<repo>\crates\codegraph-css)
-   Compiling codegraph-c v0.1.4 (<repo>\crates\codegraph-c)
-   Compiling codegraph-solidity v0.2.1 (<repo>\crates\codegraph-solidity)
+   Compiling codegraph-clojure v0.2.1 (<path>
+   Compiling codegraph-elixir v0.1.0 (<path>
+   Compiling codegraph-elm v0.2.1 (<path>
+   Compiling codegraph-css v0.2.1 (<path>
+   Compiling codegraph-c v0.1.4 (<path>
+   Compiling codegraph-solidity v0.2.1 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
   --> crates\codegraph-c\src\visitor.rs:14:16
    |
@@ -91,10 +91,10 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
    |
    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-   Compiling codegraph-ocaml v0.1.0 (<repo>\crates\codegraph-ocaml)
+   Compiling codegraph-ocaml v0.1.0 (<path>
 warning: `codegraph-c` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-c` to apply 1 suggestion)
-   Compiling codegraph-hcl v0.1.0 (<repo>\crates\codegraph-hcl)
-   Compiling codegraph-swift v0.1.2 (<repo>\crates\codegraph-swift)
+   Compiling codegraph-hcl v0.1.0 (<path>
+   Compiling codegraph-swift v0.1.2 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-swift\src\visitor.rs:9:5
   |
@@ -103,9 +103,9 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   |
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-   Compiling codegraph-bash v0.1.0 (<repo>\crates\codegraph-bash)
+   Compiling codegraph-bash v0.1.0 (<path>
 warning: `codegraph-swift` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-swift` to apply 1 suggestion)
-   Compiling codegraph-java v0.1.2 (<repo>\crates\codegraph-java)
+   Compiling codegraph-java v0.1.2 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-java\src\visitor.rs:9:5
   |
@@ -114,10 +114,10 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   |
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-   Compiling codegraph-lua v0.2.1 (<repo>\crates\codegraph-lua)
+   Compiling codegraph-lua v0.2.1 (<path>
 warning: `codegraph-java` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-java` to apply 1 suggestion)
-   Compiling codegraph-objc v0.2.1 (<repo>\crates\codegraph-objc)
-   Compiling codegraph-cpp v0.2.3 (<repo>\crates\codegraph-cpp)
+   Compiling codegraph-objc v0.2.1 (<path>
+   Compiling codegraph-cpp v0.2.3 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-cpp\src\visitor.rs:9:5
   |
@@ -126,10 +126,10 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   |
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-   Compiling codegraph-julia v0.1.0 (<repo>\crates\codegraph-julia)
+   Compiling codegraph-julia v0.1.0 (<path>
 warning: `codegraph-cpp` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-cpp` to apply 1 suggestion)
-   Compiling codegraph-php v0.2.1 (<repo>\crates\codegraph-php)
-   Compiling codegraph-tcl v0.1.1 (<repo>\crates\codegraph-tcl)
+   Compiling codegraph-php v0.2.1 (<path>
+   Compiling codegraph-tcl v0.1.1 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
   --> crates\codegraph-tcl\src\visitor.rs:13:5
    |
@@ -139,8 +139,8 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `codegraph-tcl` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-tcl` to apply 1 suggestion)
-   Compiling codegraph-typescript v0.4.2 (<repo>\crates\codegraph-typescript)
-   Compiling codegraph-verilog v0.1.0 (<repo>\crates\codegraph-verilog)
+   Compiling codegraph-typescript v0.4.2 (<path>
+   Compiling codegraph-verilog v0.1.0 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-typescript\src\visitor.rs:9:20
   |

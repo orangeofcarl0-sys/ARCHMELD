@@ -1,6 +1,6 @@
 {
-  "captured_at": "2026-10-29T17:40:21.730931+00:00",
-  "hostname": "orangeofcarl0",
+  "captured_at": "2026-11-27T00:00:00+00:00",
+  "hostname": "<identity>",
   "os": {
     "system": "Windows",
     "release": "10",
@@ -19,10 +19,10 @@
     "python": "Python 3.11.9",
     "cmake": "cmake version 3.29.2",
     "ninja": "1.12.0",
-    "gcc": "gcc (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
-    "gxx": "g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+    "gcc": "gcc (Rev6, Built by MSYS2 project) 16.1.0",
+    "gxx": "g++ (Rev6, Built by MSYS2 project) 16.1.0",
     "perl": "This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-msys-thread-multi",
-    "libclang_path": "<workspace>\\_archmeld_tools\\pylibclang\\clang\native",
+    "libclang_path": "<path>",
     "libclang": "File \"<string>\", line 1"
   },
   "absent": {
@@ -32,8 +32,9 @@
     "clang_cl": true
   },
   "notes": [
-    "MSVC default toolchain cannot link; GNU host of the same pinned 1.94.1 is used.",
-    "libclang 18.1.1 from PyPI package 'libclang' extracted outside the repo."
+    "MSVC default toolchain cannot link; GNU host of the pinned 1.94.1 is used.",
+    "libclang 18.1.1 from PyPI package libclang extracted outside the repo.",
+    "The 2026-10-29 winlibs 13.2.0 installation is no longer present; the current MinGW is MSYS2 UCRT 16.1.0 (ARCHMELD_MINGW_BIN=<path>"
   ],
   "network": {
     "github_ls_remote_head": "590c2ca7dd7b37bd1d41caf45fac535b6522f969"

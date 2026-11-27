@@ -452,6 +452,24 @@
         "AT008",
         "AT071"
       ]
+    },
+    {
+      "operation_id": "status",
+      "method": "GET",
+      "path": "/v1/status",
+      "owner_task": "F10",
+      "acceptance_tests": [
+        "AT015"
+      ]
+    },
+    {
+      "operation_id": "reviewWorkspaceDiff",
+      "method": "POST",
+      "path": "/v1/reviews/workspace-diff",
+      "owner_task": "F10",
+      "acceptance_tests": [
+        "AT015"
+      ]
     }
   ]
 }

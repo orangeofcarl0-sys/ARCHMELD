@@ -414,7 +414,7 @@ fn claims_architectures_and_capabilities_are_real_http_routes() {
             "project_id": PROJECT,
             "expected_revision": 1,
             "contract_digest": stored_contract["digest"],
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "http-plan-approve-1",
         })),
     );

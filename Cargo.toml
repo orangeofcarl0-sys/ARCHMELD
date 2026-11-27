@@ -96,7 +96,7 @@ globset = "0.4"
 clap = { version = "4", features = ["derive"] }
 
 # Internal crates
-codegraph = { path = "crates/codegraph", version = "0.2.0" }
+codegraph = { path = "crates/codegraph", version = "0.2.0", default-features = false }
 codegraph-parser-api = { path = "crates/codegraph-parser-api", version = "0.2.1" }
 codegraph-python = { path = "crates/codegraph-python" }
 codegraph-rust = { path = "crates/codegraph-rust" }
@@ -142,3 +142,20 @@ codegraph-memory = { path = "crates/codegraph-memory" }
 opt-level = 3
 lto = true
 codegen-units = 1
+
+# ARCHMELD: the pinned librocksdb-sys builds 322 C++ translation units. With
+# debuginfo they produce an 833 MB archive and an 835 MB rlib, which OOMs and
+# stalls the 16 GB Windows host that must also link the 1 GB helper. The helper
+# only needs RocksDB to satisfy codegraph-server's storage dependency; debug
+# info for it has no value here. This does not change debuginfo for Rust code.
+[profile.dev.package.librocksdb-sys]
+debug = false
+
+# ARCHMELD: test binaries do not need full variable/type debuginfo. Line tables
+# keep file/line backtraces while cutting the size and link time of the 100+
+# integration-test executables. `dev` builds keep their full debuginfo.
+[profile.test]
+debug = 1
+
+[profile.test.package.librocksdb-sys]
+debug = false

@@ -7,21 +7,28 @@ use serde_json::json;
 use std::fs;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
+
+mod support;
+
+fn python() -> Option<String> {
+    support::require_program("ARCHMELD_PYTHON", "python.exe")
+}
 const P:&str="project.scenario";
 #[test]
 fn scenarios_require_grant_capture_artifacts_and_timeout(){
+ let Some(python)=python() else {return;};
  let dir=tempfile::tempdir().unwrap();let root=dir.path().join("repo");fs::create_dir_all(&root).unwrap();fs::write(root.join("a.py"),"x=1\n").unwrap();
  let mut st=Store::open(dir.path().join("state")).unwrap();st.ensure_project(P,"expedition").unwrap();
  let snap=capture_snapshot(&mut st,P,&root,&SnapshotInputs{build_config:json!({"variant":"test"}),environment:json!({"os":"test"})},&SnapshotOptions{include_untracked:true,..SnapshotOptions::default()}).unwrap();
  let cfg=snap.snapshot["config_digest"].as_str().unwrap().to_string();
  let spec=|run:&str,argv:Vec<String>,timeout:Duration|ScenarioSpec{project_id:P.into(),run_id:run.into(),snapshot_id:snap.snapshot_id.clone(),config_digest:cfg.clone(),argv,cwd:root.clone(),env:vec![],timeout,sandbox:None};
- let denied=run_scenario(&mut st,&spec("run.denied",vec!["python".into(),"-c".into(),"print(1)".into()],Duration::from_secs(5)),&ExecutionGrant::deny("no approval"));
+ let denied=run_scenario(&mut st,&spec("run.denied",vec![python.clone(),"-c".into(),"print(1)".into()],Duration::from_secs(5)),&ExecutionGrant::deny("no approval"));
  assert!(denied.is_err());
- let ok=run_scenario(&mut st,&spec("run.ok",vec!["python".into(),"-c".into(),"print('hello')".into()],Duration::from_secs(10)),&ExecutionGrant::grant("g1","test")).unwrap();
- assert_eq!(ok["exit_code"],0);assert_eq!(ok["timed_out"],false);assert_eq!(ok["argv"][0],"python");
+ let ok=run_scenario(&mut st,&spec("run.ok",vec![python.clone(),"-c".into(),"print('hello')".into()],Duration::from_secs(10)),&ExecutionGrant::grant("g1","test")).unwrap();
+ assert_eq!(ok["exit_code"],0);assert_eq!(ok["timed_out"],false);assert_eq!(ok["argv"][0].as_str(),Some(python.as_str()));
  assert!(ok["stdout"]["digest"].as_str().unwrap().starts_with("sha256:"));
  assert_eq!(ok["stdout"]["truncated"],false);
- let slow=run_scenario(&mut st,&spec("run.slow",vec!["python".into(),"-c".into(),"import time;time.sleep(5)".into()],Duration::from_millis(400)),&ExecutionGrant::grant("g2","timeout test")).unwrap();
+ let slow=run_scenario(&mut st,&spec("run.slow",vec![python.clone(),"-c".into(),"import time;time.sleep(5)".into()],Duration::from_millis(400)),&ExecutionGrant::grant("g2","timeout test")).unwrap();
  assert_eq!(slow["timed_out"],true);
  assert_eq!(slow["completion"],"timed_out");
  assert_eq!(slow["process_audit"]["state"],"complete");
@@ -30,12 +37,13 @@ fn scenarios_require_grant_capture_artifacts_and_timeout(){
 
 #[test]
 fn cancellation_kills_the_process_tree_and_is_never_complete(){
+ let Some(python)=python() else {return;};
  let dir=tempfile::tempdir().unwrap();let root=dir.path().join("repo");fs::create_dir_all(&root).unwrap();fs::write(root.join("a.py"),"x=1\n").unwrap();
  let mut st=Store::open(dir.path().join("state")).unwrap();st.ensure_project(P,"expedition").unwrap();
  let snap=capture_snapshot(&mut st,P,&root,&SnapshotInputs{build_config:json!({"variant":"test"}),environment:json!({"os":"test"})},&SnapshotOptions{include_untracked:true,..SnapshotOptions::default()}).unwrap();
  let cfg=snap.snapshot["config_digest"].as_str().unwrap().to_string();
  let script="import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); time.sleep(60)";
- let spec=ScenarioSpec{project_id:P.into(),run_id:"run.cancel".into(),snapshot_id:snap.snapshot_id.clone(),config_digest:cfg.clone(),argv:vec!["python".into(),"-c".into(),script.into()],cwd:root.clone(),env:vec![],timeout:Duration::from_secs(30),sandbox:None};
+ let spec=ScenarioSpec{project_id:P.into(),run_id:"run.cancel".into(),snapshot_id:snap.snapshot_id.clone(),config_digest:cfg.clone(),argv:vec![python.clone(),"-c".into(),script.into()],cwd:root.clone(),env:vec![],timeout:Duration::from_secs(30),sandbox:None};
  let cancel=AtomicBool::new(false);
  let manifest=std::thread::scope(|scope|{
   scope.spawn(||{std::thread::sleep(Duration::from_millis(1200));cancel.store(true,Ordering::SeqCst);});

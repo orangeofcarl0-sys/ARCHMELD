@@ -1,0 +1,37 @@
+test_check_reports_up_to_date (__main__.CheckCommandTests.test_check_reports_up_to_date) ... ok
+test_check_reports_update (__main__.CheckCommandTests.test_check_reports_update) ... ok
+test_missing_package_fails (__main__.DependencyIsolationTests.test_missing_package_fails) ... ok
+test_no_codegraph_dependency_passes (__main__.DependencyIsolationTests.test_no_codegraph_dependency_passes) ... ok
+test_transitive_codegraph_dependency_fails (__main__.DependencyIsolationTests.test_transitive_codegraph_dependency_fails) ... ok
+test_diff_current_upstream_is_clean (__main__.DiffTests.test_diff_current_upstream_is_clean) ... ok
+test_current_manifest_is_complete (__main__.PatchManifestTests.test_current_manifest_is_complete) ... ok
+test_incomplete_manifest_is_detected (__main__.PatchManifestTests.test_incomplete_manifest_is_detected) ... ok
+test_python_const_regex (__main__.PinRecordTests.test_python_const_regex) ... ok
+test_resolve_pointer (__main__.PinRecordTests.test_resolve_pointer) ... ok
+test_non_passed_evidence_is_refused (__main__.RecordPlannerTests.test_non_passed_evidence_is_refused) ... ok
+test_plan_updates_all_pin_sources (__main__.RecordPlannerTests.test_plan_updates_all_pin_sources) ... ok
+test_same_pin_is_no_change (__main__.RecordPlannerTests.test_same_pin_is_no_change) ... ok
+test_auto_pin_update_must_be_false (__main__.RegistryValidationTests.test_auto_pin_update_must_be_false) ... ok
+test_current_registry_is_valid (__main__.RegistryValidationTests.test_current_registry_is_valid) ... ok
+test_duplicate_id_is_rejected (__main__.RegistryValidationTests.test_duplicate_id_is_rejected) ... ok
+test_unknown_reuse_mode_is_rejected (__main__.RegistryValidationTests.test_unknown_reuse_mode_is_rejected) ... ok
+test_check_reports_all_failed_targets (__main__.RemoteFallbackTests.test_check_reports_all_failed_targets) ... ok
+test_check_uses_url_and_head_when_registry_has_no_remote_or_ref (__main__.RemoteFallbackTests.test_check_uses_url_and_head_when_registry_has_no_remote_or_ref) ... ok
+test_status_falls_back_from_remote_name_to_url (__main__.RemoteFallbackTests.test_status_falls_back_from_remote_name_to_url) ... ok
+test_no_drive_absolute_literal_in_tooling (__main__.StaleLiteralTests.test_no_drive_absolute_literal_in_tooling) ... ok
+test_no_stale_at077_partial_literal_in_tooling (__main__.StaleLiteralTests.test_no_stale_at077_partial_literal_in_tooling) ... ok
+test_no_stale_pin_literal_in_tooling (__main__.StaleLiteralTests.test_no_stale_pin_literal_in_tooling) ... ok
+test_status_fail_on_update_returns_three (__main__.StatusOutputTests.test_status_fail_on_update_returns_three) ... ok
+test_status_out_writes_json (__main__.StatusOutputTests.test_status_out_writes_json) ... ok
+test_hash_mismatch_fails (__main__.TraceFixtureAuditTests.test_hash_mismatch_fails) ... ok
+test_matching_lock_passes (__main__.TraceFixtureAuditTests.test_matching_lock_passes) ... ok
+test_missing_provenance_and_test_are_warnings (__main__.TraceFixtureAuditTests.test_missing_provenance_and_test_are_warnings) ... ok
+test_public_snapshot_check_does_not_fail_a_private_tree (__main__.VerifyCurrentTreeTests.test_public_snapshot_check_does_not_fail_a_private_tree) ... ok
+test_sealed_pack_digest_check_is_a_warning_not_a_failure (__main__.VerifyCurrentTreeTests.test_sealed_pack_digest_check_is_a_warning_not_a_failure) ... ok
+test_verify_has_no_failures_without_cargo (__main__.VerifyCurrentTreeTests.test_verify_has_no_failures_without_cargo) ... ok
+test_weekly_workflow_is_read_only (__main__.WorkflowTests.test_weekly_workflow_is_read_only) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 56.878s
+
+OK

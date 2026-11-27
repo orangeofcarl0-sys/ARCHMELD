@@ -273,18 +273,33 @@ pub(crate) fn generate_test_path_patterns(source_path: &str) -> Vec<String> {
 
     let mut patterns = Vec::new();
 
+    // Graph property values keep the separator style of the indexed path. A
+    // Windows index stores `<path> while these patterns are
+    // assembled with `/`; emit the native variant too so an exact property
+    // lookup finds the adjacent test file.
+    let mut push = |pattern: String| {
+        patterns.push(pattern.clone());
+        #[cfg(windows)]
+        {
+            let native = pattern.replace('/', "\\");
+            if native != pattern {
+                patterns.push(native);
+            }
+        }
+    };
+
     if !ext.is_empty() {
         // Adjacent test files: foo.test.ts, foo.spec.ts
-        patterns.push(format!("{dir}/{stem}.test.{ext}"));
-        patterns.push(format!("{dir}/{stem}.spec.{ext}"));
+        push(format!("{dir}/{stem}.test.{ext}"));
+        push(format!("{dir}/{stem}.spec.{ext}"));
         // Rust/Go convention: foo_test.rs
-        patterns.push(format!("{dir}/{stem}_test.{ext}"));
+        push(format!("{dir}/{stem}_test.{ext}"));
         // Subdirectory conventions: tests/foo.ts, __tests__/foo.ts, test/foo.ts
-        patterns.push(format!("{dir}/tests/{stem}.{ext}"));
-        patterns.push(format!("{dir}/__tests__/{stem}.{ext}"));
-        patterns.push(format!("{dir}/test/{stem}.{ext}"));
+        push(format!("{dir}/tests/{stem}.{ext}"));
+        push(format!("{dir}/__tests__/{stem}.{ext}"));
+        push(format!("{dir}/test/{stem}.{ext}"));
         // Test file with _test suffix in subdirectory
-        patterns.push(format!("{dir}/tests/{stem}_test.{ext}"));
+        push(format!("{dir}/tests/{stem}_test.{ext}"));
     }
 
     patterns

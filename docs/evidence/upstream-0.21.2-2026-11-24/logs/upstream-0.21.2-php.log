@@ -14,9 +14,9 @@
    Compiling tree-sitter-php v0.24.2
    Compiling criterion v0.5.1
    Compiling rocksdb v0.22.0
-   Compiling codegraph v0.2.0 (<repo>\crates\codegraph)
-   Compiling codegraph-parser-api v0.2.1 (<repo>\crates\codegraph-parser-api)
-   Compiling codegraph-php v0.2.1 (<repo>\crates\codegraph-php)
+   Compiling codegraph v0.2.0 (<path>
+   Compiling codegraph-parser-api v0.2.1 (<path>
+   Compiling codegraph-php v0.2.1 (<path>
     Finished `test` profile [unoptimized + debuginfo] target(s) in 25m 54s
      Running unittests src\lib.rs (target\debug\deps\codegraph_php-88e8ca237a288935.exe)
 

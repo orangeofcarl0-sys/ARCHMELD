@@ -1,0 +1,14 @@
+test_export_omits_and_redacts (__main__.ExportTests.test_export_omits_and_redacts) ... ok
+test_drive_path (__main__.RedactTests.test_drive_path) ... ok
+test_msys_path (__main__.RedactTests.test_msys_path) ... ok
+test_private_map (__main__.RedactTests.test_private_map) ... ok
+test_remote_and_private_ip (__main__.RedactTests.test_remote_and_private_ip) ... ok
+test_user_json_field (__main__.RedactTests.test_user_json_field) ... ok
+test_policy_allow_and_omit (__main__.ScanTests.test_policy_allow_and_omit) ... ok
+test_private_mode_warns (__main__.ScanTests.test_private_mode_warns) ... ok
+test_public_mode_fails_on_unclassified_path (__main__.ScanTests.test_public_mode_fails_on_unclassified_path) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.430s
+
+OK

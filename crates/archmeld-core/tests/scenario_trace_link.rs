@@ -16,6 +16,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::time::Duration;
 
+mod support;
+
 static EVIDENCE_LOCK: Mutex<()> = Mutex::new(());
 
 const P: &str = "project.trace.link";
@@ -70,7 +72,7 @@ fn run_scenario_fixture(fixture: &mut Fixture, run_id: &str) -> Value {
             run_id: run_id.to_string(),
             snapshot_id: fixture.snapshot_id.clone(),
             config_digest: fixture.config_digest.clone(),
-            argv: vec!["python".into(), "-c".into(), "print('linked')".into()],
+            argv: vec![support::require_program("ARCHMELD_PYTHON", "python.exe").expect("python"), "-c".into(), "print('linked')".into()],
             cwd: fixture.root.clone(),
             env: vec![],
             timeout: Duration::from_secs(20),
@@ -129,6 +131,7 @@ fn import(
 
 #[test]
 fn explicit_matching_scenario_run_is_linked_and_queryable() {
+    if support::require_program("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
     let mut fixture = setup();
     let manifest = run_scenario_fixture(&mut fixture, "run.link.ok");
     assert_eq!(manifest["exit_code"], 0);
@@ -185,6 +188,7 @@ fn explicit_matching_scenario_run_is_linked_and_queryable() {
 
 #[test]
 fn missing_and_mismatched_scenario_runs_are_rejected() {
+    if support::require_program("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
     let mut fixture = setup();
     run_scenario_fixture(&mut fixture, "run.link.ok");
     let trace_value = trace(&fixture, &fixture.snapshot_id, None);
@@ -213,6 +217,7 @@ fn missing_and_mismatched_scenario_runs_are_rejected() {
 
 #[test]
 fn scenario_run_from_another_snapshot_is_rejected() {
+    if support::require_program("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
     let mut fixture = setup();
     run_scenario_fixture(&mut fixture, "run.link.old");
     fs::write(fixture.root.join("src/app.py"), "def work():\n    return 2\n").unwrap();
@@ -250,6 +255,7 @@ fn scenario_run_from_another_snapshot_is_rejected() {
 
 #[test]
 fn producer_declared_scenario_id_is_recorded_as_unverified() {
+    if support::require_program("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
     let mut fixture = setup();
     let trace_value = trace(&fixture, &fixture.snapshot_id, Some("producer.only"));
     let report = import(

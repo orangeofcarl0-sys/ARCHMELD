@@ -145,5 +145,5 @@
     "--debounce-ms",
     "150"
   ],
-  "cwd": "<temp>/b016_trace_evidence"
+  "cwd": "<path>"
 }

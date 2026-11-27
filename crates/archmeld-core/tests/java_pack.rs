@@ -12,8 +12,10 @@ use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions}
 use archmeld_core::store::Store;
 use serde_json::{json, Value};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::time::Duration;
+
+mod support;
 
 const P: &str = "project.javapack";
 
@@ -157,8 +159,12 @@ fn touches(ranges: &[(u64, u64)], line: u64) -> bool {
 
 #[test]
 fn jdtls_overloads_interfaces_annotations_reflection_and_cross_file_rename() {
-    let jdk = PathBuf::from("<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe");
-    let jdtls = PathBuf::from("<workspace>/_archmeld_tools/jdtls");
+    let (Some(jdk), Some(jdtls)) = (
+        support::require_tool("ARCHMELD_JAVA", "jdk25/jdk-25.0.5+8/bin/java.exe"),
+        support::require_tool("ARCHMELD_JDTLS", "jdtls"),
+    ) else {
+        return;
+    };
     let launcher = fs::read_dir(jdtls.join("plugins"))
         .ok()
         .and_then(|entries| {
@@ -176,7 +182,7 @@ fn jdtls_overloads_interfaces_annotations_reflection_and_cross_file_rename() {
         eprintln!("jdtls/jdk missing");
         return;
     };
-    let dir = tempfile::tempdir().unwrap();
+    let dir = support::tempdir("java-pack-");
     let root = dir.path().join("repo");
     copy(
         &Path::new(env!("CARGO_MANIFEST_DIR")).join("../../adapters/languages/fixtures/java"),
@@ -242,7 +248,7 @@ fn jdtls_overloads_interfaces_annotations_reflection_and_cross_file_rename() {
             initialization_options: None,
         },
         &SpawnPermission::grant("grant.b013.java", "Java pack test"),
-        &PathBuf::from("<temp>/java-audit.ndjson"),
+        &support::audit_path(&root, "java-audit"),
     )
     .expect("jdtls start");
     session.initialize(&root).expect("initialize");

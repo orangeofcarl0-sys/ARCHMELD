@@ -601,14 +601,14 @@ mod tests {
     #[test]
     fn test_memory_context_params() {
         let json = r#"{
-            "uri": "file:///test/main.rs",
+            "uri": "file://<path>",
             "position": {"line": 10, "character": 5},
             "limit": 5,
             "kinds": ["debug_context"]
         }"#;
 
         let params: MemoryContextParams = serde_json::from_str(json).unwrap();
-        assert_eq!(params.uri, "file:///test/main.rs");
+        assert_eq!(params.uri, "file://<path>");
         assert!(params.position.is_some());
         let pos = params.position.unwrap();
         assert_eq!(pos.line, 10);

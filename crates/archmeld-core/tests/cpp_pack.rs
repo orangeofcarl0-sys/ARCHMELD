@@ -14,13 +14,12 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+mod support;
+
 const PROJECT: &str = "project.cpp";
 
 fn clangd() -> Option<PathBuf> {
-    let path = std::env::var("ARCHMELD_CLANGD")
-        .unwrap_or_else(|_| "<workspace>/_archmeld_tools/llvm18/bin/clangd.exe".into());
-    let path = PathBuf::from(path);
-    path.is_file().then_some(path)
+    support::tool("ARCHMELD_CLANGD", "llvm18/bin/clangd.exe")
 }
 
 fn copy_dir(source: &Path, destination: &Path) {
@@ -118,7 +117,7 @@ fn clangd_uses_compile_commands_for_macros_virtuals_and_indirect_calls() {
             initialization_options: None,
         },
         &SpawnPermission::grant("grant.b012", "C/C++ language pack integration test"),
-        &PathBuf::from("<temp>/cpp-audit.ndjson"),
+        &support::audit_path(&root, "cpp-audit"),
     )
     .expect("clangd start");
     session.initialize(&root).expect("initialize");

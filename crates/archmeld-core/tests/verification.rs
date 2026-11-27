@@ -5,6 +5,14 @@
 //! snapshot binding and process-tree resource limits.
 
 mod common;
+mod support;
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
 
 use archmeld_core::changeset::get_changeset;
 use archmeld_core::hash;
@@ -174,7 +182,7 @@ fn accept(
             "expected_revision": revision,
             "verification_id": verification_id,
             "workspace_handle": fixture.handle,
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": key,
         }),
     )
@@ -196,13 +204,15 @@ fn check_command(argv: Vec<&str>, timeout_ms: u64, predicate: Value) -> Value {
 
 #[test]
 fn missing_unsupported_and_zero_test_checks_never_pass() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
+    let python = python();
     let mut fixture = common::setup("b022-missing");
     let contract = contract_with_checks(
         &mut fixture,
         2,
         vec![
             check_command(
-                vec!["python", "-c", "print('ok')"],
+                vec![python.as_str(), "-c", "print('ok')"],
                 5000,
                 json!({"kind": "exit_code", "expected_codes": [0]}),
             ),
@@ -498,13 +508,15 @@ fn staged_or_changed_snapshots_can_never_be_accepted() {
 
 #[test]
 fn timeout_is_explicit_and_the_spawned_tree_is_reaped() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
+    let python = python();
     let mut fixture = common::setup("b022-timeout");
     let contract = contract_with_checks(
         &mut fixture,
         2,
         vec![check_command(
             vec![
-                "python",
+                python.as_str(),
                 "-c",
                 "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); time.sleep(60)",
             ],
@@ -634,6 +646,8 @@ fn predicate_detail(check: &Value) -> &Value {
 
 #[test]
 fn numeric_invariant_and_performance_predicates_are_deterministic() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
+    let python = python();
     let mut fixture = common::setup("b022-predicates");
     let environment = hash::digest_bytes(b"b022-predicates-environment");
     let other_environment = hash::digest_bytes(b"b022-other-environment");
@@ -718,7 +732,7 @@ fn numeric_invariant_and_performance_predicates_are_deterministic() {
             true,
             Some(json!({
                 "argv": [
-                    "python",
+                    python.clone(),
                     "-c",
                     "import json;open('actual-numbers.json','w').write(json.dumps({'columns':['x','y'],'data':[[1.0005,2.0005],[3.0005,4.0005]]}))",
                 ],
@@ -1157,7 +1171,7 @@ fn sandboxed_check(id: &str, script: &str, include: Vec<&str>, cwd: Option<&str>
         "required": true,
         "description": "command runs inside a declared snapshot sandbox",
         "command": {
-            "argv": ["python", "-c", script],
+            "argv": [python(), "-c", script],
             "cwd": cwd,
             "timeout_ms": 15000,
         },
@@ -1170,6 +1184,8 @@ fn sandboxed_check(id: &str, script: &str, include: Vec<&str>, cwd: Option<&str>
 
 #[test]
 fn sandboxed_check_reads_applied_snapshot_and_never_writes_the_workspace() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
+    let python = python();
     let mut fixture = common::setup("b022-sandbox-copy");
     let script = concat!(
         "import pathlib\n",
@@ -1263,6 +1279,8 @@ fn sandboxed_check_reads_applied_snapshot_and_never_writes_the_workspace() {
 
 #[test]
 fn sandboxed_check_cannot_see_excluded_snapshot_files() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() { return; }
+    let python = python();
     let mut fixture = common::setup("b022-sandbox-excluded");
     let script = concat!(
         "import pathlib\n",
@@ -1311,6 +1329,9 @@ fn sandboxed_check_cannot_see_excluded_snapshot_files() {
 
 #[test]
 fn sandboxed_check_cwd_must_stay_inside_the_materialized_copy() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() {
+        return;
+    }
     let mut fixture = common::setup("b022-sandbox-escape");
     let script = "print('never runs')\n";
     let contract = contract_with_checks(

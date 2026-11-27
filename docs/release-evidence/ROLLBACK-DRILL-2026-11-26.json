@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-26",
+  "scope": "U5 upstream rollback drill and playbook",
+  "generated_by": "tooling/upstream.py rollback-drill + baseline/run_cmd.py",
+  "target": {
+    "commit": "903bfe0a888e290a8618c714ffc1a11d27390261",
+    "role": "first parent of merge 1ca0ae8b85a013ce9ce85af78a39d257d6332c0d; fork state before CodeGraph 0.21.2",
+    "not_a_target": "590c2ca7dd7b37bd1d41caf45fac535b6522f969 is the pure upstream commit and has no ARCHMELD patches"
+  },
+  "runs": {
+    "full_matrix": {
+      "from": "48d1005836db4f07310a1021d663613a620801e1",
+      "matrix": "full",
+      "status": "failed",
+      "tests": {
+        "archmeld_core_api": {"exit_code": 0, "passed": 211, "failed": 0},
+        "bridge_import": {"exit_code": 0, "passed": 3, "failed": 0},
+        "archmeld_probes_no_default": {"exit_code": 0, "passed": 3, "failed": 0},
+        "codegraph_php": {"exit_code": 3221225785, "note": "0xC0000409 STATUS_STACK_BUFFER_OVERRUN; known Windows GNU RocksDB runtime limitation"},
+        "codegraph_server_state_root": {"exit_code": 101, "note": "server failed at startup; same Windows GNU RocksDB limitation"},
+        "export_example_build": {"exit_code": 0}
+      }
+    },
+    "quick_matrix": {
+      "from": "bda420887839df1f3127708754ac01961bec122c",
+      "matrix": "quick",
+      "status": "passed",
+      "tests": {
+        "archmeld_core_api": {"exit_code": 0, "passed": 211, "failed": 0},
+        "bridge_import": {"exit_code": 0, "passed": 3, "failed": 0},
+        "archmeld_probes_no_default": {"exit_code": 0, "passed": 3, "failed": 0}
+      }
+    },
+    "revert_probe": {
+      "merge_commit": "1ca0ae8b85a013ce9ce85af78a39d257d6332c0d",
+      "exit_code": 1,
+      "status": "conflicted",
+      "conflicts": [
+        "UPSTREAM_PATCHES.md",
+        "crates/codegraph-server/src/watcher.rs"
+      ],
+      "note": "expected after later local commits touched merged files; aborted and not resolved"
+    }
+  },
+  "conclusion": "The old fork tree builds and the Windows quick gate passes 217/0. The full matrix is blocked only by the known Windows GNU RocksDB runtime limitation in codegraph-php and archmeld_state_root; the PHP/server part belongs on the Linux worker. No test was removed or weakened.",
+  "hashes": {
+    "tooling/upstream.py": "81202e423f705016785c667c5ab1ed2f6413fc87a430fc3d57c89313149887c2",
+    "tooling/test_upstream.py": "479590aa1e2ee77837e9265c42f0f08590df88139d45b38b425307bcfad85dff",
+    "tooling/portable_env.py": "4c58688f400821f2613be5af4634d44eaf592c1061e8304aa4a4c8d6b7599b16",
+    "docs/upstream/ROLLBACK.md": "cfd655e8ec77897a1a2eb9d685ae0c2d9fe4dec3e6d6d9fdd3947920488d8d3e",
+    "docs/upstream/UPGRADE_PLAYBOOK.md": "29b716400b727bac7a2af7afc66dbb3bfcef160175e1efa7e831103c5c9d4f02",
+    "docs/evidence/upstream-rollback-2026-11-26/full-matrix.json": "44549bac381754c5c32e3da5d13d5dd7acf53d02b098a01663307ccba4bb6fd9",
+    "docs/evidence/upstream-rollback-2026-11-26/quick-matrix.json": "9df2c3995ef3420935b726cded904a36d0b531145b652e7e0f26c631c9191e61"
+  },
+  "commands": ["u5-rollback-full-matrix", "u5-rollback-quick-matrix"],
+  "limitations": [
+    "full matrix is not green on Windows GNU because of the known RocksDB runtime limitation; use the Linux worker for PHP/server",
+    "the revert probe reports conflicts but does not resolve or commit a rollback",
+    "no pin, lock, NOTICE, patch manifest or tag was changed",
+    "the drill uses temporary worktrees and does not prove a production rollback end to end"
+  ]
+}

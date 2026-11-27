@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_find_related_tests
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 8
 expect:
   match: contains

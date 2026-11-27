@@ -787,6 +787,10 @@ impl GraphUpdater {
         for (from_id, to_id, props) in ref_edges_to_add {
             let _ = graph.add_edge(from_id, to_id, EdgeType::References, props);
         }
+
+        // Phase 4: resolve `Implements` edges whose trait was parsed after the
+        // implementing file. Idempotent, so repeated watcher passes are safe.
+        codegraph_rust::resolve_pending_implements(graph);
     }
 }
 

@@ -82,6 +82,120 @@ pub struct AuditSummary {
     pub audit_available: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ServerInfo {
+    pub name: Option<String>,
+    pub version: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CapabilityProbe {
+    pub server_info: Option<ServerInfo>,
+    pub definition: bool,
+    pub references: bool,
+    pub rename: bool,
+    pub version_match: Option<bool>,
+    pub status: &'static str,
+    pub degraded: Vec<&'static str>,
+}
+
+impl CapabilityProbe {
+    pub fn to_json(&self) -> Value {
+        json!({
+            "server": self.server_info.as_ref().and_then(|info| info.name.clone()),
+            "server_version": self.server_info.as_ref().and_then(|info| info.version.clone()),
+            "definition": self.definition,
+            "references": self.references,
+            "rename": self.rename,
+            "version_match": self.version_match,
+            "status": self.status,
+            "degraded": self.degraded,
+        })
+    }
+}
+
+fn advertised(value: Option<&Value>) -> bool {
+    matches!(value, Some(Value::Bool(true)) | Some(Value::Object(_)))
+}
+
+/// Language servers often append build metadata to `serverInfo.version`
+/// (rust-analyzer reports `1.94.1 (e408947b ...)`), while the lock records the
+/// release version. Compare the first token as well as the whole string.
+fn version_matches(expected: &str, observed: &str) -> bool {
+    observed == expected || observed.split_whitespace().next() == Some(expected)
+}
+
+/// Inspect an LSP `initialize` result without starting a server. Capability
+/// downgrade is evidence-only: the runtime broker still reads the sealed
+/// `contracts/language-profiles.json` contract and never promotes a capability
+/// from a live probe.
+pub fn probe_initialize_result(result: &Value, expected_version: Option<&str>) -> CapabilityProbe {
+    let server_info = result
+        .get("serverInfo")
+        .and_then(Value::as_object)
+        .map(|info| ServerInfo {
+            name: info.get("name").and_then(Value::as_str).map(str::to_string),
+            version: info
+                .get("version")
+                .and_then(Value::as_str)
+                .map(str::to_string),
+        });
+    let observed_version = server_info
+        .as_ref()
+        .and_then(|info| info.version.as_deref());
+    let version_match = match (expected_version, observed_version) {
+        (Some(expected), Some(observed)) => Some(version_matches(expected, observed)),
+        _ => None,
+    };
+    let missing_version = expected_version.is_some() && observed_version.is_none();
+    let Some(capabilities) = result.get("capabilities").and_then(Value::as_object) else {
+        let mut degraded = vec!["definition_reference", "bounded_refactor"];
+        if missing_version {
+            degraded.push("server_version");
+        }
+        return CapabilityProbe {
+            server_info,
+            definition: false,
+            references: false,
+            rename: false,
+            version_match,
+            status: "unparsed",
+            degraded,
+        };
+    };
+    let definition = advertised(capabilities.get("definitionProvider"));
+    let references = advertised(capabilities.get("referencesProvider"));
+    let rename = advertised(capabilities.get("renameProvider"));
+    let mut degraded = Vec::new();
+    if !definition || !references {
+        degraded.push("definition_reference");
+    }
+    if !rename {
+        degraded.push("bounded_refactor");
+    }
+    if version_match == Some(false) || missing_version {
+        degraded.push("server_version");
+    }
+    let status = if version_match == Some(false) {
+        "version_mismatch"
+    } else if missing_version {
+        "unparsed"
+    } else if !definition || !references || !rename {
+        "capability_missing"
+    } else {
+        "ok"
+    };
+    CapabilityProbe {
+        server_info,
+        definition,
+        references,
+        rename,
+        version_match,
+        status,
+        degraded,
+    }
+}
+
 pub struct LspSession {
     child: Child,
     stdin: Arc<Mutex<ChildStdin>>,
@@ -93,6 +207,7 @@ pub struct LspSession {
     events: u64,
     stderr_log: PathBuf,
     initialization_options: Option<Value>,
+    server_info: Mutex<Option<Value>>,
 }
 
 impl LspSession {
@@ -207,6 +322,7 @@ impl LspSession {
             events: audit.events,
             stderr_log,
             initialization_options: spec.initialization_options.clone(),
+            server_info: Mutex::new(None),
         })
     }
 
@@ -285,9 +401,34 @@ impl LspSession {
             params["initializationOptions"] = options.clone();
         }
         let result = self.request("initialize", params, Duration::from_secs(90))?;
+        if let Ok(mut guard) = self.server_info.lock() {
+            *guard = Some(result.clone());
+        }
         self.notify("initialized", json!({}))?;
-        self.audit("initialize", json!({"root": root.to_string_lossy()}))?;
+        let probe = probe_initialize_result(&result, None);
+        self.audit(
+            "initialize",
+            json!({
+                "root": root.to_string_lossy(),
+                "server": probe.server_info.as_ref().and_then(|info| info.name.clone()),
+                "server_version": probe.server_info.as_ref().and_then(|info| info.version.clone()),
+                "capabilities": {
+                    "definition": probe.definition,
+                    "references": probe.references,
+                    "rename": probe.rename,
+                },
+            }),
+        )?;
         Ok(result)
+    }
+
+    /// Probe the initialize response captured by this session. `expected_version`
+    /// comes from the pinned `tools.lock.json` in tests/tooling; a mismatch is
+    /// reported here but never promotes or changes the sealed runtime profile.
+    pub fn capability_probe(&self, expected_version: Option<&str>) -> Option<CapabilityProbe> {
+        let guard = self.server_info.lock().ok()?;
+        let result = guard.as_ref()?;
+        Some(probe_initialize_result(result, expected_version))
     }
 
     pub fn did_open(&self, path: &Path, language_id: &str, text: &str) -> Result<()> {
@@ -528,7 +669,7 @@ fn capture_stderr(mut stderr: impl Read, path: &Path) {
 pub fn file_uri(path: &Path) -> Result<String> {
     let absolute = std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     let raw = absolute.to_string_lossy().replace('\\', "/");
-    // Windows canonicalize returns an extended-length prefix (//?/C:/...).
+    // Windows canonicalize returns an extended-length prefix (//?/<path>
     // LSP clients reject it as "url is not a file".
     let raw = raw
         .strip_prefix("//?/")
@@ -542,7 +683,7 @@ pub fn file_uri(path: &Path) -> Result<String> {
         .replace('%', "%25")
         .replace(' ', "%20")
         .replace('#', "%23");
-    Ok(format!("file://{encoded}"))
+    Ok(format!("file://<path>"))
 }
 
 /// Descendant pids of an owned process tree. Returns `None` when the audit

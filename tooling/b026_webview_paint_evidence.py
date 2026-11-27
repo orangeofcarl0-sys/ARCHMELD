@@ -32,7 +32,12 @@ EVIDENCE = ROOT / "docs" / "release-evidence" / "B026-ui-webview-paint.json"
 EVIDENCE_DIR = ROOT / "docs" / "evidence"
 STATE = ROOT / "docs" / "evidence" / "ui-state"
 SERVE = ROOT / "target" / "debug" / "archmeld-serve.exe"
-CODE = Path("D:/Program Files/Microsoft VS Code/Code.exe")
+
+import portable_env as portable
+
+CODE = portable.find_vscode_code()
+if CODE is None:
+    raise SystemExit("VS Code executable not found; set ARCHMELD_VSCODE or add code to PATH")
 FIXTURE = ROOT / "archmeld-vscode" / "test-ui" / "fixture"
 SNAPSHOT = "sha256:505c5fcf9301d85bb9346881666f184507c8b901ef6bfbd97ff1c3183171b9cc"
 PROJECT = "project.ui"

@@ -63,4 +63,4 @@ pub use error::{CoreError, Result};
 pub use predicate::evaluate_numeric_tolerance_artifacts;
 
 /// Contract schema version implemented by this crate.
-pub const CONTRACT_VERSION: &str = "1.0";
+pub const CONTRACT_VERSION: &str = "1.1";

@@ -28,7 +28,12 @@ EVIDENCE = ROOT / "docs" / "release-evidence" / "B016-trace-source-jump.json"
 STATE = ROOT / "docs" / "evidence" / "ui-trace-state"
 REPO = ROOT / "docs" / "evidence" / "ui-trace-repo"
 SERVE = ROOT / "target" / "debug" / "archmeld-serve.exe"
-CODE = Path("D:/Program Files/Microsoft VS Code/Code.exe")
+
+import portable_env as portable
+
+CODE = portable.find_vscode_code()
+if CODE is None:
+    raise SystemExit("VS Code executable not found; set ARCHMELD_VSCODE or add code to PATH")
 RESULT = ROOT / "docs" / "evidence" / "ui-result-b016-trace-jump.json"
 SCREENSHOT = ROOT / "docs" / "evidence" / "b016-trace-source-jump.png"
 PORT = 9386

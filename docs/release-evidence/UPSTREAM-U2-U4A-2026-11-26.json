@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-26",
+  "scope": "U2-U4a upstream contract gates, LSP/trace probes and weekly read-only check",
+  "generated_by": "crates/archmeld-core tests + tooling/upstream.py + tooling/public_snapshot.py",
+  "commits": {
+    "u2": "cf0b223a",
+    "u3": "1af8628e",
+    "u4a": "af1bc920"
+  },
+  "results": {
+    "contract_tests": {"passed": 32, "failed": 0, "note": "real LSP and pinned trace processor ran; b017_model_analysis included"},
+    "upstream_tooling_tests": {"passed": 32, "failed": 0},
+    "verify": {"status": "passed_with_warnings", "failed_checks": [], "warned_checks": ["codegraph.pin_records[6]", "artifacts.release_manifest", "sealed_pack.digests", "public_snapshot.private"]},
+    "status_remote": {"warnings": [], "codegraph_update_available": false, "codeboarding_update_available": true, "probe_codegraph": {"target": "upstream", "ref": "refs/heads/main"}, "probe_codeboarding": {"target": "https://github.com/CodeBoarding/CodeBoarding.git", "ref": "HEAD"}},
+    "check_codegraph": {"pin": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa", "latest": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa", "update_available": false, "exit_code": 0},
+    "public_export": {"file_count": 1797, "skipped": 28, "unclassified": 0, "allowed_findings": 6},
+    "private_scan": {"status": "passed_with_warnings", "unclassified": 1645}
+  },
+  "changes": {
+    "codeboarding": "optional analysis_schema_version; unknown major rejected before digest; tree_spec observed",
+    "scip": "Metadata.version must be 0; non-zero rejected; missing tool_info is a warning",
+    "aoci": "#Format-Version and #AOCI-ROOT-MANIFEST parsed; unknown major and missing headers are warnings",
+    "traces": "fixtures.lock.json hashes, sizes, producers, limitations and consuming tests audited",
+    "lsp": "serverInfo/capability probe with evidence-layer downgrade; sealed runtime profile unchanged",
+    "trace_processor": "checked wrapper fails closed on pinned version or sha256 mismatch",
+    "u4a": "status --out/--fail-on-update, URL/HEAD fallback, check --out, weekly workflow and evidence template"
+  },
+  "hashes": {
+    "crates/archmeld-core/src/interpret.rs": "a0f665d5699f7a17bbd76e09c59fcda54adf17ce13e5d14b1bd5c1567eef6d5c",
+    "crates/archmeld-core/src/scip.rs": "93dd70b7afd4e21838e52c154bec93cd8ffb47e7ce9be93be94b3697bda47117",
+    "crates/archmeld-core/src/cognition.rs": "2209bf4d0c7c18640fcd01f3c4aaeb47d7d1a5dd07a2c7068c831f6b8a69a6d9",
+    "crates/archmeld-core/src/lsp.rs": "bd443b5b310ea6602467c9e6f9b68fa0abc141f857cdeef88e89207b72984298",
+    "crates/archmeld-core/src/trace_processor.rs": "73f7ed23ee2acf016dde53155baddf2dc76962222ef34c726f4810b44f11d964",
+    "tooling/upstream.py": "78e91398f94397c4870df6fa1a41f1d673bbd18ada47eae3e8d016278fc5afb1",
+    "tooling/test_upstream.py": "954e0dbfcdf3ed7ce512653d3d7816824015fabe0c221573f0d35a4865aeff5d",
+    "upstreams.lock.json": "8f49b466fb7cd2f45eefc81ae040e70c51b40cc688de62a26218c833599fe5ce",
+    "adapters/traces/fixtures.lock.json": "45f235a352f7f1fefe4494118030ac33aad54c6816695192ef832ac54b46512d",
+    ".github/workflows/archmeld-upstream.yml": "177d17d4b1d04545888f7f24934b37499490c05841fc731527877650685fa532",
+    "docs/upstream/WEEKLY_CHECK.md": "cc1eb7e1cfd2e12521c7c920967f4dd4a5db0b1f658f6ad2c183eb80e8c5d775"
+  },
+  "commands": [
+    "u2-u3-contract-tests",
+    "u4-upstream-tests",
+    "u4-upstream-verify",
+    "u4-upstream-status",
+    "u4-upstream-check",
+    "u4-public-export",
+    "u4-public-verify"
+  ],
+  "limitations": [
+    "version and lockfile pins are not probed by the weekly check; U4b covers them",
+    "CodeBoarding has no analysis_schema_version in the pinned 0.15.3 artifact; the gate is optional by design",
+    "SCIP protocol v0.3 defines only version 0; the gate rejects any future non-zero value",
+    "trace artifacts have no common in-band version; the check audits the fixture lock instead",
+    "LSP capability downgrade is evidence-only; runtime promotion needs an ADR and a sealed-pack revision",
+    "the weekly workflow runs on the public snapshot default branch; the private tree uses local commands"
+  ]
+}

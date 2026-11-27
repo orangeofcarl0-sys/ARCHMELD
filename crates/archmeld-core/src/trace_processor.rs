@@ -41,11 +41,51 @@ pub struct TraceProcessorCapture {
     pub counter_rows: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TraceProcessorExpectation {
+    pub version_prefix: String,
+    pub sha256: Option<String>,
+}
+
+/// Fail closed when the optional SQL backend is not the pinned binary. The
+/// caller can fall back to the in-process decoder instead of silently mixing
+/// results from a different Perfetto version.
+pub fn verify_processor_identity(
+    observed_version: &str,
+    observed_sha: &str,
+    expected: &TraceProcessorExpectation,
+) -> Result<()> {
+    if !observed_version.starts_with(&expected.version_prefix) {
+        return Err(CoreError::invalid(format!(
+            "trace_processor_version_mismatch: observed {observed_version:?}, expected prefix {:?}",
+            expected.version_prefix
+        )));
+    }
+    if let Some(expected_sha) = &expected.sha256 {
+        if observed_sha != expected_sha {
+            return Err(CoreError::invalid(format!(
+                "trace_processor_sha256_mismatch: observed {observed_sha}, expected {expected_sha}"
+            )));
+        }
+    }
+    Ok(())
+}
+
 pub fn perfetto_trace_via_processor(
     trace_path: &Path,
     processor_path: &Path,
     locator: &TraceLocator,
     meta: &TraceMeta,
+) -> Result<TraceProcessorCapture> {
+    perfetto_trace_via_processor_checked(trace_path, processor_path, locator, meta, None)
+}
+
+pub fn perfetto_trace_via_processor_checked(
+    trace_path: &Path,
+    processor_path: &Path,
+    locator: &TraceLocator,
+    meta: &TraceMeta,
+    expected: Option<&TraceProcessorExpectation>,
 ) -> Result<TraceProcessorCapture> {
     if !trace_path.is_file() {
         return Err(CoreError::not_found(format!(
@@ -61,6 +101,9 @@ pub fn perfetto_trace_via_processor(
     }
     let tool_version = processor_version(processor_path)?;
     let tool_sha256 = hash::digest_bytes(&std::fs::read(processor_path)?);
+    if let Some(expected) = expected {
+        verify_processor_identity(&tool_version, &tool_sha256, expected)?;
+    }
     let slice_csv = run_query(processor_path, trace_path, SLICE_QUERY)?;
     let counter_csv = run_query(processor_path, trace_path, COUNTER_QUERY)?;
     let slice_rows = parse_csv(&slice_csv)?;

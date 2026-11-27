@@ -20,6 +20,7 @@ U1 subcommands (`patches`, `diff`, `drill`, `record`) are added separately.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import json
 import os
@@ -27,16 +28,19 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import build_helper
+import portable_env as portable
+
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "upstreams.lock.json"
 TOOLCHAIN_LOCK = ROOT / "toolchains.lock.json"
-TEMP_BASE = Path("<temp>")
 
 REUSE_MODES = {
     "thin_fork",
@@ -49,6 +53,7 @@ REUSE_MODES = {
 PIN_KINDS = {"commit", "lockfile", "version"}
 UPDATE_MODES = {
     "manual_merge_with_drill",
+    "manual_release_merge_with_drill",
     "regenerate_artifact_and_run_contract_tests",
     "regenerate_fixture_and_run_decoder_tests",
     "version_probe_and_capability_profile",
@@ -58,6 +63,7 @@ UPDATE_MODES = {
     "doctor_and_relock",
 }
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
+PROBE_KINDS = {"git_tags", "npm", "pypi", "go_proxy", "none", "local_lock"}
 
 
 def now_utc() -> str:
@@ -93,28 +99,8 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def subprocess_env() -> dict[str, str]:
-    env = dict(os.environ)
-    env.setdefault("PYTHONIOENCODING", "utf-8")
-    if TEMP_BASE.is_dir():
-        env.setdefault("TMP", str(TEMP_BASE))
-        env.setdefault("TEMP", str(TEMP_BASE))
-        env.setdefault("TMPDIR", str(TEMP_BASE))
-    path_parts = env.get("PATH", "").split(os.pathsep)
-    candidates = []
-    cargo_bin = Path.home() / ".cargo" / "bin"
-    if cargo_bin.is_dir():
-        candidates.append(str(cargo_bin))
-    strawberry = Path("D:/Strawberry/c/bin")
-    if os.name == "nt" and strawberry.is_dir():
-        candidates.append(str(strawberry))
-    for candidate in reversed(candidates):
-        if candidate not in path_parts:
-            path_parts.insert(0, candidate)
-    env["PATH"] = os.pathsep.join(path_parts)
-    if os.name == "nt" and "RUSTUP_TOOLCHAIN" not in env:
-        env["RUSTUP_TOOLCHAIN"] = "1.94.1-x86_64-pc-windows-gnu"
-    return env
+def subprocess_env(extra_path: tuple[str | Path, ...] = ()) -> dict[str, str]:
+    return portable.subprocess_env(extra_path=extra_path)
 
 
 def run(
@@ -128,7 +114,11 @@ def run(
     The environment is inherited but never dumped: only an allowlisted view is
     returned, so tokens or repository secrets cannot leak into logs.
     """
-    env = subprocess_env()
+    command_name = Path(argv[0]).name.lower()
+    if command_name in {"cargo", "cargo.exe", "rustc", "rustc.exe"}:
+        env = build_helper.cargo_env(env=dict(os.environ))
+    else:
+        env = subprocess_env()
     started_at = now_utc()
     started = time.monotonic()
     timed_out = False
@@ -190,8 +180,9 @@ def tool_versions() -> dict[str, Any]:
     for name, argv in probes.items():
         record = run(argv, timeout=30)
         first_line = (record["stdout"] or record["stderr"]).strip().splitlines()
+        display_argv = ["python", "--version"] if name == "python" else argv
         result[name] = {
-            "argv": argv,
+            "argv": display_argv,
             "exit_code": record["exit_code"],
             "first_line": first_line[0] if first_line else "",
         }
@@ -358,6 +349,12 @@ def validate_registry(registry: dict[str, Any]) -> list[dict[str, str]]:
         contract = entry.get("contract")
         if not isinstance(contract, dict) or not contract.get("id") or not contract.get("version"):
             add(f"{upstream_id}.contract", "fail", "contract.id and contract.version are required")
+        elif "version_field" in contract:
+            version_field = contract.get("version_field")
+            if not isinstance(version_field, str) or not version_field.strip():
+                add(f"{upstream_id}.contract.version_field", "fail", "version_field must be a non-empty string")
+            if "fail_closed_on_major" in contract and not isinstance(contract["fail_closed_on_major"], bool):
+                add(f"{upstream_id}.contract.fail_closed_on_major", "fail", "fail_closed_on_major must be a boolean")
 
         policy = entry.get("update_policy")
         if not isinstance(policy, dict):
@@ -372,6 +369,53 @@ def validate_registry(registry: dict[str, Any]) -> list[dict[str, str]]:
         records = entry.get("pin_records", [])
         if not isinstance(records, list):
             add(f"{upstream_id}.pin_records", "fail", "pin_records must be a list")
+
+        probe_defs = entry.get("probes", [])
+        if not isinstance(probe_defs, list):
+            add(f"{upstream_id}.probes", "fail", "probes must be a list")
+        else:
+            seen_probes: set[str] = set()
+            for index, probe in enumerate(probe_defs):
+                label = f"{upstream_id}.probes[{index}]"
+                if not isinstance(probe, dict):
+                    add(label, "fail", "probe must be an object")
+                    continue
+                probe_id = probe.get("id")
+                if not isinstance(probe_id, str) or not probe_id.strip():
+                    add(f"{label}.id", "fail", "probe id is required")
+                elif probe_id in seen_probes:
+                    add(f"{label}.id", "fail", f"duplicate probe id {probe_id!r}")
+                else:
+                    seen_probes.add(probe_id)
+                kind = probe.get("kind")
+                if kind not in PROBE_KINDS:
+                    add(f"{label}.kind", "fail", f"unknown probe kind {kind!r}")
+                    continue
+                if kind == "git_tags":
+                    if not probe.get("url"):
+                        add(f"{label}.url", "fail", "git_tags probe requires url")
+                    if not probe.get("version_regex"):
+                        add(f"{label}.version_regex", "fail", "git_tags probe requires version_regex")
+                elif kind in {"npm", "pypi"}:
+                    if not probe.get("package"):
+                        add(f"{label}.package", "fail", f"{kind} probe requires package")
+                elif kind == "go_proxy":
+                    if not probe.get("module"):
+                        add(f"{label}.module", "fail", "go_proxy probe requires module")
+                elif kind in {"none", "local_lock"} and not probe.get("note"):
+                    add(f"{label}.note", "fail", f"{kind} probe requires a note explaining the skip")
+                if "include_prerelease" in probe and not isinstance(probe["include_prerelease"], bool):
+                    add(f"{label}.include_prerelease", "fail", "include_prerelease must be a boolean")
+                if kind not in {"none", "local_lock"}:
+                    try:
+                        pin = probe_pin(probe)
+                    except Exception as error:  # noqa: BLE001 - report the probe, not a traceback
+                        add(f"{label}.pin", "fail", str(error))
+                    else:
+                        if not pin:
+                            add(f"{label}.pin", "fail", "probe pin is empty")
+            if probe_defs:
+                add(f"{upstream_id}.probes", "pass", f"{len(probe_defs)} probes")
 
     add("registry.ids", "pass", f"{len(seen)} unique upstream ids")
     return checks
@@ -469,6 +513,132 @@ def check_dependency_isolation(metadata: dict[str, Any], package_name: str = "ar
     else:
         checks.append({"id": "deps.core", "status": "pass", "detail": f"{package_name} closure has no codegraph crate"})
     return checks
+
+
+TOOLING_PATH_LITERAL = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]")
+
+
+def check_tooling_literals() -> list[dict[str, str]]:
+    hits: list[str] = []
+    for path in sorted((ROOT / "tooling").glob("*.py")):
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeDecodeError):
+            continue
+        for number, line in enumerate(lines, 1):
+            if TOOLING_PATH_LITERAL.search(line):
+                hits.append(f"{path.name}:{number}")
+    if hits:
+        return [{
+            "id": "privacy.tooling_literals",
+            "status": "fail",
+            "detail": "absolute drive path in executable tooling: " + ", ".join(hits),
+        }]
+    return [{"id": "privacy.tooling_literals", "status": "pass", "detail": "no drive-absolute path literals"}]
+
+
+def check_lock_portability() -> list[dict[str, str]]:
+    missing: list[str] = []
+    for relative in ("toolchains.lock.json", "adapters/languages/tools.lock.json"):
+        path = ROOT / relative
+        if not path.is_file():
+            continue
+        try:
+            data = read_json(path)
+        except Exception as error:  # noqa: BLE001
+            missing.append(f"{relative}: {error}")
+            continue
+        tools = data.get("tools", [])
+        if isinstance(data, dict) and "clangd" in data:
+            tools = [value for key, value in data.items() if key != "packages" and isinstance(value, dict)]
+        for tool in tools:
+            if not isinstance(tool, dict) or tool.get("status") == "missing":
+                continue
+            if not (tool.get("relative_path") or tool.get("strategy")):
+                missing.append(f"{relative}:{tool.get('name') or 'tool'}")
+    if missing:
+        return [{
+            "id": "locks.portable",
+            "status": "warn",
+            "detail": "tools without portable resolution: " + ", ".join(missing),
+        }]
+    return [{"id": "locks.portable", "status": "pass", "detail": "all lock entries have portable resolution"}]
+
+
+def check_trace_fixtures(root: Path = ROOT) -> list[dict[str, str]]:
+    """Audit the trace fixture lock without inventing an in-band format version.
+
+    Perfetto/Tracy artifacts do not carry a common version header. The lock is
+    the authority: every recorded file must exist, match its hash/size, and
+    name the producer, limitations and consuming test.
+    """
+    relative = "adapters/traces/fixtures.lock.json"
+    path = root / relative
+    if not path.is_file():
+        return [{"id": "artifacts.trace_fixtures", "status": "warn", "detail": f"{relative} is missing"}]
+    try:
+        lock = read_json(path)
+    except Exception as error:  # noqa: BLE001
+        return [{"id": "artifacts.trace_fixtures", "status": "fail", "detail": f"cannot parse {relative}: {error}"}]
+    fixtures = lock.get("fixtures")
+    if not isinstance(fixtures, list) or not fixtures:
+        return [{"id": "artifacts.trace_fixtures", "status": "fail", "detail": f"{relative} has no fixtures array"}]
+    failures: list[str] = []
+    warnings: list[str] = []
+    for index, fixture in enumerate(fixtures):
+        if not isinstance(fixture, dict):
+            failures.append(f"fixtures[{index}] is not an object")
+            continue
+        fixture_id = fixture.get("id") or f"fixtures[{index}]"
+        recorded = []
+        if fixture.get("path"):
+            recorded.append((fixture["path"], fixture.get("sha256"), fixture.get("size")))
+        if fixture.get("capture"):
+            recorded.append((fixture["capture"], fixture.get("capture_sha256"), fixture.get("capture_size")))
+        if fixture.get("summary"):
+            recorded.append((fixture["summary"], fixture.get("summary_sha256"), None))
+        if not recorded:
+            failures.append(f"{fixture_id}: no path/capture/summary")
+        for file_relative, expected_hash, expected_size in recorded:
+            file_path = root / str(file_relative)
+            if not file_path.is_file():
+                failures.append(f"{fixture_id}: missing {file_relative}")
+                continue
+            if expected_size is not None and file_path.stat().st_size != expected_size:
+                failures.append(
+                    f"{fixture_id}: {file_relative} size {file_path.stat().st_size} != {expected_size}"
+                )
+            if not expected_hash:
+                warnings.append(f"{fixture_id}: {file_relative} has no sha256")
+                continue
+            observed = "sha256:" + sha256_file(file_path)
+            if observed != expected_hash:
+                failures.append(f"{fixture_id}: {file_relative} sha256 mismatch")
+        if not fixture.get("producer"):
+            warnings.append(f"{fixture_id}: no producer")
+        if not fixture.get("limitations"):
+            warnings.append(f"{fixture_id}: no limitations")
+        tests = fixture.get("tests")
+        if not isinstance(tests, list) or not tests:
+            warnings.append(f"{fixture_id}: no consuming tests")
+        else:
+            for test in tests:
+                test_path = root / "crates/archmeld-core/tests" / f"{test}.rs"
+                if not test_path.is_file():
+                    warnings.append(f"{fixture_id}: test {test} not found")
+    if failures:
+        return [{"id": "artifacts.trace_fixtures", "status": "fail", "detail": "; ".join(failures)}]
+    if warnings:
+        return [{"id": "artifacts.trace_fixtures", "status": "warn", "detail": "; ".join(warnings)}]
+    return [{"id": "artifacts.trace_fixtures", "status": "pass", "detail": f"{len(fixtures)} fixtures match the lock"}]
+
+
+def check_public_snapshot() -> list[dict[str, str]]:
+    try:
+        import public_snapshot
+    except Exception as error:  # noqa: BLE001
+        return [{"id": "public_snapshot.import", "status": "warn", "detail": f"tool unavailable: {error}"}]
+    return public_snapshot.verify_for_upstream(ROOT)
 
 
 def check_generated_artifacts(registry: dict[str, Any]) -> list[dict[str, str]]:
@@ -573,6 +743,10 @@ def verify(registry: dict[str, Any], skip_cargo: bool = False) -> dict[str, Any]
         checks.extend(check_pin_records(entry))
     checks.extend(check_generated_artifacts(registry))
     checks.extend(check_sealed_pack())
+    checks.extend(check_tooling_literals())
+    checks.extend(check_lock_portability())
+    checks.extend(check_trace_fixtures())
+    checks.extend(check_public_snapshot())
     commands: list[dict[str, Any]] = []
 
     manifest = ROOT / "patches/codegraph/manifest.json"
@@ -638,6 +812,308 @@ def ls_remote(remote: str, ref: str) -> dict[str, Any]:
     return {"remote": remote, "ref": ref, "commit": commits[0], "command": record}
 
 
+def release_only(entry: dict[str, Any]) -> bool:
+    """Whether this upstream may only be updated from a release, not a branch."""
+    return bool(entry.get("update_policy", {}).get("release_only"))
+
+
+def release_info(entry: dict[str, Any]) -> dict[str, Any]:
+    value = entry.get("release")
+    return value if isinstance(value, dict) else {}
+
+
+def release_label(entry: dict[str, Any]) -> str:
+    release = release_info(entry)
+    version = release.get("version") or entry.get("pin", {}).get("version") or "unknown"
+    tag = release.get("tag")
+    return f"release:{version}" + (f" ({tag})" if tag else " (untagged release commit)")
+
+
+def is_forbidden_ref(entry: dict[str, Any], ref: str) -> bool:
+    """Return true for branch refs a release-only upstream must not follow."""
+    if not release_only(entry) or not ref:
+        return False
+    patterns = entry.get("update_policy", {}).get("forbidden_refs", [])
+    normalized = ref.strip()
+    short = normalized.removeprefix("refs/heads/")
+    for pattern in patterns:
+        text = str(pattern)
+        candidates = {text, text.removeprefix("refs/heads/")}
+        if normalized in candidates or short in candidates:
+            return True
+        if text.endswith("*"):
+            glob = text.removeprefix("refs/heads/")
+            if fnmatch.fnmatch(normalized, text) or fnmatch.fnmatch(short, glob):
+                return True
+    return False
+
+
+def remote_candidates(entry: dict[str, Any]) -> list[tuple[str, str]]:
+    """Return read-only `git ls-remote` targets in fallback order.
+
+    A configured remote name (for example `upstream`) is tried first; a URL
+    fallback keeps the check working in a fresh CI checkout where only
+    `origin` exists. `HEAD` is the default when the registry has no ref.
+
+    For a release-only upstream the only candidate is the release tag. An
+    untagged release commit has no branch probe at all: the pin is compared
+    with itself and the caller reports that branch head is not tracked.
+    """
+    source = entry.get("source", {})
+    if release_only(entry):
+        release = release_info(entry)
+        tag = release.get("tag") or release.get("tag_ref")
+        if not tag:
+            return []
+        ref = str(tag)
+        if not ref.startswith("refs/tags/"):
+            ref = f"refs/tags/{ref}"
+    else:
+        ref = source.get("ref") or "HEAD"
+    candidates: list[tuple[str, str]] = []
+    for target in (source.get("remote"), source.get("url")):
+        if target and (target, ref) not in candidates:
+            candidates.append((target, ref))
+    return candidates
+
+
+def probe_pin(probe: dict[str, Any]) -> str:
+    """Resolve a probe's pinned version from a lock or an explicit string."""
+    pin_from = probe.get("pin_from")
+    if pin_from is not None:
+        if not isinstance(pin_from, dict):
+            raise ValueError("pin_from must be an object")
+        path = ROOT / str(pin_from.get("path", ""))
+        if not path.is_file():
+            raise ValueError(f"pin_from path does not exist: {pin_from.get('path')!r}")
+        value = resolve_pointer(read_json(path), str(pin_from.get("pointer", "")))
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("pin_from pointer must resolve to a non-empty string")
+        pin = value.strip()
+    else:
+        pin = probe.get("pin")
+    if not isinstance(pin, str) or not pin.strip():
+        raise ValueError("probe has no pin or pin_from")
+    pin = pin.strip()
+    pattern = probe.get("pin_regex")
+    if pattern is not None:
+        match = re.search(str(pattern), pin)
+        if not match:
+            raise ValueError(f"pin_regex did not match {pin!r}")
+        pin = match.group(1) if match.lastindex else match.group(0)
+    return pin.strip()
+
+
+def parse_version(text: str) -> tuple[tuple[int, ...], bool] | None:
+    """Parse a dotted numeric version, optionally prefixed by `v`/`llvmorg-`.
+
+    Returns `(numbers, is_prerelease)` or `None` when the value is not a
+    dotted numeric version. Build metadata after `-`/`+` is treated as a
+    prerelease marker; callers that want stable releases filter it out.
+    """
+    if not isinstance(text, str):
+        return None
+    value = text.strip()
+    for prefix in ("llvmorg-", "v"):
+        if value.startswith(prefix):
+            value = value[len(prefix) :]
+            break
+    match = re.fullmatch(r"(\d+(?:\.\d+)*)(?:[-+](.+))?", value)
+    if not match:
+        return None
+    numbers = tuple(int(part) for part in match.group(1).split("."))
+    return numbers, match.group(2) is not None
+
+
+def version_key(text: str) -> tuple[tuple[int, ...], int] | None:
+    parsed = parse_version(text)
+    if parsed is None:
+        return None
+    numbers, prerelease = parsed
+    padded = numbers + (0,) * max(0, 4 - len(numbers))
+    return padded, 0 if prerelease else 1
+
+
+def latest_tag(tags: list[str], probe: dict[str, Any]) -> str | None:
+    prefix = str(probe.get("tag_prefix") or "")
+    pattern = probe.get("version_regex")
+    include_prerelease = bool(probe.get("include_prerelease", False))
+    candidates: list[tuple[tuple[tuple[int, ...], int], str]] = []
+    for raw in tags:
+        tag = raw.strip()
+        if tag.startswith("refs/tags/"):
+            tag = tag[len("refs/tags/") :]
+        if prefix:
+            if not tag.startswith(prefix):
+                continue
+            version = tag[len(prefix) :]
+        else:
+            version = tag
+        if pattern and not re.fullmatch(str(pattern), version):
+            continue
+        parsed = parse_version(version)
+        if parsed is None:
+            continue
+        if parsed[1] and not include_prerelease:
+            continue
+        key = version_key(version)
+        if key is None:
+            continue
+        candidates.append((key, version))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda item: item[0])
+    return candidates[-1][1]
+
+
+def http_json(url: str, timeout: int = 20) -> Any:
+    request = urllib.request.Request(
+        url, headers={"User-Agent": "archmeld-upstream-probe"}
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def probe_latest(probe: dict[str, Any]) -> tuple[str, str]:
+    """Return `(latest_version, source)` for a probe; raises on failure."""
+    kind = probe.get("kind")
+    if kind == "git_tags":
+        url = str(probe.get("url", ""))
+        if not url:
+            raise ValueError("git_tags probe has no url")
+        record = run(["git", "ls-remote", "--tags", "--refs", url], timeout=60)
+        if record["exit_code"] != 0:
+            raise RuntimeError(f"git ls-remote --tags failed for {url}: {record['stderr'].strip()}")
+        tags = []
+        for line in record["stdout"].splitlines():
+            parts = line.split("\t")
+            if len(parts) == 2:
+                tags.append(parts[1])
+        latest = latest_tag(tags, probe)
+        if latest is None:
+            raise RuntimeError(f"no stable tag matched the probe regex for {url}")
+        return latest, url
+    if kind == "npm":
+        package = str(probe.get("package", ""))
+        if not package:
+            raise ValueError("npm probe has no package")
+        data = http_json(f"https://registry.npmjs.org/{urllib.parse.quote(package)}/latest")
+        version = data.get("version")
+        if not isinstance(version, str) or not version:
+            raise RuntimeError(f"npm package {package} has no version")
+        return version, f"npm:{package}"
+    if kind == "pypi":
+        package = str(probe.get("package", ""))
+        if not package:
+            raise ValueError("pypi probe has no package")
+        data = http_json(f"https://pypi.org/pypi/{urllib.parse.quote(package)}/json")
+        version = data.get("info", {}).get("version")
+        if not isinstance(version, str) or not version:
+            raise RuntimeError(f"PyPI package {package} has no version")
+        return version, f"pypi:{package}"
+    if kind == "go_proxy":
+        module = str(probe.get("module", ""))
+        if not module:
+            raise ValueError("go_proxy probe has no module")
+        data = http_json(f"https://proxy.golang.org/{module}/@latest")
+        version = data.get("Version")
+        if not isinstance(version, str) or not version:
+            raise RuntimeError(f"Go module {module} has no Version")
+        return version, f"go_proxy:{module}"
+    raise ValueError(f"unsupported probe kind {kind!r}")
+
+
+def run_probe(probe: dict[str, Any]) -> dict[str, Any]:
+    probe_id = probe.get("id")
+    kind = probe.get("kind")
+    note = str(probe.get("note") or "")
+    if kind in {"none", "local_lock"}:
+        try:
+            pin = probe_pin(probe)
+        except Exception:  # noqa: BLE001 - a skipped probe may have no pin source
+            pin = probe.get("pin")
+        return {
+            "id": probe_id,
+            "kind": kind,
+            "pin": pin,
+            "latest": None,
+            "update_available": None,
+            "behind": None,
+            "status": "skipped",
+            "detail": note or "not remotely probed",
+            "source": None,
+        }
+    pin = probe_pin(probe)
+    latest, source = probe_latest(probe)
+    pin_key = version_key(pin)
+    latest_key = version_key(latest)
+    if pin_key is None or latest_key is None:
+        return {
+            "id": probe_id,
+            "kind": kind,
+            "pin": pin,
+            "latest": latest,
+            "update_available": None,
+            "behind": None,
+            "status": "unsupported",
+            "detail": f"cannot compare {pin!r} with {latest!r}; version formats differ",
+            "source": source,
+        }
+    update = latest_key > pin_key
+    return {
+        "id": probe_id,
+        "kind": kind,
+        "pin": pin,
+        "latest": latest,
+        "update_available": update,
+        "behind": None,
+        "status": "update" if update else "ok",
+        "detail": "version pin; behind count is not computed",
+        "source": source,
+    }
+
+
+def probes(registry: dict[str, Any], only_id: str | None = None) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    known = {entry.get("id") for entry in registry.get("upstreams", [])}
+    if only_id is not None and only_id not in known:
+        raise SystemExit(f"unknown upstream id: {only_id}")
+    for entry in registry.get("upstreams", []):
+        entry_id = entry.get("id")
+        if only_id is not None and entry_id != only_id:
+            continue
+        definitions = entry.get("probes", [])
+        if not definitions:
+            continue
+        results: list[dict[str, Any]] = []
+        for definition in definitions:
+            try:
+                results.append(run_probe(definition))
+            except Exception as error:  # noqa: BLE001 - one probe must not stop the report
+                probe_id = definition.get("id") if isinstance(definition, dict) else "unknown"
+                warnings.append(f"{entry_id}/{probe_id}: {error}")
+                results.append({
+                    "id": probe_id,
+                    "kind": definition.get("kind") if isinstance(definition, dict) else None,
+                    "pin": definition.get("pin") if isinstance(definition, dict) else None,
+                    "latest": None,
+                    "update_available": None,
+                    "behind": None,
+                    "status": "error",
+                    "detail": str(error),
+                    "source": None,
+                })
+        rows.append({"id": entry_id, "probes": results})
+    return {
+        "schema_version": "1.0",
+        "recorded_at": today(),
+        "generated_by": "tooling/upstream.py probes",
+        "upstreams": rows,
+        "warnings": warnings,
+    }
+
+
 def status(registry: dict[str, Any], remote: bool = False) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     warnings: list[str] = []
@@ -651,23 +1127,47 @@ def status(registry: dict[str, Any], remote: bool = False) -> dict[str, Any]:
             "version": pin.get("version"),
             "contract": f"{entry.get('contract', {}).get('id')} {entry.get('contract', {}).get('version')}",
             "last_drill": (entry.get("last_drill") or {}).get("result"),
+            "release_only": release_only(entry),
             "update_available": None,
             "latest": None,
+            "probe": None,
         }
         if remote and pin.get("kind") == "commit":
-            source = entry.get("source", {})
-            remote_name = source.get("remote")
-            ref = source.get("ref")
-            if remote_name and ref:
-                try:
-                    latest = ls_remote(remote_name, ref)
-                except RuntimeError as error:
-                    warnings.append(f"{entry.get('id')}: {error}")
+            candidates = remote_candidates(entry)
+            if not candidates:
+                if release_only(entry):
+                    row["latest"] = pin.get("commit")
+                    row["update_available"] = False
+                    row["probe"] = {
+                        "mode": "release-only",
+                        "ref": None,
+                        "release": release_label(entry),
+                        "note": "branch head is not tracked",
+                    }
                 else:
+                    warnings.append(f"{entry.get('id')}: no configured remote or URL")
+            else:
+                last_error: Exception | None = None
+                for target, ref in candidates:
+                    try:
+                        latest = ls_remote(target, ref)
+                    except RuntimeError as error:
+                        last_error = error
+                        continue
                     row["latest"] = latest["commit"]
                     row["update_available"] = latest["commit"] != pin.get("commit")
+                    row["probe"] = {"target": target, "ref": ref}
+                    break
+                else:
+                    warnings.append(f"{entry.get('id')}: {last_error}")
         rows.append(row)
-    return {"schema_version": "1.0", "recorded_at": today(), "upstreams": rows, "warnings": warnings}
+    return {
+        "schema_version": "1.0",
+        "recorded_at": today(),
+        "generated_by": "tooling/upstream.py status",
+        "upstreams": rows,
+        "warnings": warnings,
+    }
 
 
 def check(registry: dict[str, Any], upstream_id: str) -> dict[str, Any]:
@@ -678,25 +1178,55 @@ def check(registry: dict[str, Any], upstream_id: str) -> dict[str, Any]:
     pin = entry.get("pin", {})
     if pin.get("kind") != "commit":
         raise SystemExit(f"{upstream_id} has pin kind {pin.get('kind')!r}; remote commit check does not apply")
-    source = entry.get("source", {})
-    remote_name = source.get("remote")
-    ref = source.get("ref")
-    if not remote_name or not ref:
-        raise SystemExit(f"{upstream_id} has no configured remote/ref")
-    latest = ls_remote(remote_name, ref)
+    candidates = remote_candidates(entry)
+    if not candidates:
+        if release_only(entry):
+            return {
+                "schema_version": "1.0",
+                "recorded_at": today(),
+                "generated_by": "tooling/upstream.py check",
+                "upstream": upstream_id,
+                "pin": pin.get("commit"),
+                "latest": pin.get("commit"),
+                "ref": release_label(entry),
+                "update_available": False,
+                "release_only": True,
+                "release": release_info(entry),
+                "note": (
+                    "release-only upstream; branch head is not tracked; "
+                    "update manually from release notes"
+                ),
+                "auto_follow_latest": False,
+            }
+        raise SystemExit(f"{upstream_id} has no configured remote or URL")
+    last_error: Exception | None = None
+    latest: dict[str, Any] | None = None
+    for target, ref in candidates:
+        try:
+            latest = ls_remote(target, ref)
+        except RuntimeError as error:
+            last_error = error
+            continue
+        break
+    if latest is None:
+        raise SystemExit(f"{upstream_id}: {last_error}")
     update_available = latest["commit"] != pin.get("commit")
-    return {
+    result = {
         "schema_version": "1.0",
         "recorded_at": today(),
         "generated_by": "tooling/upstream.py check",
         "upstream": upstream_id,
         "pin": pin.get("commit"),
         "latest": latest["commit"],
-        "ref": ref,
+        "ref": latest["ref"],
         "update_available": update_available,
         "auto_follow_latest": False,
         "command": latest["command"],
     }
+    if release_only(entry):
+        result["release_only"] = True
+        result["release"] = release_info(entry)
+    return result
 
 
 def upstream_diff(
@@ -709,6 +1239,11 @@ def upstream_diff(
     entry = upstreams_by_id(registry).get(upstream_id)
     if entry is None:
         raise SystemExit(f"unknown upstream id: {upstream_id}")
+    if release_only(entry) and is_forbidden_ref(entry, to_ref):
+        raise SystemExit(
+            f"{upstream_id} is release-only; refusing branch ref {to_ref!r}. "
+            "Use a release tag or the recorded release commit."
+        )
     pin = entry.get("pin", {}).get("commit")
     if not pin:
         raise SystemExit(f"{upstream_id} has no commit pin")
@@ -718,6 +1253,11 @@ def upstream_diff(
         source = entry.get("source", {})
         remote = source.get("remote")
         ref = source.get("ref")
+        if release_only(entry):
+            raise SystemExit(
+                f"{upstream_id} is release-only; fetch the release tag explicitly, "
+                "not a branch"
+            )
         if not remote or not ref:
             raise SystemExit(f"{upstream_id} has no configured remote/ref for --fetch")
         fetched = run(["git", "fetch", remote, ref], timeout=180)
@@ -804,11 +1344,15 @@ def drill(
     entry = upstreams_by_id(registry).get(upstream_id)
     if entry is None:
         raise SystemExit(f"unknown upstream id: {upstream_id}")
+    if release_only(entry) and is_forbidden_ref(entry, ref):
+        raise SystemExit(
+            f"{upstream_id} is release-only; refusing branch ref {ref!r}. "
+            "Drill a release tag or the recorded release commit."
+        )
     clean = run(["git", "status", "--porcelain"], timeout=30)
     if clean["stdout"].strip():
         raise SystemExit("drill requires a clean main worktree; commit or stash local changes first")
-    TEMP_BASE.mkdir(parents=True, exist_ok=True)
-    temp = Path(tempfile.mkdtemp(prefix="upstream-drill-", dir=str(TEMP_BASE)))
+    temp = portable.temp_dir("upstream-drill-")
     worktree = temp / "worktree"
     commands: list[dict[str, Any]] = [clean]
     added = run(["git", "worktree", "add", "--detach", str(worktree), "HEAD"], timeout=120)
@@ -833,11 +1377,6 @@ def drill(
     if run_matrix and not conflicts:
         env = subprocess_env()
         env["CARGO_TARGET_DIR"] = str(temp / "target")
-        env["LIBCLANG_PATH"] = "<workspace>/_archmeld_tools/pylibclang/clang/native"
-        env["BINDGEN_EXTRA_CLANG_ARGS"] = (
-            "-ID:/Strawberry/c/lib/gcc/x86_64-w64-mingw32/13.2.0/include "
-            "-ID:/Strawberry/c/x86_64-w64-mingw32/include"
-        )
         tests = drill_matrix(worktree, env, matrix)
         if any(test["exit_code"] != 0 for test in tests):
             status = "failed"
@@ -861,6 +1400,143 @@ def drill(
         "conflicts": conflicts,
         "matrix": matrix if run_matrix else "not_run",
         "tests": tests,
+        "status": status,
+        "auto_follow_latest": False,
+        "commands": commands,
+        "worktree_kept": keep_worktree,
+    }
+
+
+def rollback_drill(
+    registry: dict[str, Any],
+    upstream_id: str,
+    to_ref: str,
+    run_matrix: bool = False,
+    matrix: str = "quick",
+    probe_revert: str | None = None,
+    keep_worktree: bool = False,
+) -> dict[str, Any]:
+    """Build/test an old tree and optionally probe `git revert -m 1`.
+
+    This is read-only with respect to the main worktree, registry and pins. It
+    creates temporary worktrees only. A conflicted revert is a recorded finding,
+    not a drill failure.
+    """
+    entry = upstreams_by_id(registry).get(upstream_id)
+    if entry is None:
+        raise SystemExit(f"unknown upstream id: {upstream_id}")
+    clean = run(["git", "status", "--porcelain"], timeout=30)
+    if clean["stdout"].strip():
+        raise SystemExit("rollback-drill requires a clean main worktree; commit or stash local changes first")
+    commands: list[dict[str, Any]] = [clean]
+    current = run(["git", "rev-parse", "HEAD"], timeout=30)
+    commands.append(current)
+    current_head = current["stdout"].strip() if current["exit_code"] == 0 else None
+    resolved = run(["git", "rev-parse", "--verify", f"{to_ref}^{{commit}}"], timeout=30)
+    commands.append(resolved)
+    if resolved["exit_code"] != 0:
+        raise SystemExit(f"cannot resolve rollback target {to_ref!r}")
+    target = resolved["stdout"].strip()
+    ancestor = run(["git", "merge-base", "--is-ancestor", target, "HEAD"], timeout=30)
+    commands.append(ancestor)
+    if ancestor["exit_code"] != 0:
+        if ancestor["exit_code"] == 1:
+            raise SystemExit(f"rollback target {target} is not an ancestor of HEAD")
+        raise SystemExit(f"git merge-base --is-ancestor failed: {ancestor['stderr'].strip()}")
+
+    temp = portable.temp_dir("upstream-rollback-")
+    worktree = temp / "rollback"
+    added = run(["git", "worktree", "add", "--detach", str(worktree), target], timeout=120)
+    commands.append(added)
+    if added["exit_code"] != 0:
+        shutil.rmtree(temp, ignore_errors=True)
+        raise SystemExit(f"git worktree add failed: {added['stderr'].strip()}")
+
+    tests: list[dict[str, Any]] = []
+    status = "passed"
+    if run_matrix:
+        env = subprocess_env()
+        env["CARGO_TARGET_DIR"] = str(temp / "target")
+        tests = drill_matrix(worktree, env, matrix)
+        if any(test["exit_code"] != 0 for test in tests):
+            status = "failed"
+
+    revert_probe: dict[str, Any] | None = None
+    revert_worktree = temp / "revert"
+    revert_created = False
+    if probe_revert:
+        revert_added = run(
+            ["git", "worktree", "add", "--detach", str(revert_worktree), "HEAD"],
+            timeout=120,
+        )
+        commands.append(revert_added)
+        revert_created = revert_added["exit_code"] == 0
+        if not revert_created:
+            revert_probe = {
+                "merge_commit": probe_revert,
+                "exit_code": revert_added["exit_code"],
+                "conflicts": [],
+                "status": "failed",
+                "note": "could not create the revert probe worktree",
+            }
+        else:
+            revert = run(
+                ["git", "revert", "--no-commit", "-m", "1", probe_revert],
+                cwd=revert_worktree,
+                timeout=600,
+            )
+            commands.append(revert)
+            conflicts_result = run(
+                ["git", "diff", "--name-only", "--diff-filter=U"],
+                cwd=revert_worktree,
+                timeout=30,
+            )
+            commands.append(conflicts_result)
+            conflicts = [
+                line.strip()
+                for line in conflicts_result["stdout"].splitlines()
+                if line.strip()
+            ]
+            if revert["exit_code"] == 0 and not conflicts:
+                revert_status = "clean"
+            elif conflicts:
+                revert_status = "conflicted"
+            else:
+                revert_status = "failed"
+            if revert["exit_code"] != 0 or conflicts:
+                aborted = run(["git", "revert", "--abort"], cwd=revert_worktree, timeout=30)
+                commands.append(aborted)
+            revert_probe = {
+                "merge_commit": probe_revert,
+                "exit_code": revert["exit_code"],
+                "conflicts": conflicts,
+                "status": revert_status,
+                "note": "conflicts are expected when later local commits touch merged files; they are not resolved by this drill",
+            }
+
+    if not keep_worktree:
+        removed = run(["git", "worktree", "remove", "--force", str(worktree)], timeout=120)
+        commands.append(removed)
+        if revert_created:
+            removed_revert = run(
+                ["git", "worktree", "remove", "--force", str(revert_worktree)],
+                timeout=120,
+            )
+            commands.append(removed_revert)
+        shutil.rmtree(temp, ignore_errors=True)
+
+    return {
+        "schema_version": "1.0",
+        "recorded_at": today(),
+        "generated_by": "tooling/upstream.py rollback-drill",
+        "upstream": upstream_id,
+        "from": current_head,
+        "to": to_ref,
+        "target_commit": target,
+        "target_is_ancestor": True,
+        "matrix": matrix if run_matrix else "not_run",
+        "tests": tests,
+        "revert_probe": revert_probe,
         "status": status,
         "auto_follow_latest": False,
         "commands": commands,
@@ -951,6 +1627,18 @@ def print_checks(result: dict[str, Any]) -> None:
     print(f"status: {result['status']}")
 
 
+def print_probes(result: dict[str, Any]) -> None:
+    for row in result["upstreams"]:
+        for probe in row["probes"]:
+            print(
+                f"{row['id']:<14} {str(probe.get('id')):<30} "
+                f"{str(probe.get('pin') or ''):<18} {str(probe.get('latest') or ''):<18} "
+                f"{probe.get('status')}"
+            )
+    for warning in result.get("warnings", []):
+        print(f"warning: {warning}", file=sys.stderr)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only ARCHMELD upstream registry checks")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -958,6 +1646,8 @@ def main(argv: list[str] | None = None) -> int:
     status_parser = subparsers.add_parser("status", help="show registry state")
     status_parser.add_argument("--json", action="store_true")
     status_parser.add_argument("--remote", action="store_true", help="query git ls-remote; read-only")
+    status_parser.add_argument("--out", help="write the status JSON to this path")
+    status_parser.add_argument("--fail-on-update", action="store_true", help="exit 3 when any commit pin has a newer remote commit")
 
     verify_parser = subparsers.add_parser("verify", help="check registry, pins and dependency isolation")
     verify_parser.add_argument("--json", action="store_true")
@@ -967,7 +1657,13 @@ def main(argv: list[str] | None = None) -> int:
     check_parser = subparsers.add_parser("check", help="compare a commit pin with git ls-remote")
     check_parser.add_argument("id")
     check_parser.add_argument("--json", action="store_true")
+    check_parser.add_argument("--out", help="write the check JSON to this path")
     check_parser.add_argument("--fail-on-update", action="store_true", help="exit 3 when a newer commit exists")
+
+    probes_parser = subparsers.add_parser("probes", help="probe version/lockfile /artifact pins; read-only")
+    probes_parser.add_argument("--id", help="limit to one upstream id")
+    probes_parser.add_argument("--json", action="store_true")
+    probes_parser.add_argument("--out", help="write the probe JSON to this path")
 
     patches_parser = subparsers.add_parser("patches", help="check or refresh the path-level patch manifest")
     patches_parser.add_argument("--check", action="store_true", help="check only (default)")
@@ -990,6 +1686,19 @@ def main(argv: list[str] | None = None) -> int:
     drill_parser.add_argument("--out")
     drill_parser.add_argument("--json", action="store_true")
 
+    rollback_parser = subparsers.add_parser(
+        "rollback-drill",
+        help="build/test an old tree and optionally probe git revert -m 1; read-only",
+    )
+    rollback_parser.add_argument("id")
+    rollback_parser.add_argument("--to", required=True, help="old commit/ref to build; must be an ancestor of HEAD")
+    rollback_parser.add_argument("--run", action="store_true", help="run the test matrix in the old worktree")
+    rollback_parser.add_argument("--matrix", choices=["quick", "full"], default="quick")
+    rollback_parser.add_argument("--probe-revert", help="merge commit to probe with git revert --no-commit -m 1")
+    rollback_parser.add_argument("--keep-worktree", action="store_true")
+    rollback_parser.add_argument("--out")
+    rollback_parser.add_argument("--json", action="store_true")
+
     record_parser = subparsers.add_parser("record", help="guarded pin/doc update after a passed drill")
     record_parser.add_argument("id")
     record_parser.add_argument("--evidence", required=True)
@@ -1002,10 +1711,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "status":
         result = status(registry, remote=args.remote)
+        if args.out:
+            write_json(Path(args.out), result)
         if args.json:
             print(json.dumps(result, ensure_ascii=False, indent=2))
         else:
             print_status(result)
+        if args.fail_on_update and any(row.get("update_available") for row in result["upstreams"]):
+            return 3
         return 0
 
     if args.command == "verify":
@@ -1020,12 +1733,24 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "check":
         result = check(registry, args.id)
+        if args.out:
+            write_json(Path(args.out), result)
         if args.json:
             print(json.dumps(result, ensure_ascii=False, indent=2))
         else:
             print(f"{args.id}: pin {result['pin']} latest {result['latest']} update_available={result['update_available']}")
         if args.fail_on_update and result["update_available"]:
             return 3
+        return 0
+
+    if args.command == "probes":
+        result = probes(registry, only_id=args.id)
+        if args.out:
+            write_json(Path(args.out), result)
+        if args.json:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print_probes(result)
         return 0
 
     if args.command == "patches":
@@ -1079,6 +1804,29 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(f"{args.id}: merge_exit={result['merge_exit_code']} conflicts={len(result['conflicts'])} status={result['status']}")
         return 0 if result["status"] in {"passed", "conflicted"} else 1
+
+    if args.command == "rollback-drill":
+        result = rollback_drill(
+            registry,
+            args.id,
+            args.to,
+            run_matrix=args.run,
+            matrix=args.matrix,
+            probe_revert=args.probe_revert,
+            keep_worktree=args.keep_worktree,
+        )
+        if args.out:
+            write_json(Path(args.out), result)
+        if args.json:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            revert = result.get("revert_probe") or {}
+            print(
+                f"{args.id}: target={result['target_commit'][:12]} "
+                f"matrix={result['matrix']} status={result['status']} "
+                f"revert={revert.get('status')} conflicts={len(revert.get('conflicts') or [])}"
+            )
+        return 0 if result["status"] == "passed" else 1
 
     if args.command == "record":
         evidence_path = Path(args.evidence)

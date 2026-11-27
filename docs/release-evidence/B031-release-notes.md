@@ -1,14 +1,14 @@
 # ARCHMELD 0.1.0 release notes
 
-Status: **packaging evidence only; R1 is not declared complete.** AT067 passed for the seven-language gate; AT077 remains partial because upstream HEAD still equals the pinned commit.
+Status: **packaging evidence only; release_status=provisional; R1 is not declared complete.** Binaries were not rebuilt from HEAD: Windows `dd124ca1` (dirty=False), Linux `af8fa2f9` (dirty=False); see `bundle.json` builds. AT067 is `passed` for the seven-language gate; AT077 passed for the real newer-upstream upgrade.
 
 ## Artifacts
 
 | Artifact | SHA-256 |
 |---|---|
-| `archmeld-cli-0.1.0-windows-x64.zip` | `6f0bd537ccfa6dc2480894885d99eccd34c77dd54172036ce04da84cfb7cb495` |
-| `archmeld-cli-0.1.0-linux-x64.zip` | `5108624288e6b4271028af7cd8f231b4cd4db99dd67ae7e8367aa82e5da79b2a` |
-| `archmeld-workbench-0.1.0.vsix` | `31d6f0de23d53545ccc63b03582f0250d159fdb89e508bd61a7d4b4901488a82` |
+| `archmeld-cli-0.1.0-windows-x64.zip` | `295d8b3db06f6becaf4565e7d94576d56009842abf56be0a0aaa0fcfe1ffd863` |
+| `archmeld-cli-0.1.0-linux-x64.zip` | `f8c4ac0f8373388cd11efab828ddc97f67d2adc39e583219af35ffcccbd60b51` |
+| `archmeld-workbench-0.1.0.vsix` | `776491ced16fac531f65b4743e3d8e28120c2f9d9757afa2589552ebdbe25928` |
 
 ## Platforms
 
@@ -22,7 +22,8 @@ Status: **packaging evidence only; R1 is not declared complete.** AT067 passed f
 - Linux GUI/VS Code host integration is untested.
 - The Ubuntu offline report was inspected as static HTML; the rendered browser check ran on Windows Chrome headless.
 - The upgrade drill uses a locally built 0.0.9 bundle, not a published historical release.
-- AT077 real newer-upstream upgrade is blocked: `git ls-remote upstream HEAD` still returns the pinned commit. The synthetic interface drill passed.
+- Binaries were built before the current packaging HEAD; this package is repackaged from existing artifacts and is provisional, not a release built from HEAD.
+- AT077 real newer-upstream upgrade: passed (docs\release-evidence\UPSTREAM-0.21.2-2026-11-24.json).
 
 ## Verification
 

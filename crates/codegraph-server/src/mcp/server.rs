@@ -12,7 +12,7 @@ use crate::telemetry::emit_tel;
 
 /// Map a raw tool-error string to a coarse, allowlisted class. The raw
 /// message MUST NOT be emitted — it routinely contains file paths and
-/// usernames (e.g. "No symbols found in 'file:///Users/<name>/...'").
+/// usernames (e.g. "No symbols found in 'file://<path><name>/...'").
 /// Mirrors the extension's `categorizeError` so both channels align.
 fn classify_tool_error(e: &str) -> &'static str {
     let m = e.to_ascii_lowercase();
@@ -1221,12 +1221,12 @@ impl McpBackend {
 
         let config = self.index_config();
         let counter = Arc::new(std::sync::atomic::AtomicUsize::new(0));
-        let (total, _parsed, _skipped, _by_lang, _errors) = self
+        let stats = self
             .indexer
             .index_directory(&self.graph, dir, &config, 0, counter)
             .await;
 
-        if total > 0 {
+        if stats.total_files > 0 {
             // Resolve cross-file imports
             {
                 let mut graph = self.graph.write().await;
@@ -1243,12 +1243,12 @@ impl McpBackend {
             tracing::info!(
                 "Added directory {:?}: {} files indexed (embed={})",
                 dir,
-                total,
+                stats.total_files,
                 embed
             );
         }
 
-        total
+        stats.total_files
     }
 }
 
@@ -1647,7 +1647,7 @@ impl McpServer {
                 .iter()
                 .filter_map(|r| {
                     r.uri
-                        .strip_prefix("file://")
+                        .strip_prefix("file://<path>")
                         .map(PathBuf::from)
                         .or_else(|| {
                             // Accept bare paths too
@@ -3504,11 +3504,11 @@ impl McpServer {
                     return Err("paths parameter is required (array of file paths)".to_string());
                 }
 
-                // Convert file:// URIs to plain paths
+                // Convert file://<path> URIs to plain paths
                 let paths: Vec<PathBuf> = raw
                     .iter()
                     .map(|s| {
-                        if let Some(p) = s.strip_prefix("file://") {
+                        if let Some(p) = s.strip_prefix("file://<path>") {
                             PathBuf::from(p)
                         } else {
                             PathBuf::from(s)

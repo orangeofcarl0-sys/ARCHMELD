@@ -33,8 +33,8 @@
     "patches/codegraph/manifest.json": "f4919e6736dae8717427214c3d6732cb6b32a2b6f31dea79e323669509742454",
     "upstreams.lock.json": "8585d9e1e3dc78b659a2ea512eff3c183146584fd4f75e6be645c40f91229908",
     "contracts/upstreams/archmeld-export-v1.md": "a12fb752ccc06b98ec2e1a0ed5ed49dd49a59396d4c6f987dee33076f0f326df",
-    "docs/upstream/README.md": "0c11894777199d0747627e8fdd8f43dee744a4a3974ed9d6391e1e3019f08ca0",
-    "docs/release-evidence/UPSTREAM-STATUS-2026-11-25.json": "32d8f3f63e5dc2732eee3593cb402ab4755f5e2720c2a89d3190500f90b3a7db"
+    "docs/upstream/README.md": "33cb82d8cb8f3bf7954e4d125209f2169ea0ab1f6201b647e7d9334446998112",
+    "docs/release-evidence/UPSTREAM-STATUS-2026-11-25.json": "5db79f63ee6a5bc2d1115c6a34ee468ec405e1e64278e6e9b9b5b97111b54f07"
   },
   "supersedes": {
     "record": "docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json",

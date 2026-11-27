@@ -16,11 +16,46 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "<workspace>/_archmeld_tools";
-const TEMP: &str = "<temp>";
+mod support;
 
 fn repo_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
+}
+
+fn resolve_locked_path(value: &str) -> PathBuf {
+    if value.starts_with("crates/") || value.starts_with("crates\\") {
+        return repo_root().join(value);
+    }
+    PathBuf::from(value)
+}
+
+fn env_base(name: &str) -> Option<PathBuf> {
+    support::env_path(name).or_else(|| match name {
+        "LOCALAPPDATA" => support::home().map(|home| home.join("AppData").join("Local")),
+        "PROGRAMFILES" => support::env_path("ProgramFiles"),
+        _ => None,
+    })
+}
+
+fn resolve_locked(
+    value: &Value,
+    path_key: &str,
+    env_key: &str,
+    relative_key: &str,
+) -> Option<PathBuf> {
+    if let Some(relative) = value[relative_key].as_str() {
+        if relative.starts_with("crates/") || relative.starts_with("crates\\") {
+            return Some(repo_root().join(relative));
+        }
+        let base = value[env_key]
+            .as_str()
+            .and_then(env_base)
+            .or_else(support::tools_root);
+        if let Some(base) = base {
+            return Some(base.join(relative));
+        }
+    }
+    value[path_key].as_str().map(resolve_locked_path)
 }
 
 fn lock_path() -> PathBuf {
@@ -105,10 +140,7 @@ fn run(
 }
 
 fn temp_dir(name: &str) -> tempfile::TempDir {
-    tempfile::Builder::new()
-        .prefix(&format!("b030-medium-{name}-"))
-        .tempdir_in(TEMP)
-        .unwrap()
+    support::tempdir(&format!("b030-medium-{name}-"))
 }
 
 fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
@@ -139,10 +171,11 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
             let out = temp.path().join("out");
             fs::create_dir_all(&out).unwrap();
             let exe = out.join("lua.exe");
-            let mut argv = vec![
-                "D:/Strawberry/c/bin/gcc.exe".to_string(),
-                "-O2".to_string(),
-            ];
+            let gcc = support::require_tool("ARCHMELD_GCC", "c/bin/gcc.exe")
+                .expect("gcc")
+                .to_string_lossy()
+                .to_string();
+            let mut argv = vec![gcc, "-O2".to_string()];
             for path in &sources {
                 argv.push(path.to_string_lossy().into_owned());
             }
@@ -167,10 +200,14 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
         "python_compileall" => {
             let copied = temp.path().join("asyncio");
             copy_dir(source, &copied, extension);
+            let python = support::require_tool("ARCHMELD_PYTHON", "python.exe")
+                .expect("python")
+                .to_string_lossy()
+                .to_string();
             let (build_result, _) = run(
                 &temp.path(),
                 vec![
-                    "python".into(),
+                    python.clone(),
                     "-m".into(),
                     "compileall".into(),
                     "-q".into(),
@@ -183,7 +220,7 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
             let (smoke, stdout) = run(
                 &temp.path(),
                 vec![
-                    "python".into(),
+                    python.clone(),
                     "-c".into(),
                     "import asyncio; print(asyncio.__name__)".into(),
                 ],
@@ -207,10 +244,14 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
                  walk(root); console.log(n);\n",
             )
             .unwrap();
+            let node = support::require_tool("ARCHMELD_NODE", "node.exe")
+                .expect("node")
+                .to_string_lossy()
+                .to_string();
             let (build_result, stdout) = run(
                 &temp.path(),
                 vec![
-                    "node".into(),
+                    node,
                     script.to_string_lossy().into_owned(),
                     source.to_string_lossy().into_owned(),
                 ],
@@ -240,20 +281,26 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
                     .join("\n"),
             )
             .unwrap();
+            let javac = support::require_tool("ARCHMELD_JAVAC", "jdk25/jdk-25.0.5+8/bin/javac.exe")
+                .expect("javac")
+                .to_string_lossy()
+                .to_string();
+            let java_home = Path::new(&javac)
+                .parent()
+                .and_then(|bin| bin.parent())
+                .map(|root| root.to_string_lossy().to_string())
+                .unwrap_or_default();
             let (build_result, _) = run(
                 &temp.path(),
                 vec![
-                    format!("{TOOLS}/jdk25/jdk-25.0.5+8/bin/javac.exe"),
+                    javac,
                     "--patch-module".into(),
                     format!("java.base={}", patch_root.to_string_lossy()),
                     "-d".into(),
                     out.to_string_lossy().into_owned(),
                     format!("@{}", argfile.to_string_lossy()),
                 ],
-                &[(
-                    "JAVA_HOME".into(),
-                    format!("{TOOLS}/jdk25/jdk-25.0.5+8"),
-                )],
+                &[("JAVA_HOME".into(), java_home)],
                 "javac patch-module",
             );
             let compiled = fs::read_dir(&out)
@@ -265,45 +312,59 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
             result.insert("build".into(), build_result);
         }
         "dotnet_build" => {
-            let dotnet = format!("{TOOLS}/dotnet8/dotnet.exe");
+            let dotnet = support::require_tool("ARCHMELD_DOTNET", "dotnet8/dotnet.exe")
+                .expect("dotnet")
+                .to_string_lossy()
+                .to_string();
             let mut argv = Vec::new();
             for argument in build["argv"].as_array().unwrap() {
                 argv.push(argument.as_str().unwrap().replace("{dotnet}", &dotnet));
             }
-            let env = vec![
-                ("DOTNET_ROOT".into(), format!("{TOOLS}/dotnet8")),
-                (
-                    "NUGET_PACKAGES".into(),
+            let mut env = support::tool_env(temp.path());
+            if let Some(root) = Path::new(&dotnet).parent() {
+                env.push(("DOTNET_ROOT".into(), root.to_string_lossy().to_string()));
+            }
+            let nuget = support::nuget_root()
+                .map(|path| path.to_string_lossy().to_string())
+                .or_else(|| {
                     build["env"]["NUGET_PACKAGES"]
                         .as_str()
-                        .unwrap_or("<workspace>/_archmeld_tools/fixtures/nuget-packages")
-                        .to_string(),
-                ),
-                ("DOTNET_CLI_TELEMETRY_OPTOUT".into(), "1".into()),
-                ("DOTNET_NOLOGO".into(), "1".into()),
-                (
-                    "DOTNET_CLI_HOME".into(),
-                    temp.path().to_string_lossy().into_owned(),
-                ),
-                ("HOMEDRIVE".into(), "C:".into()),
-                ("HOMEPATH".into(), "<user>".into()),
-                ("ProgramFiles".into(), "C:/Program Files".into()),
-                ("ProgramFiles(x86)".into(), "C:/Program Files (x86)".into()),
-                ("PROCESSOR_ARCHITECTURE".into(), "AMD64".into()),
-                ("COMPUTERNAME".into(), "LOCALHOST".into()),
-            ];
-            let cwd = build["cwd"]
-                .as_str()
-                .map(PathBuf::from)
-                .unwrap_or_else(|| source.to_path_buf());
+                        .map(resolve_locked_path)
+                        .map(|path| path.to_string_lossy().to_string())
+                });
+            if let Some(nuget) = nuget {
+                env.push(("NUGET_PACKAGES".into(), nuget));
+            }
+            env.push(("DOTNET_CLI_TELEMETRY_OPTOUT".into(), "1".into()));
+            env.push(("DOTNET_NOLOGO".into(), "1".into()));
+            env.push((
+                "DOTNET_CLI_HOME".into(),
+                temp.path().to_string_lossy().into_owned(),
+            ));
+            env.push(("PROCESSOR_ARCHITECTURE".into(), "AMD64".into()));
+            env.push(("COMPUTERNAME".into(), "LOCALHOST".into()));
+            for key in ["ProgramFiles", "ProgramFiles(x86)"] {
+                if let Ok(value) = std::env::var(key) {
+                    env.push((key.to_string(), value));
+                }
+            }
+            let cwd = source
+                .parent()
+                .and_then(|path| path.parent())
+                .unwrap_or(source)
+                .to_path_buf();
             let (build_result, _) = run(&cwd, argv, &env, "newtonsoft build");
             result.insert("build".into(), build_result);
         }
         "go_test" => {
+            let go = support::require_tool("ARCHMELD_GO", "go/go/bin/go.exe")
+                .expect("go")
+                .to_string_lossy()
+                .to_string();
             let (build_result, _) = run(
                 temp.path(),
                 vec![
-                    format!("{TOOLS}/go/go/bin/go.exe"),
+                    go,
                     "test".into(),
                     "net/http".into(),
                     "-run".into(),
@@ -332,10 +393,7 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
                     "--target-dir".into(),
                     target.to_string_lossy().into_owned(),
                 ],
-                &[(
-                    "RUSTUP_TOOLCHAIN".into(),
-                    "1.94.1-x86_64-pc-windows-gnu".into(),
-                )],
+                &[("RUSTUP_TOOLCHAIN".into(), support::rust_toolchain())],
                 "cargo check codegraph",
             );
             result.insert("build".into(), build_result);
@@ -347,16 +405,33 @@ fn build_group(key: &str, spec: &Value, _root: &Path, source: &Path) -> Value {
 
 #[test]
 fn seven_groups_have_pinned_medium_real_projects_with_real_builds() {
+    let required = [
+        ("ARCHMELD_GCC", "c/bin/gcc.exe"),
+        ("ARCHMELD_JAVAC", "jdk25/jdk-25.0.5+8/bin/javac.exe"),
+        ("ARCHMELD_JAVA", "jdk25/jdk-25.0.5+8/bin/java.exe"),
+        ("ARCHMELD_DOTNET", "dotnet8/dotnet.exe"),
+        ("ARCHMELD_GO", "go/go/bin/go.exe"),
+        ("ARCHMELD_NODE", "node.exe"),
+        ("ARCHMELD_PYTHON", "python.exe"),
+    ];
+    if required
+        .iter()
+        .any(|(env, relative)| support::require_tool(env, relative).is_none())
+    {
+        return;
+    }
     let lock: Value = serde_json::from_slice(&fs::read(lock_path()).unwrap()).unwrap();
     let mut groups = Map::new();
     for (key, spec) in lock["groups"].as_object().unwrap() {
         let extension = spec["source_extension"].as_str().unwrap();
         let source_text = spec["source_path"].as_str().unwrap();
-        let source = if source_text.starts_with("crates/") {
-            repo_root().join(source_text)
-        } else {
-            PathBuf::from(source_text)
-        };
+        let source = resolve_locked(
+            spec,
+            "source_path",
+            "source_path_env",
+            "source_relative_path",
+        )
+        .unwrap_or_else(|| panic!("{key}: no source path"));
         assert!(source.is_dir(), "{key}: missing medium sample {source_text}");
         let files = source_files(&source, extension);
         let minimum = spec["minimum_source_files"].as_u64().unwrap();
@@ -368,7 +443,9 @@ fn seven_groups_have_pinned_medium_real_projects_with_real_builds() {
         let digest = tree_digest(&source, &files);
         let archive = &spec["archive"];
         let archive_check = if let Some(path) = archive["path"].as_str() {
-            let bytes = fs::read(path)
+            let resolved = resolve_locked(archive, "path", "path_env", "relative_path")
+                .unwrap_or_else(|| resolve_locked_path(path));
+            let bytes = fs::read(&resolved)
                 .unwrap_or_else(|error| panic!("{key}: archive {path}: {error}"));
             let actual = hash::digest_bytes(&bytes);
             let expected = archive["sha256"].as_str().unwrap();
@@ -377,7 +454,7 @@ fn seven_groups_have_pinned_medium_real_projects_with_real_builds() {
                 expected,
                 "{key}: archive hash mismatch"
             );
-            json!({"path": path, "sha256": expected, "verified": true})
+            json!({"path": resolved, "sha256": expected, "verified": true})
         } else {
             json!({"verified": false, "reason": "sample comes from the pinned local toolchain"})
         };
@@ -410,6 +487,8 @@ fn seven_groups_have_pinned_medium_real_projects_with_real_builds() {
         "generated_by": "crates/archmeld-core/tests/language_medium_projects.rs",
         "lock": "adapters/languages/fixtures.lock.json",
         "platform": {"os": std::env::consts::OS, "arch": std::env::consts::ARCH},
+        "recorded_at_unix": support::recorded_at_unix(),
+        "product_head": support::product_head(),
         "groups": groups,
         "note": "Each sample is a pinned public project or toolchain source tree. Builds and smoke commands were executed for real; limitations are copied from the lock and are not averaged into a score.",
     });

@@ -130,7 +130,7 @@ describe('SymbolTreeProvider', () => {
             name: 'MyClass',
             kind: 'class',
             language: 'typescript',
-            uri: 'file:///test/file.ts',
+            uri: 'file://<path>',
             range: { start: { line: 0, character: 0 }, end: { line: 10, character: 0 } },
           },
           {
@@ -138,7 +138,7 @@ describe('SymbolTreeProvider', () => {
             name: 'myFunction',
             kind: 'function',
             language: 'typescript',
-            uri: 'file:///test/file.ts',
+            uri: 'file://<path>',
             range: { start: { line: 12, character: 0 }, end: { line: 15, character: 0 } },
           },
         ],
@@ -171,7 +171,7 @@ describe('SymbolTreeProvider', () => {
             name: 'MyClass',
             kind: 'class',
             language: 'typescript',
-            uri: 'file:///test/file.ts',
+            uri: 'file://<path>',
             range: { start: { line: 0, character: 0 }, end: { line: 20, character: 0 } },
             children: [
               {
@@ -179,7 +179,7 @@ describe('SymbolTreeProvider', () => {
                 name: 'myMethod',
                 kind: 'method',
                 language: 'typescript',
-                uri: 'file:///test/file.ts',
+                uri: 'file://<path>',
                 range: { start: { line: 5, character: 2 }, end: { line: 10, character: 2 } },
               },
             ],

@@ -11,13 +11,17 @@
 use crate::apply::resolve_workspace_root;
 use crate::error::{CoreError, Result};
 use crate::hash;
+use crate::snapshot::{
+    git_sets, git_untracked, is_binary, is_git_repository, read_file, walk, MetaFile, OmittedFile,
+    ReadOutcome, SnapshotOptions, WorkspacePolicy,
+};
 use crate::store::{validate, Store};
 use rusqlite::Connection;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -58,7 +62,8 @@ pub fn analyze_drift(
         }
     }
     let base_files = snapshot_files(store, project_id, base_snapshot_id)?;
-    let disk_files = walk_disk(root)?;
+    let scan = scan_workspace(store, project_id, base_snapshot_id, root)?;
+    let disk_files = &scan.files;
     let mut changed = Vec::new();
     let mut deleted = Vec::new();
     for (path, digest) in &base_files {
@@ -74,7 +79,7 @@ pub fn analyze_drift(
         }
     }
     let mut added = Vec::new();
-    for (path, digest) in &disk_files {
+    for (path, digest) in disk_files {
         if !base_files.contains_key(path) {
             added.push(json!({"path": path, "state": "added", "current_digest": digest}));
         }
@@ -170,6 +175,28 @@ pub fn analyze_drift(
     let stale_plans = plans_on_snapshot(store, project_id, base_snapshot_id)?;
     let stale_changesets = changesets_on_snapshot(store, project_id, base_snapshot_id)?;
     let dirty = !(changed.is_empty() && deleted.is_empty() && added.is_empty());
+    let omitted_count = scan.omitted.len() as u64;
+    let observed_count = disk_files.len() as u64;
+    let expected_count = observed_count + omitted_count;
+    let mut limitations = Vec::new();
+    let mut reasons: BTreeMap<&str, usize> = BTreeMap::new();
+    for item in &scan.omitted {
+        *reasons.entry(item.reason.as_str()).or_insert(0) += 1;
+    }
+    for (reason, count) in reasons {
+        limitations.push(format!("{reason}: {count} file(s)"));
+    }
+    if scan.policy_source != "snapshot" {
+        limitations.push(format!(
+            "snapshot has no workspace_policy; applied current defaults ({})",
+            scan.policy_source
+        ));
+    }
+    let coverage_state = if omitted_count == 0 {
+        "complete"
+    } else {
+        "partial"
+    };
     Ok(json!({
         "schema_version": "1.0",
         "project_id": project_id,
@@ -179,25 +206,34 @@ pub fn analyze_drift(
         "changed": changed,
         "deleted": deleted,
         "added": added,
+        "omitted": scan.omitted,
+        "policy": {
+            "source": scan.policy_source,
+            "include_untracked": scan.policy.include_untracked,
+            "max_file_bytes": scan.policy.max_file_bytes,
+            "excluded_dirs": scan.policy.excluded_dirs,
+            "max_depth": scan.policy.max_depth,
+            "gitignored": scan.gitignored,
+            "untracked_not_included": scan.untracked_not_included,
+        },
         "affected_entities": affected_entities,
         "affected_relations": affected_relations,
         "affected_claims": affected_claims,
         "affected_architectures": affected_architectures,
         "stale_plans": stale_plans,
         "stale_changesets": stale_changesets,
-        "needs_review": dirty
-            && !(affected_entities.is_empty()
-                && affected_relations.is_empty()
-                && affected_claims.is_empty()
-                && affected_architectures.is_empty()
-                && stale_plans.is_empty()
-                && stale_changesets.is_empty()),
+        "needs_review": dirty,
         "source_mutation": "none",
         "history_mutation": "none",
         "coverage": {
-            "state": "complete",
-            "scope": "listed base-snapshot files versus the current workspace",
-            "limitations": ["files added outside the captured snapshot policy are listed as added"],
+            "state": coverage_state,
+            "scope": "eligible workspace files under the snapshot workspace_policy",
+            "expected_count": expected_count,
+            "observed_count": observed_count,
+            "omitted_count": omitted_count,
+            "unresolved_count": 0,
+            "limitations": limitations,
+            "policy_source": scan.policy_source,
         },
     }))
 }
@@ -634,45 +670,208 @@ fn snapshot_files(
     Ok(rows.collect::<rusqlite::Result<BTreeMap<_, _>>>()?)
 }
 
-fn walk_disk(root: &Path) -> Result<BTreeMap<String, String>> {
-    let excluded = [
-        ".git",
-        ".archmeld",
-        "node_modules",
-        "target",
-        ".venv",
-        "__pycache__",
-    ];
+struct WorkspaceScan {
+    files: BTreeMap<String, String>,
+    omitted: Vec<OmittedFile>,
+    policy: WorkspacePolicy,
+    policy_source: &'static str,
+    gitignored: usize,
+    untracked_not_included: usize,
+}
+
+fn scan_workspace(
+    store: &Store,
+    project_id: &str,
+    snapshot_id: &str,
+    root: &Path,
+) -> Result<WorkspaceScan> {
+    let payload = store
+        .snapshot_payload(project_id, snapshot_id)?
+        .ok_or_else(|| CoreError::not_found(format!("snapshot {snapshot_id} not found")))?;
+    let (policy, policy_source) = match payload.get("workspace_policy") {
+        Some(value) => (
+            serde_json::from_value::<WorkspacePolicy>(value.clone()).map_err(|error| {
+                CoreError::Storage(format!("snapshot workspace_policy is corrupt: {error}"))
+            })?,
+            "snapshot",
+        ),
+        None => (
+            WorkspacePolicy::from_options(&SnapshotOptions::default()),
+            "defaults_unrecorded",
+        ),
+    };
+    let options = SnapshotOptions {
+        include_untracked: policy.include_untracked,
+        max_file_bytes: policy.max_file_bytes,
+        excluded_dirs: policy.excluded_dirs.clone(),
+        max_retries: 2,
+    };
+    if is_git_repository(root) {
+        scan_git(root, &policy, policy_source)
+    } else {
+        scan_walk(root, &policy, &options, policy_source)
+    }
+}
+
+fn path_under_excluded_dir(path: &str, excluded: &[String]) -> bool {
+    path.split('/')
+        .any(|segment| excluded.iter().any(|name| name == segment))
+}
+
+fn read_meta(path: &Path) -> Option<std::fs::Metadata> {
+    fs::symlink_metadata(path).ok()
+}
+
+fn scan_git(
+    root: &Path,
+    policy: &WorkspacePolicy,
+    policy_source: &'static str,
+) -> Result<WorkspaceScan> {
+    let (tracked, ignored, _commit) = git_sets(root);
+    let untracked = git_untracked(root);
+    let mut candidates = tracked.clone();
+    if policy.include_untracked {
+        candidates.extend(untracked.iter().cloned());
+    }
     let mut files = BTreeMap::new();
-    fn walk(
-        root: &Path,
-        dir: &Path,
-        excluded: &[&str],
-        files: &mut BTreeMap<String, String>,
-    ) -> Result<()> {
-        for entry in fs::read_dir(dir)? {
-            let entry = entry?;
-            let name = entry.file_name().to_string_lossy().to_string();
-            if excluded.contains(&name.as_str()) {
-                continue;
+    let mut omitted = Vec::new();
+    for path in candidates {
+        if path_under_excluded_dir(&path, &policy.excluded_dirs) {
+            omitted.push(OmittedFile {
+                path,
+                reason: "excluded_dir".into(),
+            });
+            continue;
+        }
+        let full = root.join(&path);
+        let Some(metadata) = read_meta(&full) else {
+            // A tracked file that no longer exists is a deletion, not a scan
+            // omission; the base-file loop reports it.
+            continue;
+        };
+        if metadata.file_type().is_symlink() {
+            omitted.push(OmittedFile {
+                path,
+                reason: "symlink_not_followed".into(),
+            });
+            continue;
+        }
+        if !metadata.is_file() {
+            continue;
+        }
+        if metadata.len() > policy.max_file_bytes {
+            omitted.push(OmittedFile {
+                path,
+                reason: "too_large".into(),
+            });
+            continue;
+        }
+        let meta = MetaFile {
+            path: path.clone(),
+            size: metadata.len(),
+            mtime_ns: metadata
+                .modified()
+                .ok()
+                .and_then(|time| time.duration_since(std::time::UNIX_EPOCH).ok())
+                .map(|duration| duration.as_nanos())
+                .unwrap_or(0),
+        };
+        match read_file(root, Path::new(&path), &meta, policy.max_file_bytes)? {
+            ReadOutcome::TooLarge => omitted.push(OmittedFile {
+                path,
+                reason: "too_large".into(),
+            }),
+            ReadOutcome::ChangedDuringRead => {
+                return Err(CoreError::conflict(format!(
+                    "workspace file changed while drift was reading it: {path}"
+                )))
             }
-            let path = entry.path();
-            let metadata = fs::symlink_metadata(&path)?;
-            if metadata.is_dir() {
-                walk(root, &path, excluded, files)?;
-            } else if metadata.is_file() {
-                let relative = path
-                    .strip_prefix(root)
-                    .map_err(|_| CoreError::Storage("drift path escaped root".into()))?
-                    .to_string_lossy()
-                    .replace('\\', "/");
-                files.insert(relative, hash::digest_bytes(&fs::read(&path)?));
+            ReadOutcome::Read(bytes) => {
+                if is_binary(&bytes) {
+                    omitted.push(OmittedFile {
+                        path,
+                        reason: "binary".into(),
+                    });
+                } else {
+                    files.insert(path, hash::digest_bytes(&bytes));
+                }
             }
         }
-        Ok(())
     }
-    walk(root, root, &excluded, &mut files)?;
-    Ok(files)
+    Ok(WorkspaceScan {
+        files,
+        omitted,
+        policy: policy.clone(),
+        policy_source,
+        gitignored: ignored.len(),
+        untracked_not_included: if policy.include_untracked {
+            0
+        } else {
+            untracked.len()
+        },
+    })
+}
+
+fn scan_walk(
+    root: &Path,
+    policy: &WorkspacePolicy,
+    options: &SnapshotOptions,
+    policy_source: &'static str,
+) -> Result<WorkspaceScan> {
+    let walked = walk(root, options)?;
+    if !policy.include_untracked {
+        let omitted = walked
+            .files
+            .into_iter()
+            .map(|file| OmittedFile {
+                path: file.path,
+                reason: "untracked_not_included".into(),
+            })
+            .chain(walked.omitted)
+            .collect();
+        return Ok(WorkspaceScan {
+            files: BTreeMap::new(),
+            omitted,
+            policy: policy.clone(),
+            policy_source,
+            gitignored: 0,
+            untracked_not_included: 0,
+        });
+    }
+    let mut files = BTreeMap::new();
+    let mut omitted = walked.omitted;
+    for meta in walked.files {
+        match read_file(root, Path::new(&meta.path), &meta, policy.max_file_bytes)? {
+            ReadOutcome::TooLarge => omitted.push(OmittedFile {
+                path: meta.path,
+                reason: "too_large".into(),
+            }),
+            ReadOutcome::ChangedDuringRead => {
+                return Err(CoreError::conflict(format!(
+                    "workspace file changed while drift was reading it: {}",
+                    meta.path
+                )))
+            }
+            ReadOutcome::Read(bytes) => {
+                if is_binary(&bytes) {
+                    omitted.push(OmittedFile {
+                        path: meta.path,
+                        reason: "binary".into(),
+                    });
+                } else {
+                    files.insert(meta.path, hash::digest_bytes(&bytes));
+                }
+            }
+        }
+    }
+    Ok(WorkspaceScan {
+        files,
+        omitted,
+        policy: policy.clone(),
+        policy_source,
+        gitignored: 0,
+        untracked_not_included: 0,
+    })
 }
 
 fn latest_rows(

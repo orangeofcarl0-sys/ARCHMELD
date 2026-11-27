@@ -9,11 +9,11 @@
     "python": "3.11.9",
     "code": {
       "argv": [
-        "D:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "<path> Files\\Microsoft VS Code\\Code.exe",
         "--version"
       ],
       "exit": null,
-      "error": "Command '['D:\\\\Program Files\\\\Microsoft VS Code\\\\Code.exe', '--version']' timed out after 30 seconds"
+      "error": "Command '['<path> Files\\\\Microsoft VS Code\\\\Code.exe', '--version']' timed out after 30 seconds"
     },
     "node": {
       "argv": [

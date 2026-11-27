@@ -11,15 +11,15 @@
     "recorded_at": "2026-11-01"
   },
   "source": {
-    "name": "<private-recorded-file>",
-    "sha256": "sha256:<redacted>",
-    "bytes": "<redacted>",
-    "rows": "<redacted>",
-    "selected_columns": [
-      "<redacted-column>",
-      "<redacted-column>",
-      "<redacted-column>",
-      "<redacted-column>"
+    "name": "<private-dataset>.json",
+    "sha256": "sha256:2b7cda9a4ab9f7d8672c888c5c803b872a98125dbaec8194d24ce14db8de0201",
+    "bytes": 738737,
+    "rows": 342,
+    "<selected-columns>": [
+      "model.conditional_SD_mm",
+      "MC.all_output_SD_mm",
+      "model.bias_mm",
+      "MC.all_output_bias_mm"
     ]
   },
   "extraction": {
@@ -56,16 +56,16 @@
   "checks": {
     "statistical": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\statistical.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:131f21f8bb57e66105c8d570b675ee13153a3e2a6955bf37e4ca1286aa534e7d",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -169,16 +169,16 @@
     },
     "statistical_sample": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\statistical_sample.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:5ec085e2b9551aca0b25b629e71d11e3266e60ce63bc01d136a67580af05576f",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -274,16 +274,16 @@
     },
     "ulp": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\ulp.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:499a0080d055d20b70bb6bac6a67277d613526d8e416c820425f9564333e9caa",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -345,16 +345,16 @@
     },
     "matlab_eps": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\matlab_eps.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:ea0c33aec6edddd97bf10c3bd8c283c952cfd73fdad92de450ce57e2f11d7f4a",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -420,16 +420,16 @@
     },
     "dimension": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\dimension.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:0e2e96e9c817fe28b44bf3d69fa6e6d8e406801b25a13c318299a55ffc9d871c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -495,16 +495,16 @@
     },
     "dimension_custom": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\dimension_custom.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:6b451e49c4e27210bdea3c17ffa94da41229f75c5bd8855f6994ee97a1b3067b",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -572,16 +572,16 @@
     },
     "dimension_negative_control": {
       "argv": [
-        "<repo>\\target\\debug\\archmeld.exe",
+        "<path>",
         "numeric-check",
         "--state",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\state",
+        "<path><identity><temp>",
         "--root",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\artifacts",
+        "<path><identity><temp>",
         "--predicate",
-        "<user>\\AppData\\Local\\Temp\\<private-dataset-work>\\work3\\predicates\\dimension_negative.json"
+        "<path><identity><temp>"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "stdout_sha256": "sha256:f1998f5f72faa12e65cd032b3cc7f77397a21e7a4c5676fe95f1497f87f4e483",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -642,17 +642,17 @@
     "reason": "the model and the Monte Carlo estimator are different estimators; no frozen tolerance exists, so the difference is reported only",
     "sd_mm_model_vs_mc": {
       "count": 342,
-      "mean_abs_error": "<redacted>",
+      "mean_abs_error": "0.40937056371841574",
       "rms_error": "1.9913509250813881",
       "p95_abs_error": "4.491015143916547",
-      "max_abs_error": "<redacted>"
+      "max_abs_error": "13.907340398982468"
     },
     "bias_mm_model_vs_mc": {
       "count": 342,
-      "mean_abs_error": "<redacted>",
+      "mean_abs_error": "0.000863412938404859",
       "rms_error": "0.005015919252837724",
       "p95_abs_error": "0.002297657186469248",
-      "max_abs_error": "<redacted>"
+      "max_abs_error": "0.04688110172316613"
     }
   },
   "limitations": [

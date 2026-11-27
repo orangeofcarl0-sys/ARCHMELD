@@ -1,0 +1,38 @@
+{
+  "snapshot_id": "sha256:0bdf83a7376b73151f5c9d819b8136de17d1bb9332921a7f3aca97c82a5347f9",
+  "files_total": 600,
+  "pages": [
+    {
+      "bytes": 534980,
+      "returned": 500,
+      "page": {
+        "has_more": true,
+        "max_files": 500,
+        "next_cursor": "r1:sha256:0bdf83a7376b73151f5c9d819b8136de17d1bb9332921a7f3aca97c82a5347f9:500:500",
+        "offset": 0,
+        "returned": 500,
+        "tool": "r1",
+        "total": 600
+      }
+    },
+    {
+      "bytes": 396901,
+      "returned": 100,
+      "page": {
+        "has_more": false,
+        "max_files": 500,
+        "next_cursor": null,
+        "offset": 500,
+        "returned": 100,
+        "tool": "r1",
+        "total": 600
+      }
+    }
+  ],
+  "paged_unique": 600,
+  "full_unique": 600,
+  "paged_equals_full": true,
+  "max_page_bytes": 534980,
+  "full_bytes": 1400140,
+  "all_pages_under_1mb": true
+}

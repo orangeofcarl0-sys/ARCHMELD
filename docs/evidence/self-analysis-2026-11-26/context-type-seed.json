@@ -1,0 +1,59 @@
+{
+ "4000": {
+  "bytes": 2241,
+  "page": null,
+  "selected": [],
+  "snippets": 0,
+  "slices": 0,
+  "omissions": [
+   {
+    "count": 473,
+    "kind": "omitted",
+    "reason": "final_budget_trim"
+   }
+  ],
+  "questions": [
+   "452 item(s) were omitted by budget; use next_cursor or a larger budget",
+   "more candidate entities remain; call again with next_cursor to continue"
+  ],
+  "truncated": true
+ },
+ "8000": {
+  "bytes": 2241,
+  "page": null,
+  "selected": [],
+  "snippets": 0,
+  "slices": 0,
+  "omissions": [
+   {
+    "count": 591,
+    "kind": "omitted",
+    "reason": "final_budget_trim"
+   }
+  ],
+  "questions": [
+   "554 item(s) were omitted by budget; use next_cursor or a larger budget",
+   "more candidate entities remain; call again with next_cursor to continue"
+  ],
+  "truncated": true
+ },
+ "16000": {
+  "bytes": 2242,
+  "page": null,
+  "selected": [],
+  "snippets": 0,
+  "slices": 0,
+  "omissions": [
+   {
+    "count": 848,
+    "kind": "omitted",
+    "reason": "final_budget_trim"
+   }
+  ],
+  "questions": [
+   "772 item(s) were omitted by budget; use next_cursor or a larger budget",
+   "more candidate entities remain; call again with next_cursor to continue"
+  ],
+  "truncated": true
+ }
+}

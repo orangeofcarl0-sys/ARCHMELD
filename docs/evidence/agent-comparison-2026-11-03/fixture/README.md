@@ -3,7 +3,7 @@
 This directory is a copy of the working tree the agents inspected. It is
 synthetic test data, not production code.
 
-- Origin repository: `<workspace>/agent-bench-vizIZe/repo`
+- Origin repository: `<path>
 - Origin git HEAD: `df2a5d13e7a67c9e460517b7f6a859bc909d16d2`
 - Origin status at experiment time: `M src/change.py`
 - `src/change.py` here is the live (modified) file: `value * 0.8`

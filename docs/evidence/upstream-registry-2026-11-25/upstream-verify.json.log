@@ -5,7 +5,7 @@
   "generated_by": "tooling/upstream.py verify",
   "auto_follow_latest": false,
   "registry_sha256": "8585d9e1e3dc78b659a2ea512eff3c183146584fd4f75e6be645c40f91229908",
-  "toolchain_lock_sha256": "d0692ed90b5fdfebbe805616a879b38f48b5db9ce830d5c1dd9fec06507f1c9e",
+  "toolchain_lock_sha256": "75a77064e915ce9158ae0fda9803a020c81fcdf3450234bc4b842619bc003399",
   "tools": {
     "git": {
       "argv": [
@@ -33,7 +33,7 @@
     },
     "python": {
       "argv": [
-        "<user>\\Python\\pythoncore-3.14-64\\python.exe",
+        "python",
         "--version"
       ],
       "exit_code": 0,
@@ -177,6 +177,21 @@
       "detail": "pre-existing SHA256SUMS mismatches: contracts/mcp-tools.json, contracts/schemas/archmeld.schema.json, specs/S11_API_MCP_EVENTS.md"
     },
     {
+      "id": "privacy.tooling_literals",
+      "status": "pass",
+      "detail": "no drive-absolute path literals"
+    },
+    {
+      "id": "locks.portable",
+      "status": "pass",
+      "detail": "all lock entries have portable resolution"
+    },
+    {
+      "id": "public_snapshot.private",
+      "status": "warn",
+      "detail": "1635 private-tree finding(s); run python tooling/public_snapshot.py check"
+    },
+    {
       "id": "patches.manifest",
       "status": "pass",
       "detail": "patches/codegraph/manifest.json exists"
@@ -202,12 +217,12 @@
         "--offline",
         "--locked"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
-      "started_at": "2026-11-25T13:31:48.008651+00:00",
-      "finished_at": "2026-11-25T13:31:49.622738+00:00",
-      "duration_s": 1.611,
+      "started_at": "2026-11-25T17:29:01.240130+00:00",
+      "finished_at": "2026-11-25T17:29:02.908866+00:00",
+      "duration_s": 1.666,
       "stdout": "",
       "stderr": "",
       "stdout_sha256": "c51e67d2f96ea32518f9540d211ce4c8f08b20d92a8b29a3f87a3840cf1ed3ba",

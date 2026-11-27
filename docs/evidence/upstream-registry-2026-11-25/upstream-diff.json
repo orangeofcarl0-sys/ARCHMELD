@@ -22,7 +22,7 @@
         "--verify",
         "upstream/main^{commit}"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:22:21.062205+00:00",
@@ -41,7 +41,7 @@
         "--no-merges",
         "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa..upstream/main"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:22:21.102812+00:00",
@@ -59,7 +59,7 @@
         "--stat",
         "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa..upstream/main"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:22:21.139667+00:00",
@@ -77,7 +77,7 @@
         "--name-status",
         "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa..upstream/main"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:22:21.174778+00:00",
@@ -97,7 +97,7 @@
         "HEAD",
         "upstream/main"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:22:21.209439+00:00",

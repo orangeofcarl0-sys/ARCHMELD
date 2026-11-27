@@ -45,6 +45,22 @@ pub struct QueryRequest {
     pub max_nodes: u32,
     pub max_depth: u32,
     pub cursor: Option<String>,
+    #[serde(default)]
+    pub entity_kinds: Vec<super::store::EntityKind>,
+    #[serde(default)]
+    pub entity_roles: Vec<super::store::EntityRole>,
+    /// Exclude relations incident to any entity with one of these roles.
+    /// This is separate from `entity_roles`, which keeps the historical
+    /// "both endpoints must match" inclusion semantics.
+    #[serde(default)]
+    pub exclude_entity_roles: Vec<super::store::EntityRole>,
+    /// Exclude relations incident to any entity with one of these kinds.
+    #[serde(default)]
+    pub exclude_entity_kinds: Vec<super::store::EntityKind>,
+    #[serde(default)]
+    pub min_producer_resolution: Option<super::store::ProducerResolution>,
+    #[serde(default)]
+    pub require_call_site: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -89,6 +105,29 @@ pub fn run_query(store: &Store, raw: &Value) -> Result<Value> {
     for entity_id in &request.entity_ids {
         validate::require_id("entity_ids[]", entity_id)?;
     }
+    let traversal = matches!(
+        request.kind,
+        QueryKind::Neighbors | QueryKind::Path | QueryKind::Impact
+    );
+    if !traversal
+        && (!request.relation_kinds.is_empty()
+            || request.min_producer_resolution.is_some()
+            || request.require_call_site)
+    {
+        return Err(CoreError::invalid(
+            "relation_kinds, min_producer_resolution and require_call_site are only valid for neighbors, path and impact queries",
+        ));
+    }
+    if request.kind == QueryKind::Source
+        && request
+            .entity_kinds
+            .iter()
+            .any(|kind| *kind != super::store::EntityKind::File)
+    {
+        return Err(CoreError::invalid(
+            "source queries only support entity_kinds=[\"file\"]",
+        ));
+    }
     store.check_snapshot_scope(&request.project_id, &request.snapshot_id)?;
 
     let query_digest = digest_request(raw)?;
@@ -121,6 +160,47 @@ pub fn run_query(store: &Store, raw: &Value) -> Result<Value> {
     }
 }
 
+fn entity_filter_clause(request: &QueryRequest) -> String {
+    let mut clause = String::new();
+    if !request.entity_kinds.is_empty() {
+        let list = request
+            .entity_kinds
+            .iter()
+            .map(|kind| format!("'{}'", kind.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        clause.push_str(&format!(" AND kind IN ({list})"));
+    }
+    if !request.entity_roles.is_empty() {
+        let list = request
+            .entity_roles
+            .iter()
+            .map(|role| format!("'{}'", role.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        clause.push_str(&format!(" AND role IN ({list})"));
+    }
+    if !request.exclude_entity_roles.is_empty() {
+        let list = request
+            .exclude_entity_roles
+            .iter()
+            .map(|role| format!("'{}'", role.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        clause.push_str(&format!(" AND role NOT IN ({list})"));
+    }
+    if !request.exclude_entity_kinds.is_empty() {
+        let list = request
+            .exclude_entity_kinds
+            .iter()
+            .map(|kind| format!("'{}'", kind.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        clause.push_str(&format!(" AND kind NOT IN ({list})"));
+    }
+    clause
+}
+
 fn search(
     store: &Store,
     request: &QueryRequest,
@@ -133,9 +213,10 @@ fn search(
     } else {
         "qualified_name LIKE ?3 ESCAPE '\\'"
     };
+    let filters = entity_filter_clause(request);
     let total: i64 = store.conn.query_row(
         &format!(
-            "SELECT COUNT(*) FROM entities WHERE project_id=?1 AND snapshot_id=?2 AND ({columns})"
+            "SELECT COUNT(*) FROM entities WHERE project_id=?1 AND snapshot_id=?2 AND ({columns}){filters}"
         ),
         (&request.project_id, &request.snapshot_id, &pattern),
         |row| row.get(0),
@@ -144,8 +225,15 @@ fn search(
     let offset_i = offset as i64;
     let sql = format!(
         "SELECT payload_json FROM entities
-         WHERE project_id=?1 AND snapshot_id=?2 AND ({columns})
-         ORDER BY entity_id LIMIT ?4 OFFSET ?5"
+         WHERE project_id=?1 AND snapshot_id=?2 AND ({columns}){filters}
+         ORDER BY CASE kind
+             WHEN 'type' THEN 0
+             WHEN 'symbol' THEN 1
+             WHEN 'file' THEN 2
+             WHEN 'module' THEN 3
+             WHEN 'external' THEN 4
+             ELSE 5
+         END, entity_id LIMIT ?4 OFFSET ?5"
     );
     let mut statement = store.conn.prepare(&sql)?;
     let rows = statement.query_map(
@@ -236,10 +324,35 @@ fn source_search(
     }
     let needle = request.query.as_bytes();
     let limit = request.max_nodes as usize;
-    let mut statement = store.conn.prepare(
+    let mut file_filters = String::new();
+    if !request.entity_roles.is_empty() {
+        let list = request
+            .entity_roles
+            .iter()
+            .map(|role| format!("'{}'", role.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        file_filters.push_str(&format!(" AND role IN ({list})"));
+    }
+    if !request.exclude_entity_roles.is_empty() {
+        let list = request
+            .exclude_entity_roles
+            .iter()
+            .map(|role| format!("'{}'", role.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        file_filters.push_str(&format!(" AND role NOT IN ({list})"));
+    }
+    if request
+        .exclude_entity_kinds
+        .contains(&super::store::EntityKind::File)
+    {
+        file_filters.push_str(" AND 1=0");
+    }
+    let mut statement = store.conn.prepare(&format!(
         "SELECT path, blob_digest FROM files
-         WHERE project_id=?1 AND snapshot_id=?2 ORDER BY path",
-    )?;
+         WHERE project_id=?1 AND snapshot_id=?2{file_filters} ORDER BY path"
+    ))?;
     let rows = statement.query_map(
         (&request.project_id, &request.snapshot_id),
         |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
@@ -880,11 +993,86 @@ fn load_edges_with_cap(
         .map(|kind| kind.as_str().to_string())
         .collect();
     let limit = cap.saturating_add(1);
+    let mut joins = String::new();
+    let mut extra = String::new();
+    if !request.entity_roles.is_empty()
+        || !request.entity_kinds.is_empty()
+        || !request.exclude_entity_roles.is_empty()
+        || !request.exclude_entity_kinds.is_empty()
+    {
+        joins.push_str(
+            " JOIN entities s ON s.project_id=r.project_id AND s.snapshot_id=r.snapshot_id AND s.entity_id=r.source_id
+              JOIN entities t ON t.project_id=r.project_id AND t.snapshot_id=r.snapshot_id AND t.entity_id=r.target_id",
+        );
+    }
+    if !request.entity_roles.is_empty() {
+        let list = request
+            .entity_roles
+            .iter()
+            .map(|role| format!("'{}'", role.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        extra.push_str(&format!(" AND s.role IN ({list}) AND t.role IN ({list})"));
+    }
+    if !request.exclude_entity_roles.is_empty() {
+        let list = request
+            .exclude_entity_roles
+            .iter()
+            .map(|role| format!("'{}'", role.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        extra.push_str(&format!(
+            " AND s.role NOT IN ({list}) AND t.role NOT IN ({list})"
+        ));
+    }
+    if !request.entity_kinds.is_empty() {
+        let list = request
+            .entity_kinds
+            .iter()
+            .map(|kind| format!("'{}'", kind.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        extra.push_str(&format!(" AND s.kind IN ({list}) AND t.kind IN ({list})"));
+    }
+    if !request.exclude_entity_kinds.is_empty() {
+        let list = request
+            .exclude_entity_kinds
+            .iter()
+            .map(|kind| format!("'{}'", kind.as_str()))
+            .collect::<Vec<_>>()
+            .join(",");
+        extra.push_str(&format!(
+            " AND s.kind NOT IN ({list}) AND t.kind NOT IN ({list})"
+        ));
+    }
+    if let Some(minimum) = request.min_producer_resolution {
+        let allowed: Vec<&str> = match minimum {
+            crate::store::ProducerResolution::NameMatch => {
+                vec!["name_match", "cross_file_resolution", "direct"]
+            }
+            crate::store::ProducerResolution::CrossFileResolution => {
+                vec!["cross_file_resolution", "direct"]
+            }
+            crate::store::ProducerResolution::Direct => vec!["direct"],
+            crate::store::ProducerResolution::Declared => vec!["declared"],
+        };
+        let list = allowed
+            .iter()
+            .map(|item| format!("'{item}'"))
+            .collect::<Vec<_>>()
+            .join(",");
+        extra.push_str(&format!(" AND r.producer_resolution IN ({list})"));
+    }
+    if request.require_call_site {
+        extra.push_str(" AND r.call_site_line IS NOT NULL");
+    }
     let (sql, params) = if kinds.is_empty() {
         (
             format!(
-                "SELECT relation_id, source_id, target_id, kind, payload_json FROM relations
-                 WHERE project_id=?1 AND snapshot_id=?2 ORDER BY relation_id LIMIT {limit}"
+                "SELECT r.relation_id, r.source_id, r.target_id, r.kind, r.payload_json
+                 FROM relations r{joins}
+                 WHERE r.project_id=?1 AND r.snapshot_id=?2{extra}
+                 ORDER BY r.relation_id LIMIT {limit}"
             ),
             vec![request.project_id.clone(), request.snapshot_id.clone()],
         )
@@ -894,9 +1082,10 @@ fn load_edges_with_cap(
         params.extend(kinds.iter().cloned());
         (
             format!(
-                "SELECT relation_id, source_id, target_id, kind, payload_json FROM relations
-                 WHERE project_id=?1 AND snapshot_id=?2 AND kind IN ({})
-                 ORDER BY relation_id LIMIT {limit}",
+                "SELECT r.relation_id, r.source_id, r.target_id, r.kind, r.payload_json
+                 FROM relations r{joins}
+                 WHERE r.project_id=?1 AND r.snapshot_id=?2 AND r.kind IN ({}){extra}
+                 ORDER BY r.relation_id LIMIT {limit}",
                 placeholders.join(",")
             ),
             params,
@@ -1271,6 +1460,12 @@ mod tests {
             max_nodes: 1,
             max_depth: 1,
             cursor: None,
+            entity_kinds: Vec::new(),
+            entity_roles: Vec::new(),
+            exclude_entity_roles: Vec::new(),
+            exclude_entity_kinds: Vec::new(),
+            min_producer_resolution: None,
+            require_call_site: false,
         };
         let result = traverse(&store, &request, "digest", 0, false).unwrap();
         assert_eq!(result["pagination"]["edge_scan_truncated"], true);
@@ -1306,6 +1501,12 @@ mod tests {
             max_nodes: 10,
             max_depth: 2,
             cursor: None,
+            entity_kinds: Vec::new(),
+            entity_roles: Vec::new(),
+            exclude_entity_roles: Vec::new(),
+            exclude_entity_kinds: Vec::new(),
+            min_producer_resolution: None,
+            require_call_site: false,
         };
         let result = traverse_with_cap(&store, &request, "digest", 0, false, 2).unwrap();
         assert_eq!(result["pagination"]["edge_scan_truncated"], true);

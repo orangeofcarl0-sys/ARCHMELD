@@ -2480,7 +2480,7 @@
             "anchor_index": 0,
             "entity_id": "syn.34f096bdc96a3119f0410078c7b952b4e4b82c652734184a9ef7d409559f847d",
             "max_bytes": 1024,
-            "path": "C:/Windows/win.ini",
+            "path": "<path>",
             "project_id": "project.mcp",
             "snapshot_id": "sha256:9d2c5c260e5567ca11dd520b989cc9f255b7d2e23976e13755751561acaff693"
           },

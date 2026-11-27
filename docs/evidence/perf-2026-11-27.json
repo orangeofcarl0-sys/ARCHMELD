@@ -1,0 +1,187 @@
+{
+  "schema": "archmeld-perf/1",
+  "recorded_at": "2026-11-27T19:10:00+00:00",
+  "host": {
+    "platform": "windows x64",
+    "cpu_logical": 24,
+    "memory_gib": 16,
+    "rust": "1.94.1 (e408947bf 2026-03-25) x86_64-pc-windows-gnu",
+    "cargo": "1.94.1 (29ea6fb6a 2026-03-24)",
+    "gcc": "gcc.EXE (Rev6, Built by MSYS2 project) 16.1.0",
+    "temp_root": "<path>",
+    "tools_root": "<path>"
+  },
+  "scope": {
+    "changed": [
+      "tooling/build_helper.py cargo_env is the single environment source",
+      "tooling/cargo_test.py --lane/--target-dir and robust -j parsing",
+      "baseline/run_cmd.py chooses cargo_env for cargo/rustc",
+      "tooling/test_lane.py fast/core/server/parser/evidence/full lanes",
+      "tooling/rocksdb_cache.py prebuilt librockdb.a cache",
+      "tooling/link_probe.py lld probes",
+      "tooling/install_sccache.py pinned sccache + smoke test",
+      "Cargo.toml [profile.test] debug=1 (librocksdb-sys debug=false)"
+    ],
+    "not_changed": [
+      "product runtime code",
+      "test assertions, tolerances or risk budgets",
+      "release artifacts"
+    ]
+  },
+  "baseline": {
+    "description": "source-built RocksDB, BFD, CARGO_INCREMENTAL=0, -j2, canonical env",
+    "command_ids": {
+      "server_lib_no_run": "perf-baseline-server-lib-no-run-2",
+      "core_no_run": "perf-baseline-core-no-run",
+      "api_lib_no_run": "perf-baseline-api-lib-no-run-2"
+    },
+    "server_lib_no_run_s": 974.29,
+    "core_no_run_s": 171.867,
+    "api_lib_no_run_s": 5.082
+  },
+  "environment_unification": {
+    "description": "same commands after all entry points share cargo_env; the existing RocksDB fingerprint stayed valid",
+    "command_ids": {
+      "server_lib_no_run": "perf-env-unified-server-warm",
+      "core_no_run": "perf-env-unified-core-warm",
+      "api_lib_no_run": "perf-env-unified-api-warm"
+    },
+    "server_lib_no_run_s": 2.901,
+    "core_no_run_s": 1.387,
+    "api_lib_no_run_s": 1.697
+  },
+  "rocksdb_prebuilt_cache": {
+    "crate": "librocksdb-sys 0.16.0+8.10.0",
+    "features": ["bzip2", "lz4", "snappy", "static", "zlib", "zstd"],
+    "archive": "<path>",
+    "archive_sha256": "2d3b9a348e1906fb01accfe11f50588025a585ff33c70f0d1a00ff9fd9ac8f26",
+    "archive_bytes": 228191280,
+    "source_archive": "target/debug/build/librocksdb-sys-bbca3a7ec03e7cf9/out",
+    "fresh_target_build_and_test_delete_s": 103.37,
+    "fresh_target_command_id": "perf-rocksdb-cache-fresh-verify",
+    "runtime_smoke": "codegraph --lib test_delete (RocksDB backend): 4 passed"
+  },
+  "lld": {
+    "version": "LLD 21.1.8 (rust-lang/llvm-project 00d23d10dc48c6bb9d57ba96d4a748d85d77d0c7, GNU compatible)",
+    "shim": "rustup 1.94.1-x86_64-pc-windows-gnu lib/rustlib/x86_64-pc-windows-gnu/bin/gcc-ld",
+    "probe_command_id": "perf-link-probe-workspace-2",
+    "c_link_s": 0.25,
+    "rust_link_s": 0.406,
+    "workspace_link_s": 294.422,
+    "workspace_probe": "codegraph-server --lib --no-run in target-lld with prebuilt RocksDB"
+  },
+  "sccache": {
+    "version": "sccache 0.20.1",
+    "sha256": "307acbee1a49766d7d73d7b5e4e243454f2c10d6f01e2ef1ef1eee14e76d6e7f",
+    "install_method": "cargo install --locked --no-default-features (local disk cache only)",
+    "smoke_hits": 2,
+    "smoke_probes": ["c", "cpp", "rust"],
+    "parser_cold_target_s": 85.977,
+    "parser_second_target_s": 43.92,
+    "parser_second_target_hits": 73,
+    "parser_second_target_misses": 103,
+    "command_ids": {
+      "cold": "perf-sccache-parser-rust-cold-3",
+      "second_target": "perf-sccache-parser-rust-warm-4"
+    }
+  },
+  "fast_lane": {
+    "description": "prebuilt RocksDB + lld + sccache + [profile.test] debug=1, -j4; benchmark/t3_stress/language_*/LSP packs excluded",
+    "without_sccache": {
+      "command_id": "perf-fast-lane-4-warm",
+      "total_s": 262.119,
+      "groups_s": {
+        "core": 218.563,
+        "api": 4.015,
+        "parser": 22.031,
+        "server": 12.454
+      }
+    },
+    "with_sccache_first_run": {
+      "command_id": "perf-fast-lane-5-sccache",
+      "total_s": 615.562,
+      "groups_s": {
+        "core": 297.547,
+        "api": 40.859,
+        "parser": 29.563,
+        "server": 244.984
+      },
+      "note": "RUSTC_WRAPPER/CC/CXX change invalidated the warm artifacts; 34 hits / 281 misses"
+    },
+    "with_sccache_warm": {
+      "command_id": "perf-fast-lane-6-sccache-warm",
+      "total_s": 135.521,
+      "groups_s": {
+        "core": 124.016,
+        "api": 1.109,
+        "parser": 4.75,
+        "server": 2.782
+      }
+    }
+  },
+  "timing_tests": {
+    "benchmark": {
+      "command_id": "perf-verify-benchmark-2",
+      "duration_s": 223.074,
+      "result": "passed (p95 budgets unchanged)"
+    },
+    "t3_stress": {
+      "command_id": "perf-verify-t3-stress",
+      "duration_s": 121.656,
+      "result": "passed (300s/180s budgets unchanged)"
+    }
+  },
+  "cleanup": {
+    "removed_incremental": "target/debug/incremental (~15 GiB pre-cleanup audit)",
+    "removed_rocksdb_dirs_kib": 6915219,
+    "removed_rocksdb_dirs": [
+      "f1e05f426aca04fc",
+      "60a690f1b1ced7d4",
+      "e77b2d07b716423a",
+      "579b5683f08b7271",
+      "66545f6b90273717",
+      "b3930622dc49d783",
+      "88aa4a917136e593",
+      "3ab3dc6daa49a51d",
+      "dbb1b2d90af7464a",
+      "ade5833facccf0be",
+      "0bb18a22a610acd0",
+      "e0543efb943a9d10",
+      "09628158c16889fd",
+      "53a83bd4e0b75e0d",
+      "b29bd8c3d1224856"
+    ],
+    "kept_rocksdb_dirs": [
+      "23dea9578a193465",
+      "4521cd683e15b6e6",
+      "bbca3a7ec03e7cf9"
+    ],
+    "estimated_total_reclaimed_gib": 21.6,
+    "free_space_after_kib": 119914916
+  },
+  "evidence_lane": {
+    "command": "py -3.11 tooling/test_lane.py --lane evidence --json",
+    "head": "7474343d",
+    "duration_s": 452.172,
+    "exit_code": 0,
+    "tests": {
+      "runtime_linkage_s": 73.56,
+      "medium_projects_s": 65.36,
+      "rename_apply_s": 181.61,
+      "language_matrix_s": 17.26
+    },
+    "command_ids": {
+      "runtime_linkage": "b030-language_runtime_linkage-perf-20261127-111213",
+      "medium_projects": "b030-language_medium_projects-perf-20261127-111213",
+      "rename_apply": "b030-language_rename_apply-perf-20261127-111213",
+      "language_matrix": "b030-language_matrix-perf-20261127-111213",
+      "verifier": "b030-verify-perf-20261127-111213"
+    },
+    "verifier": "passed (status=passed, blockers=[], r1_naming_allowed=true)"
+  },
+  "notes": [
+    "All durations come from baseline/commands.ndjson records or the test-lane JSON captured on 2026-11-27.",
+    "The fast lane excludes benchmark/t3_stress and the language/LSP tests by default; those were run separately and passed.",
+    "The evidence lane remains source-built RocksDB + BFD + j2; its AT067 rerun passed at HEAD 7474343d."
+  ]
+}

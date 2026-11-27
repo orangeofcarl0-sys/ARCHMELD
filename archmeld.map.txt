@@ -1,0 +1,28 @@
+#ARCHMELD-MAP: 1
+#snapshot: sha256:3f7fef3227b46b1e0494d9dd387949356ed3c3e7c9dffe1396f81356a867d7b2
+#scope: code
+#observe: **
+#exclude: target/**,target-linux/**,dist/**
+===crates/archmeld-core/src/store/===
+mod.rs: F:SQLite ledger, snapshot scope, CAS artifacts, batches, index_runs. | R:file:crates/archmeld-core/src/store/types.rs,file:crates/archmeld-core/src/store/migrations/0019_evidence_model.sql | A:Schema migrations are append-only and versioned. | S:No path may escape the project/snapshot scope.
+types.rs: F:Contract types, roles, relation provenance and coverage states. | R:file:crates/archmeld-core/src/store/mod.rs | A:Optional 1.1 fields default for old ledgers. | S:Candidate relations never become resolved_call.
+===crates/archmeld-core/src/===
+snapshot.rs: F:Workspace policy, byte and git identity, file roles. | R:file:crates/archmeld-core/src/drift.rs | A:Tracked clean files use index blobs; dirty files use working bytes. | S:Policy is recorded in the snapshot and reused by drift.
+drift.rs: F:Workspace drift under the snapshot policy with explicit omissions. | R:file:crates/archmeld-core/src/snapshot.rs,file:crates/archmeld-core/src/review.rs | A:Ignored, binary and oversized files are omitted, not added. | S:needs_review is exactly state=changed.
+bridge.rs: F:Import archmeld-export-v1, preserve provenance and index coverage. | R:file:crates/archmeld-core/src/query.rs,file:crates/archmeld-core/src/store/import.rs | A:1.2 manifest index is authoritative; stdout is a legacy fallback. | S:Never promote candidates or invent call sites.
+query.rs: F:Bounded snapshot-scoped graph queries with filters and cursors. | R:file:crates/archmeld-core/src/store/types.rs | A:Inclusion filters apply to both endpoints; exclusions remove any incident edge. | S:Relation filters are traversal-only; hard caps are explicit.
+context.rs: F:Budgeted context pack with mandatory explicit seeds. | R:file:crates/archmeld-core/src/query.rs | A:Explicit seed metadata and one snippet are retained before optional content. | S:Omissions are counted and trimmed, never silently dropped.
+brief.rs: F:One-screen project/change/map brief from existing facts. | R:file:crates/archmeld-core/src/status.rs,file:crates/archmeld-core/src/review.rs | A:Auto recipe performs one workspace review and reuses it. | S:declared is not confirmed; candidate is not a resolved call.
+status.rs: F:Projects, snapshots, coverage, language/origin/index/map summaries. | R:file:crates/archmeld-core/src/drift.rs | A:Coverage layers are named separately. | S:Freshness is read-only and never mutates the workspace.
+review.rs: F:Static workspace review against a frozen snapshot. | R:file:crates/archmeld-core/src/drift.rs | A:Verification is not_run; no test or build is executed. | S:One needs_review definition shared with status/brief.
+apply.rs: F:Staged, hash-bound apply with recovery and writer lease. | R:file:crates/archmeld-core/src/hash.rs | A:Only declared writes with content/contract hashes are applied. | S:Never overwrite uncommitted user changes.
+cognition_map.rs: F:Read-only parsing and validation of archmeld.map.txt. | R:file:crates/archmeld-core/src/source.rs | A:F/A/S are model-authored; refs resolve against the map snapshot. | S:No write, no relation refs, no candidate promotion.
+===crates/archmeld-api/src/===
+cli.rs: F:CLI commands for index/init/refresh/review/brief/map/report. | R:file:crates/archmeld-core/src/snapshot.rs,file:crates/archmeld-core/src/bridge.rs | A:init and refresh accept the same index policy as index. | S:No commit or push; helper failures are explicit.
+mcp.rs: F:Read-only MCP stdio surface with eight tools and paging. | R:file:crates/archmeld-api/src/lib.rs | A:Summary pages stay bounded; cursors bind snapshot and request. | S:No approval, path or write tool.
+lib.rs: F:Local HTTP API, workspace-handle authorization and static reads. | R:file:crates/archmeld-api/src/cli.rs | A:Anonymous loopback is allowed only without a token. | S:Foreign hosts/origins and arbitrary paths are rejected.
+===crates/codegraph-server/src/===
+indexer.rs: F:Workspace indexing with skip reasons, parser-error paths and include overrides. | R:file:crates/codegraph-server/examples/archmeld_export.rs | A:Indexer limits may be stricter than capture limits. | S:Parser failures are recorded with paths, never hidden.
+watcher.rs: F:Cross-file import/call/type resolution plus deferred Implements. | R:file:crates/codegraph-rust/src/mapper.rs | A:Repeated resolution is idempotent. | S:Ambiguous trait names stay unresolved.
+===crates/codegraph-server/examples/===
+archmeld_export.rs: F:One-shot in-memory NDJSON helper with schema/version flags. | R:file:crates/codegraph/src/export/ndjson.rs | A:No RocksDB runtime, model or watcher. | S:Manifest index block is emitted with schema 1.2.

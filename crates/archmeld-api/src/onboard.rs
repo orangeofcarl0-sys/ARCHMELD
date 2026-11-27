@@ -418,9 +418,29 @@ fn read_response(
 /// preflight hint; the snapshot capture remains the authority on what is
 /// indexed.
 pub fn count_source_files(workspace: &Path, max_files: usize) -> Result<Value, String> {
+    count_source_files_with(workspace, max_files, &[], &[], None)
+}
+
+/// Count files using the same include/exclude/size options the index helper
+/// receives, so `init --dry-run` does not promise a different scope.
+pub fn count_source_files_with(
+    workspace: &Path,
+    max_files: usize,
+    include_dirs: &[String],
+    exclude_dirs: &[String],
+    max_file_size: Option<u64>,
+) -> Result<Value, String> {
     let mut count = 0usize;
     let mut truncated = false;
-    walk_files(workspace, max_files, &mut count, &mut truncated)?;
+    walk_files(
+        workspace,
+        max_files,
+        include_dirs,
+        exclude_dirs,
+        max_file_size,
+        &mut count,
+        &mut truncated,
+    )?;
     Ok(json!({
         "files": count,
         "truncated": truncated,
@@ -431,6 +451,9 @@ pub fn count_source_files(workspace: &Path, max_files: usize) -> Result<Value, S
 fn walk_files(
     dir: &Path,
     max_files: usize,
+    include_dirs: &[String],
+    exclude_dirs: &[String],
+    max_file_size: Option<u64>,
     count: &mut usize,
     truncated: &mut bool,
 ) -> Result<(), String> {
@@ -455,24 +478,44 @@ fn walk_files(
         let name = entry.file_name();
         let name = name.to_string_lossy();
         if file_type.is_dir() {
-            if matches!(
-                name.as_ref(),
-                ".git"
-                    | ".hg"
-                    | ".svn"
-                    | "node_modules"
-                    | "target"
-                    | ".venv"
-                    | "__pycache__"
-                    | ".mypy_cache"
-                    | ".pytest_cache"
-                    | "dist"
-                    | "build"
-            ) {
+            let included = include_dirs.iter().any(|dir| dir == name.as_ref());
+            if !included
+                && (matches!(
+                    name.as_ref(),
+                    ".git"
+                        | ".hg"
+                        | ".svn"
+                        | "node_modules"
+                        | "target"
+                        | ".venv"
+                        | "__pycache__"
+                        | ".mypy_cache"
+                        | ".pytest_cache"
+                        | "dist"
+                        | "build"
+                ) || exclude_dirs.iter().any(|dir| dir == name.as_ref()))
+            {
                 continue;
             }
-            walk_files(&entry.path(), max_files, count, truncated)?;
+            walk_files(
+                &entry.path(),
+                max_files,
+                include_dirs,
+                exclude_dirs,
+                max_file_size,
+                count,
+                truncated,
+            )?;
         } else if file_type.is_file() {
+            if let Some(limit) = max_file_size {
+                if entry
+                    .metadata()
+                    .map(|metadata| metadata.len() > limit)
+                    .unwrap_or(false)
+                {
+                    continue;
+                }
+            }
             *count += 1;
             if *count >= max_files {
                 *truncated = true;

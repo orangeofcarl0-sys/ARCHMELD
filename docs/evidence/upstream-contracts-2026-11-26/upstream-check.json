@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "generated_by": "tooling/upstream.py check",
+  "upstream": "codegraph",
+  "pin": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "latest": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+  "ref": "refs/heads/main",
+  "update_available": false,
+  "auto_follow_latest": false,
+  "command": {
+    "argv": [
+      "git",
+      "ls-remote",
+      "upstream",
+      "refs/heads/main"
+    ],
+    "cwd": "<path>",
+    "exit_code": 0,
+    "timed_out": false,
+    "started_at": "2026-11-25T18:57:50.832612+00:00",
+    "finished_at": "2026-11-25T18:57:51.830262+00:00",
+    "duration_s": 0.998,
+    "stdout": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa\trefs/heads/main\n",
+    "stderr": "",
+    "stdout_sha256": "eeb39a8e17cf9528cf4599769c9e94f9ba0741b5d894fc400c02f15dd49fb64f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

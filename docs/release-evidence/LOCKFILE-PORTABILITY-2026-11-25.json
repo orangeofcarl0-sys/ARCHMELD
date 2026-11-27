@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "scope": "P2 portable lockfile resolution",
+  "generated_by": "manual schema migration + tooling/doctor.py + tooling/upstream.py verify",
+  "changes": {
+    "toolchains.lock.json": "lock_version 1.1; every present tool gains observed_path, path_kind, strategy, and path_env/relative_path where applicable",
+    "adapters/languages/tools.lock.json": "path_env/relative_path/observed_path/path_kind for clangd, rust-analyzer, JDKs, jdtls, dotnet, csharp-ls, go, gopls",
+    "adapters/languages/fixtures.lock.json": "source_path_env/source_relative_path and archive.path_env/relative_path; build tool literals replaced with {gcc}/{gxx}/{go}/{nuget_packages}",
+    "adapters/languages/profiles": "path_env/relative_path added to c-cpp, csharp, go, java",
+    "tooling/doctor.py": "resolves path_env + relative_path, ARCHMELD_TOOLS_ROOT, strategy=which/rustup_which, then the recorded path; no KeyError on a missing path",
+    "tooling/upstream.py": "locks.portable check"
+  },
+  "resolution_order": [
+    "explicit path_env + relative_path",
+    "ARCHMELD_TOOLS_ROOT + relative_path",
+    "strategy=which",
+    "strategy=rustup_which",
+    "recorded path (observed, not a contract)"
+  ],
+  "hashes": {
+    "toolchains.lock.json": "75a77064e915ce9158ae0fda9803a020c81fcdf3450234bc4b842619bc003399",
+    "adapters/languages/tools.lock.json": "73f6e9fdcc6e6729452784699ddc4e49f9cdf54a9bfeb067344af1c58e0d958f",
+    "adapters/languages/fixtures.lock.json": "7c09cd3681a9f9d917213d5819930384fe4c42368d746401c15d744ea2af2ce2",
+    "adapters/languages/profiles/c-cpp.json": "514d4514eccf8bf4fbc2617229e94ed7b66f9ad2f0db37aabe6f988e7514db86",
+    "adapters/languages/profiles/csharp.json": "8707790caa2bad121ec0e4913b8516786610e8739e65c71c1287e13ec3d20179",
+    "adapters/languages/profiles/go.json": "b9c9afca0fac933d2d748f58b15d6edf23dcc4b5210373d352706b1f4388c69e",
+    "adapters/languages/profiles/java.json": "8b572019bbea070d535603cffbe1203189747b69e2e4a7dd12167fafcc727022"
+  },
+  "commands": [
+    "p2-doctor",
+    "p2-upstream-verify"
+  ],
+  "historical_note": "This changes the hashes recorded for toolchains.lock.json in UPSTREAM-0.21.2-2026-11-24.json. That record remains valid for the merge it documents and is not rewritten; the new hash is recorded here and in UPSTREAM-STATUS-2026-11-25.json.",
+  "limitations": [
+    "legacy path/source_path/archive.path fields are retained for old readers",
+    "fixtures.lock.json build placeholders are documentation for now; the medium-project test resolves tools through tests/support",
+    "historical evidence hashes are not rewritten"
+  ]
+}

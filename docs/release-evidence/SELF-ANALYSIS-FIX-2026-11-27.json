@@ -1,0 +1,834 @@
+{
+  "schema_version": "1.0",
+  "id": "SELF-ANALYSIS-FIX-2026-11-27",
+  "status": "passed",
+  "head_at_snapshot": "f36c9870",
+  "snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5",
+  "run_id": "run.archmeld-self.index.1795732916",
+  "commits": {
+    "repair": "5622b2a7755bd058ad5b2801c252357e75a1f2dd",
+    "test_fix": "059c49e335ed926950c565ef571ead19ab422732",
+    "patch_manifest": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+    "test_records": "509059d9932fa83f27e9a62fef1a2ff4b8f1be29",
+    "acceptance_record": "c804d66c910c49e8eee2fefa7eb81311e358c3da",
+    "cursor_fix": "5012abef",
+    "summary_fix": "c0280a8f",
+    "final_records": "da6fe8f3",
+    "query_filters": "437880a7",
+    "onboarding": "437880a7",
+    "build_env": "9a1cd6d4",
+    "snapshot_policy": "dd124ca1",
+    "map": "baa23829",
+    "release_validation": "f36c9870"
+  },
+  "metrics": {
+    "snapshot_files": 1868,
+    "files_total": 776,
+    "files_parsed": 776,
+    "files_skipped": 0,
+    "entities": 11171,
+    "relations": 46422,
+    "collapsed_edges": 4986,
+    "implements_relations": 47,
+    "cross_file_implements": {
+      "resolved": 25,
+      "ambiguous": 0
+    },
+    "examples_entities": 65,
+    "parser_errors": 3,
+    "parser_error_languages": {
+      "kotlin": 3
+    },
+    "languages": {
+      "kotlin": 318,
+      "toml": 274,
+      "bash": 14
+    },
+    "status_summary_bytes": 11773,
+    "review_summary_bytes": 1880,
+    "context": {
+      "selected_entities": 11,
+      "source_snippets": 7,
+      "estimated_tokens": 3856,
+      "truncated": true
+    },
+    "paging": {
+      "files_total": 600,
+      "paged_unique": 600,
+      "full_unique": 600,
+      "paged_equals_full": true,
+      "max_page_bytes": 534980,
+      "all_pages_under_1mb": true
+    },
+    "paged_entities": null,
+    "p04_filter_seed": "direct call site; filtered relations=4; symbols rejection verified",
+    "p11_impact": {
+      "default_relations": 399,
+      "excluded_relations": 475,
+      "default_has_test": true,
+      "excluded_has_test": false
+    },
+    "p12_store_kinds": [
+      "type",
+      "symbol",
+      "module",
+      "external"
+    ],
+    "p16": {
+      "vendored_default": 0,
+      "config_default": 20,
+      "config_excluded": 0
+    },
+    "p20_files_origin": {
+      "tracked": 1868
+    },
+    "p23": {
+      "review_calls": 1,
+      "review_ms": 12680
+    },
+    "p17": {
+      "entries": 18,
+      "confirmed_refs": 23,
+      "orphan": 0,
+      "ambiguous": 0
+    },
+    "timings": {
+      "status_s": 7.979,
+      "review_s": 11.786,
+      "brief_s": 14.426,
+      "brief_review_calls": 1,
+      "brief_review_ms": 11828
+    },
+    "map": {
+      "entries": 18,
+      "confirmed_refs": 23,
+      "orphan": 0,
+      "ambiguous": 0
+    },
+    "files_origin": {
+      "tracked": 1868
+    }
+  },
+  "acceptance": {
+    "state": "<path>",
+    "project": "archmeld-self",
+    "metrics": {
+      "snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5",
+      "implements_relations": 47,
+      "examples_entities": 65,
+      "cli_commit": "dd124ca1",
+      "helper_commit": "0113b6c7080f8aff2c6f123dfe7dc152c9a00318",
+      "export_schema": "1.2",
+      "parse": {
+        "by_language": {
+          "bash": 8,
+          "cpp": 4,
+          "csharp": 2,
+          "kotlin": 39,
+          "python": 61,
+          "rust": 560,
+          "toml": 49,
+          "typescript": 53
+        },
+        "cross_file_implements": {
+          "ambiguous": 0,
+          "resolved": 25
+        },
+        "files_parsed": 776,
+        "files_skipped": 0,
+        "files_total": 776,
+        "max_depth_reached": false,
+        "max_files_reached": false,
+        "parser_errors": [
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/CodeGraphServerResolver.kt"
+          },
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/EngineLifecycle.kt"
+          },
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/test/kotlin/ai/codegraph/jetbrains/mcp/McpRegistrationTest.kt"
+          }
+        ],
+        "skipped_by_reason": {
+          "exclude_pattern": 10,
+          "excluded_dir": 49,
+          "hidden": 8,
+          "too_large": 2,
+          "unsupported_extension": 664
+        }
+      },
+      "coverage": {
+        "expected_count": 14227,
+        "limitations": [
+          "line-only anchors; upstream exposes no byte ranges",
+          "call/reference edges are syntax candidates, not resolved semantics",
+          "3056 upstream node(s) merged by content identity",
+          "4986 duplicate edge(s) collapsed into occurrence counts",
+          "45676 relation(s) have no call-site line; evidence_scope=artifact"
+        ],
+        "observed_count": 14227,
+        "omitted_count": 0,
+        "scope": "codegraph structural export over the declared snapshot",
+        "state": "complete",
+        "unresolved_count": 0
+      }
+    },
+    "checks": [
+      {
+        "name": "export_schema_1_2",
+        "ok": true,
+        "detail": "1.2"
+      },
+      {
+        "name": "parser_errors_have_paths",
+        "ok": true,
+        "detail": [
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/CodeGraphServerResolver.kt"
+          },
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/EngineLifecycle.kt"
+          },
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/test/kotlin/ai/codegraph/jetbrains/mcp/McpRegistrationTest.kt"
+          }
+        ]
+      },
+      {
+        "name": "implements_at_least_40",
+        "ok": true,
+        "detail": 47
+      },
+      {
+        "name": "examples_entities_positive",
+        "ok": true,
+        "detail": 65
+      },
+      {
+        "name": "helper_schema_1_2",
+        "ok": true,
+        "detail": {
+          "exit": 0,
+          "stdout": "1.2"
+        }
+      },
+      {
+        "name": "helper_version_launches",
+        "ok": true,
+        "detail": {
+          "exit": 0,
+          "stdout": "archmeld-export-v1 helper 0.21.2 schema 1.2 commit 0113b6c7"
+        }
+      },
+      {
+        "name": "status_summary_under_256kb",
+        "ok": true,
+        "detail": 11773
+      },
+      {
+        "name": "status_clean",
+        "ok": true,
+        "detail": {
+          "added": [],
+          "added_total": 0,
+          "added_truncated": false,
+          "affected_architectures": [],
+          "affected_claims": [],
+          "affected_entities": [],
+          "affected_relations": [],
+          "base_snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5",
+          "changed": [],
+          "changed_total": 0,
+          "coverage": {
+            "expected_count": 1901,
+            "limitations": [
+              "binary: 29 file(s)",
+              "excluded_dir: 1 file(s)",
+              "too_large: 3 file(s)"
+            ],
+            "observed_count": 1868,
+            "omitted_count": 33,
+            "policy_source": "snapshot",
+            "scope": "eligible workspace files under the snapshot workspace_policy",
+            "state": "partial",
+            "unresolved_count": 0
+          },
+          "deleted": [],
+          "deleted_total": 0,
+          "history_mutation": "none",
+          "needs_review": false,
+          "omitted": [
+            {
+              "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.exe",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.pdb",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.assets.cache",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.pdb",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/apphost.exe",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/ref/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/refint/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/traces/fixtures/perfetto-counter-state.pftrace",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/traces/fixtures/tracy-zones-plots.tracy",
+              "reason": "binary"
+            },
+            {
+              "path": "crates/codegraph-cobol/tree-sitter-cobol-src/parser.c",
+              "reason": "too_large"
+            },
+            {
+              "path": "crates/codegraph-dart/tree-sitter-dart-src/parser.c",
+              "reason": "too_large"
+            },
+            {
+              "path": "crates/codegraph-perl/tree-sitter-perl-src/parser.c",
+              "reason": "too_large"
+            },
+            {
+              "path": "crates/codegraph-python/tests/fixtures/test_project/__pycache__/ignored.py",
+              "reason": "excluded_dir"
+            },
+            {
+              "path": "docs/evidence/b007-workbench.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b016-trace-source-jump.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-clean-2.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-clean-3.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-clean.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-paint-1.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-paint-2.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-paint-3.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/mcp-probe-core.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/mcp-probe-path-source.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/mcp-status.jsonl.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/review-diff.raw.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/status.raw.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "jetbrains/gradle/wrapper/gradle-wrapper.jar",
+              "reason": "binary"
+            },
+            {
+              "path": "upstream-probes/scip/cpp.scip",
+              "reason": "binary"
+            },
+            {
+              "path": "upstream-probes/scip/python.scip",
+              "reason": "binary"
+            },
+            {
+              "path": "upstream-probes/scip/rustdemo.scip",
+              "reason": "binary"
+            },
+            {
+              "path": "vscode/images/icon.png",
+              "reason": "binary"
+            }
+          ],
+          "policy": {
+            "excluded_dirs": [
+              ".git",
+              ".hg",
+              ".svn",
+              ".archmeld",
+              "node_modules",
+              "target",
+              "target-linux",
+              "dist",
+              "build",
+              "out",
+              "coverage",
+              ".venv",
+              "__pycache__",
+              ".mypy_cache",
+              ".pytest_cache",
+              ".tox",
+              ".gradle",
+              ".dart_tool"
+            ],
+            "gitignored": 126362,
+            "include_untracked": false,
+            "max_depth": 64,
+            "max_file_bytes": 8388608,
+            "source": "snapshot",
+            "untracked_not_included": 0
+          },
+          "source_mutation": "none",
+          "stale_changesets": [],
+          "stale_plans": [],
+          "state": "clean"
+        }
+      },
+      {
+        "name": "language_kotlin",
+        "ok": true,
+        "detail": {
+          "bash": 14,
+          "cpp": 8,
+          "csharp": 11,
+          "javascript": 180,
+          "kotlin": 318,
+          "python": 440,
+          "rust": 8313,
+          "toml": 274,
+          "typescript": 434,
+          "unknown": 1179
+        }
+      },
+      {
+        "name": "language_toml",
+        "ok": true,
+        "detail": {
+          "bash": 14,
+          "cpp": 8,
+          "csharp": 11,
+          "javascript": 180,
+          "kotlin": 318,
+          "python": 440,
+          "rust": 8313,
+          "toml": 274,
+          "typescript": 434,
+          "unknown": 1179
+        }
+      },
+      {
+        "name": "language_bash",
+        "ok": true,
+        "detail": {
+          "bash": 14,
+          "cpp": 8,
+          "csharp": 11,
+          "javascript": 180,
+          "kotlin": 318,
+          "python": 440,
+          "rust": 8313,
+          "toml": 274,
+          "typescript": 434,
+          "unknown": 1179
+        }
+      },
+      {
+        "name": "status_files_origin_visible",
+        "ok": true,
+        "detail": {
+          "files_origin": {
+            "tracked": 1868
+          },
+          "file_count": 1868
+        }
+      },
+      {
+        "name": "review_summary_under_1mb",
+        "ok": true,
+        "detail": 1880
+      },
+      {
+        "name": "review_agrees_with_status",
+        "ok": true,
+        "detail": {
+          "state": "clean",
+          "needs_review": false
+        }
+      },
+      {
+        "name": "store_symbol_found",
+        "ok": true,
+        "detail": [
+          {
+            "anchors": [
+              {
+                "blob_digest": "sha256:add12f3b2413fe1a0a03f268afd08021e2aa89e9ea51e2f16b184781d6b94fe7",
+                "byte_end": null,
+                "byte_start": null,
+                "encoding": "utf-8",
+                "line_end": 59,
+                "line_start": 55,
+                "path": "crates/archmeld-core/src/store/mod.rs",
+                "precision": "line_only"
+              }
+            ],
+            "backend_refs": [
+              {
+                "adapter_id": "codegraph",
+                "backend_id": "2112",
+                "run_id": "run.archmeld-self.index.1795732916"
+              }
+            ],
+            "config_digest": "sha256:4b223e3711fc2d16602eb261bd678c1b73beffd5222b22eab37ee5886dc8a497",
+            "external": false,
+            "id": "syn.85335bb0a8ccc0631cb887d68421b8790b4ce74f9cc801eb43470c6aebd4040a",
+            "kind": "type",
+            "language": "rust",
+            "project_id": "archmeld-self",
+            "qualified_name": "crates/archmeld-core/src/store/mod.rs::Store",
+            "role": "source",
+            "snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5"
+          }
+        ]
+      },
+      {
+        "name": "context_4000_non_empty",
+        "ok": true,
+        "detail": {
+          "selected_entities": 11,
+          "source_snippets": 7,
+          "budget": {
+            "bytes": 16000,
+            "estimated_tokens": 3856,
+            "tokenizer": "deterministic bytes/4 estimate; not a model tokenizer",
+            "tokens": 4000,
+            "truncated": true
+          }
+        }
+      },
+      {
+        "name": "p04_producer_and_site_filter",
+        "ok": true,
+        "detail": {
+          "seed": {
+            "entity_id": "syn.e31a0465836dcd97a8d9bf35ed4085dea0e76aa9ed02f5bce44884eec06fe8b2",
+            "producer_resolution": "direct",
+            "call_site_line": 235
+          },
+          "returned": 4,
+          "resolutions": [
+            "direct"
+          ]
+        }
+      },
+      {
+        "name": "p04_rejects_relation_filter_on_symbols",
+        "ok": true,
+        "detail": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"code\":\"invalid_request\",\"message\":\"invalid input: relation_kinds, min_producer_resolution and require_call_site are only valid for neighbors, path and impact queries\",\"next_action\":\"call archmeld_capabilities for the implemented surface\",\"status\":\"implemented\"}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "name": "p11_exclude_test_from_impact",
+        "ok": true,
+        "detail": {
+          "default_relations": 401,
+          "excluded_relations": 475,
+          "default_has_test": true,
+          "excluded_has_test": false
+        }
+      },
+      {
+        "name": "p16_vendored_excluded_by_default",
+        "ok": true,
+        "detail": {
+          "default": 0
+        }
+      },
+      {
+        "name": "p16_exclude_config",
+        "ok": true,
+        "detail": {
+          "default": 20,
+          "excluded": 0
+        }
+      },
+      {
+        "name": "p12_kind_separation_and_order",
+        "ok": true,
+        "detail": {
+          "kinds": [
+            "type",
+            "symbol",
+            "symbol",
+            "symbol",
+            "symbol",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "external",
+            "external",
+            "external"
+          ],
+          "module_count": 9
+        }
+      },
+      {
+        "name": "p23_single_review",
+        "ok": true,
+        "detail": {
+          "review_calls": 1,
+          "review_ms": 12679
+        }
+      },
+      {
+        "name": "review_cursor_covers_full",
+        "ok": true,
+        "detail": "clean tree: no changed files"
+      }
+    ],
+    "passed": 24,
+    "failed": 0
+  },
+  "issues": [
+    {
+      "id": "P01",
+      "status": "verified",
+      "title": "context seed retention and omission budget",
+      "evidence": "acceptance: context_4000_non_empty; self-fix-core-tests-2026-11-27"
+    },
+    {
+      "id": "P02",
+      "status": "verified",
+      "title": "capture/drift share one workspace policy",
+      "evidence": "acceptance: status_clean/review_agrees; drift_policy test in self-fix-core-tests-2026-11-27"
+    },
+    {
+      "id": "P03",
+      "status": "verified",
+      "title": "one needs_review definition",
+      "evidence": "acceptance: status_clean + review_agrees_with_status + brief no stale finding"
+    },
+    {
+      "id": "P04",
+      "status": "verified",
+      "title": "producer/call-site filters and explicit rejection on non-traversals",
+      "evidence": "acceptance p04_producer_and_site_filter + p04_rejects_relation_filter_on_symbols"
+    },
+    {
+      "id": "P05",
+      "status": "verified",
+      "title": "resolved_by/is_direct preserved",
+      "evidence": "bridge_import test in self-fix-core-tests-2026-11-27"
+    },
+    {
+      "id": "P06",
+      "status": "verified",
+      "title": "duplicate edges collapse into occurrences",
+      "evidence": "bridge_import test; self-analysis 4,948 collapsed edges visible"
+    },
+    {
+      "id": "P07",
+      "status": "verified",
+      "title": "capture/index/transport coverage separated",
+      "evidence": "status/brief/acceptance; parse and transport blocks present"
+    },
+    {
+      "id": "P08",
+      "status": "verified",
+      "title": "language extension map",
+      "evidence": "self-analysis: kotlin/toml/bash counts"
+    },
+    {
+      "id": "P09",
+      "status": "verified",
+      "title": "parser errors carry paths",
+      "evidence": "self-analysis 3 Kotlin paths; index_coverage test"
+    },
+    {
+      "id": "P10",
+      "status": "verified",
+      "title": "confirmed renamed declared",
+      "evidence": "brief counts show declared; no confirmed key"
+    },
+    {
+      "id": "P11",
+      "status": "verified",
+      "title": "test-role exclusion from impact",
+      "evidence": "acceptance p11_exclude_test_from_impact"
+    },
+    {
+      "id": "P12",
+      "status": "verified",
+      "title": "module/type/symbol/external separation and type-first order",
+      "evidence": "acceptance p12_kind_separation_and_order"
+    },
+    {
+      "id": "P13",
+      "status": "verified",
+      "title": "index skip reasons and parser error paths",
+      "evidence": "self-fix-server-indexer-tests-2026-11-27; self-fix-server-integration-tests-2026-11-27; self-analysis skip reasons and 3 paths"
+    },
+    {
+      "id": "P14",
+      "status": "verified",
+      "title": "include-dir examples and export 1.2 index",
+      "evidence": "self-fix-export-tests-2026-11-27; self-fix-server-integration-tests-2026-11-27; 65 examples entities"
+    },
+    {
+      "id": "P15",
+      "status": "verified",
+      "title": "order-independent cross-file Implements",
+      "evidence": "self-fix-server-integration-tests-2026-11-27; self-analysis 47 implements, 25 deferred, 0 ambiguous"
+    },
+    {
+      "id": "P16",
+      "status": "verified",
+      "title": "vendored default exclusion and config exclusion",
+      "evidence": "acceptance p16_vendored_excluded_by_default + p16_exclude_config"
+    },
+    {
+      "id": "P17",
+      "status": "verified",
+      "title": "real committed cognition map",
+      "evidence": "map check/status: 18 entries, 23 confirmed refs, 0 orphan; brief(recipe=map) ok; inspect(map_entry) ok"
+    },
+    {
+      "id": "P18",
+      "status": "verified",
+      "title": "coverage layers shown together",
+      "evidence": "status/brief captured/parsed/coverage; acceptance"
+    },
+    {
+      "id": "P19",
+      "status": "verified",
+      "title": "git content identity beside byte snapshot ID",
+      "evidence": "drift_policy LF/CRLF test in self-fix-core-tests-2026-11-27"
+    },
+    {
+      "id": "P20",
+      "status": "verified",
+      "title": "tracked-only policy and files_origin",
+      "evidence": "acceptance status_files_origin_visible; snapshot_capture tracked-only test"
+    },
+    {
+      "id": "P21",
+      "status": "verified",
+      "title": "build provenance in CLI/MCP/ledger",
+      "evidence": "archmeld --version 0.1.0+723df0d1; index_run cli_commit/helper_commit/export_schema recorded"
+    },
+    {
+      "id": "P22",
+      "status": "verified",
+      "title": "call-site evidence scope",
+      "evidence": "self-analysis 45,530 artifact-scope relations explicit; bridge test"
+    },
+    {
+      "id": "P23",
+      "status": "verified",
+      "title": "single review and measured timings",
+      "evidence": "acceptance p23_single_review; timings.json"
+    },
+    {
+      "id": "P24",
+      "status": "verified",
+      "title": "MCP status/review summary and cursor",
+      "evidence": "acceptance: 11,122 B status, 1,880 B review; PAGING-RESULT.json: 600/600 files across 2 pages, max 534,980 B; cursor unit test"
+    },
+    {
+      "id": "P25",
+      "status": "verified",
+      "title": "helper schema/version and missing DLL diagnostics",
+      "evidence": "acceptance helper_schema_1_2 + helper_version_launches; helper_hint unit; induced 0xC0000135"
+    }
+  ],
+  "evidence": [
+    "docs/evidence/self-analysis-fix-2026-11-27/COMMANDS.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/acceptance.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/INDEX-RESULT.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/MAP-STATUS.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/PAGING-RESULT.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/TIMINGS.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/HELPER-DIAGNOSTICS.json",
+    "docs/evidence/self-analysis-fix-2026-11-27/README.md"
+  ],
+  "limitations": [
+    "Snapshot precedes evidence-only commits; clean status was observed at snapshot time.",
+    "CLI, helper and snapshot commits differ but product source is identical after 5622b2a7; only tests, records and patch bookkeeping follow.",
+    "RocksDB built with UCRT Mingw-w64 16.1.0; the earlier winlibs 13.2.0 toolchain is unavailable.",
+    "archmeld.map.txt is absent; map status is absent and no map was fabricated.",
+    "Full codegraph-server suite still has pre-existing Windows backend/ROCKSDB failures; only indexer and new integration targets were run.",
+    "The map header binds snapshot 3f7fef; the final snapshot includes the map file but the map is checked against its declared snapshot.",
+    "The 600-file cursor run is a synthetic temporary workspace, not the repository snapshot."
+  ]
+}

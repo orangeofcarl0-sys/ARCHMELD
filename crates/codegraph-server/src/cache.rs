@@ -319,7 +319,7 @@ mod tests {
 
     fn make_location(line: u32) -> Location {
         Location {
-            uri: Url::parse("file:///test.rs").unwrap(),
+            uri: Url::parse("file://<path>").unwrap(),
             range: Range {
                 start: tower_lsp::lsp_types::Position { line, character: 0 },
                 end: tower_lsp::lsp_types::Position {

@@ -42,3 +42,6 @@ upstream-probes/**/state-*/
 docs/evidence/ui-state/
 docs/evidence/ui-trace-state/
 docs/evidence/ui-export.ndjson
+
+# untracked private snapshot map and reports
+.archmeld-private/

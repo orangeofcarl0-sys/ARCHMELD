@@ -9,6 +9,7 @@ use archmeld_core::snapshot::{
     capture_snapshot, capture_snapshot_with_hook, SnapshotInputs, SnapshotOptions,
 };
 use archmeld_core::source::{validate_range, LineIndex};
+use archmeld_core::status::status_report;
 use archmeld_core::store::Store;
 use serde_json::{json, Value};
 use std::fs;
@@ -269,4 +270,62 @@ fn utf8_ranges_and_utf16_columns_cover_cjk_and_emoji() {
     assert_eq!(index.utf16_col_to_byte(bytes, 0, 6), Some(12), "CR is a real code unit");
     assert_eq!(index.utf16_col_to_byte(bytes, 1, 6), Some(19));
     assert_eq!(index.byte_to_utf16_col(bytes, 11), Some(5));
+}
+
+#[test]
+fn tracked_only_policy_and_origin_counts_are_visible_in_status() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("repo");
+    fs::create_dir_all(root.join("src")).unwrap();
+    fs::write(root.join("src/a.py"), "print('tracked')\n").unwrap();
+    init_repo(&root);
+    fs::write(root.join("notes.txt"), "untracked\n").unwrap();
+    let mut store = store(dir.path());
+
+    let tracked = capture_snapshot(
+        &mut store,
+        PROJECT,
+        &root,
+        &inputs(json!({"variant": "tracked-only"})),
+        &SnapshotOptions {
+            include_untracked: false,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(tracked.files.len(), 1);
+    assert!(tracked
+        .omitted
+        .iter()
+        .any(|item| item.path == "notes.txt" && item.reason == "untracked_not_included"));
+    let status = status_report(&store, Some(PROJECT), Some(&root)).unwrap();
+    let snapshot = &status["projects"][0]["snapshot"];
+    assert_eq!(snapshot["files_origin"]["tracked"], 1, "{status}");
+    assert_eq!(
+        snapshot["workspace_policy"]["include_untracked"],
+        false,
+        "{status}"
+    );
+
+    let all = capture_snapshot(
+        &mut store,
+        PROJECT,
+        &root,
+        &inputs(json!({"variant": "with-untracked"})),
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(all.files.len(), 2);
+    let status = status_report(&store, Some(PROJECT), Some(&root)).unwrap();
+    let snapshot = &status["projects"][0]["snapshot"];
+    assert_eq!(snapshot["files_origin"]["tracked"], 1, "{status}");
+    assert_eq!(snapshot["files_origin"]["untracked"], 1, "{status}");
+    assert_eq!(
+        snapshot["workspace_policy"]["include_untracked"],
+        true,
+        "{status}"
+    );
 }

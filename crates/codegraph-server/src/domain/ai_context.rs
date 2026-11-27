@@ -886,7 +886,7 @@ fn truncate_to_call_site(code: &str, target_name: &str) -> String {
 
 fn make_location(path: &str, start_line: u32, end_line: u32) -> LocationInfo {
     let uri = if path.starts_with('/') {
-        format!("file://{path}")
+        format!("file://<path>")
     } else {
         path.to_string()
     };

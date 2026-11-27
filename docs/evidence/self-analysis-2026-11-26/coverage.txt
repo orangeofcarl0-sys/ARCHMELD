@@ -1,0 +1,43 @@
+parsed files 742
+tracked vs parsed by ext (tracked>=3):
+  .rs            579 tracked   538 parsed
+  .json          320 tracked     0 parsed
+  .md            177 tracked     0 parsed
+  .yml           171 tracked     0 parsed
+  .py            112 tracked    49 parsed
+  .toml           53 tracked    49 parsed
+  .log            50 tracked     0 parsed
+  .kt             41 tracked    37 parsed
+  .ts             36 tracked    32 parsed
+  .js             31 tracked    22 parsed
+  .jsonl          30 tracked     0 parsed
+  (none)          24 tracked     0 parsed
+  .h              20 tracked     0 parsed
+  .c              19 tracked     0 parsed
+  .sql            18 tracked     0 parsed
+  .err            16 tracked     0 parsed
+  .txt            14 tracked     0 parsed
+  .sh             11 tracked     8 parsed
+  .png             9 tracked     0 parsed
+  .cpp             8 tracked     0 parsed
+  .cs              8 tracked     2 parsed
+  .java            8 tracked     0 parsed
+  .ndjson          7 tracked     0 parsed
+  .php             6 tracked     0 parsed
+  .cache           5 tracked     0 parsed
+  .dll             4 tracked     0 parsed
+  .go              4 tracked     0 parsed
+  .groovy          3 tracked     0 parsed
+  .pl              3 tracked     0 parsed
+  .ex              3 tracked     0 parsed
+  .jl              3 tracked     0 parsed
+  .hs              3 tracked     0 parsed
+  .cc              3 tracked     3 parsed
+  .properties      3 tracked     0 parsed
+  .scip            3 tracked     0 parsed
+unparsed tracked files under default-excluded dir names Counter({'fixtures': 196, 'examples': 76, 'benches': 18, 'bin': 6})
+kotlin tracked 41 parsed 37 missing ['crates/codegraph-kotlin/tests/fixtures/sample_app.kt', 'jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/CodeGraphServerResolver.kt', 'jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/EngineLifecycle.kt', 'jetbrains/src/test/kotlin/ai/codegraph/jetbrains/mcp/McpRegistrationTest.kt']
+archmeld-vscode/media/cytoscape.min.js entities 104 Counter({'symbol': 103, 'file': 1})
+  incoming 1133 outgoing 219
+toml entities 0 Counter()
+toml top names []

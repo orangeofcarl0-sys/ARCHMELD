@@ -1,12 +1,12 @@
 [
   {
-    "directory": "<repo>/adapters/languages/fixtures/c-cpp",
-    "file": "<repo>/adapters/languages/fixtures/c-cpp/src/circle.cpp",
-    "command": "g++ -std=c++17 -I<repo>/adapters/languages/fixtures/c-cpp/src -DFACTOR=3 -c <repo>/adapters/languages/fixtures/c-cpp/src/circle.cpp -o <repo>/adapters/languages/fixtures/c-cpp/src/circle.cpp.o"
+    "directory": "<path>",
+    "file": "<path>",
+    "command": "g++ -std=c++17 -I<path> -DFACTOR=3 -c <path> -o <path>"
   },
   {
-    "directory": "<repo>/adapters/languages/fixtures/c-cpp",
-    "file": "<repo>/adapters/languages/fixtures/c-cpp/src/main.cpp",
-    "command": "g++ -std=c++17 -I<repo>/adapters/languages/fixtures/c-cpp/src -DFACTOR=3 -c <repo>/adapters/languages/fixtures/c-cpp/src/main.cpp -o <repo>/adapters/languages/fixtures/c-cpp/src/main.cpp.o"
+    "directory": "<path>",
+    "file": "<path>",
+    "command": "g++ -std=c++17 -I<path> -DFACTOR=3 -c <path> -o <path>"
   }
 ]

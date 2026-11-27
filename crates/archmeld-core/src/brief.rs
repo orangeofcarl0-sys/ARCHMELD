@@ -14,7 +14,7 @@ use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BriefRecipe {
@@ -76,7 +76,7 @@ pub fn build_brief(store: &Store, request: &BriefRequest<'_>) -> Result<Value> {
                         "snapshot_id": null,
                         "coverage": "unknown"
                     },
-                    "counts": {"confirmed": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
+                    "counts": {"declared": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
                     "findings": [],
                     "unknowns": [{
                         "question": "Which bytes does the project graph describe?",
@@ -93,20 +93,35 @@ pub fn build_brief(store: &Store, request: &BriefRequest<'_>) -> Result<Value> {
         },
     };
 
+    let mut auto_review: Option<Value> = None;
+    let mut clean_freshness: Option<Value> = None;
+    let mut review_calls = 0u64;
+    let mut review_ms = 0u64;
     let recipe = match request.recipe {
         BriefRecipe::Auto => {
             if request.workspace.is_none() {
                 BriefRecipe::Project
             } else {
+                let started = Instant::now();
                 let review = review_workspace_diff(
                     store,
                     request.project_id,
                     &snapshot_id,
                     request.workspace.expect("checked"),
                 )?;
+                review_calls = 1;
+                review_ms = started.elapsed().as_millis() as u64;
                 if review["state"] == "changed" {
+                    auto_review = Some(review);
                     BriefRecipe::Change
                 } else {
+                    clean_freshness = Some(json!({
+                        "state": "clean",
+                        "needs_review": false,
+                        "changed": [],
+                        "added": [],
+                        "deleted": [],
+                    }));
                     BriefRecipe::Project
                 }
             }
@@ -114,11 +129,20 @@ pub fn build_brief(store: &Store, request: &BriefRequest<'_>) -> Result<Value> {
         other => other,
     };
 
-    match recipe {
-        BriefRecipe::Change => change_brief(store, request, &snapshot_id),
+    let mut brief = match recipe {
+        BriefRecipe::Change => {
+            change_brief(store, request, &snapshot_id, auto_review.as_ref())
+        }
         BriefRecipe::Map => map_brief(store, request, &snapshot_id),
-        _ => project_brief(store, request, &snapshot_id),
+        _ => project_brief(store, request, &snapshot_id, clean_freshness.as_ref()),
+    }?;
+    if let Some(object) = brief.as_object_mut() {
+        object.insert(
+            "timings".to_string(),
+            json!({"review_calls": review_calls, "review_ms": review_ms}),
+        );
     }
+    Ok(brief)
 }
 
 fn map_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Result<Value> {
@@ -132,7 +156,7 @@ fn map_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Re
             "verification": "not_run",
             "summary": "map status needs an authorized workspace root",
             "scope": {"project_id": request.project_id, "snapshot_id": snapshot_id, "coverage": "unknown"},
-            "counts": {"confirmed": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
+            "counts": {"declared": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
             "findings": [],
             "unknowns": [{
                 "question": "Which workspace contains archmeld.map.txt?",
@@ -199,13 +223,28 @@ fn map_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Re
     }))
 }
 
-fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Result<Value> {
-    let status = status_report(store, Some(request.project_id), request.workspace)?;
-    let entry = status["projects"]
+fn project_brief(
+    store: &Store,
+    request: &BriefRequest<'_>,
+    snapshot_id: &str,
+    freshness_override: Option<&Value>,
+) -> Result<Value> {
+    // Auto already ran the review once; do not hash the workspace again just
+    // to prove it is clean.
+    let status_workspace = if freshness_override.is_some() {
+        None
+    } else {
+        request.workspace
+    };
+    let status = status_report(store, Some(request.project_id), status_workspace)?;
+    let mut entry = status["projects"]
         .as_array()
         .and_then(|projects| projects.first())
         .cloned()
         .unwrap_or_else(|| json!({}));
+    if let Some(freshness) = freshness_override {
+        entry["freshness"] = freshness.clone();
+    }
     let counts = &entry["counts"];
     let snapshot = &entry["snapshot"];
     let coverage = snapshot["coverage"].clone();
@@ -218,7 +257,7 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
 
     let entities = counts["entities"].as_u64().unwrap_or(0);
     let relations = counts["relations"].as_u64().unwrap_or(0);
-    let (confirmed, candidate) = resolution_counts(store, request.project_id, snapshot_id)?;
+    let (declared, candidate) = resolution_counts(store, request.project_id, snapshot_id)?;
     let mut findings = Vec::new();
     if coverage["state"] == "partial"
         || coverage["omitted_count"].as_u64().unwrap_or(0) > 0
@@ -244,19 +283,30 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
             "workspace differs from the indexed snapshot",
             json!({}),
             Vec::new(),
-            "the working tree has uncommitted changes; the graph describes older bytes",
+            "eligible workspace bytes differ from the indexed snapshot; the graph describes older bytes",
             "archmeld_review",
             json!({}),
         ));
     }
     let unknowns = coverage_unknowns(&coverage);
-    let summary = format!(
-        "{} files, {} entities, {} relations, {} language(s)",
-        files.len(),
-        entities,
-        relations,
-        languages.len()
-    );
+    let parsed_files = entry["index"]["parse"]["files_parsed"].as_u64();
+    let summary = match parsed_files {
+        Some(parsed) => format!(
+            "{} files ({} parsed), {} entities, {} relations, {} language(s)",
+            files.len(),
+            parsed,
+            entities,
+            relations,
+            languages.len()
+        ),
+        None => format!(
+            "{} files, {} entities, {} relations, {} language(s)",
+            files.len(),
+            entities,
+            relations,
+            languages.len()
+        ),
+    };
     let mut brief = json!({
         "schema_version": "1.0",
         "state": "ok",
@@ -269,7 +319,7 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
             "coverage": coverage["state"],
         },
         "counts": {
-            "confirmed": confirmed,
+            "declared": declared,
             "candidate": candidate,
             "unknown": unknowns.len(),
             "stale": if entry["freshness"]["state"] == "changed" { 1 } else { 0 },
@@ -298,6 +348,9 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
         ],
         "artifacts": {}
     });
+    if entry["index"].is_object() {
+        brief["index"] = entry["index"].clone();
+    }
     let cognition = crate::cognition::summarize(request.workspace);
     if cognition["present"] == true {
         brief["cognition"] = cognition;
@@ -309,7 +362,12 @@ fn project_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -
     Ok(brief)
 }
 
-fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) -> Result<Value> {
+fn change_brief(
+    store: &Store,
+    request: &BriefRequest<'_>,
+    snapshot_id: &str,
+    prepared_review: Option<&Value>,
+) -> Result<Value> {
     let Some(workspace) = request.workspace else {
         return Ok(json!({
             "schema_version": "1.0",
@@ -321,7 +379,7 @@ fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) ->
                 "snapshot_id": snapshot_id,
                 "coverage": "unknown"
             },
-            "counts": {"confirmed": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
+            "counts": {"declared": 0, "candidate": 0, "unknown": 1, "stale": 0, "findings": 0},
             "findings": [],
             "unknowns": [{
                 "question": "Which working tree should be compared with the snapshot?",
@@ -335,7 +393,13 @@ fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) ->
             }]
         }));
     };
-    let review = review_workspace_diff(store, request.project_id, snapshot_id, workspace)?;
+    let computed_review;
+    let review = if let Some(review) = prepared_review {
+        review
+    } else {
+        computed_review = review_workspace_diff(store, request.project_id, snapshot_id, workspace)?;
+        &computed_review
+    };
     let relations = review["affected_relations"]
         .as_array()
         .cloned()
@@ -449,7 +513,7 @@ fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) ->
         ));
     }
 
-    let confirmed = relations
+    let declared = relations
         .iter()
         .filter(|relation| {
             matches!(
@@ -521,7 +585,7 @@ fn change_brief(store: &Store, request: &BriefRequest<'_>, snapshot_id: &str) ->
             "coverage": coverage["state"],
         },
         "counts": {
-            "confirmed": confirmed,
+            "declared": declared,
             "candidate": candidate,
             "unknown": unknown,
             "stale": if review["state"] == "changed" { 1 } else { 0 },
@@ -548,19 +612,19 @@ fn resolution_counts(store: &Store, project_id: &str, snapshot_id: &str) -> Resu
         .conn
         .prepare("SELECT payload_json FROM relations WHERE project_id=?1 AND snapshot_id=?2")?;
     let rows = statement.query_map((project_id, snapshot_id), |row| row.get::<_, String>(0))?;
-    let mut confirmed = 0u64;
+    let mut declared = 0u64;
     let mut candidate = 0u64;
     for row in rows {
         let text = row?;
         let payload: Value = serde_json::from_str(&text)
             .map_err(|error| CoreError::Storage(format!("relation payload corrupt: {error}")))?;
         match payload["resolution"].as_str() {
-            Some("declared") | Some("resolved") | Some("observed") => confirmed += 1,
+            Some("declared") | Some("resolved") | Some("observed") => declared += 1,
             Some("candidate") => candidate += 1,
             _ => {}
         }
     }
-    Ok((confirmed, candidate))
+    Ok((declared, candidate))
 }
 
 fn top_modules(files: &[Value]) -> Vec<Value> {
@@ -658,8 +722,8 @@ pub fn render_markdown(brief: &Value) -> String {
     ));
     let counts = &brief["counts"];
     out.push_str(&format!(
-        "- confirmed: {} · candidate: {} · unknown: {} · stale: {} · findings: {}\n",
-        counts["confirmed"].as_u64().unwrap_or(0),
+        "- declared: {} · candidate: {} · unknown: {} · stale: {} · findings: {}\n",
+        counts["declared"].as_u64().unwrap_or(0),
         counts["candidate"].as_u64().unwrap_or(0),
         counts["unknown"].as_u64().unwrap_or(0),
         counts["stale"].as_u64().unwrap_or(0),
@@ -868,8 +932,8 @@ pub fn write_session_card(
         if stale { "dirty-or-stale" } else { "clean" }
     ));
     content.push_str(&format!(
-        "- counts: confirmed={} candidate={} unknown={} stale={} findings={}\n",
-        counts["confirmed"].as_u64().unwrap_or(0),
+        "- counts: declared={} candidate={} unknown={} stale={} findings={}\n",
+        counts["declared"].as_u64().unwrap_or(0),
         counts["candidate"].as_u64().unwrap_or(0),
         counts["unknown"].as_u64().unwrap_or(0),
         counts["stale"].as_u64().unwrap_or(0),

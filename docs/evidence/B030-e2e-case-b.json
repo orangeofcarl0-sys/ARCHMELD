@@ -10,9 +10,9 @@
           "python",
           "pipeline.py",
           "--capture",
-          "<temp>\\b030-case-b-ulX03e\\work\\build\\capture.exe",
+          "<path>",
           "--work",
-          "<temp>\\b030-case-b-ulX03e\\work\\baseline"
+          "<path>"
         ],
         "exit_code": 0,
         "process_audit": {
@@ -27,19 +27,19 @@
         },
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout": "{\"capture\": \"<temp>\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\capture.csv\", \"estimate\": \"<temp>\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\estimate.json\", \"ui\": \"<temp>\\\\b030-case-b-ulX03e\\\\work\\\\baseline\\\\ui-report.html\"}\r\n",
+        "stdout": "{\"capture\": \"<path>", \"estimate\": \"<path>", \"ui\": \"<path>"}\r\n",
         "stdout_digest": "sha256:11dca13b808ce1aa804a6701bafa82624d37f06c1b103465752d38f90cf18b6e",
         "wall_ms": 351
       },
       "baseline_ui_digest": "sha256:3ad1fd22df76b1b4f0180cf6576fbc2512ba8ab61aef840d1f7efb64c7e221b8",
       "build": {
         "argv": [
-          "D:/Strawberry/c/bin/g++.exe",
+          "<path>",
           "-std=c++17",
           "-O2",
           "capture/main.cpp",
           "-o",
-          "<temp>\\b030-case-b-ulX03e\\work\\build\\capture.exe"
+          "<path>"
         ],
         "exit_code": 0,
         "process_audit": {
@@ -418,17 +418,17 @@
           "python",
           "pipeline.py",
           "--capture",
-          "<temp>\\b030-case-b-ulX03e\\work\\build\\capture.exe",
+          "<path>",
           "--work",
-          "<temp>\\b030-case-b-ulX03e\\work\\traced",
+          "<path>",
           "--snapshot-id",
           "sha256:551de8aee31d54f622882e3dcc32679f2464f95aae65114e591069461981c4dd",
           "--config-digest",
           "sha256:fe1d06a2c70b5b53906e756d4a05f7d5a9fd025cc93f0cefe9d8506b6c6f44c2",
           "--entities",
-          "<temp>\\b030-case-b-ulX03e\\work\\entities.json",
+          "<path>",
           "--trace",
-          "<temp>\\b030-case-b-ulX03e\\work\\trace.json"
+          "<path>"
         ],
         "exit_code": 0,
         "process_audit": {
@@ -443,7 +443,7 @@
         },
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout": "{\"capture\": \"<temp>\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\capture.csv\", \"estimate\": \"<temp>\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\estimate.json\", \"ui\": \"<temp>\\\\b030-case-b-ulX03e\\\\work\\\\traced\\\\ui-report.html\"}\r\n",
+        "stdout": "{\"capture\": \"<path>", \"estimate\": \"<path>", \"ui\": \"<path>"}\r\n",
         "stdout_digest": "sha256:be9d41935c32796ff3422ee4b9c3dd56212b230e3ebeae3586fcb4ad0aa7129c",
         "wall_ms": 302
       },

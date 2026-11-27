@@ -1,43 +1,13 @@
 {
   "package": "ARCHMELD_InitPack",
-  "version": "1.0",
-  "specification_date": "2026-10-30",
+  "version": "1.1",
+  "specification_date": "2026-11-26",
   "kind": "implementation_specification_pack_not_product",
   "excludes": [
     "PACK_MANIFEST.json",
     "SHA256SUMS"
   ],
   "files": [
-    {
-      "path": "AGENTS.md",
-      "size_bytes": 2916,
-      "digest": "sha256:99b33a0296860001a2fa5edd65e64cec957c3031dc5339f51dcbadcad2d3abc0"
-    },
-    {
-      "path": "LICENSE",
-      "size_bytes": 1322,
-      "digest": "sha256:8c8e621e154ea74af21acd62cfd3a14b790940b4da312cbdd3b4c2c1e99bddc8"
-    },
-    {
-      "path": "LOCAL_AGENT_PROMPT.md",
-      "size_bytes": 1539,
-      "digest": "sha256:61a209c5294620c36ef68c21c9c96b6cad89da02bdd59042a98b05edcde95cb8"
-    },
-    {
-      "path": "PACKAGE_CONTENTS.md",
-      "size_bytes": 1562,
-      "digest": "sha256:e6ed3b7bac2edcdd4dae4b904548b98ad93499399fdcd4ebf548d18be2278da4"
-    },
-    {
-      "path": "README.md",
-      "size_bytes": 4043,
-      "digest": "sha256:f6fe3ec75d8ae5e5271f1b774ffcc003bb69ea283f575ba67df9bfc8c2db5283"
-    },
-    {
-      "path": "START_HERE.md",
-      "size_bytes": 2605,
-      "digest": "sha256:8a97e9f269faef004ef814f1cca2d45e3baffd3ce789fa249bd342319f27a65e"
-    },
     {
       "path": "acceptance/ACCEPTANCE.md",
       "size_bytes": 4386,
@@ -55,18 +25,13 @@
     },
     {
       "path": "acceptance/test-cases.json",
-      "size_bytes": 52237,
-      "digest": "sha256:74ae589f67b662164d449fb6b5de99103ec0fef2c062cef141414826ec1e5557"
+      "size_bytes": 52640,
+      "digest": "sha256:1041a0412fc86e840a6d84e6c982b407c56e0acaadc584dcade325d7e57b56d3"
     },
     {
-      "path": "contracts/README.md",
-      "size_bytes": 1737,
-      "digest": "sha256:545e8e882d90415ac5ce97f3573813d92807f49aec9cdea0b26a7571faea3ba1"
-    },
-    {
-      "path": "contracts/STORAGE_AND_TRANSACTION_MAP.md",
-      "size_bytes": 4124,
-      "digest": "sha256:57b282e4c4715b5f52a0b993f68fffdaa2562ca5b763bd7098258aff1a2dc5c9"
+      "path": "AGENTS.md",
+      "size_bytes": 2916,
+      "digest": "sha256:99b33a0296860001a2fa5edd65e64cec957c3031dc5339f51dcbadcad2d3abc0"
     },
     {
       "path": "contracts/adapter-protocol.json",
@@ -80,18 +45,23 @@
     },
     {
       "path": "contracts/mcp-tools.json",
-      "size_bytes": 58253,
-      "digest": "sha256:d2df43c1772f4498255706716ffb799fd3b0ac63d45c1e449d257db6ce9712cc"
+      "size_bytes": 70312,
+      "digest": "sha256:cee3bbdea1a24a6adbd832336ecdf37bd596777f606b2d1a8902e56ab2544057"
     },
     {
       "path": "contracts/openapi.json",
-      "size_bytes": 47634,
-      "digest": "sha256:e81fe5516893f5dd6968f6e61c1940fd49aa3775344e872b4910374a56afb49e"
+      "size_bytes": 52318,
+      "digest": "sha256:864c4736d3ac1f0580177d55ce8e1ff15ab4baa40689462274887a55f761d9e0"
     },
     {
       "path": "contracts/operation-coverage.json",
-      "size_bytes": 9408,
-      "digest": "sha256:3f4639e3ceea8d4b438a171d2604ad58ae34cb987da2397001fdb8e497a29792"
+      "size_bytes": 10263,
+      "digest": "sha256:07a01142458e4e45d3339e143b0d02bafdf377f2b761f5c3e87478f2253a445a"
+    },
+    {
+      "path": "contracts/README.md",
+      "size_bytes": 1737,
+      "digest": "sha256:545e8e882d90415ac5ce97f3573813d92807f49aec9cdea0b26a7571faea3ba1"
     },
     {
       "path": "contracts/schemas/adapter-capabilities.schema.json",
@@ -110,8 +80,8 @@
     },
     {
       "path": "contracts/schemas/archmeld.schema.json",
-      "size_bytes": 91009,
-      "digest": "sha256:151ce2d18ceedeb9342356c6a221f100acf722d1ef8d79b3775a2d9a9378e9ef"
+      "size_bytes": 101418,
+      "digest": "sha256:03323aaeade853534b8a5db3b95faf5ff3a79f756e001452aa828c9fcf2a447f"
     },
     {
       "path": "contracts/schemas/behavior-contract.schema.json",
@@ -214,6 +184,11 @@
       "digest": "sha256:918c423bd30f296b8742ed90a8533bb40139118729de7bfb46a57cef65486405"
     },
     {
+      "path": "contracts/STORAGE_AND_TRANSACTION_MAP.md",
+      "size_bytes": 4124,
+      "digest": "sha256:57b282e4c4715b5f52a0b993f68fffdaa2562ca5b763bd7098258aff1a2dc5c9"
+    },
+    {
       "path": "docs/00_BLUEPRINT.md",
       "size_bytes": 4600,
       "digest": "sha256:e46e369d3052340cea253b4e2e26ff8dc7cadbdcb2f7a6a6200aa7ec06e7f52f"
@@ -232,11 +207,6 @@
       "path": "docs/03_ARCHITECTURE_DECISIONS.md",
       "size_bytes": 2282,
       "digest": "sha256:7fe7100ee6395d2974748fdb2b0af98577645f1cfb89be529c900f0b9612ef8b"
-    },
-    {
-      "path": "examples/README.md",
-      "size_bytes": 1146,
-      "digest": "sha256:169768e12b990d0d5ba870e5e1f177ffd408a7852a4b5562c7ead87e612aaae5"
     },
     {
       "path": "examples/artifact-map.json",
@@ -337,6 +307,11 @@
       "path": "examples/invalid/unknown-status.json",
       "size_bytes": 200,
       "digest": "sha256:275e0ea565c35723ec815e2e7dc68227f3e918a1568e51cca2606703b6d690c6"
+    },
+    {
+      "path": "examples/README.md",
+      "size_bytes": 1146,
+      "digest": "sha256:169768e12b990d0d5ba870e5e1f177ffd408a7852a4b5562c7ead87e612aaae5"
     },
     {
       "path": "examples/semantic-invalid/anchor-end-before-start.json",
@@ -524,14 +499,24 @@
       "digest": "sha256:bc614300d44411135ec361a16e2d8c61299d6ee297b32ece708e32065e68d317"
     },
     {
-      "path": "research/SOURCES.md",
-      "size_bytes": 6344,
-      "digest": "sha256:7814a2d9e0ac239fe2701a87207e36621ab33046f20b585be6a9d6c422c00daf"
+      "path": "LICENSE",
+      "size_bytes": 1322,
+      "digest": "sha256:8c8e621e154ea74af21acd62cfd3a14b790940b4da312cbdd3b4c2c1e99bddc8"
     },
     {
-      "path": "research/UPSTREAM_RISKS.md",
-      "size_bytes": 1351,
-      "digest": "sha256:5f0e81e7b5cc71d187652748308ee657420b6c6658cb7f88fdb6934178383256"
+      "path": "LOCAL_AGENT_PROMPT.md",
+      "size_bytes": 1539,
+      "digest": "sha256:61a209c5294620c36ef68c21c9c96b6cad89da02bdd59042a98b05edcde95cb8"
+    },
+    {
+      "path": "PACKAGE_CONTENTS.md",
+      "size_bytes": 1562,
+      "digest": "sha256:e6ed3b7bac2edcdd4dae4b904548b98ad93499399fdcd4ebf548d18be2278da4"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 4043,
+      "digest": "sha256:f6fe3ec75d8ae5e5271f1b774ffcc003bb69ea283f575ba67df9bfc8c2db5283"
     },
     {
       "path": "research/sources.json",
@@ -539,9 +524,19 @@
       "digest": "sha256:9703b27499c3d5895bc3adf7b1e655156c04e49af258bce5ac369fda41f13701"
     },
     {
+      "path": "research/SOURCES.md",
+      "size_bytes": 6344,
+      "digest": "sha256:7814a2d9e0ac239fe2701a87207e36621ab33046f20b585be6a9d6c422c00daf"
+    },
+    {
       "path": "research/upstream-selection.json",
       "size_bytes": 3977,
       "digest": "sha256:21456ab8242e5f7c533e2c9e6167c0a3c69c08446c0fcc16953408ab2f9a4998"
+    },
+    {
+      "path": "research/UPSTREAM_RISKS.md",
+      "size_bytes": 1351,
+      "digest": "sha256:5f0e81e7b5cc71d187652748308ee657420b6c6658cb7f88fdb6934178383256"
     },
     {
       "path": "specs/INDEX.md",
@@ -600,8 +595,8 @@
     },
     {
       "path": "specs/S11_API_MCP_EVENTS.md",
-      "size_bytes": 3834,
-      "digest": "sha256:116847e741053b3e6dd80842f5ecfe2a6a66f3217532e44aac90cd5f15060cd7"
+      "size_bytes": 4943,
+      "digest": "sha256:d069ff6c4329e0228e72ce2e4772cbfa60429fb9c4d2460ddfe47d12f7a8f50b"
     },
     {
       "path": "specs/S12_AGENT_CONTEXT_AND_INSTIGATOR.md",
@@ -642,6 +637,11 @@
       "path": "specs/S19_WIRE_HASH_AND_SEMANTICS.md",
       "size_bytes": 10367,
       "digest": "sha256:e65f6323f12fbc5a18a62e9859bc125022d1efef94997b1490f9d8538b4cc138"
+    },
+    {
+      "path": "START_HERE.md",
+      "size_bytes": 2605,
+      "digest": "sha256:8a97e9f269faef004ef814f1cca2d45e3baffd3ce789fa249bd342319f27a65e"
     },
     {
       "path": "templates/ADR.md",

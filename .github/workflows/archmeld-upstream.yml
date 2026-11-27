@@ -1,0 +1,61 @@
+name: ARCHMELD upstream check
+
+# Weekly, read-only upstream governance. It never fetches into the working
+# tree, merges, pushes, opens a PR or changes a pin. Exit code 3 from
+# --fail-on-update means "a newer upstream commit exists"; it is recorded in
+# the job summary instead of failing the run, because a moved upstream is not
+# a repository defect.
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify registry
+        run: python3 tooling/upstream.py verify --skip-cargo --json --out upstream-verify.json
+
+      - name: Status (read-only)
+        shell: bash
+        run: |
+          set +e
+          python3 tooling/upstream.py status --remote --json --out upstream-status.json --fail-on-update
+          code=$?
+          echo "status_exit=$code" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" -ne 0 ] && [ "$code" -ne 3 ]; then
+            exit "$code"
+          fi
+
+      - name: CodeGraph update check (read-only)
+        shell: bash
+        run: |
+          set +e
+          python3 tooling/upstream.py check codegraph --json --out upstream-check.json --fail-on-update
+          code=$?
+          echo "check_exit=$code" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" -ne 0 ] && [ "$code" -ne 3 ]; then
+            exit "$code"
+          fi
+
+      - name: Version and lockfile probes (read-only)
+        run: python3 tooling/upstream.py probes --json --out upstream-probes.json
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upstream-check
+          path: upstream-*.json
+          if-no-files-found: warn

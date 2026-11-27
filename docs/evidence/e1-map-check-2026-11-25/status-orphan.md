@@ -1,7 +1,7 @@
 # ARCHMELD map status
 
 - state: invalid
-- map: <workspace>\_archmeld_m1_fixture\repo\archmeld.map.txt
+- map: <path>
 - snapshot: sha256:9e43304f09e25de7bde38172ad7ca9a141d584b064acfa3b10d0830d7bddd4fc
 - entries: 2 · files covered: 2 · tokens: 65 / 40000
 - refs: confirmed 2 · candidate 0 · unknown 0 · orphan 1 · ambiguous 0

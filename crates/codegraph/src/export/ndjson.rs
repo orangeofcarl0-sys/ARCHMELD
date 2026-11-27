@@ -17,19 +17,35 @@ pub const FORMAT: &str = "archmeld-export-v1";
 
 /// Stream-ready NDJSON: one manifest line, then one line per node and edge.
 pub fn export_ndjson_v1(graph: &CodeGraph) -> crate::Result<String> {
+    export_ndjson_v1_with_manifest(graph, None)
+}
+
+/// Same export with optional additive manifest metadata (for example the
+/// indexer's parse/skip counters). Consumers ignore unknown manifest fields.
+pub fn export_ndjson_v1_with_manifest(
+    graph: &CodeGraph,
+    extra_manifest: Option<&serde_json::Value>,
+) -> crate::Result<String> {
     let nodes: Vec<(u64, &crate::Node)> = graph.iter_nodes().collect();
     let edges: Vec<(u64, &crate::Edge)> = graph.iter_edges().collect();
 
     let mut manifest = json!({
         "type": "manifest",
         "format": FORMAT,
-        "schema_version": "1.1",
+        "schema_version": if extra_manifest.is_some() { "1.2" } else { "1.1" },
         "source": "codegraph",
         "version": env!("CARGO_PKG_VERSION"),
         "node_count": nodes.len(),
         "edge_count": edges.len(),
         "iteration": "real-iterators",
     });
+    if let Some(extra) = extra_manifest {
+        if let (Some(target), Some(extra)) = (manifest.as_object_mut(), extra.as_object()) {
+            for (key, value) in extra {
+                target.insert(key.clone(), value.clone());
+            }
+        }
+    }
     if let Some(commit) = producer_commit() {
         manifest["producer_commit"] = json!(commit);
         manifest["producer_dirty"] = json!(crate::metadata::GIT_HASH_SHORT.ends_with("-dirty"));
@@ -106,6 +122,42 @@ fn properties_to_json(properties: &PropertyMap) -> Value {
 mod tests {
     use super::*;
     use crate::{EdgeType, NodeType};
+
+    #[test]
+    fn export_with_manifest_reports_schema_1_2_and_index_block() {
+        let mut graph = CodeGraph::in_memory().unwrap();
+        graph
+            .add_node(NodeType::Function, PropertyMap::new().with("name", "a"))
+            .unwrap();
+        let index = json!({
+            "files_total": 7,
+            "files_parsed": 6,
+            "files_skipped": 1,
+            "skipped_by_reason": {"excluded_dir": 2, "too_large": 1},
+            "parser_errors": [{
+                "path": "example/broken.kt",
+                "language": "kotlin",
+                "message": "parse failed"
+            }],
+            "max_files_reached": false,
+            "max_depth_reached": true
+        });
+        let text = export_ndjson_v1_with_manifest(&graph, Some(&json!({"index": index})))
+            .unwrap();
+        let manifest: Value = serde_json::from_str(text.lines().next().unwrap()).unwrap();
+        assert_eq!(manifest["schema_version"], "1.2");
+        assert_eq!(manifest["index"]["files_total"], 7);
+        assert_eq!(manifest["index"]["skipped_by_reason"]["too_large"], 1);
+        assert_eq!(
+            manifest["index"]["parser_errors"][0]["path"],
+            "example/broken.kt"
+        );
+        assert_eq!(
+            manifest["index"]["parser_errors"][0]["language"],
+            "kotlin"
+        );
+        assert_eq!(manifest["index"]["max_depth_reached"], true);
+    }
 
     #[test]
     fn export_includes_sparse_ids() {

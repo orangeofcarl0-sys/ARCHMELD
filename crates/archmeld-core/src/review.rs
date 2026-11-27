@@ -423,7 +423,6 @@ pub fn review_workspace_diff(
             unsupported.push(file["path"].clone());
         }
     }
-    let dirty = drift["state"] == "changed";
     Ok(json!({
         "schema_version": "1.0",
         "project_id": project_id,
@@ -439,7 +438,7 @@ pub fn review_workspace_diff(
             "affected_entities": affected.len(),
             "unmapped_files": unmapped.len(),
             "unsupported_files": unsupported.len(),
-            "needs_review": dirty,
+            "needs_review": drift["needs_review"].as_bool().unwrap_or(false),
         },
         "files": files,
         "affected_entities": drift["affected_entities"],

@@ -374,3 +374,103 @@ fn unknown_manifest_fields_are_ignored() {
     let report = import_codegraph_export(&mut store, &config, &files, &text).expect("import");
     assert_eq!(report.entities, 1);
 }
+
+#[test]
+fn call_sites_and_producer_resolution_are_preserved_not_promoted() {
+    let (_dir, mut store, snapshot_id, config_digest, root, files) = fixture();
+    let nodes = vec![
+        node(&root, 1, "CodeFile", "src/app.py", "app.py", None),
+        node(&root, 2, "CodeFile", "src/util.py", "util.py", None),
+        node(&root, 3, "Function", "src/app.py", "main", Some((1, 2))),
+        node(&root, 4, "Function", "src/util.py", "helper", Some((1, 2))),
+    ];
+    let manifest = json!({
+        "type": "manifest",
+        "format": "archmeld-export-v1",
+        "schema_version": "1.2",
+        "source": "codegraph",
+        "version": "0.2.0",
+        "node_count": nodes.len(),
+        "edge_count": 3,
+        "iteration": "real-iterators",
+        "index": {
+            "files_total": 2,
+            "files_parsed": 2,
+            "files_skipped": 0,
+            "skipped_by_reason": {},
+            "parser_errors": [{
+                "path": "src/broken.kt",
+                "language": "kotlin",
+                "message": "parse failed"
+            }],
+        }
+    });
+    let edge = |id: u64, line: u64| {
+        json!({
+            "type": "edge",
+            "id": id,
+            "source": 3,
+            "target": 4,
+            "edge_type": "Calls",
+            "properties": {
+                "call_site_line": line,
+                "is_direct": true,
+                "resolved_by": "cross_file_resolution"
+            }
+        })
+    };
+    let text = export_with_manifest(nodes, vec![edge(10, 2), edge(11, 2), edge(12, 4)], manifest);
+    let report = import_codegraph_export(
+        &mut store,
+        &BridgeConfig {
+            project_id: PROJECT,
+            snapshot_id: &snapshot_id,
+            config_digest: &config_digest,
+            run_id: RUN,
+            workspace_root: Some(&root),
+            max_entities_per_batch: 500,
+            max_relations_per_batch: 2000,
+        },
+        &files,
+        &text,
+    )
+    .unwrap();
+    assert_eq!(report.relations, 2, "two distinct call sites");
+    assert_eq!(report.collapsed_edges, 1, "same-site duplicate is counted");
+    assert_eq!(report.relations_with_call_site, 2);
+    assert_eq!(
+        report.index["parser_errors"][0]["path"],
+        "src/broken.kt",
+        "the manifest index block must survive import: {report:?}"
+    );
+    let evidence = store.evidence_payloads(PROJECT, &snapshot_id).unwrap();
+    assert_eq!(evidence.len(), 1);
+    assert_eq!(evidence[0]["coverage"]["state"], "partial", "{evidence:?}");
+    assert!(
+        evidence[0]["coverage"]["limitations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item.as_str().unwrap_or("").contains("failed to parse")),
+        "{evidence:?}"
+    );
+    let relations = store.relation_payloads(PROJECT, &snapshot_id).unwrap();
+    assert_eq!(relations.len(), 2);
+    let mut lines: Vec<u64> = relations
+        .iter()
+        .map(|relation| relation["call_site"]["line"].as_u64().unwrap())
+        .collect();
+    lines.sort_unstable();
+    assert_eq!(lines, vec![2, 4]);
+    for relation in &relations {
+        assert_eq!(relation["producer_resolution"], "cross_file_resolution");
+        assert_eq!(relation["evidence_scope"], "site");
+        assert_eq!(relation["occurrences"], if relation["call_site"]["line"] == 2 { 2 } else { 1 });
+        assert!(relation["conditions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|condition| condition == "codegraph-resolved-by:cross_file_resolution"));
+        assert_ne!(relation["resolution"], "resolved");
+    }
+}

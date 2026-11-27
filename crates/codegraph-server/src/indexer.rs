@@ -36,12 +36,42 @@ pub(crate) fn is_excluded_entry(
     if name.starts_with('.') {
         return true;
     }
+    if is_dir && config.include_dirs.iter().any(|dir| dir == name.as_ref()) {
+        return false;
+    }
     if exclude_set.is_match(path) {
         return true;
     }
     is_dir
         && (config.exclude_dirs.iter().any(|d| d == name.as_ref())
             || exclude_set.is_match(name.as_ref()))
+}
+
+/// Reason an entry was skipped, used for index coverage. `is_excluded_entry`
+/// remains the boolean view for the watcher.
+pub(crate) fn exclusion_reason(
+    config: &IndexConfig,
+    exclude_set: &globset::GlobSet,
+    path: &Path,
+    is_dir: bool,
+) -> Option<&'static str> {
+    let name = path.file_name()?.to_string_lossy();
+    if name.starts_with('.') {
+        return Some("hidden");
+    }
+    if is_dir && config.include_dirs.iter().any(|dir| dir == name.as_ref()) {
+        return None;
+    }
+    if exclude_set.is_match(path) {
+        return Some("exclude_pattern");
+    }
+    if is_dir
+        && (config.exclude_dirs.iter().any(|d| d == name.as_ref())
+            || exclude_set.is_match(name.as_ref()))
+    {
+        return Some("excluded_dir");
+    }
+    None
 }
 
 /// Decides whether the file watcher may admit a path, by the same rule the
@@ -183,6 +213,9 @@ pub struct IndexConfig {
     pub max_depth: u32,
     /// Maximum number of files to index in a single run.
     pub max_files: usize,
+    /// Directory names that override `exclude_dirs` and the default excludes
+    /// (for example `examples` during a self-analysis run).
+    pub include_dirs: Vec<String>,
 }
 
 impl Default for IndexConfig {
@@ -193,6 +226,7 @@ impl Default for IndexConfig {
             max_file_size_bytes: 1024 * 1024, // 1 MiB
             max_depth: 20,
             max_files: Self::DEFAULT_MAX_FILES,
+            include_dirs: Vec::new(),
         }
     }
 }
@@ -295,6 +329,9 @@ impl IndexConfig {
     /// indexer didn't filter binary file extensions.
     pub fn default_exclude_patterns() -> Vec<String> {
         [
+            // Vendored/minified assets: not first-party source.
+            "**/*.min.js",
+            "**/*.min.css",
             // Archives / packaged artifacts
             "**/*.tar.gz",
             "**/*.tar.bz2",
@@ -479,6 +516,56 @@ pub struct IndexResult {
     /// tree-sitter parse step itself failed — distinct from "no files
     /// of this language found." Drives parser-quality prioritization.
     pub parser_errors_by_language: std::collections::HashMap<String, usize>,
+    /// Files/entries skipped before parsing, by reason.
+    pub skipped_by_reason: std::collections::HashMap<String, usize>,
+    /// Parser failures with the file path and message (not only a count).
+    pub parser_errors: Vec<ParserErrorInfo>,
+    /// The run stopped at `max_files` or `max_depth`.
+    pub max_files_reached: bool,
+    pub max_depth_reached: bool,
+    /// Deferred cross-file `Implements` edges that were resolved after the
+    /// whole workspace was parsed.
+    pub implements_resolved: usize,
+    /// Trait names that matched more than one interface; left unresolved.
+    pub implements_ambiguous: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParserErrorInfo {
+    pub path: String,
+    pub language: String,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, Default)]
+pub(crate) struct IndexDirectoryStats {
+    pub total_files: usize,
+    pub files_parsed: usize,
+    pub files_skipped: usize,
+    pub by_language: std::collections::HashMap<String, usize>,
+    pub skipped_by_reason: std::collections::HashMap<String, usize>,
+    pub parser_errors_by_language: std::collections::HashMap<String, usize>,
+    pub parser_errors: Vec<ParserErrorInfo>,
+    pub max_files_reached: bool,
+    pub max_depth_reached: bool,
+}
+
+fn merge_index_stats(into: &mut IndexDirectoryStats, from: IndexDirectoryStats) {
+    into.total_files += from.total_files;
+    into.files_parsed += from.files_parsed;
+    into.files_skipped += from.files_skipped;
+    into.max_files_reached |= from.max_files_reached;
+    into.max_depth_reached |= from.max_depth_reached;
+    for (key, count) in from.by_language {
+        *into.by_language.entry(key).or_insert(0) += count;
+    }
+    for (key, count) in from.skipped_by_reason {
+        *into.skipped_by_reason.entry(key).or_insert(0) += count;
+    }
+    for (key, count) in from.parser_errors_by_language {
+        *into.parser_errors_by_language.entry(key).or_insert(0) += count;
+    }
+    into.parser_errors.extend(from.parser_errors);
 }
 
 /// Shared indexer for walking directories, hashing files, and parsing them
@@ -532,19 +619,38 @@ impl Indexer {
             // folders' configs.
             let mut folder_config = config.clone();
             folder_config.extend_from_codegraphignore(folder);
-            let (total, parsed, skipped, by_lang, parser_errors) = self
+            let stats = self
                 .index_directory(graph, folder, &folder_config, 0, counter.clone())
                 .await;
-            result.total_files += total;
-            result.files_parsed += parsed;
-            result.files_skipped += skipped;
-            for (lang, count) in by_lang {
+            result.total_files += stats.total_files;
+            result.files_parsed += stats.files_parsed;
+            result.files_skipped += stats.files_skipped;
+            result.max_files_reached |= stats.max_files_reached;
+            result.max_depth_reached |= stats.max_depth_reached;
+            for (lang, count) in stats.by_language {
                 *result.by_language.entry(lang).or_insert(0) += count;
             }
-            for (lang, count) in parser_errors {
-                *result.parser_errors_by_language.entry(lang).or_insert(0) += count;
+            for (reason, count) in stats.skipped_by_reason {
+                *result.skipped_by_reason.entry(reason).or_insert(0) += count;
             }
+            for (lang, count) in stats.parser_errors_by_language {
+                *result
+                    .parser_errors_by_language
+                    .entry(lang)
+                    .or_insert(0) += count;
+            }
+            result.parser_errors.extend(stats.parser_errors);
         }
+
+        // Resolve trait implementations whose trait was parsed after the
+        // implementing file. This must run before `resolve_cross_file_imports`
+        // only to capture the counters; that pass calls it again idempotently.
+        let implements = {
+            let mut g = graph.write().await;
+            codegraph_rust::resolve_pending_implements(&mut g)
+        };
+        result.implements_resolved = implements.resolved;
+        result.implements_ambiguous = implements.ambiguous;
 
         // Resolve cross-file imports
         {
@@ -579,7 +685,8 @@ impl Indexer {
 
     /// Recursively walk a directory and index supported files.
     ///
-    /// Returns `(total_encountered, files_parsed, files_skipped)`.
+    /// Returns counts plus skip reasons and per-file parser failures so the
+    /// caller can record what was never offered to a parser.
     pub fn index_directory<'a>(
         &'a self,
         graph: &'a Arc<RwLock<CodeGraph>>,
@@ -588,36 +695,26 @@ impl Indexer {
         depth: u32,
         counter: Arc<std::sync::atomic::AtomicUsize>,
     ) -> std::pin::Pin<
-        Box<
-            dyn std::future::Future<
-                    Output = (
-                        usize,
-                        usize,
-                        usize,
-                        std::collections::HashMap<String, usize>,
-                        std::collections::HashMap<String, usize>,
-                    ),
-                > + Send
-                + 'a,
-        >,
+        Box<dyn std::future::Future<Output = IndexDirectoryStats> + Send + 'a>,
     > {
         Box::pin(async move {
             use std::sync::atomic::Ordering;
 
-            let empty_by_lang: std::collections::HashMap<String, usize> = Default::default();
-            let empty_errors: std::collections::HashMap<String, usize> = Default::default();
-
+            let mut stats = IndexDirectoryStats::default();
             if depth > config.max_depth {
                 tracing::warn!(
                     "Skipping {:?}: exceeded max indexing depth of {}",
                     dir,
                     config.max_depth
                 );
-                return (0, 0, 0, empty_by_lang, empty_errors);
+                stats.max_depth_reached = true;
+                *stats.skipped_by_reason.entry("max_depth".into()).or_insert(0) += 1;
+                return stats;
             }
-
             if counter.load(Ordering::Relaxed) >= config.max_files {
-                return (0, 0, 0, empty_by_lang, empty_errors);
+                stats.max_files_reached = true;
+                *stats.skipped_by_reason.entry("max_files".into()).or_insert(0) += 1;
+                return stats;
             }
 
             let exclude_set = config.build_exclude_set();
@@ -625,17 +722,12 @@ impl Indexer {
 
             tracing::debug!("Scanning directory: {:?}", dir);
 
-            let mut total = 0usize;
-            let mut parsed = 0usize;
-            let mut skipped = 0usize;
-            let mut by_language: std::collections::HashMap<String, usize> = Default::default();
-            let mut parser_errors: std::collections::HashMap<String, usize> = Default::default();
-
             let entries = match std::fs::read_dir(dir) {
                 Ok(e) => e,
                 Err(e) => {
                     tracing::warn!("Cannot read directory {:?}: {}", dir, e);
-                    return (0, 0, 0, empty_by_lang, empty_errors);
+                    *stats.skipped_by_reason.entry("unreadable_dir".into()).or_insert(0) += 1;
+                    return stats;
                 }
             };
 
@@ -646,83 +738,96 @@ impl Indexer {
                          --max-files or the codegraph.maxFiles setting",
                         config.max_files
                     );
+                    stats.max_files_reached = true;
+                    *stats.skipped_by_reason.entry("max_files".into()).or_insert(0) += 1;
                     break;
                 }
 
                 let path = entry.path();
-
                 let is_dir = path.is_dir();
-                if is_excluded_entry(config, &exclude_set, &path, is_dir) {
+                if let Some(reason) = exclusion_reason(config, &exclude_set, &path, is_dir) {
+                    *stats.skipped_by_reason.entry(reason.into()).or_insert(0) += 1;
                     continue;
                 }
 
                 if is_dir {
-                    let (t, p, s, child_by_lang, child_errors) = self
+                    let child = self
                         .index_directory(graph, &path, config, depth + 1, counter.clone())
                         .await;
-                    total += t;
-                    parsed += p;
-                    skipped += s;
-                    for (lang, count) in child_by_lang {
-                        *by_language.entry(lang).or_insert(0) += count;
-                    }
-                    for (lang, count) in child_errors {
-                        *parser_errors.entry(lang).or_insert(0) += count;
-                    }
+                    merge_index_stats(&mut stats, child);
                 } else if path.is_file() {
-                    // Skip files that exceed the configurable size limit
-                    if let Ok(metadata) = std::fs::metadata(&path) {
-                        if metadata.len() > config.max_file_size_bytes {
-                            tracing::info!(
-                                "Skipping {:?}: file size {} exceeds limit of {}",
-                                path,
-                                metadata.len(),
-                                config.max_file_size_bytes
-                            );
+                    let metadata = match std::fs::metadata(&path) {
+                        Ok(metadata) => metadata,
+                        Err(_) => {
+                            *stats.skipped_by_reason.entry("unreadable_file".into()).or_insert(0) += 1;
                             continue;
                         }
+                    };
+                    if metadata.len() > config.max_file_size_bytes {
+                        tracing::info!(
+                            "Skipping {:?}: file size {} exceeds limit of {}",
+                            path,
+                            metadata.len(),
+                            config.max_file_size_bytes
+                        );
+                        *stats.skipped_by_reason.entry("too_large".into()).or_insert(0) += 1;
+                        continue;
                     }
 
-                    // Check if file has a supported extension
-                    if let Some(ext) = path.extension() {
-                        let ext_str = ext.to_string_lossy();
-                        let ext_with_dot = format!(".{}", ext_str);
-                        let is_supported = supported_extensions
-                            .iter()
-                            .any(|e| *e == ext_str.as_ref() || *e == ext_with_dot);
+                    let Some(ext) = path.extension() else {
+                        *stats
+                            .skipped_by_reason
+                            .entry("unsupported_extension".into())
+                            .or_insert(0) += 1;
+                        continue;
+                    };
+                    let ext_str = ext.to_string_lossy();
+                    let ext_with_dot = format!(".{}", ext_str);
+                    let is_supported = supported_extensions
+                        .iter()
+                        .any(|e| *e == ext_str.as_ref() || *e == ext_with_dot);
+                    if !is_supported {
+                        *stats
+                            .skipped_by_reason
+                            .entry("unsupported_extension".into())
+                            .or_insert(0) += 1;
+                        continue;
+                    }
 
-                        if is_supported {
-                            // Resolve the parser before parsing so we can
-                            // attribute the file (and any error) to a
-                            // specific language for telemetry.
-                            let language = self
-                                .parsers
-                                .parser_for_path(&path)
-                                .map(|p| p.language().to_string())
-                                .unwrap_or_else(|| "unknown".to_string());
-                            match self.index_file(graph, &path).await {
-                                Ok(was_parsed) => {
-                                    total += 1;
-                                    counter.fetch_add(1, Ordering::Relaxed);
-                                    *by_language.entry(language).or_insert(0) += 1;
-                                    if was_parsed {
-                                        parsed += 1;
-                                    } else {
-                                        skipped += 1;
-                                        tracing::trace!("Skipped unchanged: {:?}", path);
-                                    }
-                                }
-                                Err(e) => {
-                                    tracing::warn!("Failed to index {:?}: {}", path, e);
-                                    *parser_errors.entry(language).or_insert(0) += 1;
-                                }
+                    let language = self
+                        .parsers
+                        .parser_for_path(&path)
+                        .map(|p| p.language().to_string())
+                        .unwrap_or_else(|| "unknown".to_string());
+                    match self.index_file(graph, &path).await {
+                        Ok(was_parsed) => {
+                            stats.total_files += 1;
+                            counter.fetch_add(1, Ordering::Relaxed);
+                            *stats.by_language.entry(language).or_insert(0) += 1;
+                            if was_parsed {
+                                stats.files_parsed += 1;
+                            } else {
+                                stats.files_skipped += 1;
+                                tracing::trace!("Skipped unchanged: {:?}", path);
                             }
+                        }
+                        Err(error) => {
+                            tracing::warn!("Failed to index {:?}: {}", path, error);
+                            *stats
+                                .parser_errors_by_language
+                                .entry(language.clone())
+                                .or_insert(0) += 1;
+                            stats.parser_errors.push(ParserErrorInfo {
+                                path: path.to_string_lossy().to_string(),
+                                language,
+                                message: error,
+                            });
                         }
                     }
                 }
             }
 
-            (total, parsed, skipped, by_language, parser_errors)
+            stats
         })
     }
 
@@ -794,6 +899,43 @@ mod tests {
         );
     }
 
+    #[test]
+    fn include_dir_overrides_default_directory_exclusion() {
+        let config = IndexConfig::default();
+        let exclude_set = config.build_exclude_set();
+        let examples = Path::new("examples");
+        let demo = Path::new("examples/demo.py");
+
+        assert_eq!(
+            exclusion_reason(&config, &exclude_set, examples, true),
+            Some("excluded_dir")
+        );
+        assert_eq!(
+            exclusion_reason(&config, &exclude_set, demo, false),
+            None,
+            "the file itself is only reachable once the directory is admitted"
+        );
+
+        let mut included = config.clone();
+        included.include_dirs = vec!["examples".to_string()];
+        assert_eq!(
+            exclusion_reason(&included, &exclude_set, examples, true),
+            None
+        );
+        assert_eq!(exclusion_reason(&included, &exclude_set, demo, false), None);
+    }
+
+    #[test]
+    fn include_dir_does_not_override_hidden_entries() {
+        let mut config = IndexConfig::default();
+        config.include_dirs = vec![".hidden".to_string()];
+        let exclude_set = config.build_exclude_set();
+        assert_eq!(
+            exclusion_reason(&config, &exclude_set, Path::new(".hidden"), true),
+            Some("hidden")
+        );
+    }
+
     fn filter_config(exclude_dirs: &[&str], max_depth: u32) -> IndexConfig {
         IndexConfig {
             exclude_dirs: exclude_dirs.iter().map(|d| d.to_string()).collect(),
@@ -801,6 +943,7 @@ mod tests {
             max_file_size_bytes: 1024 * 1024,
             max_depth,
             max_files: 1000,
+            include_dirs: vec![],
         }
     }
 
@@ -924,6 +1067,7 @@ mod tests {
             max_file_size_bytes: 1024,
             max_depth: 5,
             max_files: 100,
+            include_dirs: vec![],
         };
         config.extend_from_codegraphignore(tmp.path());
         // Pre-existing patterns are kept.

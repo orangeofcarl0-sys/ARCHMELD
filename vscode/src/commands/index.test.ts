@@ -81,7 +81,7 @@ describe('CodeGraph Commands', () => {
     // Set up mock for activeTextEditor (using setMock directly)
     const mockEditor = {
       document: {
-        uri: { toString: () => 'file:///test/file.ts' },
+        uri: { toString: () => 'file://<path>' },
         fileName: '/test/file.ts',
         languageId: 'typescript',
       },

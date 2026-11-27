@@ -18,8 +18,32 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "<workspace>/_archmeld_tools";
-const TEMP: &str = "<temp>";
+mod support;
+
+fn tools_root() -> String {
+    support::tools_root()
+        .expect("ARCHMELD_TOOLS_ROOT is required for the rename-apply matrix")
+        .to_string_lossy()
+        .to_string()
+}
+
+fn temp_root() -> String {
+    support::temp_root().to_string_lossy().to_string()
+}
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
+
+fn node() -> String {
+    support::require_tool("ARCHMELD_NODE", "node.exe")
+        .expect("node")
+        .to_string_lossy()
+        .to_string()
+}
 
 fn fixtures() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../adapters/languages/fixtures")
@@ -91,10 +115,7 @@ fn rename_edit(
 }
 
 fn temp_dir(label: &str) -> tempfile::TempDir {
-    tempfile::Builder::new()
-        .prefix(&format!("b030-rename-{label}-"))
-        .tempdir_in(TEMP)
-        .unwrap()
+    support::tempdir(&format!("b030-rename-{label}-"))
 }
 
 fn run(
@@ -130,7 +151,7 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             require_ok(
                 root,
                 vec![
-                    "D:/Strawberry/c/bin/g++.exe".into(),
+                    support::require_tool("ARCHMELD_GXX", "c/bin/g++.exe").expect("g++").to_string_lossy().into_owned(),
                     "-std=c++17".into(),
                     "-DFACTOR=2".into(),
                     "-Isrc".into(),
@@ -156,7 +177,7 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             require_ok(
                 root,
                 vec![
-                    "python".into(),
+                    python(),
                     "-m".into(),
                     "compileall".into(),
                     "-q".into(),
@@ -168,7 +189,7 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             require_ok(
                 root,
                 vec![
-                    "python".into(),
+                    python(),
                     "-c".into(),
                     "from app import main; print(main(3))".into(),
                 ],
@@ -179,23 +200,23 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             .to_string()
         }
         "typescript" => {
-            let tsc = format!("{TOOLS}/lang-servers/node_modules/typescript/bin/tsc");
+            let tsc = format!("{}/lang-servers/node_modules/typescript/bin/tsc", tools_root());
             require_ok(
                 root,
-                vec!["node".into(), tsc.clone(), "--noEmit".into(), "-p".into(), ".".into()],
+                vec![node(), tsc.clone(), "--noEmit".into(), "-p".into(), ".".into()],
                 &[],
                 "tsc noEmit",
             );
             require_ok(
                 root,
-                vec!["node".into(), tsc, "-p".into(), ".".into(), "--outDir".into(), "out".into()],
+                vec![node(), tsc, "-p".into(), ".".into(), "--outDir".into(), "out".into()],
                 &[],
                 "tsc emit",
             );
             require_ok(
                 root,
                 vec![
-                    "node".into(),
+                    node(),
                     "-e".into(),
                     "console.log(require('./out/app.js').value)".into(),
                 ],
@@ -208,14 +229,14 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
         "javascript" => {
             require_ok(
                 root,
-                vec!["node".into(), "--check".into(), "src/app.js".into()],
+                vec![node(), "--check".into(), "src/app.js".into()],
                 &[],
                 "node --check",
             );
             require_ok(
                 root,
                 vec![
-                    "node".into(),
+                    node(),
                     "-e".into(),
                     "import('./src/app.js').then((m) => console.log(m.value))".into(),
                 ],
@@ -226,7 +247,7 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             .to_string()
         }
         "java" => {
-            let jdk = format!("{TOOLS}/jdk25/jdk-25.0.5+8/bin");
+            let jdk = format!("{}/jdk25/jdk-25.0.5+8/bin", tools_root());
             let out = temp.join("classes");
             fs::create_dir_all(&out).unwrap();
             let mut argv = vec![
@@ -243,13 +264,13 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             require_ok(
                 root,
                 argv,
-                &[("JAVA_HOME".into(), format!("{TOOLS}/jdk25/jdk-25.0.5+8"))],
+                &[("JAVA_HOME".into(), format!("{}/jdk25/jdk-25.0.5+8", tools_root()))],
                 "javac",
             );
             "compiled".to_string()
         }
         "csharp" => {
-            let dotnet = format!("{TOOLS}/dotnet8/dotnet.exe");
+            let dotnet = format!("{}/dotnet8/dotnet.exe", tools_root());
             let env = csharp_env(root);
             require_ok(
                 root,
@@ -267,7 +288,7 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
             .to_string()
         }
         "go" => {
-            let go = format!("{TOOLS}/go/go/bin/go.exe");
+            let go = format!("{}/go/go/bin/go.exe", tools_root());
             let exe = temp.join("app.exe");
             let env = go_env();
             require_ok(
@@ -294,15 +315,15 @@ fn build_fixture(kind: &str, root: &Path, temp: &Path) -> String {
         "rust" => {
             let mut env = vec![(
                 "RUSTUP_TOOLCHAIN".to_string(),
-                "1.94.1-x86_64-pc-windows-gnu".to_string(),
+                support::rust_toolchain(),
             )];
             env.push((
                 "LIBCLANG_PATH".to_string(),
-                format!("{TOOLS}/pylibclang/clang/native"),
+                format!("{}/pylibclang/clang/native", tools_root()),
             ));
             env.push((
                 "BINDGEN_EXTRA_CLANG_ARGS".to_string(),
-                format!("-isystem {TOOLS}/llvm18/lib/clang/18/include"),
+                format!("-isystem {}/llvm18/lib/clang/18/include", tools_root()),
             ));
             env.push(("CXXFLAGS".to_string(), "-include cstdint".to_string()));
             require_ok(
@@ -341,10 +362,10 @@ fn baseline_build(kind: &str, root: &Path, label: &str) -> String {
 
 fn csharp_env(root: &Path) -> Vec<(String, String)> {
     vec![
-        ("DOTNET_ROOT".into(), format!("{TOOLS}/dotnet8")),
+        ("DOTNET_ROOT".into(), format!("{}/dotnet8", tools_root())),
         (
             "NUGET_PACKAGES".into(),
-            "<user>/.nuget/packages".into(),
+            support::nuget_root().expect("NUGET_PACKAGES or HOME/.nuget/packages").to_string_lossy().into_owned(),
         ),
         ("DOTNET_CLI_TELEMETRY_OPTOUT".into(), "1".into()),
         ("DOTNET_NOLOGO".into(), "1".into()),
@@ -353,16 +374,16 @@ fn csharp_env(root: &Path) -> Vec<(String, String)> {
             root.to_string_lossy().into_owned(),
         ),
         ("HOMEDRIVE".into(), "C:".into()),
-        ("HOMEPATH".into(), "<user>".into()),
-        ("ProgramFiles".into(), "C:/Program Files".into()),
-        ("ProgramFiles(x86)".into(), "C:/Program Files (x86)".into()),
+        ("HOMEPATH".into(), support::home().expect("HOME or USERPROFILE").to_string_lossy().into_owned()),
+        ("ProgramFiles".into(), "<path> Files".into()),
+        ("ProgramFiles(x86)".into(), "<path> Files (x86)".into()),
         ("PROCESSOR_ARCHITECTURE".into(), "AMD64".into()),
         ("COMPUTERNAME".into(), "LOCALHOST".into()),
     ]
 }
 
 fn go_env() -> Vec<(String, String)> {
-    let go = format!("{TOOLS}/go");
+    let go = format!("{}/go", tools_root());
     vec![
         ("GOROOT".into(), format!("{go}/go")),
         ("GOPATH".into(), format!("{go}/gopath")),
@@ -453,9 +474,30 @@ fn assert_unchanged(root: &Path, path: &str, needle: &str) {
 
 #[test]
 fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
+    let required = [
+        ("ARCHMELD_GCC", "c/bin/gcc.exe"),
+        ("ARCHMELD_GXX", "c/bin/g++.exe"),
+        ("ARCHMELD_CLANGD", "llvm18/bin/clangd.exe"),
+        ("ARCHMELD_CLANGXX", "llvm18/bin/clang++.exe"),
+        ("ARCHMELD_TSC", "lang-servers/node_modules/typescript/bin/tsc"),
+        ("ARCHMELD_PYRIGHT", "lang-servers/node_modules/pyright/langserver.index.js"),
+        ("ARCHMELD_TS_SERVER", "lang-servers/node_modules/typescript-language-server/lib/cli.mjs"),
+        ("ARCHMELD_JAVA", "jdk25/jdk-25.0.5+8/bin/java.exe"),
+        ("ARCHMELD_JAVAC", "jdk25/jdk-25.0.5+8/bin/javac.exe"),
+        ("ARCHMELD_DOTNET", "dotnet8/dotnet.exe"),
+        ("ARCHMELD_GO", "go/go/bin/go.exe"),
+        ("ARCHMELD_PYTHON", "python.exe"),
+        ("ARCHMELD_NODE", "node.exe"),
+    ];
+    if required
+        .iter()
+        .any(|(env, relative)| support::require_tool(env, relative).is_none())
+    {
+        return;
+    }
     let mut evidence = Map::new();
-    let csharp_available = Path::new(&format!("{TOOLS}/csharp-tools/csharp-ls.exe")).is_file();
-    let jdtls_available = Path::new(&format!("{TOOLS}/jdtls/plugins")).is_dir();
+    let csharp_available = Path::new(&format!("{}/csharp-tools/csharp-ls.exe", tools_root())).is_file();
+    let jdtls_available = Path::new(&format!("{}/jdtls/plugins", tools_root())).is_dir();
 
     // ---------------- C/C++ ----------------
     {
@@ -469,7 +511,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
             .unwrap();
         });
         let before = baseline_build("cpp", &fixture.root, "cpp");
-        let clangd = PathBuf::from(format!("{TOOLS}/llvm18/bin/clangd.exe"));
+        let clangd = PathBuf::from(format!("{}/llvm18/bin/clangd.exe", tools_root()));
         let session = LspSession::start(
             &LspServerSpec {
                 id: "clangd".into(),
@@ -486,7 +528,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.cpp", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-cpp-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-cpp-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -521,9 +563,9 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let session = LspSession::start(
             &LspServerSpec {
                 id: "pyright".into(),
-                program: PathBuf::from("C:/Program Files/nodejs/node.exe"),
+                program: PathBuf::from("<path> Files/nodejs/node.exe"),
                 args: vec![
-                    format!("{TOOLS}/lang-servers/node_modules/pyright/langserver.index.js"),
+                    format!("{}/lang-servers/node_modules/pyright/langserver.index.js", tools_root()),
                     "--stdio".into(),
                 ],
                 cwd: fixture.root.clone(),
@@ -531,7 +573,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.python", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-python-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-python-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -563,9 +605,9 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let session = LspSession::start(
             &LspServerSpec {
                 id: "typescript-language-server".into(),
-                program: PathBuf::from("C:/Program Files/nodejs/node.exe"),
+                program: PathBuf::from("<path> Files/nodejs/node.exe"),
                 args: vec![
-                    format!("{TOOLS}/lang-servers/node_modules/typescript-language-server/lib/cli.mjs"),
+                    format!("{}/lang-servers/node_modules/typescript-language-server/lib/cli.mjs", tools_root()),
                     "--stdio".into(),
                 ],
                 cwd: fixture.root.clone(),
@@ -573,7 +615,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.typescript", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-ts-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-ts-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -608,9 +650,9 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let session = LspSession::start(
             &LspServerSpec {
                 id: "typescript-language-server".into(),
-                program: PathBuf::from("C:/Program Files/nodejs/node.exe"),
+                program: PathBuf::from("<path> Files/nodejs/node.exe"),
                 args: vec![
-                    format!("{TOOLS}/lang-servers/node_modules/typescript-language-server/lib/cli.mjs"),
+                    format!("{}/lang-servers/node_modules/typescript-language-server/lib/cli.mjs", tools_root()),
                     "--stdio".into(),
                 ],
                 cwd: fixture.root.clone(),
@@ -618,7 +660,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.javascript", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-js-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-js-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -656,8 +698,8 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let source = fixtures().join("java");
         let mut fixture = common::setup_prepared("b030-rename-java", |root| copy_dir(&source, root));
         let before = baseline_build("java", &fixture.root, "java");
-        let jdk = PathBuf::from(format!("{TOOLS}/jdk25/jdk-25.0.5+8/bin/java.exe"));
-        let jdtls = PathBuf::from(format!("{TOOLS}/jdtls"));
+        let jdk = PathBuf::from(format!("{}/jdk25/jdk-25.0.5+8/bin/java.exe", tools_root()));
+        let jdtls = PathBuf::from(format!("{}/jdtls", tools_root()));
         let launcher = fs::read_dir(jdtls.join("plugins"))
             .unwrap()
             .filter_map(Result::ok)
@@ -713,7 +755,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.java", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-java-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-java-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -758,11 +800,11 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let source = fixtures().join("csharp");
         let mut fixture = common::setup_prepared("b030-rename-csharp", |root| copy_dir(&source, root));
         let before = baseline_build("csharp", &fixture.root, "cs");
-        let dn = format!("{TOOLS}/dotnet8");
+        let dn = format!("{}/dotnet8", tools_root());
         let session = LspSession::start(
             &LspServerSpec {
                 id: "csharp-ls".into(),
-                program: PathBuf::from(format!("{TOOLS}/csharp-tools/csharp-ls.exe")),
+                program: PathBuf::from(format!("{}/csharp-tools/csharp-ls.exe", tools_root())),
                 args: vec![],
                 cwd: fixture.root.clone(),
                 env: vec![
@@ -775,7 +817,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.csharp", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-csharp-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-csharp-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -804,7 +846,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let source = fixtures().join("go");
         let mut fixture = common::setup_prepared("b030-rename-go", |root| copy_dir(&source, root));
         let before = baseline_build("go", &fixture.root, "go");
-        let go = format!("{TOOLS}/go");
+        let go = format!("{}/go", tools_root());
         let session = LspSession::start(
             &LspServerSpec {
                 id: "gopls".into(),
@@ -823,7 +865,7 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.go", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-go-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-go-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -863,14 +905,14 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         let session = LspSession::start(
             &LspServerSpec {
                 id: "rust-analyzer".into(),
-                program: PathBuf::from("<user>/.rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe"),
+                program: support::rust_tool("rust-analyzer").expect("rust-analyzer"),
                 args: vec![],
                 cwd: fixture.root.clone(),
                 env: Vec::new(),
                 initialization_options: None,
             },
             &SpawnPermission::grant("grant.b030.rust", "rename apply acceptance"),
-            &PathBuf::from(format!("{TEMP}/b030-rename-rust-audit.ndjson")),
+            &PathBuf::from(format!("{}/b030-rename-rust-audit.ndjson", temp_root())),
         )
         .unwrap();
         session.initialize(&fixture.root).unwrap();
@@ -898,6 +940,8 @@ fn seven_groups_apply_semantic_renames_through_the_changeset_gate() {
         "schema_version": "1.0",
         "generated_by": "crates/archmeld-core/tests/language_rename_apply.rs",
         "platform": {"os": std::env::consts::OS, "arch": std::env::consts::ARCH},
+        "recorded_at_unix": support::recorded_at_unix(),
+        "product_head": support::product_head(),
         "groups": evidence,
         "note": "Each rename came from a real language server, was applied to the staging tree only, approved by exact prepared digest, applied through the journaled writer gate, then built and executed again. Same-named symbols in other files and reflective/string literals remained untouched.",
     });

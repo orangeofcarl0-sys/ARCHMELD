@@ -148,7 +148,7 @@ fn overlapping_ranges_resource_ops_and_absolute_uris_are_refused() {
     let resource = json!({
         "documentChanges": [{
             "kind": "create",
-            "uri": "file:///C:/tmp/new.py"
+            "uri": "file://<path><path>"
         }]
     });
     let preview =
@@ -160,7 +160,7 @@ fn overlapping_ranges_resource_ops_and_absolute_uris_are_refused() {
         .any(|refusal| refusal.code == "resource_operation_not_supported"));
 
     let absolute = json!({
-        "changes": {"file:///C:/tmp/app.py": [edit((0, 0, 0, 1), "x")]}
+        "changes": {"file://<path><path>": [edit((0, 0, 0, 1), "x")]}
     });
     let preview =
         preview_workspace_edit(&fixture.store, &preview_request(&fixture, &allowed), &absolute)

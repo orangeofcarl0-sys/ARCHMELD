@@ -15,29 +15,47 @@ fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("build_info.rs");
 
-    let git_hash = Command::new("git")
-        .args(["rev-parse", "HEAD"])
-        .output()
+    println!("cargo:rerun-if-env-changed=ARCHMELD_BUILD_COMMIT");
+    println!("cargo:rerun-if-env-changed=ARCHMELD_BUILD_COMMIT_SHORT");
+    println!("cargo:rerun-if-env-changed=ARCHMELD_BUILD_DIRTY");
+    let git_hash = env::var("ARCHMELD_BUILD_COMMIT")
         .ok()
-        .filter(|o| o.status.success())
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-        .unwrap_or_else(|| "unknown".to_string());
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| {
+            Command::new("git")
+                .args(["rev-parse", "HEAD"])
+                .output()
+                .ok()
+                .filter(|o| o.status.success())
+                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                .unwrap_or_else(|| "unknown".to_string())
+        });
 
-    let git_hash_short = Command::new("git")
-        .args(["rev-parse", "--short", "HEAD"])
-        .output()
+    let git_hash_short = env::var("ARCHMELD_BUILD_COMMIT_SHORT")
         .ok()
-        .filter(|o| o.status.success())
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-        .unwrap_or_else(|| "unknown".to_string());
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| {
+            Command::new("git")
+                .args(["rev-parse", "--short", "HEAD"])
+                .output()
+                .ok()
+                .filter(|o| o.status.success())
+                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                .unwrap_or_else(|| "unknown".to_string())
+        });
 
-    let git_dirty = Command::new("git")
-        .args(["status", "--porcelain"])
-        .output()
+    let git_dirty = env::var("ARCHMELD_BUILD_DIRTY")
         .ok()
-        .filter(|o| o.status.success())
-        .map(|o| !o.stdout.is_empty())
-        .unwrap_or(false);
+        .map(|value| value == "1" || value.eq_ignore_ascii_case("true"))
+        .unwrap_or_else(|| {
+            Command::new("git")
+                .args(["status", "--porcelain"])
+                .output()
+                .ok()
+                .filter(|o| o.status.success())
+                .map(|o| !o.stdout.is_empty())
+                .unwrap_or(false)
+        });
 
     let dirty_suffix = if git_dirty { "-dirty" } else { "" };
 

@@ -1,4 +1,4 @@
-   Compiling codegraph-server v0.21.2 (<repo>\crates\codegraph-server)
+   Compiling codegraph-server v0.21.2 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
  --> crates\codegraph-csharp\src\visitor.rs:9:5
   |

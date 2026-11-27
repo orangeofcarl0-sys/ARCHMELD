@@ -56,7 +56,7 @@
       "retention_id": "retention.b025",
       "schema_version": "1.0",
       "source": "backup-new",
-      "target": "\\\\?\\<temp>\\b025_backup\\offhost\\retention.b025",
+      "target": "\\\\?\\<path>",
       "target_kind": "path",
       "verified": true
     },

@@ -73,7 +73,7 @@ describe('CodeGraphAIProvider', () => {
 
       // Create a mock document
       const doc = createTextDocument({
-        uri: 'file:///test/file.ts',
+        uri: 'file://<path>',
         fileName: '/test/file.ts',
         languageId: 'typescript',
         content: 'function hello() { return "world"; }',
@@ -133,7 +133,7 @@ describe('CodeGraphAIProvider', () => {
       const provider = new CodeGraphAIProvider(mockClient as any);
 
       const doc = createTextDocument({
-        uri: 'file:///test/file.ts',
+        uri: 'file://<path>',
         content: 'const test = 1;',
       });
 
@@ -167,7 +167,7 @@ describe('CodeGraphAIProvider', () => {
       const provider = new CodeGraphAIProvider(mockClient as any);
 
       const doc = createTextDocument({
-        uri: 'file:///test/file.ts',
+        uri: 'file://<path>',
         content: 'function test() {}',
       });
 
@@ -212,7 +212,7 @@ describe('CodeGraphAIProvider', () => {
       const provider = new CodeGraphAIProvider(mockClient as any);
 
       const doc = createTextDocument({
-        uri: 'file:///test/file.ts',
+        uri: 'file://<path>',
         content: 'const x = 1;',
       });
 

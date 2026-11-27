@@ -1,6 +1,6 @@
 # Upstream integration and update policy
 
-Status: U0/U1 governance, 2026-11-25.
+Status: U4b/U5 governance, 2026-11-26.
 
 This document describes how ARCHMELD consumes other projects. It is deliberately
 not a "universal compatibility layer": each upstream has the boundary its failure
@@ -51,25 +51,135 @@ Derived or historical records are not rewritten by the registry:
   `specs/S11_API_MCP_EVENTS.md`. `git status -- docs/archmeld` is clean, so this
   predates U0/U1; it needs a separate re-seal task. Do not hand-edit the pack.
 
+## Environment resolution
+
+Development tools do not encode a machine-specific path. `tooling/portable_env.py`
+resolves, in order: explicit argument → `ARCHMELD_*` → standard environment
+variable → repository-sibling `_archmeld_*` (only if it exists) → system default.
+
+| Variable | Purpose |
+|---|---|
+| `ARCHMELD_TEMP` | temporary root for drills, fixtures and test work |
+| `ARCHMELD_TOOLS_ROOT` | external language servers, JDKs and trace tools |
+| `ARCHMELD_STATE_ROOT` | product state root (unchanged) |
+| `ARCHMELD_STRAWBERRY_BIN` | optional MinGW runtime/bin directory |
+| `ARCHMELD_GCC_ROOT` | optional MinGW root for bindgen include discovery |
+| `ARCHMELD_PYTHON` | optional pinned Python executable for tests and old-tree drills |
+| `ARCHMELD_LIBCLANG_PATH` | optional libclang directory; falls back to `LIBCLANG_PATH` |
+| `ARCHMELD_VSCODE` / `ARCHMELD_CHROME` | optional GUI tool locations |
+| `ARCHMELD_REQUIRE_TOOLS=1` | tests fail, instead of skipping, when an external tool is missing |
+
+`python tooling/portable_env.py --json` prints the resolved roots. Product
+runtime code does not read `ARCHMELD_TOOLS_ROOT`; it is a development/test
+concept. Historical evidence under `docs/evidence/**` and
+`baseline/commands.ndjson` is a record, not a runtime configuration; the public
+snapshot tool redacts it at export time.
+
+External-tool tests use `crates/archmeld-core/tests/support`:
+
+- `ARCHMELD_TOOLS_ROOT` set but a required tool missing → hard failure;
+- `ARCHMELD_REQUIRE_TOOLS=1` → hard failure even when the root is unset;
+- neither → `SKIP: ...` and the test returns without weakening its assertions.
+
+This keeps a fresh checkout runnable while evidence runs stay strict.
+
+## Public snapshot boundary
+
+The private development history is never published. `tooling/public_snapshot.py`
+checks and exports a single sanitized tree:
+
+```text
+python tooling/public_snapshot.py check --mode private --json
+python tooling/public_snapshot.py export --out <temp> --previous-public <public-tree> --private-map <untracked-json>
+python tooling/public_snapshot.py verify-export <temp>
+```
+
+`check --mode private` reports historical evidence as warnings; `--mode public`
+fails on any unclassified finding. `export` omits transient outputs, redacts
+local paths/identities/IPs, requires a private map for dataset markers, and
+refuses to copy raw SCIP binaries without `--previous-public`. It writes only
+under `--out` and never pushes. `tooling/upstream.py verify` includes a
+non-failing `public_snapshot.private` check in the private tree.
+
 ## Commands
 
 ```text
-python tooling/upstream.py status [--json] [--remote]
+python tooling/upstream.py status [--json] [--remote] [--out PATH] [--fail-on-update]
 python tooling/upstream.py verify [--json] [--out PATH] [--skip-cargo]
-python tooling/upstream.py check codegraph [--json] [--fail-on-update]
+python tooling/upstream.py check codegraph [--json] [--out PATH] [--fail-on-update]
 ```
 
 - `status` is offline by default. `--remote` runs `git ls-remote` and is still
-  read-only.
+  read-only. It tries `source.remote` first and falls back to `source.url` with
+  `HEAD`, so a fresh CI checkout without an `upstream` remote still works.
+  `--fail-on-update` exits 3 when any commit pin has a newer remote commit.
 - `verify` checks registry schema, pin copies, generated-artifact drift,
-  sealed-pack cleanliness, the export contract document, and the private core's
-  dependency closure. It writes nothing unless `--out` is passed.
+  sealed-pack cleanliness, the export contract document, the trace fixture lock,
+  and the private core's dependency closure. It writes nothing unless `--out`
+  is passed.
 - `check` compares the registry pin with `git ls-remote`. It never fetches,
   merges, pushes or updates a pin. `--fail-on-update` returns exit code 3 when a
-  newer commit exists.
+  newer commit exists. Only commit pins apply; version and lockfile pins are
+  reported by `status`.
 
 U1 adds `patches`, `diff`, `drill` and `record`; those are still development-side
 commands. They must never auto-merge or auto-change a pin.
+
+## Weekly check
+
+`.github/workflows/archmeld-upstream.yml` runs the read-only check weekly and on
+`workflow_dispatch`, with `contents: read`. It uploads `upstream-verify.json`,
+`upstream-status.json` and `upstream-check.json` as an artifact, and treats exit
+code 3 as "a newer commit exists", not as a job failure. It never commits,
+pushes, merges or changes a pin.
+
+The shell commands and the evidence template are in
+[`WEEKLY_CHECK.md`](WEEKLY_CHECK.md). The private development tree uses the same
+commands locally; the workflow only runs on the public snapshot's default
+branch.
+
+## U2/U3 contract gates
+
+- CodeBoarding: `analysis_schema_version` is optional. Missing is recorded as
+  `unversioned`; an explicit unknown major version is rejected. The pinned
+  0.15.3 artifact has no top-level version field, so a hard requirement would
+  reject the only real output.
+- SCIP: `Metadata.version` must be 0 (the only value defined by
+  `scip-protobuf-v0.3`); `tool_info` is recorded and missing tool info is a
+  warning.
+- AOCI: `#Format-Version` and `#AOCI-ROOT-MANIFEST` are parsed; unknown major
+  versions and missing headers are warnings and entries still parse.
+- Traces: Perfetto/Tracy artifacts have no common in-band version. `verify`
+  audits `adapters/traces/fixtures.lock.json` hashes, sizes, producers,
+  limitations and consuming tests instead of inventing a parser version gate.
+- LSP: `LspSession::capability_probe` records `serverInfo` and advertised
+  capabilities and degrades evidence when a version or capability is missing.
+  It does not change the sealed runtime language profile.
+- Perfetto trace processor: `perfetto_trace_via_processor_checked` fails closed
+  when the pinned version or sha256 does not match; the caller can fall back to
+  the in-process decoder.
+
+## Version probes
+
+`python tooling/upstream.py probes [--id <upstream>] [--json] [--out PATH]`
+checks version/lockfile/asset pins without changing anything:
+
+- `git_tags`: `git ls-remote --tags --refs` (no GitHub REST API, no token);
+- `npm`: `registry.npmjs.org/<package>/latest`;
+- `pypi`: `pypi.org/pypi/<package>/json`;
+- `go_proxy`: `proxy.golang.org/<module>/@latest`.
+
+Covered: scip-clang, scip-python, scip format, Perfetto, Tracy, Cytoscape,
+pyright, typescript-language-server, gopls, jdtls and csharp-ls. Explicitly
+skipped with a reason: clangd (LLVM tag stream), rust-analyzer (rustup
+toolchain), VizTracer (no pinned fixture), AOCI (identifier is not a Git URL)
+and the toolchain (environment pin, `doctor.py` is authoritative).
+
+`probes` reports `latest`, `update_available`, `status` and `behind: null`.
+Version updates are informational: they do not change `--fail-on-update`
+(commit pins only), do not fail the weekly job, and never update a pin. A
+version format that cannot be normalized is reported as `unsupported` rather
+than a false `update_available`.
 
 ## Update policy by upstream
 
@@ -87,6 +197,18 @@ commands. They must never auto-merge or auto-change a pin.
 Only CodeGraph can fail at compile time. The other boundaries fail at parse or
 protocol time and are covered by fixtures.
 
+## Upgrade and rollback
+
+- [`UPGRADE_PLAYBOOK.md`](UPGRADE_PLAYBOOK.md): preflight, check/diff, drill,
+  conflict rules, test matrix, record and post-upgrade checks.
+- [`ROLLBACK.md`](ROLLBACK.md): binary vs source vs pin-only rollback, the
+  `git revert -m 1 <merge>` procedure, provenance reconciliation and the
+  read-only `rollback-drill` command.
+
+`rollback-drill` builds an old fork commit in a temporary worktree and can probe
+`git revert -m 1` for conflicts. It never changes the main worktree, a pin or
+the patch manifest, and it does not use `record`.
+
 ## CodeGraph patch surface
 
 `patches/codegraph/manifest.json` (U1) is a **path-level audit manifest**, not a
@@ -102,4 +224,5 @@ Every automated command must record cwd, argv, exit code, tool versions, log
 hashes, artifact hashes and sandbox/trust state. Put committed logs under
 `docs/evidence/upstream-<date>/`, structured records under
 `docs/release-evidence/`, and append command records through
-`python baseline/run_cmd.py`.
+`python baseline/run_cmd.py`. Weekly reports use the template in
+[`WEEKLY_CHECK.md`](WEEKLY_CHECK.md) and must not include an `AT077` block.

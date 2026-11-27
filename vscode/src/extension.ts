@@ -391,7 +391,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     // observe its exit code/signal for crash diagnostics. Spawning the binary
     // directly with no shell also fixes the Windows path-with-spaces bug
     // (issue #2) properly — Node passes argv without shell word-splitting, so
-    // `C:\Users\First Last\...\codegraph-server.exe` no longer breaks at the
+    // `<path> Last\...\codegraph-server.exe` no longer breaks at the
     // space the way `shell:true` + cmd.exe did. stdio defaults to pipes, which
     // vscode-languageclient uses for the LSP transport (stderr → outputChannel).
     const serverOptions: ServerOptions = () => {

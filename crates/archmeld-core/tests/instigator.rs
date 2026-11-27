@@ -47,7 +47,7 @@ fn configure_mode(store: &mut Store, enabled: bool, cooldown: i64, max: i64) {
             "enabled": enabled,
             "cooldown_seconds": cooldown,
             "max_nudges_per_task": max,
-            "actor": "operator",
+            "actor": "<identity>",
         }),
     )
     .unwrap();

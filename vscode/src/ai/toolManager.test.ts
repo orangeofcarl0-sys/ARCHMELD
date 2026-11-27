@@ -41,8 +41,8 @@ describe('CodeGraphToolManager', () => {
 
             const response = {
                 nodes: [
-                    { id: '1', label: 'main.ts', type: 'file', language: 'typescript', uri: 'file:///src/main.ts' },
-                    { id: '2', label: 'utils.ts', type: 'file', language: 'typescript', uri: 'file:///src/utils.ts' },
+                    { id: '1', label: 'main.ts', type: 'file', language: 'typescript', uri: 'file://<path>' },
+                    { id: '2', label: 'utils.ts', type: 'file', language: 'typescript', uri: 'file://<path>' },
                 ],
                 edges: [
                     { from: '1', to: '2', type: 'import' },
@@ -104,7 +104,7 @@ describe('CodeGraphToolManager', () => {
 
             const response = {
                 nodes: [
-                    { id: '1', label: 'auth.rs', type: 'module', language: 'rust', uri: 'file:///src/auth.rs' },
+                    { id: '1', label: 'auth.rs', type: 'module', language: 'rust', uri: 'file://<path>' },
                 ],
                 edges: [],
             };
@@ -129,14 +129,14 @@ describe('CodeGraphToolManager', () => {
                     id: '1',
                     name: 'processData',
                     signature: 'fn processData(data: Vec<u8>) -> Result<(), Error>',
-                    uri: 'file:///src/lib.rs',
+                    uri: 'file://<path>',
                     range: { start: { line: 10, character: 0 }, end: { line: 20, character: 1 } },
                     language: 'rust',
                     metrics: { complexity: 5, linesOfCode: 10 },
                 },
                 nodes: [
-                    { id: '1', name: 'processData', signature: '', uri: 'file:///src/lib.rs', range: {}, language: 'rust' },
-                    { id: '2', name: 'validateInput', signature: '', uri: 'file:///src/validate.rs', range: {}, language: 'rust' },
+                    { id: '1', name: 'processData', signature: '', uri: 'file://<path>', range: {}, language: 'rust' },
+                    { id: '2', name: 'validateInput', signature: '', uri: 'file://<path>', range: {}, language: 'rust' },
                 ],
                 edges: [
                     { from: '1', to: '2', callSites: [] },
@@ -178,8 +178,8 @@ describe('CodeGraphToolManager', () => {
                 root: { id: 'main', name: 'main', signature: '', uri: '', range: {}, language: 'typescript' },
                 nodes: [
                     { id: 'main', name: 'main', signature: '', uri: '', range: {}, language: 'typescript' },
-                    { id: 'caller1', name: 'init', signature: '', uri: 'file:///init.ts', range: {}, language: 'typescript' },
-                    { id: 'callee1', name: 'helper', signature: '', uri: 'file:///helper.ts', range: {}, language: 'typescript' },
+                    { id: 'caller1', name: 'init', signature: '', uri: 'file://<path>', range: {}, language: 'typescript' },
+                    { id: 'callee1', name: 'helper', signature: '', uri: 'file://<path>', range: {}, language: 'typescript' },
                 ],
                 edges: [
                     { from: 'caller1', to: 'main', callSites: [] },
@@ -245,9 +245,9 @@ describe('CodeGraphToolManager', () => {
 
             const response = {
                 directImpact: [
-                    { uri: 'file:///a.ts', range: { start: { line: 10 } }, type: 'caller', severity: 'breaking' },
-                    { uri: 'file:///b.ts', range: { start: { line: 20 } }, type: 'reference', severity: 'warning' },
-                    { uri: 'file:///c.ts', range: { start: { line: 30 } }, type: 'subclass', severity: 'info' },
+                    { uri: 'file://<path>', range: { start: { line: 10 } }, type: 'caller', severity: 'breaking' },
+                    { uri: 'file://<path>', range: { start: { line: 20 } }, type: 'reference', severity: 'warning' },
+                    { uri: 'file://<path>', range: { start: { line: 30 } }, type: 'subclass', severity: 'info' },
                 ],
                 indirectImpact: [],
                 affectedTests: [],
@@ -270,7 +270,7 @@ describe('CodeGraphToolManager', () => {
             const response = {
                 directImpact: [],
                 indirectImpact: [
-                    { uri: 'file:///z.ts', path: ['a.ts', 'b.ts', 'z.ts'], severity: 'breaking' },
+                    { uri: 'file://<path>', path: ['a.ts', 'b.ts', 'z.ts'], severity: 'breaking' },
                 ],
                 affectedTests: [],
                 summary: { filesAffected: 1, breakingChanges: 1, warnings: 0 },
@@ -291,8 +291,8 @@ describe('CodeGraphToolManager', () => {
                 directImpact: [],
                 indirectImpact: [],
                 affectedTests: [
-                    { uri: 'file:///test/unit.test.ts', testName: 'should validate input' },
-                    { uri: 'file:///test/integration.test.ts', testName: 'should handle API response' },
+                    { uri: 'file://<path>', testName: 'should validate input' },
+                    { uri: 'file://<path>', testName: 'should handle API response' },
                 ],
                 summary: { filesAffected: 0, breakingChanges: 0, warnings: 0 },
             };
@@ -318,7 +318,7 @@ describe('CodeGraphToolManager', () => {
                     name: 'calculateTotal',
                     code: 'function calculateTotal(items) { return items.reduce((a, b) => a + b, 0); }',
                     language: 'javascript',
-                    location: { uri: 'file:///src/calc.js' },
+                    location: { uri: 'file://<path>' },
                 },
                 relatedSymbols: [],
                 dependencies: [],
@@ -425,13 +425,13 @@ describe('CodeGraphToolManager', () => {
             const response = {
                 tests: [
                     {
-                        uri: 'file:///project/src/processData.test.ts',
+                        uri: 'file://<path>',
                         testName: 'testProcessData',
                         relationship: 'direct',
                         range: { start: { line: 10, character: 0 }, end: { line: 20, character: 0 } }
                     },
                     {
-                        uri: 'file:///project/src/processData.test.ts',
+                        uri: 'file://<path>',
                         testName: 'processDataIntegrationTest',
                         relationship: 'indirect',
                         range: { start: { line: 30, character: 0 }, end: { line: 40, character: 0 } }
@@ -477,7 +477,7 @@ describe('CodeGraphToolManager', () => {
                 ],
                 definitions: [],
                 references: [],
-                uri: 'file:///src/test.ts',
+                uri: 'file://<path>',
                 line: 10,
                 character: 5,
             };
@@ -485,7 +485,7 @@ describe('CodeGraphToolManager', () => {
             const result = format(data);
 
             expect(result).toContain('# Symbol Information');
-            expect(result).toContain('Location: file:///src/test.ts:11:6');
+            expect(result).toContain('Location: file://<path>');
             expect(result).toContain('## Documentation & Type Information');
             expect(result).toContain('function test(): void');
         });
@@ -502,7 +502,7 @@ describe('CodeGraphToolManager', () => {
                     { uri: { fsPath: '/src/utils.ts' }, range: { start: { line: 5 } } },
                 ],
                 references: [],
-                uri: 'file:///src/test.ts',
+                uri: 'file://<path>',
                 line: 0,
                 character: 0,
             };
@@ -527,7 +527,7 @@ describe('CodeGraphToolManager', () => {
                     { uri: { fsPath: '/src/a.ts' }, range: { start: { line: 20 } } },
                     { uri: { fsPath: '/src/b.ts' }, range: { start: { line: 5 } } },
                 ],
-                uri: 'file:///src/test.ts',
+                uri: 'file://<path>',
                 line: 0,
                 character: 0,
             };
@@ -556,7 +556,7 @@ describe('CodeGraphToolManager', () => {
                     { uri: { fsPath: '/src/a.ts' }, range: { start: { line: 4 } } },
                     { uri: { fsPath: '/src/a.ts' }, range: { start: { line: 5 } } },
                 ],
-                uri: 'file:///src/test.ts',
+                uri: 'file://<path>',
                 line: 0,
                 character: 0,
             };
@@ -575,7 +575,7 @@ describe('CodeGraphToolManager', () => {
                 hovers: [],
                 definitions: [],
                 references: [],
-                uri: 'file:///src/test.ts',
+                uri: 'file://<path>',
                 line: 0,
                 character: 0,
             };

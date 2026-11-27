@@ -220,7 +220,7 @@ pub struct PreviewRequest<'a> {
     pub snapshot_id: &'a str,
     pub allowed_paths: &'a [String],
     pub max_files: usize,
-    /// Authorized workspace root. When set, absolute `file://` URIs are
+    /// Authorized workspace root. When set, absolute `file://<path> URIs are
     /// accepted only if they resolve inside this root.
     pub workspace_root: Option<&'a Path>,
 }
@@ -715,7 +715,7 @@ fn normalize_uri(uri: &str, request: &PreviewRequest<'_>) -> std::result::Result
             ));
         }
         parts.next().unwrap_or("").to_string()
-    } else if let Some(rest) = uri.strip_prefix("file://") {
+    } else if let Some(rest) = uri.strip_prefix("file://<path>") {
         // Real LSP servers return absolute file URIs. They are accepted only
         // when the preview request names an authorized workspace root.
         let Some(root) = request.workspace_root else {
@@ -796,10 +796,10 @@ fn snapshot_file(
     request: &PreviewRequest<'_>,
     path: &str,
 ) -> Result<Option<FileEntry>> {
-    let row: Option<(String, i64, String, String, i64)> = store
+    let row: Option<(String, i64, String, String, i64, Option<String>)> = store
         .conn
         .query_row(
-            "SELECT blob_digest, size_bytes, role, origin, executable
+            "SELECT blob_digest, size_bytes, role, origin, executable, git_blob
              FROM files WHERE project_id=?1 AND snapshot_id=?2 AND path=?3",
             (request.project_id, request.snapshot_id, path),
             |row| {
@@ -809,18 +809,20 @@ fn snapshot_file(
                     row.get(2)?,
                     row.get(3)?,
                     row.get(4)?,
+                    row.get(5)?,
                 ))
             },
         )
         .ok();
     Ok(row.map(
-        |(blob_digest, size_bytes, role, origin, executable)| FileEntry {
+        |(blob_digest, size_bytes, role, origin, executable, git_blob)| FileEntry {
             path: path.to_string(),
             blob_digest,
             size_bytes: size_bytes.max(0) as u64,
             role: parse_role(&role),
             origin: parse_origin(&origin),
             executable: executable != 0,
+            git_blob,
         },
     ))
 }
@@ -832,6 +834,7 @@ fn parse_role(value: &str) -> crate::store::FileRole {
         "generated" => Generated,
         "protocol" => Protocol,
         "test" => Test,
+        "vendored" => Vendored,
         "other" => Other,
         _ => Source,
     }

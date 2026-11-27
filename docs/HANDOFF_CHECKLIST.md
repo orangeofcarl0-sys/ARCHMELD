@@ -6,7 +6,9 @@ the whole research sweep; read the current state and continue.
 ## 1. Identify the exact state
 
 ```sh
-cd <repo>
+cd <repo-root>
+export ARCHMELD_TEMP=<temp-root>
+export ARCHMELD_TOOLS_ROOT=<tools-root>
 git rev-parse HEAD
 git status --short
 git log --oneline -12
@@ -40,16 +42,18 @@ fixture-only run is not a release gate. Partial completion stays explicit.
 
 ## 4. Current truth
 
-- B030 is **passed** for the seven-language gate: AT066 and AT067 passed and
+- B030 is **passed** for the seven-language gate: AT066 and AT067 passed;
+  AT067 was re-run at 0.21.2/HEAD `7474343d` on 2026-11-27 and
   `docs/release-evidence/B030-language-matrix.json` records
   `r1_naming_allowed=true` with no blockers. Explicit limitations remain: C/C++
   full SCIP needs a Linux/WSL worker; Ubuntu GUI/VS Code host and macOS are
   release-level items. The real 0.21.2 upstream upgrade (AT077) passed on
   2026-11-24.
-- B031 is **partial**: Windows/Ubuntu install/upgrade/rollback/uninstall,
+- B031 is **partial**: Windows/Ubuntu **binary** install/upgrade/rollback/uninstall,
   VSIX install, clean-machine indexing, the packaged offline report and the
   real 0.21.2 upstream upgrade (AT077, 2026-11-24) were tested; the Ubuntu
-  VS Code host run remains.
+  VS Code host run remains. The binary installer rollback is not a source
+  rollback; see `docs/upstream/ROLLBACK.md`.
 - B028 gates are verified for this testing phase: contract-check and scenario
   snapshot-copy/OCI container isolation, the Unix 0600 socket, and the Windows
   named pipe with a protected custom DACL read back from the live handle.
@@ -93,9 +97,12 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   (`docs/release-evidence/B030-cpp-scip.json`); references are imported, calls
   remain clangd assertions. B000's Linux worker path is closed: the full
   upstream suite passed 141/0/1 on Ubuntu 24.04 with RocksDB
-  (`docs/release-evidence/B000-ubuntu-24.04.json`); Windows MSVC remains a
-  platform limitation. Remaining release families: Ubuntu GUI/VS Code host,
-  macOS.
+  (`docs/release-evidence/B000-ubuntu-24.04.json`). Windows GNU/UCRT64 now
+  passes `codegraph --lib` 59/59 including `test_delete`; the historical
+  0xC0000005 was a Strawberry/winlibs GCC 13.2.0 mismatch. MSVC remains
+  unexercised but is not required for RocksDB. Windows verification summary:
+  `docs/release-evidence/WINDOWS-VERIFICATION-2026-11-27.json`. Remaining
+  release families: Ubuntu GUI/VS Code host, macOS.
 - M2.5-A/B/C/D are implemented: session-start rules, one-screen markdown
   brief, read-only AOCI map block, optional `.archmeld/SESSION.md` with
   freshness, and the 3-pair adherence experiment (full ritual B 3/3 vs A 0/3;
@@ -116,15 +123,34 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   `docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-02.json`. WSL `scip-clang
   v0.4.1` is installed only in the user directory (no system package/sudo) and
   the C++ reference index was imported.
+- Public snapshot publication (2026-11-25): the U0/U1 upstream-governance slice
+  was sanitized from private `24b49a1b` and pushed fast-forward as
+  `1f724ad..1269ade0` to `origin/main`. 1780 files; path/username/remote-host
+  and private-dataset identity/aggregate scans are 0; SCIP indexes use the
+  already-neutralized public URIs; C# `bin/obj` omitted. Evidence:
+  `docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-25.json`.
 
 
 ## 5. Next executable work (do not ask for a new plan each step)
 
 1. Ubuntu GUI/VS Code host and macOS release runs.
-2. B000 Windows RocksDB/MSVC or a full Ubuntu suite environment; the real
-   0.21.2 upgrade drill is closed (AT077 passed 2026-11-24).
-3. If public publication is authorized, push the prepared sanitized
+2. B000 Windows: UCRT64 `codegraph --lib` passes 59/59 (including RocksDB);
+   PHP 89/89 and `archmeld_state_root` 1/1 pass on Windows. The U5 rollback
+   drill's old `0xC0000139` was a stale winlibs/Strawberry test binary and DLL
+   search order, not a RocksDB limitation; rebuild before replaying it. The
+   real 0.21.2 upgrade drill is closed (AT077 passed 2026-11-24). The remaining
+   `codegraph-server --lib` residue is 16 upstream POSIX fixtures (fixed in
+   this round) plus one flaky 5 ms timing assertion.
+3. U4b structured probes and U5 playbook/rollback are closed; no code blocker.
+4. If public publication is authorized, push the prepared sanitized
    `public-snapshot-next` branch.
+5. ARCHMELD self-analysis (2026-11-26) found F1–F10 and the P01–P25
+   deep-dive. The repairs and their acceptance status are in
+   `docs/release-evidence/SELF-ANALYSIS-FIX-2026-11-27.json`; all P01–P25 and
+   the P17 real map are verified, with no pending P items. Do not re-run the
+   old “top fixes” list. Reports:
+   `docs/reviews/ARCHMELD-SELF-ANALYSIS-2026-11-26.md` and
+   `docs/reviews/ARCHMELD-SELF-ANALYSIS-PROBLEMS-2026-11-26.md`.
 
 Independent tasks may proceed; blocked language work must stay marked blocked,
 not lowered or hidden.

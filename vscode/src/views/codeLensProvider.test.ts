@@ -88,7 +88,7 @@ import { registerCodeLens } from './codeLensProvider';
 /** A document whose every line is its own range, as far as the provider cares. */
 function documentWith(lineCount: number) {
     return {
-        uri: { toString: () => 'file:///repo/src/lib.rs' },
+        uri: { toString: () => 'file://<path>' },
         version: 1,
         lineCount,
         lineAt: (line: number) => ({ range: { line } }),

@@ -46,6 +46,11 @@ impl Default for SnapshotOptions {
                 ".archmeld".into(),
                 "node_modules".into(),
                 "target".into(),
+                "target-linux".into(),
+                "dist".into(),
+                "build".into(),
+                "out".into(),
+                "coverage".into(),
                 ".venv".into(),
                 "__pycache__".into(),
                 ".mypy_cache".into(),
@@ -67,10 +72,32 @@ pub struct SnapshotInputs {
     pub environment: Value,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct OmittedFile {
     pub path: String,
     pub reason: String,
+}
+
+/// The workspace-selection policy recorded in a snapshot. Drift must apply the
+/// same policy, otherwise ignored/build files look like additions.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspacePolicy {
+    pub include_untracked: bool,
+    pub max_file_bytes: u64,
+    pub excluded_dirs: Vec<String>,
+    pub max_depth: u32,
+}
+
+impl WorkspacePolicy {
+    pub fn from_options(options: &SnapshotOptions) -> Self {
+        Self {
+            include_untracked: options.include_untracked,
+            max_file_bytes: options.max_file_bytes,
+            excluded_dirs: options.excluded_dirs.clone(),
+            max_depth: MAX_DEPTH as u32,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -86,23 +113,23 @@ pub struct CapturedSnapshot {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct MetaFile {
-    path: String,
-    size: u64,
-    mtime_ns: u128,
+pub(crate) struct MetaFile {
+    pub(crate) path: String,
+    pub(crate) size: u64,
+    pub(crate) mtime_ns: u128,
 }
 
-enum ReadOutcome {
+pub(crate) enum ReadOutcome {
     Read(Vec<u8>),
     TooLarge,
     ChangedDuringRead,
 }
 
 #[derive(Default)]
-struct WalkResult {
-    files: Vec<MetaFile>,
-    omitted: Vec<OmittedFile>,
-    case_collisions: Vec<String>,
+pub(crate) struct WalkResult {
+    pub(crate) files: Vec<MetaFile>,
+    pub(crate) omitted: Vec<OmittedFile>,
+    pub(crate) case_collisions: Vec<String>,
 }
 
 /// Capture and register a snapshot. The ledger row and file list are inserted
@@ -138,6 +165,16 @@ pub fn capture_snapshot_with_hook(
     let exclusions_digest = exclusions_digest(options)?;
     let is_git = is_git_repository(root);
     let (tracked, ignored, git_commit) = git_sets(root);
+    let git_blobs = if is_git {
+        git_index_blobs(root)
+    } else {
+        BTreeMap::new()
+    };
+    let git_dirty = if is_git {
+        git_dirty_paths(root)
+    } else {
+        BTreeSet::new()
+    };
 
     let mut last_reason = String::new();
     for _attempt in 0..=options.max_retries {
@@ -204,6 +241,13 @@ pub fn capture_snapshot_with_hook(
                     } else {
                         FileOrigin::Untracked
                     };
+                    let git_blob = if origin == FileOrigin::Tracked
+                        && !git_dirty.contains(&meta.path)
+                    {
+                        git_blobs.get(&meta.path).cloned()
+                    } else {
+                        None
+                    };
                     files.push(FileEntry {
                         path: meta.path.clone(),
                         blob_digest,
@@ -211,6 +255,7 @@ pub fn capture_snapshot_with_hook(
                         role: role_for(&meta.path),
                         executable: is_executable(root, &path),
                         origin,
+                        git_blob,
                     });
                 }
             }
@@ -232,6 +277,28 @@ pub fn capture_snapshot_with_hook(
         omitted.dedup_by(|a, b| a.path == b.path && a.reason == b.reason);
 
         let coverage = coverage_for(&files, &omitted);
+        let git_tree_digest = if is_git {
+            let entries: Vec<Value> = files
+                .iter()
+                .map(|file| {
+                    json!([
+                        file.path,
+                        file.git_blob
+                            .clone()
+                            .unwrap_or_else(|| format!("working:{}", file.blob_digest))
+                    ])
+                })
+                .collect();
+            Some(
+                hash::digest_value(&json!({
+                    "version": "1.0",
+                    "entries": entries,
+                }))
+                .map_err(|err| CoreError::invalid(format!("git tree digest: {err}")))?,
+            )
+        } else {
+            None
+        };
         let snapshot = build_snapshot(
             project_id,
             &config_digest,
@@ -240,6 +307,8 @@ pub fn capture_snapshot_with_hook(
             git_commit.clone(),
             &files,
             &coverage,
+            git_tree_digest,
+            &WorkspacePolicy::from_options(options),
         )?;
         let snapshot_id = snapshot["id"].as_str().unwrap().to_string();
         let manifest_bytes = hash::canonical_json(&snapshot)
@@ -305,6 +374,8 @@ fn build_snapshot(
     git_commit: Option<String>,
     files: &[FileEntry],
     coverage: &Coverage,
+    git_tree_digest: Option<String>,
+    workspace_policy: &WorkspacePolicy,
 ) -> Result<Value> {
     let without_id = json!({
         "schema_version": "1.0",
@@ -313,9 +384,11 @@ fn build_snapshot(
         "kind": "disk",
         "base_snapshot_id": null,
         "git_commit": git_commit,
+        "git_tree_digest": git_tree_digest,
         "config_digest": config_digest,
         "environment_digest": environment_digest,
         "exclusions_digest": exclusions_digest,
+        "workspace_policy": workspace_policy,
         "files": files,
         "coverage": coverage,
         "stable": true,
@@ -355,7 +428,7 @@ fn coverage_for(files: &[FileEntry], omitted: &[OmittedFile]) -> Coverage {
     }
 }
 
-fn walk(root: &Path, options: &SnapshotOptions) -> Result<WalkResult> {
+pub(crate) fn walk(root: &Path, options: &SnapshotOptions) -> Result<WalkResult> {
     let mut result = WalkResult::default();
     let excluded: HashSet<&str> = options.excluded_dirs.iter().map(String::as_str).collect();
     walk_dir(
@@ -458,7 +531,7 @@ fn walk_dir(
     Ok(())
 }
 
-fn read_file(root: &Path, relative: &Path, meta: &MetaFile, max: u64) -> Result<ReadOutcome> {
+pub(crate) fn read_file(root: &Path, relative: &Path, meta: &MetaFile, max: u64) -> Result<ReadOutcome> {
     let full = root.join(relative);
     let bytes = fs::read(&full)?;
     if bytes.len() as u64 > max {
@@ -470,7 +543,7 @@ fn read_file(root: &Path, relative: &Path, meta: &MetaFile, max: u64) -> Result<
     Ok(ReadOutcome::Read(bytes))
 }
 
-fn is_binary(bytes: &[u8]) -> bool {
+pub(crate) fn is_binary(bytes: &[u8]) -> bool {
     bytes.iter().take(8192).any(|byte| *byte == 0)
 }
 
@@ -491,9 +564,10 @@ fn is_executable(root: &Path, relative: &Path) -> bool {
 
 fn role_for(path: &str) -> FileRole {
     let lower = path.to_ascii_lowercase();
-    let name = lower.rsplit('/').next().unwrap_or(&lower);
-    if lower.contains("/test/")
-        || lower.contains("/tests/")
+    let normalized = lower.replace('\\', "/");
+    let name = normalized.rsplit('/').next().unwrap_or(&normalized);
+    if normalized.contains("/test/")
+        || normalized.contains("/tests/")
         || name.starts_with("test_")
         || name.ends_with("_test.py")
         || name.ends_with(".test.ts")
@@ -503,8 +577,20 @@ fn role_for(path: &str) -> FileRole {
     {
         return FileRole::Test;
     }
-    if lower.contains("/generated/")
-        || lower.contains("/gen/")
+    if name.ends_with(".min.js")
+        || name.ends_with(".min.css")
+        || normalized.contains("/vendor/")
+        || normalized.contains("/vendored/")
+        || normalized.contains("/third_party/")
+        || normalized.contains("/third-party/")
+        || normalized.starts_with("vendor/")
+        || normalized.starts_with("vendored/")
+        || normalized.starts_with("third_party/")
+    {
+        return FileRole::Vendored;
+    }
+    if normalized.contains("/generated/")
+        || normalized.contains("/gen/")
         || name.contains(".generated.")
         || name.ends_with(".g.dart")
         || name.ends_with(".pb.go")
@@ -645,7 +731,7 @@ fn media_type_for(path: &str) -> &'static str {
 
 /// Tracked / untracked-nonignored / ignored sets and HEAD commit. Missing git
 /// is not an error: content hashes still describe the bytes.
-fn git_sets(root: &Path) -> (BTreeSet<String>, BTreeSet<String>, Option<String>) {
+pub(crate) fn git_sets(root: &Path) -> (BTreeSet<String>, BTreeSet<String>, Option<String>) {
     let tracked = git_z(root, &["ls-files", "-z"]);
     let ignored = git_z(
         root,
@@ -668,7 +754,47 @@ fn git_sets(root: &Path) -> (BTreeSet<String>, BTreeSet<String>, Option<String>)
         .filter(|commit| commit.len() >= 40);
     (tracked, ignored, commit)
 }
-fn is_git_repository(root: &Path) -> bool {
+/// Untracked files that are not gitignored. Used by drift so it enumerates the
+/// same eligible set as capture instead of hashing build artifacts.
+pub(crate) fn git_untracked(root: &Path) -> BTreeSet<String> {
+    git_z(root, &["ls-files", "-z", "--others", "--exclude-standard"])
+}
+
+/// Git index blob for each tracked path (`<mode> <blob> <stage>\t<path>`).
+pub(crate) fn git_index_blobs(root: &Path) -> BTreeMap<String, String> {
+    let output = std::process::Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["ls-files", "-s", "-z"])
+        .output();
+    let Ok(output) = output else {
+        return BTreeMap::new();
+    };
+    if !output.status.success() {
+        return BTreeMap::new();
+    }
+    let mut blobs = BTreeMap::new();
+    for entry in output.stdout.split(|byte| *byte == 0) {
+        let Ok(text) = std::str::from_utf8(entry) else {
+            continue;
+        };
+        let Some((meta, path)) = text.split_once('\t') else {
+            continue;
+        };
+        let fields: Vec<&str> = meta.split_whitespace().collect();
+        if let (Some(blob), true) = (fields.get(1), fields.len() >= 3) {
+            blobs.insert(path.replace('\\', "/"), (*blob).to_string());
+        }
+    }
+    blobs
+}
+
+/// Paths whose working/index bytes differ from HEAD (after git filters).
+pub(crate) fn git_dirty_paths(root: &Path) -> BTreeSet<String> {
+    git_z(root, &["diff", "-z", "HEAD", "--name-only"])
+}
+
+pub(crate) fn is_git_repository(root: &Path) -> bool {
     std::process::Command::new("git")
         .arg("-C")
         .arg(root)
@@ -755,6 +881,16 @@ mod tests {
         assert_eq!(role_for("Cargo.toml"), FileRole::Config);
         assert_eq!(role_for("api/service.proto"), FileRole::Protocol);
         assert_eq!(role_for("src/generated/model.ts"), FileRole::Generated);
+        assert_eq!(
+            role_for("archmeld-vscode/media/cytoscape.min.js"),
+            FileRole::Vendored
+        );
+        assert_eq!(role_for("vendor/foo.rs"), FileRole::Vendored);
+        assert_eq!(role_for("third_party/lib.rs"), FileRole::Vendored);
+        assert_eq!(
+            role_for("crates\\thing\\vendor\\package.json"),
+            FileRole::Vendored
+        );
         assert_eq!(role_for("LICENSE"), FileRole::Other);
     }
 }

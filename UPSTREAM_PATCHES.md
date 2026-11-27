@@ -47,6 +47,18 @@ Conflict hotspots are `Cargo.toml`, `main.rs`, `memory.rs`, `daemon.rs`,
 manifest records a SHA-256 of each path-scoped diff; refresh it with
 `python tooling/upstream.py patches --write` after a local change.
 
+## Windows test portability and RocksDB feature split (2026-11-27)
+
+| ID | Change | Paths | Upstream? | AT / evidence |
+|---|---|---|---|---|
+| P015 | Platform-absolute test fixtures (tempdir-style logical root, `Url::from_file_path`) and native-separator adjacent-test lookup; no assertion weakened | `crates/codegraph-server/src/handlers/custom.rs`, `handlers/navigation.rs`, `domain/unused_code.rs`; `backend.rs`/`memory.rs` are accounted under P005/P011 | Candidate: upstream Windows portability fix | Windows server-lib suite 426/0/1; `WINDOWS-VERIFICATION-2026-11-27` |
+| P016 | Parser-only crates no longer enable the RocksDB default backend; `codegraph-server` opts in; examples/bench/test modules gated; build-time commit overrides and corrected `.git` rerun paths | `crates/codegraph-server/Cargo.toml`, `crates/codegraph/Cargo.toml`, `crates/codegraph-server/build.rs`, `crates/codegraph/build.rs`, `crates/codegraph/tests/integration/mod.rs`, `crates/codegraph/tests/unit/export_test.rs`; `crates/archmeld-api/build.rs` is product-owned | Candidate for the parser split; build overrides are generally useful | parser suites; `cargo tree`; release provenance |
+| P017 | `[profile.test] debug = 1` (line tables) with an explicit `librocksdb-sys` `debug = false`; test binaries keep file/line backtraces but shrink enough to cut link time. `dev` debuginfo is unchanged | `Cargo.toml` | No (local build profile; upstream may prefer its own default) | fast lane; `WINDOWS` perf evidence; AT067 re-run |
+
+These changes are test/build-graph only; no product runtime behaviour is
+changed. The fixture patch preserves every exact path, count, line and column
+assertion.
+
 | # | Change | Paths | Necessity | Upstream? | AT |
 |---|---|---|---|---|---|
 | 1 | Workspace member for the evidence core | `Cargo.toml` | ARCHMELD crate must build with the pinned workspace | No (product code) | B003+ |
@@ -60,18 +72,26 @@ manifest records a SHA-256 of each path-scoped diff; refresh it with
 | 9 | Process-level state isolation test | `crates/codegraph-server/tests/archmeld_state_root.rs` (new) | Proves no `~/.codegraph` write in bridge mode without needing RocksDB | No (fork-only test) | AT005 |
 | 10 | Spec pack copied as baseline | `docs/archmeld/**`, `AGENTS.md` | Required by FIRST_SESSION; upstream has no AGENTS.md to merge | No | — |
 | 11 | Lockfile entries for `archmeld-core`, `sha2`, `rusqlite` | `Cargo.lock` | New crate dependencies, resolved with `--locked` discipline | No | B003+ |
+| 12 | `[profile.dev.package.librocksdb-sys] debug = false`; helper manifest `index` includes `by_language`/`cross_file_implements`; deferred `Implements` post-pass | `Cargo.toml`, `crates/codegraph-rust/src/{mapper.rs,lib.rs}`, `crates/codegraph-server/src/{indexer.rs,watcher.rs}`, `crates/codegraph-server/examples/archmeld_export.rs` | The pinned RocksDB archive is 833 MB with debuginfo and cannot link on the 16 GB host; the helper needs no RocksDB debuginfo. The index block and cross-file trait resolution are required by P13–P15; ambiguous trait names are never guessed | Candidate: parser crates do not need the persistent backend | P13, P14, P15 |
 
 ## Build-environment workarounds (not source changes)
 
 These are recorded because the baseline is not reproducible without them on this
 machine; they do not alter upstream source:
 
-- `CXXFLAGS="-include cstdint"` for RocksDB 8.10 under GCC 13 (missing transitive
-  `<cstdint>` include).
+- `CXXFLAGS="-include cstdint"` for RocksDB 8.10 (missing transitive
+  `<cstdint>` include). The current host uses MSYS2 UCRT Mingw-w64 16.1.0;
+  the earlier winlibs 13.2.0 installation is no longer present.
+- The root `Cargo.toml` profile override in patch 12 keeps debuginfo off the
+  322 RocksDB C++ translation units. Without it the debug archive is 833 MB and
+  the helper link does not complete reliably on this host; it does not remove
+  debuginfo from Rust code.
 - `LIBCLANG_PATH` pointing at a local libclang 18.1.1 bundle for bindgen.
-- `PATH` must put the MinGW runtime DLL directory (Strawberry) first; otherwise
-  the Rust GNU test binaries fail with `STATUS_ENTRYPOINT_NOT_FOUND`.
-- `TMP`/`TEMP` redirected to `<temp>` because the
+- `PATH` must put the MinGW runtime DLL directory first; `ARCHMELD_MINGW_BIN`
+  (or its retained alias `ARCHMELD_STRAWBERRY_BIN`) is set to
+  `<path> Otherwise Rust GNU test binaries fail with
+  `STATUS_ENTRYPOINT_NOT_FOUND`.
+- `TMP`/`TEMP` redirected to `<path> because the
   system drive was full.
 - RocksDB still crashes at runtime under Windows GNU
   (`STATUS_ACCESS_VIOLATION` in `storage::rocksdb_backend::tests::test_delete`),

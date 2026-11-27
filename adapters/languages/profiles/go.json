@@ -10,12 +10,22 @@
       {
         "name": "go",
         "version": "1.27.3",
-        "path": "<workspace>/_archmeld_tools/go/go/bin/go.exe"
+        "path": "<path>",
+        "observed_path": "<path>",
+        "path_env": "ARCHMELD_TOOLS_ROOT",
+        "relative_path": "go/go/bin/go.exe",
+        "strategy": "env_file",
+        "path_kind": "file"
       },
       {
         "name": "gopls",
         "version": "0.20.0",
-        "path": "<workspace>/_archmeld_tools/go/bin/gopls.exe"
+        "path": "<path>",
+        "observed_path": "<path>",
+        "path_env": "ARCHMELD_TOOLS_ROOT",
+        "relative_path": "go/bin/gopls.exe",
+        "strategy": "env_file",
+        "path_kind": "file"
       }
     ]
   },

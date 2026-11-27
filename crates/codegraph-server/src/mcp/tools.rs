@@ -232,7 +232,7 @@ fn get_dependency_graph_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("The file URI to analyze (e.g., file:///path/to/file.ts)"),
+        string_prop("The file URI to analyze (e.g., file://<path>"),
     );
     properties.insert(
         "depth".to_string(),
@@ -274,7 +274,7 @@ fn get_call_graph_tool() -> Tool {
     properties.insert(
         "uri".to_string(),
         string_prop(
-            "The file URI containing the function (e.g. file:///Users/me/project/src/main.rs)",
+            "The file URI containing the function (e.g. file://<path>",
         ),
     );
     properties.insert(
@@ -314,7 +314,7 @@ fn analyze_impact_tool() -> Tool {
     properties.insert(
         "uri".to_string(),
         string_prop(
-            "The file URI containing the symbol (e.g. file:///Users/me/project/src/main.rs)",
+            "The file URI containing the symbol (e.g. file://<path>",
         ),
     );
     properties.insert(
@@ -352,7 +352,7 @@ fn get_ai_context_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("The file URI to get context for (e.g. file:///Users/me/project/src/main.rs)"),
+        string_prop("The file URI to get context for (e.g. file://<path>"),
     );
     properties.insert(
         "line".to_string(),
@@ -387,7 +387,7 @@ fn get_edit_context_tool() -> Tool {
     properties.insert(
         "uri".to_string(),
         string_prop(
-            "The file URI of the code being edited (e.g. file:///Users/me/project/src/main.rs)",
+            "The file URI of the code being edited (e.g. file://<path>",
         ),
     );
     properties.insert(
@@ -455,7 +455,7 @@ fn find_related_tests_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("The file URI to find tests for (e.g. file:///Users/me/project/src/main.rs)"),
+        string_prop("The file URI to find tests for (e.g. file://<path>"),
     );
     properties.insert(
         "line".to_string(),
@@ -482,7 +482,7 @@ fn get_symbol_info_tool() -> Tool {
     properties.insert(
         "uri".to_string(),
         string_prop(
-            "The file URI containing the symbol (e.g. file:///Users/me/project/src/main.rs)",
+            "The file URI containing the symbol (e.g. file://<path>",
         ),
     );
     properties.insert(
@@ -512,7 +512,7 @@ fn analyze_complexity_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("The file URI to analyze (e.g. file:///Users/me/project/src/main.rs)"),
+        string_prop("The file URI to analyze (e.g. file://<path>"),
     );
     properties.insert(
         "line".to_string(),
@@ -702,7 +702,7 @@ fn traverse_graph_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("File URI (e.g. file:///Users/me/project/src/main.rs). Use with line to identify the starting symbol."),
+        string_prop("File URI (e.g. file://<path> Use with line to identify the starting symbol."),
     );
     properties.insert(
         "line".to_string(),
@@ -809,7 +809,7 @@ fn get_callers_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("File URI (e.g. file:///Users/me/project/src/main.rs). Use with line to identify the function."),
+        string_prop("File URI (e.g. file://<path> Use with line to identify the function."),
     );
     properties.insert(
         "line".to_string(),
@@ -842,7 +842,7 @@ fn get_callees_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("File URI (e.g. file:///Users/me/project/src/main.rs). Use with line to identify the function."),
+        string_prop("File URI (e.g. file://<path> Use with line to identify the function."),
     );
     properties.insert(
         "line".to_string(),
@@ -875,7 +875,7 @@ fn get_detailed_symbol_tool() -> Tool {
     let mut properties = HashMap::new();
     properties.insert(
         "uri".to_string(),
-        string_prop("File URI (e.g. file:///Users/me/project/src/main.rs). Use with line to identify the symbol."),
+        string_prop("File URI (e.g. file://<path> Use with line to identify the symbol."),
     );
     properties.insert(
         "line".to_string(),
@@ -1049,7 +1049,7 @@ fn memory_context_tool() -> Tool {
     properties.insert(
         "uri".to_string(),
         string_prop(
-            "File URI to find relevant memories for (e.g. file:///Users/me/project/src/main.rs)",
+            "File URI to find relevant memories for (e.g. file://<path>",
         ),
     );
     properties.insert(
@@ -1575,7 +1575,7 @@ fn find_dead_imports_tool() -> Tool {
     properties.insert(
         "uri".to_string(),
         string_prop(
-            "File URI to restrict analysis to a single file (e.g. file:///path/to/foo.rs). \
+            "File URI to restrict analysis to a single file (e.g. file://<path> \
              Omit to scan the entire indexed workspace.",
         ),
     );

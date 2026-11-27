@@ -24,8 +24,28 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "<workspace>/_archmeld_tools";
-const TEMP: &str = "<temp>";
+mod support;
+
+fn tools_root() -> String {
+    support::tools_root()
+        .expect("ARCHMELD_TOOLS_ROOT is required for the runtime-linkage matrix")
+        .to_string_lossy()
+        .to_string()
+}
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
+
+fn node() -> String {
+    support::require_tool("ARCHMELD_NODE", "node.exe")
+        .expect("node")
+        .to_string_lossy()
+        .to_string()
+}
 const PROJECT: &str = "project.b030.runtime";
 
 struct Fixture {
@@ -65,11 +85,7 @@ fn fixture_root(language: &str) -> PathBuf {
 }
 
 fn setup(name: &str, files: &[(&str, &str)]) -> Fixture {
-    let base = PathBuf::from(TEMP);
-    let dir = tempfile::Builder::new()
-        .prefix(&format!("b030-runtime-{name}-"))
-        .tempdir_in(if base.is_dir() { base } else { std::env::temp_dir() })
-        .unwrap();
+    let dir = support::tempdir(&format!("b030-runtime-{name}-"));
     let root = dir.path().join("repo");
     fs::create_dir_all(&root).unwrap();
     for (path, text) in files {
@@ -359,6 +375,8 @@ fn write_json_evidence(groups: &Value) {
         "schema_version": "1.0",
         "generated_by": "crates/archmeld-core/tests/language_runtime_linkage.rs",
         "platform": {"os": std::env::consts::OS, "arch": std::env::consts::ARCH},
+        "recorded_at_unix": support::recorded_at_unix(),
+        "product_head": support::product_head(),
         "groups": groups,
         "note": "Each group was executed for real; the listed tool captured the trace. Sampling tools are lossy and say so. Source mapping uses declared entity ids or declared source ranges, never automatic name matching.",
     });
@@ -378,6 +396,21 @@ fn write_json_evidence(groups: &Value) {
 
 #[test]
 fn seven_language_groups_capture_and_import_real_native_traces() {
+    let required = [
+        ("ARCHMELD_GXX", "c/bin/g++.exe"),
+        ("ARCHMELD_PYTHON", "python.exe"),
+        ("ARCHMELD_NODE", "node.exe"),
+        ("ARCHMELD_JAVA", "jdk25/jdk-25.0.5+8/bin/java.exe"),
+        ("ARCHMELD_DOTNET", "dotnet8/dotnet.exe"),
+        ("ARCHMELD_DOTNET_TRACE", "dotnet-tools/dotnet-trace.exe"),
+        ("ARCHMELD_GO", "go/go/bin/go.exe"),
+    ];
+    if required
+        .iter()
+        .any(|(env, relative)| support::require_tool(env, relative).is_none())
+    {
+        return;
+    }
     let mut groups = serde_json::Map::new();
 
     // ---------------- Python / VizTracer ----------------
@@ -421,7 +454,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
         let (stdout, stderr) = run(
             &fixture.root,
             vec![
-                "python".into(),
+                python(),
                 "-m".into(),
                 "viztracer".into(),
                 "--output_file".into(),
@@ -431,7 +464,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
             ],
             &[(
                 "PYTHONPATH".into(),
-                format!("{TOOLS}/viztracer"),
+                format!("{}/viztracer", tools_root()),
             )],
             "viztracer",
         );
@@ -505,7 +538,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
         run(
             &fixture.root,
             vec![
-                "node".into(),
+                node(),
                 "--no-opt".into(),
                 "--cpu-prof".into(),
                 "--cpu-prof-dir".into(),
@@ -590,7 +623,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
         run(
             &fixture.root,
             vec![
-                "node".into(),
+                node(),
                 "--no-opt".into(),
                 "--cpu-prof".into(),
                 "--cpu-prof-dir".into(),
@@ -701,7 +734,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
         run(
             &fixture.root,
             vec![
-                "D:/Strawberry/c/bin/g++.exe".into(),
+                support::require_tool("ARCHMELD_GXX", "c/bin/g++.exe").expect("g++").to_string_lossy().into_owned(),
                 "-std=c++17".into(),
                 "-O1".into(),
                 "-DFACTOR=2".into(),
@@ -785,7 +818,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
             Some("jfr:pkg/Util#helper"),
         );
         fixture.import_entities("java");
-        let jdk = format!("{TOOLS}/jdk25/jdk-25.0.5+8/bin");
+        let jdk = format!("{}/jdk25/jdk-25.0.5+8/bin", tools_root());
         let mut sources = vec![
             format!("{jdk}/javac.exe"),
             "-d".into(),
@@ -797,7 +830,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
                 sources.push(path.to_string_lossy().into_owned());
             }
         }
-        let env = vec![("JAVA_HOME".to_string(), format!("{TOOLS}/jdk25/jdk-25.0.5+8"))];
+        let env = vec![("JAVA_HOME".to_string(), format!("{}/jdk25/jdk-25.0.5+8", tools_root()))];
         run(&fixture.root, sources, &env, "javac trace build");
         let recording = fixture.root.join("trace.jfr");
         run(
@@ -902,12 +935,12 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
         );
         let _ = (main_entity, runner_entity);
         fixture.import_entities("csharp");
-        let dotnet = format!("{TOOLS}/dotnet8/dotnet.exe");
+        let dotnet = format!("{}/dotnet8/dotnet.exe", tools_root());
         let csharp_env = vec![
-            ("DOTNET_ROOT".to_string(), format!("{TOOLS}/dotnet8")),
+            ("DOTNET_ROOT".to_string(), format!("{}/dotnet8", tools_root())),
             (
                 "NUGET_PACKAGES".to_string(),
-                "<user>/.nuget/packages".to_string(),
+                support::nuget_root().expect("NUGET_PACKAGES or HOME/.nuget/packages").to_string_lossy().to_string(),
             ),
             ("DOTNET_CLI_TELEMETRY_OPTOUT".to_string(), "1".to_string()),
             ("DOTNET_NOLOGO".to_string(), "1".to_string()),
@@ -916,11 +949,11 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
                 fixture.root.to_string_lossy().into_owned(),
             ),
             ("HOMEDRIVE".to_string(), "C:".to_string()),
-            ("HOMEPATH".to_string(), "<user>".to_string()),
-            ("ProgramFiles".to_string(), "C:/Program Files".to_string()),
+            ("HOMEPATH".to_string(), support::home().expect("HOME or USERPROFILE").to_string_lossy().to_string()),
+            ("ProgramFiles".to_string(), "<path> Files".to_string()),
             (
                 "ProgramFiles(x86)".to_string(),
-                "C:/Program Files (x86)".to_string(),
+                "<path> Files (x86)".to_string(),
             ),
             ("PROCESSOR_ARCHITECTURE".to_string(), "AMD64".to_string()),
             ("COMPUTERNAME".to_string(), "LOCALHOST".to_string()),
@@ -935,7 +968,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
         run(
             &fixture.root,
             vec![
-                format!("{TOOLS}/dotnet-tools/dotnet-trace.exe"),
+                format!("{}/dotnet-tools/dotnet-trace.exe", tools_root()),
                 "collect".into(),
                 "--profile".into(),
                 "dotnet-sampled-thread-time".into(),
@@ -949,14 +982,14 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
             ],
             &[(
                 "DOTNET_ROOT".into(),
-                format!("{TOOLS}/dotnet8"),
+                format!("{}/dotnet8", tools_root()),
             )],
             "dotnet-trace collect",
         );
         run(
             &fixture.root,
             vec![
-                format!("{TOOLS}/dotnet-tools/dotnet-trace.exe"),
+                format!("{}/dotnet-tools/dotnet-trace.exe", tools_root()),
                 "convert".into(),
                 "--format".into(),
                 "speedscope".into(),
@@ -1040,7 +1073,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
             None,
         );
         fixture.import_entities("go");
-        let go = format!("{TOOLS}/go/go/bin/go.exe");
+        let go = format!("{}/go/go/bin/go.exe", tools_root());
         let profile = fixture.root.join("cpu.pprof");
         run(
             &fixture.root,
@@ -1157,7 +1190,7 @@ fn seven_language_groups_capture_and_import_real_native_traces() {
             ),
             (
                 "RUSTUP_TOOLCHAIN".to_string(),
-                "1.94.1-x86_64-pc-windows-gnu".to_string(),
+                support::rust_toolchain(),
             ),
         ];
         run(

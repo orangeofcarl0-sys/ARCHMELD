@@ -39,7 +39,11 @@ pub struct BridgeReport {
     pub diagnostics: u64,
     pub skipped_nodes: u64,
     pub merged_nodes: u64,
+    pub collapsed_edges: u64,
+    pub relations_with_call_site: u64,
+    pub relations_without_call_site: u64,
     pub unresolved: u64,
+    pub index: Value,
     pub coverage: Value,
     pub export_schema_version: String,
     pub producer_commit: Option<String>,
@@ -62,6 +66,9 @@ struct EdgeRec {
     target: u64,
     edge_type: String,
     line: Option<u64>,
+    call_site_line: Option<u64>,
+    is_direct: Option<bool>,
+    resolved_by: Option<String>,
 }
 
 /// Parse and import a structural export. Returns counts and the published
@@ -96,7 +103,9 @@ pub fn import_codegraph_export(
     let mut entities: Vec<Value> = Vec::new();
     let mut entity_index: HashMap<String, usize> = HashMap::new();
     let mut entity_id_by_backend: HashMap<u64, String> = HashMap::new();
+    let mut entity_path_by_id: HashMap<String, String> = HashMap::new();
     let mut skipped_nodes = 0u64;
+    let mut true_merged_nodes = 0u64;
 
     for node in &parsed.nodes {
         let Some((kind, is_file)) = map_node_kind(&node.node_type) else {
@@ -144,13 +153,21 @@ pub fn import_codegraph_export(
                     "qualified_name": name,
                     "anchors": [],
                     "external": true,
+                    "role": "external",
                     "backend_refs": [{
                         "adapter_id": ADAPTER_ID,
                         "run_id": config.run_id,
                         "backend_id": node.backend_id.to_string(),
                     }],
                 });
-                insert_or_merge_entity(&mut entities, &mut entity_index, entity_id.clone(), entity);
+                if insert_or_merge_entity(
+                    &mut entities,
+                    &mut entity_index,
+                    entity_id.clone(),
+                    entity,
+                ) {
+                    true_merged_nodes += 1;
+                }
                 entity_id_by_backend.insert(node.backend_id, entity_id);
                 continue;
             }
@@ -213,51 +230,38 @@ pub fn import_codegraph_export(
             "snapshot_id": config.snapshot_id,
             "config_digest": config.config_digest,
             "kind": kind,
-            "language": language_for(&path),
+            "language": language_for(
+                &path,
+                property_string(Some(&node.raw_properties), "language").as_deref(),
+            ),
             "qualified_name": qualified_name,
             "anchors": [anchor],
             "external": false,
+            "role": crate::store::EntityRole::from_file_role(file.role).as_str(),
             "backend_refs": [{
                 "adapter_id": ADAPTER_ID,
                 "run_id": config.run_id,
                 "backend_id": node.backend_id.to_string(),
             }],
         });
-        insert_or_merge_entity(&mut entities, &mut entity_index, entity_id.clone(), entity);
+        if insert_or_merge_entity(
+            &mut entities,
+            &mut entity_index,
+            entity_id.clone(),
+            entity,
+        ) {
+            true_merged_nodes += 1;
+        }
+        entity_path_by_id.insert(entity_id.clone(), path.to_string());
         entity_id_by_backend.insert(node.backend_id, entity_id);
     }
 
-    let evidence = json!({
-        "id": evidence_id,
-        "project_id": config.project_id,
-        "snapshot_id": config.snapshot_id,
-        "config_digest": config.config_digest,
-        "kind": "syntax",
-        "producer": {
-            "name": "codegraph",
-            "version": parsed.version,
-            "source_ref": EXPORT_FORMAT,
-            "run_id": config.run_id,
-        },
-        "artifact_digest": export_digest,
-        "locator": EXPORT_FORMAT,
-        "source_anchor": null,
-        "scenario_id": null,
-        "runtime_run_id": null,
-        "coverage": {
-            "state": "partial",
-            "scope": "codegraph structural export",
-            "expected_count": parsed.manifest_node_count,
-            "observed_count": parsed.nodes.len() as u64,
-            "omitted_count": skipped_nodes,
-            "unresolved_count": 0,
-            "limitations": ["structural export; call edges are syntax candidates"]
-        },
-        "freshness": "current",
-    });
-
     let mut relations: Vec<Value> = Vec::new();
+    let mut relation_index: HashMap<String, usize> = HashMap::new();
     let mut unresolved = 0u64;
+    let mut collapsed_edges = 0u64;
+    let mut relations_with_call_site = 0u64;
+    let mut relations_without_call_site = 0u64;
     for edge in &parsed.edges {
         let Some(kind) = map_edge_kind(&edge.edge_type) else {
             unresolved += 1;
@@ -296,12 +300,22 @@ pub fn import_codegraph_export(
         } else {
             "declared"
         };
+        let call_site_line = edge.call_site_line;
+        let producer_resolution = if edge.resolved_by.as_deref() == Some("cross_file_resolution") {
+            "cross_file_resolution"
+        } else if edge.is_direct == Some(true) {
+            "direct"
+        } else if resolution == "candidate" {
+            "name_match"
+        } else {
+            "declared"
+        };
         let identity_value = json!({
-            "version": "1.0",
+            "version": "1.1",
             "source": source_id,
             "target": target_id,
             "kind": kind,
-            "line": edge.line,
+            "call_site_line": call_site_line,
         });
         let digest = hash::digest_value(&identity_value)
             .map_err(|err| CoreError::invalid(format!("relation identity: {err}")))?;
@@ -309,6 +323,37 @@ pub fn import_codegraph_export(
             "rel.{}",
             digest.strip_prefix("sha256:").expect("sha256 prefix")
         );
+        if let Some(existing) = relation_index.get(&relation_id) {
+            collapsed_edges += 1;
+            if let Some(count) = relations[*existing]["occurrences"].as_u64() {
+                relations[*existing]["occurrences"] = json!(count + 1);
+            }
+            continue;
+        }
+        let mut conditions = vec![
+            format!("codegraph-edge:{}", edge.edge_type),
+            "syntax-only; not a resolved call".to_string(),
+            format!("codegraph-producer-resolution:{producer_resolution}"),
+        ];
+        if let Some(is_direct) = edge.is_direct {
+            conditions.push(format!("codegraph-is-direct:{is_direct}"));
+        }
+        if let Some(resolved_by) = &edge.resolved_by {
+            conditions.push(format!("codegraph-resolved-by:{resolved_by}"));
+        }
+        let call_site = call_site_line.map(|line| {
+            json!({
+                "path": entity_path_by_id.get(source_id),
+                "line": line,
+                "column": null,
+            })
+        });
+        if call_site.is_some() {
+            relations_with_call_site += 1;
+        } else {
+            relations_without_call_site += 1;
+        }
+        relation_index.insert(relation_id.clone(), relations.len());
         relations.push(json!({
             "id": relation_id,
             "project_id": config.project_id,
@@ -319,15 +364,16 @@ pub fn import_codegraph_export(
             "kind": kind,
             "basis": "syntax",
             "evidence_ids": [evidence_id],
-            "conditions": [
-                format!("codegraph-edge:{}", edge.edge_type),
-                "syntax-only; not a resolved call".to_string()
-            ],
+            "conditions": conditions,
             "resolution": resolution,
+            "call_site": call_site,
+            "occurrences": 1,
+            "producer_resolution": producer_resolution,
+            "evidence_scope": if call_site_line.is_some() { "site" } else { "artifact" },
         }));
     }
 
-    let merged_nodes = parsed.nodes.len() as u64 - entities.len() as u64;
+    let merged_nodes = true_merged_nodes;
     let completeness = skipped_nodes == 0
         && unresolved == 0
         && parsed.nodes.len() as u64 == parsed.manifest_node_count;
@@ -346,6 +392,16 @@ pub fn import_codegraph_export(
             "{merged_nodes} upstream node(s) merged by content identity"
         ));
     }
+    if collapsed_edges > 0 {
+        limitations.push(format!(
+            "{collapsed_edges} duplicate edge(s) collapsed into occurrence counts"
+        ));
+    }
+    if relations_without_call_site > 0 {
+        limitations.push(format!(
+            "{relations_without_call_site} relation(s) have no call-site line; evidence_scope=artifact"
+        ));
+    }
     let coverage = Coverage {
         state: if completeness {
             crate::store::CoverageState::Complete
@@ -359,6 +415,42 @@ pub fn import_codegraph_export(
         unresolved_count: unresolved,
         limitations,
     };
+
+    let parser_error_count = parsed
+        .index
+        .as_ref()
+        .and_then(|index| index["parser_errors"].as_array())
+        .map(Vec::len)
+        .unwrap_or(0);
+    let mut evidence_coverage = coverage.to_json();
+    if parser_error_count > 0 {
+        evidence_coverage["state"] = json!("partial");
+        if let Some(items) = evidence_coverage["limitations"].as_array_mut() {
+            items.push(json!(format!(
+                "{parser_error_count} file(s) failed to parse; see index.parser_errors"
+            )));
+        }
+    }
+    let evidence = json!({
+        "id": evidence_id,
+        "project_id": config.project_id,
+        "snapshot_id": config.snapshot_id,
+        "config_digest": config.config_digest,
+        "kind": "syntax",
+        "producer": {
+            "name": "codegraph",
+            "version": parsed.version.clone(),
+            "source_ref": EXPORT_FORMAT,
+            "run_id": config.run_id,
+        },
+        "artifact_digest": export_digest,
+        "locator": EXPORT_FORMAT,
+        "source_anchor": null,
+        "scenario_id": null,
+        "runtime_run_id": null,
+        "coverage": evidence_coverage,
+        "freshness": "current",
+    });
 
     let adapter_version = parsed.version.clone();
     let max_entities = config.max_entities_per_batch.max(1);
@@ -409,7 +501,11 @@ pub fn import_codegraph_export(
         diagnostics: diagnostics.len() as u64,
         skipped_nodes,
         merged_nodes,
+        collapsed_edges,
+        relations_with_call_site,
+        relations_without_call_site,
         unresolved,
+        index: parsed.index.unwrap_or(Value::Null),
         coverage: coverage.to_json(),
         export_schema_version: parsed.schema_version,
         producer_commit: parsed.producer_commit,
@@ -422,6 +518,7 @@ struct ParsedExport {
     schema_version: String,
     producer_commit: Option<String>,
     producer_dirty: Option<bool>,
+    index: Option<Value>,
     manifest_node_count: u64,
     nodes: Vec<NodeRec>,
     edges: Vec<EdgeRec>,
@@ -433,6 +530,7 @@ fn parse_export(text: &str) -> Result<ParsedExport> {
     let mut producer_commit: Option<String> = None;
     let mut producer_dirty: Option<bool> = None;
     let mut manifest_node_count: Option<u64> = None;
+    let mut manifest_index: Option<Value> = None;
     let mut nodes = Vec::new();
     let mut edges = Vec::new();
     let mut seen_manifest = false;
@@ -472,6 +570,7 @@ fn parse_export(text: &str) -> Result<ParsedExport> {
                     producer_commit = Some(commit.to_string());
                 }
                 producer_dirty = value["producer_dirty"].as_bool();
+                manifest_index = value.get("index").cloned();
                 manifest_node_count = value["node_count"].as_u64();
             }
             "node" => {
@@ -508,6 +607,28 @@ fn parse_export(text: &str) -> Result<ParsedExport> {
                     line: value["properties"]
                         .as_object()
                         .and_then(|props| property_u64(Some(props), "line")),
+                    call_site_line: value["properties"]
+                        .as_object()
+                        .and_then(|props| property_u64(Some(props), "call_site_line"))
+                        .or_else(|| {
+                            value["properties"]
+                                .as_object()
+                                .and_then(|props| property_u64(Some(props), "line"))
+                        }),
+                    is_direct: value["properties"].as_object().and_then(|props| {
+                        props.get("is_direct").and_then(|value| match value {
+                            Value::Bool(value) => Some(*value),
+                            Value::String(text) => match text.as_str() {
+                                "true" => Some(true),
+                                "false" => Some(false),
+                                _ => None,
+                            },
+                            _ => None,
+                        })
+                    }),
+                    resolved_by: value["properties"]
+                        .as_object()
+                        .and_then(|props| property_string(Some(props), "resolved_by")),
                 });
             }
             other => {
@@ -533,6 +654,7 @@ fn parse_export(text: &str) -> Result<ParsedExport> {
         schema_version,
         producer_commit,
         producer_dirty,
+        index: manifest_index,
         manifest_node_count: manifest_node_count
             .ok_or_else(|| CoreError::invalid("manifest has no node_count"))?,
         nodes,
@@ -551,7 +673,7 @@ fn insert_or_merge_entity(
     index: &mut HashMap<String, usize>,
     entity_id: String,
     entity: Value,
-) {
+) -> bool {
     if let Some(existing) = index.get(&entity_id) {
         let reference = entity["backend_refs"][0].clone();
         let references = entities[*existing]["backend_refs"]
@@ -560,10 +682,11 @@ fn insert_or_merge_entity(
         if !references.iter().any(|item| item == &reference) {
             references.push(reference);
         }
-        return;
+        return true;
     }
     index.insert(entity_id, entities.len());
     entities.push(entity);
+    false
 }
 
 fn property_string(properties: Option<&Map<String, Value>>, key: &str) -> Option<String> {
@@ -654,7 +777,20 @@ fn map_edge_kind(edge_type: &str) -> Option<&'static str> {
     }
 }
 
-fn language_for(path: &str) -> String {
+fn language_for(path: &str, declared: Option<&str>) -> String {
+    if let Some(language) = declared {
+        let language = language.trim().to_ascii_lowercase();
+        if !language.is_empty() && language != "unknown" {
+            return match language.as_str() {
+                "py" => "python".to_string(),
+                "ts" => "typescript".to_string(),
+                "js" => "javascript".to_string(),
+                "cs" => "csharp".to_string(),
+                "sh" => "bash".to_string(),
+                other => other.to_string(),
+            };
+        }
+    }
     match path.rsplit_once('.').map(|(_, ext)| ext) {
         Some("py") | Some("pyi") => "python",
         Some("rs") => "rust",
@@ -665,6 +801,25 @@ fn language_for(path: &str) -> String {
         Some("java") => "java",
         Some("cs") => "csharp",
         Some("go") => "go",
+        Some("kt") | Some("kts") => "kotlin",
+        Some("toml") => "toml",
+        Some("sh") | Some("bash") => "bash",
+        Some("rb") => "ruby",
+        Some("php") => "php",
+        Some("swift") => "swift",
+        Some("scala") => "scala",
+        Some("dart") => "dart",
+        Some("lua") => "lua",
+        Some("sql") => "sql",
+        Some("r") => "r",
+        Some("pl") | Some("pm") => "perl",
+        Some("hs") => "haskell",
+        Some("ex") | Some("exs") => "elixir",
+        Some("jl") => "julia",
+        Some("ml") | Some("mli") => "ocaml",
+        Some("clj") | Some("cljs") => "clojure",
+        Some("groovy") => "groovy",
+        Some("ps1") => "powershell",
         _ => "unknown",
     }
     .to_string()

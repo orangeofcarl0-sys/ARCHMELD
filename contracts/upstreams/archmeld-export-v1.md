@@ -1,6 +1,7 @@
 # `archmeld-export-v1` contract
 
-Status: U0 additive revision (`schema_version` 1.1), 2026-11-25.
+Status: additive revisions (`schema_version` 1.1 and 1.2), 2026-11-26.
+1.1 adds producer provenance; 1.2 adds the optional `index` manifest block.
 
 The producer is the pinned CodeGraph fork (`crates/codegraph/src/export/ndjson.rs`);
 the consumer is the private evidence core (`crates/archmeld-core/src/bridge.rs`).
@@ -16,7 +17,7 @@ The first non-empty line is a JSON object with `"type": "manifest"`. Fields:
 |---|---|---|
 | `type` | yes | Always `"manifest"`. |
 | `format` | yes | Always `"archmeld-export-v1"`; exact string match. |
-| `schema_version` | no | `"1.0"` when absent. Producer emits `"1.1"`. Consumers accept any `1.x` and reject another major. |
+| `schema_version` | no | `"1.0"` when absent. Producer emits `"1.1"`, or `"1.2"` when the `index` block is present. Consumers accept any `1.x` and reject another major. |
 | `source` | producer | `"codegraph"`. The consumer does not currently validate it. |
 | `version` | yes | The **`codegraph` crate version** (for example `0.2.0`), not the upstream release (`0.21.2`) and not the git commit. |
 | `producer_commit` | no | Full 40- or 64-character lowercase/uppercase hex commit. Omitted when the build had no git checkout. |
@@ -24,6 +25,7 @@ The first non-empty line is a JSON object with `"type": "manifest"`. Fields:
 | `node_count` | yes | Number of node lines. The consumer uses it as the coverage denominator. |
 | `edge_count` | producer | Number of edge lines. The consumer does not use it for coverage today. |
 | `iteration` | producer | `"real-iterators"`. The consumer does not currently validate it. |
+| `index` | no | 1.2+: `{files_total, files_parsed, files_skipped, by_language{}, skipped_by_reason{}, parser_errors[{path,language,message}], max_files_reached, max_depth_reached, cross_file_implements{resolved,ambiguous}, config{max_files,max_file_size_bytes,max_depth,exclude_dirs,include_dirs}}`. `parser_errors[].path` is relative to the indexed workspace. The consumer records this block as index coverage and as the source of the ledger's `parse` counters; unknown subfields are ignored. |
 
 `producer_commit` is the only reliable upstream revision identifier. `version`
 is a crate version and may stay unchanged across local patches. The commit is also
@@ -34,7 +36,12 @@ recorded in `upstreams.lock.json` for the pinned release.
 Unchanged from v1: each line is one JSON object with `"type": "node"` or
 `"type": "edge"`; numeric backend IDs are local to the export; node `properties`
 carry `path`, `name`, `line_start`, `line_end`; edge lines carry `source`,
-`target`, `edge_type`, and optional `properties.line`.
+`target`, `edge_type`, and optional `properties.line`. Producers may also emit
+`properties.call_site_line`, `properties.is_direct` (boolean or `"true"`/`"false"`)
+and `properties.resolved_by`; the consumer preserves them on the relation
+(`call_site`, `producer_resolution`, `conditions`) without promoting a candidate
+to a resolved call. An edge without a call-site line is imported with
+`evidence_scope: artifact`; one with a line is `evidence_scope: site`.
 
 ## Compatibility policy
 

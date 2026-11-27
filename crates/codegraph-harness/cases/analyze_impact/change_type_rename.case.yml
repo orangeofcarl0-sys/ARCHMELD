@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_analyze_impact
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 8
     changeType: rename
 expect:

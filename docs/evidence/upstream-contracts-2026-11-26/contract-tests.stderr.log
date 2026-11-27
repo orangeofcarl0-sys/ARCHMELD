@@ -1,0 +1,68 @@
+warning: unused import: `PathBuf`
+  --> crates\archmeld-core\src\drift.rs:20:23
+   |
+20 | use std::path::{Path, PathBuf};
+   |                       ^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> crates\archmeld-core\src\apply.rs:326:9
+    |
+326 |     let mut applying = append_state_with_journal(
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+  --> crates\archmeld-core\src\units.rs:75:13
+   |
+75 |         let mut registry = Self {
+   |             ----^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: field `session_id` is never read
+   --> crates\archmeld-core\src\lsp.rs:206:5
+    |
+199 | pub struct LspSession {
+    |            ---------- field in this struct
+...
+206 |     session_id: String,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `next_event_sequence` is never used
+   --> crates\archmeld-core\src\store\mod.rs:953:19
+    |
+ 61 | impl Store {
+    | ---------- method in this implementation
+...
+953 |     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: `archmeld-core` (lib) generated 5 warnings (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)
+   Compiling archmeld-core v0.1.0 (<path>
+warning: field `root` is never read
+   --> crates\archmeld-core\tests\scip_import.rs:123:5
+    |
+120 | struct Fixture {
+    |        ------- field in this struct
+...
+123 |     root: std::path::PathBuf,
+    |     ^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `archmeld-core` (test "scip_import") generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 43.62s
+     Running tests\b017_model_analysis.rs (target\debug\deps\b017_model_analysis-aa6b9d0ec3b12565.exe)
+     Running tests\cognition.rs (target\debug\deps\cognition-831160bb723865be.exe)
+     Running tests\interpretation.rs (target\debug\deps\interpretation-d695dd84e56baeb6.exe)
+     Running tests\lsp_probe.rs (target\debug\deps\lsp_probe-c6f9c044451a5acc.exe)
+     Running tests\lsp_roundtrip.rs (target\debug\deps\lsp_roundtrip-14a52f990deebe36.exe)
+     Running tests\perfetto_trace_processor.rs (target\debug\deps\perfetto_trace_processor-35bf431feed35e50.exe)
+     Running tests\scip_import.rs (target\debug\deps\scip_import-0a6ed6bc081b373d.exe)

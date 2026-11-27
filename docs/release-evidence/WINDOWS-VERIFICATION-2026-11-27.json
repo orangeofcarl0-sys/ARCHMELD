@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-27",
+  "product_head": "3116eb24",
+  "platform": {
+    "os": "windows",
+    "arch": "x86_64",
+    "rust": "1.94.1-x86_64-pc-windows-gnu",
+    "mingw": "MSYS2 UCRT64 GCC 16.1.0"
+  },
+  "checks": [
+    {
+      "name": "codegraph-server-lib",
+      "result": "426 passed, 0 failed, 1 ignored",
+      "record": {
+        "command_id": "self-fix-server-lib-run-2026-11-27",
+        "exit_code": 0,
+        "argv": [
+          "target/debug/deps/codegraph_server-ed35874953aec4b6.exe"
+        ],
+        "log": "baseline\\logs\\self-fix-server-lib-run-2026-11-27.stdout.log",
+        "log_sha256": "965c390733ec63a73210ff89fda6cb63b9143b39e69348a3b9410c4d900d40ee"
+      },
+      "note": "16 upstream POSIX path fixtures replaced with platform-absolute fixtures; adjacent test-file lookup also emits native separators"
+    },
+    {
+      "name": "codegraph-default-lib",
+      "result": "59 passed, 0 failed",
+      "record": {
+        "command_id": "self-fix-codegraph-lib-run-2026-11-27",
+        "exit_code": 0,
+        "argv": [
+          "target/debug/deps/codegraph-8c46720d6bbca557.exe"
+        ],
+        "log": "baseline\\logs\\self-fix-codegraph-lib-run-2026-11-27.stdout.log",
+        "log_sha256": "88e3ad7a0c328ec2ccc4fcca83b4ee5d5e23357ef2135bdd97033591405e6b86"
+      },
+      "note": "includes storage::rocksdb_backend::tests::test_delete"
+    },
+    {
+      "name": "parser-suites",
+      "result": "codegraph-rust/python/php/parser-api all passed; 0 failed; 2 ignored",
+      "record": {
+        "command_id": "self-fix-parser-suites-2026-11-27",
+        "exit_code": 0,
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "codegraph-rust",
+          "-p",
+          "codegraph-python",
+          "-p",
+          "codegraph-php",
+          "-p",
+          "codegraph-parser-api",
+          "--offline",
+          "--locked",
+          "-j",
+          "2"
+        ],
+        "log": "baseline\\logs\\self-fix-parser-suites-2026-11-27.stdout.log",
+        "log_sha256": "0ce1b0af25c4c91ad5c26dcfc3be0ad58e476018994a52208bf2928dc939abbd"
+      },
+      "note": "parser-only graphs no longer enable the RocksDB default feature"
+    },
+    {
+      "name": "server-integration",
+      "result": "index_coverage 3/3, cross_file_trait 3/3, archmeld_state_root 1/1",
+      "record": {
+        "command_id": "self-fix-server-integration-tests-2026-11-27",
+        "exit_code": 0,
+        "argv": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "codegraph-server",
+          "--test",
+          "index_coverage",
+          "--test",
+          "cross_file_trait",
+          "-j",
+          "2"
+        ],
+        "log": "baseline/logs/self-fix-server-integration-tests-2026-11-27.stdout.log",
+        "log_sha256": "11d387c0c616cf77daa878289a7ec963a3ff428c368c9af04c05f244c855df40"
+      },
+      "note": "import_integration_test and graph_db_recovery_test were not rebuilt/re-run in this pass"
+    },
+    {
+      "name": "at067",
+      "result": "passed, blockers=[], r1_naming_allowed=true",
+      "record": {
+        "command_id": "b030-language-matrix-2026-11-27",
+        "exit_code": 0,
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "archmeld-core",
+          "--test",
+          "language_matrix",
+          "--offline",
+          "--locked",
+          "-j",
+          "2"
+        ],
+        "log": "baseline\\logs\\b030-language-matrix-2026-11-27.stdout.log",
+        "log_sha256": "5da0a64c8b40fdbbb39f8e13149c7c6c003e65152c7edfab49ec713f98abaaa3"
+      },
+      "verifier": {
+        "command_id": "b030-verify-2026-11-27",
+        "exit_code": 0,
+        "argv": [
+          "<path>",
+          "-3.11",
+          "tooling/verify_b030_evidence.py",
+          "--since",
+          "1795761600",
+          "--expect-head",
+          "3116eb24"
+        ],
+        "log": "baseline\\logs\\b030-verify-2026-11-27.stdout.log",
+        "log_sha256": "ed10d2408f4ca22413e0486cd612b667e220cd0027d4e0d1a3d5a9c497533682"
+      },
+      "note": "AT067 re-run at 0.21.2/HEAD 3116eb24 with UCRT64 GCC 16.1.0"
+    },
+    {
+      "name": "release-package",
+      "result": "Windows 0.1.0+dd124ca1; Linux 0.1.0+af8fa2f9; clean PATH index 11 entities; release_status=provisional",
+      "evidence": "docs/release-evidence/B031-install-tests.json",
+      "record": {
+        "command_id": "self-fix-release-provenance-2026-11-27",
+        "exit_code": null,
+        "argv": null,
+        "log": null,
+        "log_sha256": null
+      }
+    }
+  ],
+  "limitations": [
+    "Windows MSVC is not installed/tested; it is not required for the UCRT64 RocksDB path.",
+    "The full codegraph integration/doctest suite was not re-run on Windows; only the default-backend lib suite (59/59) was run.",
+    "import_integration_test and graph_db_recovery_test were not rebuilt in this pass.",
+    "The release package is repackaged from binaries built at dd124ca1/af8fa2f9/49683c1d and is provisional; it was not rebuilt from HEAD.",
+    "cmake is recorded as an optional missing tool; the current build does not invoke it."
+  ]
+}

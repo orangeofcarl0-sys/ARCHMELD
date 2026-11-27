@@ -7,7 +7,7 @@ setup:
 invoke:
   tool: codegraph_get_detailed_symbol
   args:
-    uri: "file://${fixture}"
+    uri: "file://<path>"
     line: 17
 
 expect:

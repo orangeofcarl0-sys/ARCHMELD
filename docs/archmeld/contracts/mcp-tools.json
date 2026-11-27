@@ -146,6 +146,115 @@
               }
             ],
             "default": null
+          },
+          "entity_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "file",
+                "module",
+                "symbol",
+                "type",
+                "callsite",
+                "component",
+                "process",
+                "thread",
+                "task",
+                "queue",
+                "resource",
+                "boundary",
+                "external"
+              ]
+            },
+            "minItems": 0,
+            "default": [],
+            "description": "Only return entities of these kinds."
+          },
+          "entity_roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "source",
+                "config",
+                "generated",
+                "protocol",
+                "test",
+                "vendored",
+                "external",
+                "other"
+              ]
+            },
+            "minItems": 0,
+            "default": [],
+            "description": "Keep relations whose two endpoints both have one of these roles (historical include semantics)."
+          },
+          "exclude_entity_roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "source",
+                "config",
+                "generated",
+                "protocol",
+                "test",
+                "vendored",
+                "external",
+                "other"
+              ]
+            },
+            "minItems": 0,
+            "default": [],
+            "description": "Exclude any relation incident to an entity with one of these roles (for example test or vendored)."
+          },
+          "exclude_entity_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "file",
+                "module",
+                "symbol",
+                "type",
+                "callsite",
+                "component",
+                "process",
+                "thread",
+                "task",
+                "queue",
+                "resource",
+                "boundary",
+                "external"
+              ]
+            },
+            "minItems": 0,
+            "default": [],
+            "description": "Exclude any relation incident to an entity with one of these kinds."
+          },
+          "min_producer_resolution": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "name_match",
+                  "cross_file_resolution",
+                  "direct",
+                  "declared"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Traversal-only: minimum producer resolution. declared is not a call tier."
+          },
+          "require_call_site": {
+            "type": "boolean",
+            "default": false,
+            "description": "Traversal-only: keep only relations with a call-site line."
           }
         },
         "required": [],
@@ -2176,7 +2285,28 @@
       "description": "Call this first when the project, snapshot or working-tree state is unknown. Reports registered projects, latest snapshots, counts, languages and read-only freshness. Creates no snapshot and records no drift.",
       "inputSchema": {
         "type": "object",
-        "properties": {},
+        "properties": {
+          "detail": {
+            "type": "string",
+            "enum": [
+              "summary",
+              "full"
+            ],
+            "default": "summary",
+            "description": "summary returns counts plus a bounded first page; full returns the complete object."
+          },
+          "max_files": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5000,
+            "default": 100,
+            "description": "Maximum file records per page (default 100 for status, 500 for review)."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Opaque page cursor from a previous summary response."
+          }
+        },
         "required": [],
         "additionalProperties": false
       },
@@ -2255,6 +2385,26 @@
                 "type": "null"
               }
             ]
+          },
+          "detail": {
+            "type": "string",
+            "enum": [
+              "summary",
+              "full"
+            ],
+            "default": "summary",
+            "description": "summary returns counts plus a bounded first page; full returns the complete object."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Opaque page cursor from a previous summary response."
+          },
+          "max_files": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5000,
+            "default": 500,
+            "description": "Maximum file records per page."
           }
         },
         "required": [],

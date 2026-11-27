@@ -22,6 +22,15 @@ use archmeld_core::verification::{accept_changeset, verify_changeset};
 use serde_json::{json, Value};
 use std::fs;
 use std::path::{Path, PathBuf};
+
+mod support;
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
 use std::time::Duration;
 
 fn copy_dir(source: &Path, destination: &Path) {
@@ -121,10 +130,17 @@ fn file_digest(root: &Path, path: &str) -> String {
 
 #[test]
 fn case_b_capture_estimator_ui_is_traceable_and_verified() {
-    let temp = tempfile::Builder::new()
-        .prefix("b030-case-b-")
-        .tempdir_in("<temp>")
-        .unwrap();
+    let required = [
+        ("ARCHMELD_GXX", "c/bin/g++.exe"),
+        ("ARCHMELD_PYTHON", "python.exe"),
+    ];
+    if required
+        .iter()
+        .any(|(env, relative)| support::require_tool(env, relative).is_none())
+    {
+        return;
+    }
+    let temp = support::tempdir("b030-case-b-");
     let root = temp.path().join("case-b");
     copy_dir(
         &Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples/case-b"),
@@ -177,7 +193,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
     let build = run(
         &root,
         vec![
-            "D:/Strawberry/c/bin/g++.exe".to_string(),
+            support::require_tool("ARCHMELD_GXX", "c/bin/g++.exe").expect("g++").to_string_lossy().to_string(),
             "-std=c++17".to_string(),
             "-O2".to_string(),
             "capture/main.cpp".to_string(),
@@ -192,7 +208,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
     let baseline = run(
         &root,
         vec![
-            "python".to_string(),
+            python(),
             "pipeline.py".to_string(),
             "--capture".to_string(),
             capture_exe.to_string_lossy().to_string(),
@@ -420,7 +436,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
     let trace_run = run(
         &root,
         vec![
-            "python".to_string(),
+            python(),
             "pipeline.py".to_string(),
             "--capture".to_string(),
             capture_exe.to_string_lossy().to_string(),
@@ -468,7 +484,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
             "description": "C++ capture, estimator and UI all execute",
             "command": {
                 "argv": [
-                    "python",
+                    python(),
                     "pipeline.py",
                     "--capture",
                     capture_exe.to_string_lossy(),
@@ -695,7 +711,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
             "changeset_id": changeset_id,
             "expected_revision": prepared["revision"],
             "prepared_digest": prepared["prepared_digest"],
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "caseb-approve",
         }),
     )
@@ -708,7 +724,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
             "expected_revision": prepared["revision"],
             "prepared_digest": prepared["prepared_digest"],
             "approval_id": approval["approval"]["approval_id"],
-            "actor": "operator",
+            "actor": "<identity>",
             "workspace_handle": handle,
             "idempotency_key": "caseb-apply",
         }),
@@ -756,7 +772,7 @@ fn case_b_capture_estimator_ui_is_traceable_and_verified() {
             "expected_revision": verifying["revision"],
             "verification_id": verification["verification_id"],
             "workspace_handle": handle,
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "caseb-accept",
         }),
     )

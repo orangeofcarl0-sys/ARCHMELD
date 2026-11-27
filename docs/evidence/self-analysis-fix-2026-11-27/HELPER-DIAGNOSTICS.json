@@ -1,0 +1,9 @@
+{
+  "helper": "target/debug/examples/archmeld_export.exe",
+  "copied_to": "temp/helper-missing-dll/archmeld_export.exe",
+  "sanitized_path": "<path>",
+  "exit_code": -1073741515,
+  "hex": "0xC0000135",
+  "hint": "0xC0000135 DLL_NOT_FOUND",
+  "unit_test": "helper_hint_tests::windows_helper_status_codes_are_decoded"
+}

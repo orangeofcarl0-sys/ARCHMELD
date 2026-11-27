@@ -51,7 +51,7 @@
       "case": "spawns the real archmeld-mcp process and asserts two content items for archmeld_brief"
     },
     "cli_end_to_end": {
-      "fixture": "<temp>/m2.5b-clean",
+      "fixture": "<path>",
       "result": "brief --write created .archmeld/SESSION.md; status reported session_card.present=true, snapshot_match=true, stale=false on a clean tree and stale=true after a source edit",
       "evidence": "docs/evidence/m2.5b-session-card-2026-11-24/"
     },

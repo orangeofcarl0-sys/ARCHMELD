@@ -11,10 +11,16 @@ through `codegraph_symbol_search` and score recall@{1,5,10} + MRR.
 import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 
-REPO = "/Users/anvanster/projects/codegraph"
-SERVER = f"{REPO}/target/release/codegraph-server"
-CORPUS = "/tmp/codegraph_eval_corpus.json"
-CACHE = os.path.expanduser("~/.codegraph/fastembed_cache")
+REPO = os.environ.get("CODEGRAPH_REPO", os.getcwd())
+SERVER = os.environ.get("CODEGRAPH_SERVER", str(Path(REPO) / "target/release/codegraph-server"))
+CORPUS = os.environ.get(
+    "ARCHMELD_EVAL_CORPUS",
+    str(Path(tempfile.gettempdir()) / "codegraph_eval_corpus.json"),
+)
+CACHE = os.environ.get(
+    "FASTEMBED_CACHE_DIR",
+    os.path.expanduser("~/.codegraph/fastembed_cache"),
+)
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 300
 
 

@@ -9,7 +9,7 @@
   "output_tokens": 22718,
   "provider_version": "0.15.3",
   "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
-  "target_repo": "<temp>\\b017-codeboarding-target",
+  "target_repo": "<path>",
   "analysis_path": "docs\\evidence\\B017-model-analysis.json",
   "analysis_sha256": "sha256:8a81ed5d937318c36950f7c2f92c9c7685df4d791b826653585782d75c8fc869",
   "analysis_size_bytes": 2014697,

@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "mode": "public",
+  "status": "passed",
+  "findings": [
+    {
+      "rule": "P06_secret",
+      "path": "crates/archmeld-core/tests/cognition_map.rs",
+      "line": 199,
+      "classification": "allowed",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "rule": "P06_secret",
+      "path": "crates/archmeld-core/tests/cognition_map.rs",
+      "line": 210,
+      "classification": "allowed",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "rule": "P06_secret",
+      "path": "crates/archmeld-core/tests/cognition_map.rs",
+      "line": 255,
+      "classification": "allowed",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "rule": "P06_secret",
+      "path": "crates/archmeld-core/tests/cognition_map.rs",
+      "line": 267,
+      "classification": "allowed",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "rule": "P06_secret",
+      "path": "crates/codegraph-dockerfile/tests/fixture_dockerfile.rs",
+      "line": 23,
+      "classification": "upstream_public"
+    },
+    {
+      "rule": "P06_secret",
+      "path": "crates/codegraph-harness/fixtures/secrets_demo/hardcoded_secret.py",
+      "line": 4,
+      "classification": "allowed",
+      "reason": "deliberate fake secret fixture"
+    }
+  ],
+  "unclassified": 0,
+  "allowed": 5,
+  "upstream_public": 1,
+  "limitations": [
+    "pattern-based scan; not a full PII classifier",
+    "historical evidence is classified, not rewritten"
+  ]
+}

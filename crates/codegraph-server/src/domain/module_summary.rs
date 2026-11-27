@@ -273,20 +273,20 @@ mod tests {
         // Issue #5: graph paths carry `\` on Windows; the prefix may use
         // either separator. All-zero module summaries until this matched.
         assert!(path_matches(
-            r"C:\Users\u\proj\agent\prompt_builder.py",
-            r"C:\Users\u\proj\agent"
+            r"<path>",
+            r"<path>"
         ));
         assert!(path_matches(
-            r"C:\Users\u\proj\agent\prompt_builder.py",
-            "C:/Users/u/proj/agent"
+            r"<path>",
+            "<path>"
         ));
         // Partial-dir guard must survive normalisation.
-        assert!(!path_matches(r"C:\proj\agentx\f.py", r"C:\proj\agent"));
+        assert!(!path_matches(r"<path>", r"<path>"));
     }
 
     #[test]
     fn test_path_matches_trailing_separator_prefix() {
         assert!(path_matches("/a/b/c.rs", "/a/b/"));
-        assert!(path_matches(r"C:\a\b\c.rs", r"C:\a\b\"));
+        assert!(path_matches(r"<path>", r"<path>"));
     }
 }

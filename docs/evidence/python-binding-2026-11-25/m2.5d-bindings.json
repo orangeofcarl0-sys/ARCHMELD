@@ -10,21 +10,21 @@
       {
         "id": 15,
         "name": "apply_discount",
-        "path": "//?/<workspace>/_archmeld_experiment_2026-11-24/fixture/src/pricing.py"
+        "path": "//?/<path>"
       }
     ],
     "summarize_order": [
       {
         "id": 15,
         "name": "apply_discount",
-        "path": "//?/<workspace>/_archmeld_experiment_2026-11-24/fixture/src/pricing.py"
+        "path": "//?/<path>"
       }
     ],
     "check_price": [
       {
         "id": 15,
         "name": "apply_discount",
-        "path": "//?/<workspace>/_archmeld_experiment_2026-11-24/fixture/src/pricing.py"
+        "path": "//?/<path>"
       }
     ]
   },

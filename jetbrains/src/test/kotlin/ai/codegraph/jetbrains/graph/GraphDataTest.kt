@@ -26,8 +26,8 @@ class GraphDataTest {
             """
             {
               "nodes": [
-                {"id":"1","label":"service.py","type":"Module","language":"python","uri":"file:///a/service.py"},
-                {"id":"2","label":"repo.go","type":"Module","language":"go","uri":"file:///a/repo.go"}
+                {"id":"1","label":"service.py","type":"Module","language":"python","uri":"file://<path>"},
+                {"id":"2","label":"repo.go","type":"Module","language":"go","uri":"file://<path>"}
               ],
               "edges": [{"from":"1","to":"2","type":"imports"}]
             }

@@ -134,10 +134,10 @@ rid = send(
     "initialize",
     {
         "processId": os.getpid(),
-        "rootUri": "file://" + ROOT,
+        "rootUri": "file://<path>" + ROOT,
         "capabilities": {"workspace": {"executeCommand": {"dynamicRegistration": True}}},
         "initializationOptions": init_options,
-        "workspaceFolders": [{"uri": "file://" + ROOT, "name": os.path.basename(ROOT)}],
+        "workspaceFolders": [{"uri": "file://<path>" + ROOT, "name": os.path.basename(ROOT)}],
     },
 )
 response = await_response(rid)
@@ -157,7 +157,7 @@ check("error" not in response, f"symbolSearch -> {json.dumps(response.get('resul
 # inferred from the advertised list: it went unadvertised once, and a probe that
 # only reads capabilities would have called that a clean run.
 response = execute_command(
-    "codegraph.getDocumentCodeLens", {"uri": "file://" + os.path.join(ROOT, "README.md")}
+    "codegraph.getDocumentCodeLens", {"uri": "file://<path>" + os.path.join(ROOT, "README.md")}
 )
 check("error" not in response, f"getDocumentCodeLens -> {str(response.get('error') or 'ok')[:120]}")
 

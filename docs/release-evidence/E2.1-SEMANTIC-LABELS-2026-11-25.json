@@ -43,7 +43,7 @@
   "environment": {
     "toolchain": "1.94.1-x86_64-pc-windows-gnu",
     "python": "3.11 on PATH for verification/scenario tests",
-    "LIBCLANG_PATH": "<workspace>/_archmeld_tools/pylibclang/clang/native"
+    "LIBCLANG_PATH": "<path>"
   },
   "invalid_first_run": "An earlier full run without Python 3.11 and libclang on PATH failed 17 spawn-dependent targets (verification/scenario/language/benchmark). It was discarded; the recorded run uses the full environment.",
   "boundaries": {

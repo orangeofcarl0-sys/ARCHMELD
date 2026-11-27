@@ -146,7 +146,10 @@ impl Bridge {
             "initialize" => Ok(json!({
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {"listChanged": false}},
-                "serverInfo": {"name": "archmeld", "version": env!("CARGO_PKG_VERSION")},
+                "serverInfo": {
+                    "name": "archmeld",
+                    "version": concat!(env!("CARGO_PKG_VERSION"), "+", env!("ARCHMELD_GIT_SHORT"))
+                },
                 "instructions": "Read-only ARCHMELD evidence access. Start with archmeld_status or archmeld_brief. Indexing is a CLI step (`archmeld init`); this process never creates a snapshot. Workflow: status -> brief/review -> query/context -> source. Candidate relations are not resolved calls, and review never executes tests.",
             })),
             "notifications/initialized" | "notifications/cancelled" => return None,
@@ -256,9 +259,21 @@ impl Bridge {
             }
             "archmeld_inspect" => self.inspect(arguments),
             "archmeld_status" => {
-                if !arguments.as_object().is_none_or(|object| object.is_empty()) {
-                    return Err(CoreError::invalid("archmeld_status takes no arguments"));
+                for key in arguments.as_object().into_iter().flat_map(|o| o.keys()) {
+                    if !matches!(key.as_str(), "detail" | "max_files" | "cursor") {
+                        return Err(CoreError::invalid(format!(
+                            "archmeld_status does not accept {key}"
+                        )));
+                    }
                 }
+                let detail = arguments["detail"].as_str().unwrap_or("summary");
+                if !matches!(detail, "summary" | "full") {
+                    return Err(CoreError::invalid("detail must be summary or full"));
+                }
+                let max_files = arguments["max_files"]
+                    .as_u64()
+                    .unwrap_or(100)
+                    .clamp(1, 5000) as usize;
                 let root = match &self.project {
                     Some(project) => self.store.active_project_root(project)?,
                     None => {
@@ -270,17 +285,39 @@ impl Bridge {
                         }
                     }
                 };
-                status_report(&self.store, self.project.as_deref(), root.as_deref())
+                let mut value =
+                    status_report(&self.store, self.project.as_deref(), root.as_deref())?;
+                if detail == "summary" {
+                    summarize_status(
+                        &mut value,
+                        max_files,
+                        arguments["cursor"].as_str(),
+                    )?;
+                }
+                Ok(value)
             }
             "archmeld_brief" => self.brief(arguments),
             "archmeld_review" => {
                 if let Some(object) = arguments.as_object() {
-                    if object.keys().any(|key| key != "base_snapshot_id") {
+                    if object.keys().any(|key| {
+                        !matches!(
+                            key.as_str(),
+                            "base_snapshot_id" | "detail" | "max_files" | "cursor"
+                        )
+                    }) {
                         return Err(CoreError::invalid(
-                            "archmeld_review accepts only base_snapshot_id",
+                            "archmeld_review accepts base_snapshot_id, detail, max_files and cursor",
                         ));
                     }
                 }
+                let detail = arguments["detail"].as_str().unwrap_or("summary");
+                if !matches!(detail, "summary" | "full") {
+                    return Err(CoreError::invalid("detail must be summary or full"));
+                }
+                let max_files = arguments["max_files"]
+                    .as_u64()
+                    .unwrap_or(500)
+                    .clamp(1, 5000) as usize;
                 let project = self.project()?;
                 let root = self.store.active_project_root(&project)?.ok_or_else(|| {
                     CoreError::unsupported(
@@ -293,7 +330,11 @@ impl Bridge {
                         CoreError::not_found("project has no snapshot; run archmeld init")
                     })?,
                 };
-                review_workspace_diff(&self.store, &project, &base, &root)
+                let mut value = review_workspace_diff(&self.store, &project, &base, &root)?;
+                if detail == "summary" {
+                    summarize_review(&mut value, max_files, arguments["cursor"].as_str())?;
+                }
+                Ok(value)
             }
             "archmeld_capabilities" => {
                 if !arguments.as_object().is_none_or(|object| object.is_empty()) {
@@ -345,6 +386,24 @@ impl Bridge {
             .entry("max_depth".to_string())
             .or_insert_with(|| json!(1));
         object.entry("cursor".to_string()).or_insert(Value::Null);
+        object
+            .entry("entity_kinds".to_string())
+            .or_insert_with(|| json!([]));
+        object
+            .entry("entity_roles".to_string())
+            .or_insert_with(|| json!([]));
+        object
+            .entry("exclude_entity_roles".to_string())
+            .or_insert_with(|| json!([]));
+        object
+            .entry("exclude_entity_kinds".to_string())
+            .or_insert_with(|| json!([]));
+        object
+            .entry("min_producer_resolution".to_string())
+            .or_insert(Value::Null);
+        object
+            .entry("require_call_site".to_string())
+            .or_insert_with(|| json!(false));
         Ok(Value::Object(object))
     }
 
@@ -632,6 +691,158 @@ fn choice_brief(projects: &[String], recipe: BriefRecipe) -> Value {
     })
 }
 
+fn cursor_offset(
+    cursor: Option<&str>,
+    prefix: &str,
+    snapshot: &str,
+    max_files: usize,
+) -> Result<usize, CoreError> {
+    let Some(cursor) = cursor else {
+        return Ok(0);
+    };
+    // Snapshot IDs contain a colon (`sha256:...`), so split the prefix once and
+    // parse the fixed tail from the right. Splitting the whole token on ':' made
+    // every real cursor fail with "different snapshot or tool".
+    let mut head = cursor.splitn(2, ':');
+    let token_prefix = head.next();
+    let tail = head.next();
+    if token_prefix != Some(prefix) || tail.is_none() {
+        return Err(CoreError::invalid(
+            "cursor belongs to a different snapshot or tool",
+        ));
+    }
+    let mut fields = tail.unwrap().rsplitn(3, ':');
+    let offset_text = fields.next();
+    let max_text = fields.next();
+    let snapshot_text = fields.next();
+    let (Some(offset_text), Some(max_text), Some(snapshot_text)) =
+        (offset_text, max_text, snapshot_text)
+    else {
+        return Err(CoreError::invalid(
+            "cursor belongs to a different snapshot or tool",
+        ));
+    };
+    if snapshot_text != snapshot {
+        return Err(CoreError::invalid(
+            "cursor belongs to a different snapshot or tool",
+        ));
+    }
+    let cursor_max: usize = max_text
+        .parse()
+        .map_err(|_| CoreError::invalid("cursor has an invalid page size"))?;
+    if cursor_max != max_files {
+        return Err(CoreError::invalid(
+            "cursor belongs to a different page size",
+        ));
+    }
+    offset_text
+        .parse()
+        .map_err(|_| CoreError::invalid("cursor has an invalid offset"))
+}
+
+fn page_value(
+    tool: &str,
+    snapshot: &str,
+    max_files: usize,
+    offset: usize,
+    returned: usize,
+    total: usize,
+) -> Value {
+    let has_more = offset + returned < total;
+    json!({
+        "tool": tool,
+        "max_files": max_files,
+        "offset": offset,
+        "returned": returned,
+        "total": total,
+        "has_more": has_more,
+        "next_cursor": if has_more {
+            Value::String(format!("{tool}:{snapshot}:{max_files}:{}", offset + returned))
+        } else {
+            Value::Null
+        },
+    })
+}
+
+fn summarize_status(
+    value: &mut Value,
+    max_files: usize,
+    cursor: Option<&str>,
+) -> Result<(), CoreError> {
+    let snapshot = value["projects"]
+        .as_array()
+        .and_then(|projects| projects.first())
+        .and_then(|project| project["latest_snapshot_id"].as_str())
+        .unwrap_or("none")
+        .to_string();
+    let offset = cursor_offset(cursor, "s1", &snapshot, max_files)?;
+    let mut page = None;
+    if let Some(projects) = value["projects"].as_array_mut() {
+        for project in projects {
+            let freshness = &mut project["freshness"];
+            for key in ["changed", "added", "deleted"] {
+                if let Some(items) = freshness[key].as_array_mut() {
+                    let total = items.len();
+                    let start = offset.min(total);
+                    let end = (start + max_files).min(total);
+                    let slice = items[start..end].to_vec();
+                    *items = slice;
+                    freshness[format!("{key}_total")] = json!(total);
+                    if key == "added" {
+                        freshness["added_truncated"] = json!(end < total);
+                        page = Some(page_value("s1", &snapshot, max_files, start, end - start, total));
+                    }
+                }
+            }
+        }
+    }
+    value["page"] = page.unwrap_or_else(|| page_value("s1", &snapshot, max_files, 0, 0, 0));
+    Ok(())
+}
+
+fn summarize_review(
+    value: &mut Value,
+    max_files: usize,
+    cursor: Option<&str>,
+) -> Result<(), CoreError> {
+    let snapshot = value["base_snapshot_id"].as_str().unwrap_or("none").to_string();
+    let offset = cursor_offset(cursor, "r1", &snapshot, max_files)?;
+    if let Some(files) = value["files"].as_array_mut() {
+        // A summary page must stay under the documented 1 MB budget even at
+        // max_files=500. The full per-file entity/diff payload remains in
+        // detail=full; a summary keeps the fields a caller needs to decide
+        // which file to inspect.
+        for file in files.iter_mut() {
+            if let Some(object) = file.as_object() {
+                let mut compact = serde_json::Map::new();
+                for key in [
+                    "path",
+                    "state",
+                    "language",
+                    "base_digest",
+                    "current_digest",
+                    "coverage",
+                ] {
+                    if let Some(item) = object.get(key) {
+                        compact.insert(key.to_string(), item.clone());
+                    }
+                }
+                *file = Value::Object(compact);
+            }
+        }
+    }
+    let total = value["files"].as_array().map(Vec::len).unwrap_or(0);
+    let start = offset.min(total);
+    let end = (start + max_files).min(total);
+    if let Some(files) = value["files"].as_array_mut() {
+        let slice = files[start..end].to_vec();
+        *files = slice;
+    }
+    value["files_total"] = json!(total);
+    value["page"] = page_value("r1", &snapshot, max_files, start, end - start, total);
+    Ok(())
+}
+
 fn decorate(tool: &str, mut value: Value) -> Value {
     if !value.is_object() {
         return value;
@@ -883,4 +1094,23 @@ fn error_response(id: Value, code: i64, message: &'static str) -> Value {
         "id": id,
         "error": {"code": code, "message": message, "data": null},
     })
+}
+
+#[cfg(test)]
+mod cursor_tests {
+    use super::*;
+
+    #[test]
+    fn sha256_snapshot_cursor_round_trips() {
+        let snapshot = "sha256:0123456789abcdef";
+        let page = page_value("r1", snapshot, 500, 500, 0, 600);
+        let cursor = page["next_cursor"].as_str().expect("next cursor");
+        assert_eq!(
+            cursor_offset(Some(cursor), "r1", snapshot, 500).unwrap(),
+            500
+        );
+        assert!(cursor_offset(Some(cursor), "r1", "sha256:other", 500).is_err());
+        assert!(cursor_offset(Some(cursor), "s1", snapshot, 500).is_err());
+        assert!(cursor_offset(Some(cursor), "r1", snapshot, 100).is_err());
+    }
 }

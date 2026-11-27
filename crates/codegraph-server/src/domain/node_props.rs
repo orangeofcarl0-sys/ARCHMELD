@@ -196,8 +196,8 @@ mod tests {
 
     #[test]
     fn test_path_matches_windows_separators() {
-        assert!(is_test_path(r"C:\repo\tests\navigation.rs"));
-        assert!(is_test_path(r"C:\repo\src\test_helpers.rs"));
+        assert!(is_test_path(r"<path>"));
+        assert!(is_test_path(r"<path>"));
         assert!(is_test_path(r"tests\navigation.rs"));
     }
 
@@ -216,13 +216,13 @@ mod tests {
         assert!(is_test_path("/repo/spec/models/user_spec.rb"));
         assert!(is_test_path("/repo/src/parser.spec.js"));
         assert!(is_test_path("/repo/src/main/java/com/x/ParserTest.java"));
-        assert!(is_test_path(r"C:\repo\src\ParserTests.cs"));
+        assert!(is_test_path(r"<path>"));
     }
 
     #[test]
     fn test_path_rejects_production_paths() {
         assert!(!is_test_path("/repo/src/latest/mod.rs"));
-        assert!(!is_test_path(r"C:\repo\src\contest.rs"));
+        assert!(!is_test_path(r"<path>"));
         // Ends in "test" only in lowercase, which is not a suffix convention.
         assert!(!is_test_path("/repo/src/manifest.go"));
         assert!(!is_test_path("/repo/src/latest.rs"));

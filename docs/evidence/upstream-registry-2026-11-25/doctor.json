@@ -1,0 +1,127 @@
+{
+  "checks": [
+    {
+      "tool": "git",
+      "ok": true,
+      "reason": "hash match",
+      "source": "which",
+      "resolved_path": "<path> Files\\Git\\mingw64\\bin\\git.EXE",
+      "observed_path": "<path> Files\\Git\\mingw64\\bin\\git.EXE"
+    },
+    {
+      "tool": "node",
+      "ok": true,
+      "reason": "hash match",
+      "source": "which",
+      "resolved_path": "<path> Files\\nodejs\\node.EXE",
+      "observed_path": "<path> Files\\nodejs\\node.EXE"
+    },
+    {
+      "tool": "python",
+      "ok": true,
+      "reason": "hash match",
+      "source": "env:LOCALAPPDATA",
+      "resolved_path": "<path><identity>\\AppData\\Local\\Programs\\Python\\Python311\\python.EXE",
+      "observed_path": "<path><identity>\\AppData\\Local\\Programs\\Python\\Python311\\python.EXE"
+    },
+    {
+      "tool": "gcc",
+      "ok": true,
+      "reason": "hash match",
+      "source": "env:ARCHMELD_STRAWBERRY_BIN",
+      "resolved_path": "<path>",
+      "observed_path": "<path>"
+    },
+    {
+      "tool": "gxx",
+      "ok": true,
+      "reason": "hash match",
+      "source": "env:ARCHMELD_STRAWBERRY_BIN",
+      "resolved_path": "<path>",
+      "observed_path": "<path>"
+    },
+    {
+      "tool": "cmake",
+      "ok": true,
+      "reason": "hash match",
+      "source": "env:ARCHMELD_STRAWBERRY_BIN",
+      "resolved_path": "<path>",
+      "observed_path": "<path>"
+    },
+    {
+      "tool": "ninja",
+      "ok": true,
+      "reason": "hash match",
+      "source": "env:ARCHMELD_STRAWBERRY_BIN",
+      "resolved_path": "<path>",
+      "observed_path": "<path>"
+    },
+    {
+      "tool": "perl",
+      "ok": true,
+      "reason": "hash match",
+      "source": "which",
+      "resolved_path": "<path> Files\\Git\\usr\\bin\\perl.EXE",
+      "observed_path": "<path> Files\\Git\\usr\\bin\\perl.EXE"
+    },
+    {
+      "tool": "docker",
+      "ok": true,
+      "reason": "hash match",
+      "source": "which",
+      "resolved_path": "<path> Files\\Docker\\Docker\\resources\\bin\\docker.EXE",
+      "observed_path": "<path> Files\\Docker\\Docker\\resources\\bin\\docker.EXE"
+    },
+    {
+      "tool": "rustc-default-outside-repo",
+      "ok": true,
+      "reason": "informational, verified at lock time"
+    },
+    {
+      "tool": "cargo-default-outside-repo",
+      "ok": true,
+      "reason": "informational, verified at lock time"
+    },
+    {
+      "tool": "rustc-pinned-gnu",
+      "ok": true,
+      "reason": "hash match",
+      "source": "recorded",
+      "resolved_path": "<path><identity>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rustc.exe",
+      "observed_path": "<path><identity>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rustc.exe"
+    },
+    {
+      "tool": "cargo-pinned-gnu",
+      "ok": true,
+      "reason": "hash match",
+      "source": "recorded",
+      "resolved_path": "<path><identity>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\cargo.exe",
+      "observed_path": "<path><identity>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\cargo.exe"
+    },
+    {
+      "tool": "rust-analyzer-pinned",
+      "ok": true,
+      "reason": "hash match",
+      "source": "recorded",
+      "resolved_path": "<path><identity>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rust-analyzer.exe",
+      "observed_path": "<path><identity>\\.rustup\\toolchains\\1.94.1-x86_64-pc-windows-gnu\\bin\\rust-analyzer.exe"
+    },
+    {
+      "tool": "rustup",
+      "ok": true,
+      "reason": "hash match",
+      "source": "recorded",
+      "resolved_path": "<path><identity>\\.cargo\\bin\\rustup.EXE",
+      "observed_path": "<path><identity>\\.cargo\\bin\\rustup.EXE"
+    },
+    {
+      "tool": "libclang",
+      "ok": true,
+      "reason": "hash match",
+      "source": "env:ARCHMELD_TOOLS_ROOT",
+      "resolved_path": "<path>",
+      "observed_path": "<path>"
+    }
+  ],
+  "failed": 0
+}

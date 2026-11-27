@@ -1,8 +1,10 @@
 # B030 release evidence · language matrix and Case B
 
-Status: **AT066 passed; AT067 passed for the seven-language gate. R1 is not yet
-named complete because AT077's real newer-upstream upgrade is externally
-blocked (upstream HEAD still equals the pinned commit).**
+Status: **AT066 passed. AT067 passed at 0.21.2/HEAD `7474343d` on 2026-11-27
+(the 2026-10-31/11-02 `590c2ca7` run is archived; current truth is
+`docs/release-evidence/B030-language-matrix.json`). AT077 passed on 2026-11-24
+(upstream 0.21.2).** R1 still needs the Ubuntu GUI/VS Code host run and the
+macOS decision; it is not blocked by an upstream-upgrade gap.
 
 ## AT066 · C++ capture → Python estimator → UI
 
@@ -30,9 +32,20 @@ Passed. The reference case is `examples/case-b/`:
 
 ## AT067 · seven-language release matrix
 
-Status: **passed** for the seven-language gate. Every row below has a real
-result; missing behaviours remain listed as explicit limitations instead of
-being averaged into a green score.
+Status: **passed at 0.21.2/HEAD `7474343d` on 2026-11-27** for the
+seven-language gate: `AT067.status=passed`, `blockers=[]`,
+`r1_naming_allowed=true`, all seven groups have build/runtime, runtime linkage,
+medium-project and controlled-change evidence. The per-run counts in the table
+below are from the archived 2026-10-31 run; the current JSON evidence is
+authoritative. Missing behaviours remain listed as explicit limitations
+instead of being averaged into a green score.
+
+The 2026-11-27 rerun at HEAD `7474343d` is recorded as
+`b030-language_runtime_linkage-perf-20261127-111213`,
+`b030-language_medium_projects-perf-20261127-111213`,
+`b030-language_rename_apply-perf-20261127-111213`,
+`b030-language_matrix-perf-20261127-111213`, and verified by
+`b030-verify-perf-20261127-111213`.
 
 | Group | Structure/def-ref | Build | Runtime execution | Runtime linkage | Medium real project | Controlled change |
 |---|---|---|---|---|---|---|

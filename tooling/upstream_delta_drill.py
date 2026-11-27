@@ -19,16 +19,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import shutil
 import subprocess
-import tempfile
 from datetime import date
 from pathlib import Path
 
+import portable_env as portable
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = ROOT / "docs" / "release-evidence" / f"ADAPTER-DRILL-{date.today().isoformat()}.json"
-TEMP_BASE = Path("<temp>")
 TOOLCHAIN_LOCK = ROOT / "toolchains.lock.json"
 REGISTRY = ROOT / "upstreams.lock.json"
 
@@ -105,29 +104,17 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="print the plan without compiling")
     args = parser.parse_args()
 
-    TEMP_BASE.mkdir(parents=True, exist_ok=True)
-    temp = Path(tempfile.mkdtemp(prefix="adapter-drill-", dir=str(TEMP_BASE)))
+    temp = portable.temp_dir("adapter-drill-")
     target = temp / "target"
     workspace = build_temp_workspace(temp)
     pin = current_pin()
 
-    env = dict(os.environ)
+    env = portable.subprocess_env()
     env["CARGO_TARGET_DIR"] = str(target)
-    env["RUSTUP_TOOLCHAIN"] = "1.94.1-x86_64-pc-windows-gnu"
-    env["PATH"] = (
-        "D:/Strawberry/c/bin;"
-        + str(Path.home() / ".cargo" / "bin")
-        + ";"
-        + env.get("PATH", "")
-    )
-    cargo = shutil.which("cargo", path=env["PATH"]) or "cargo"
-    env["LIBCLANG_PATH"] = "<workspace>/_archmeld_tools/pylibclang/clang/native"
-    env["BINDGEN_EXTRA_CLANG_ARGS"] = (
-        "-ID:/Strawberry/c/lib/gcc/x86_64-w64-mingw32/13.2.0/include "
-        "-ID:/Strawberry/c/x86_64-w64-mingw32/include"
-    )
-    env["TMP"] = str(TEMP_BASE)
-    env["TEMP"] = str(TEMP_BASE)
+    cargo_path = portable.resolve_tool("cargo", env=env).path
+    if cargo_path is None:
+        raise SystemExit("cargo not found; add it to PATH or set ARCHMELD_TOOLS_ROOT")
+    cargo = str(cargo_path)
 
     bridge = workspace / "archmeld-core" / "src" / "bridge.rs"
     original = bridge.read_text(encoding="utf-8")

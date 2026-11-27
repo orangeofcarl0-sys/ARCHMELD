@@ -9,11 +9,12 @@
       "evidence": {
         "build": "passed (codegraph-server built with --locked)",
         "in_memory_tests": "passed (codegraph --lib --no-default-features: 40 tests)",
-        "default_backend_tests": "failed: storage::rocksdb_backend::tests::test_delete crashes with STATUS_ACCESS_VIOLATION (0xC0000005)",
+        "default_backend_tests": "passed: codegraph --lib (default rocksdb-backend) 59/59, including storage::rocksdb_backend::tests::test_delete (UCRT64 GCC 16.1.0, 2026-11-27)",
         "state_root_isolation": "passed: codegraph-server --info --archmeld-state-root writes no ~/.codegraph (tests/archmeld_state_root.rs)",
-        "cause": "RocksDB win32 port is MSVC-targeted; the MinGW runtime is not supported by upstream"
+        "server_lib_tests": "passed: 426 passed / 0 failed / 1 ignored after the Windows fixture fix (UCRT64 16.1.0, 2026-11-27); the 5 ms ai_query timing test can still flake in debug builds",
+        "cause": "the historical 0xC0000005 was a Strawberry/winlibs GCC 13.2.0 runtime mismatch; current UCRT64 GCC 16.1.0 passes"
       },
-      "usage": "core/SQLite/parsers and memory-backend probes; not the persistent graph backend"
+      "usage": "core/SQLite/parsers and persistent graph backend lib tests; the full codegraph integration/doctest suite was not re-run on Windows"
     },
     {
       "id": "linux-x64-bookworm-container",
@@ -36,7 +37,7 @@
       "evidence": {
         "cause": "Visual Studio Build Tools and Windows SDK are not installed on this machine"
       },
-      "note": "Required before Windows-native RocksDB or product delivery; installing it is a separate authorization step."
+      "note": "Optional: not required for the current Windows GNU/RocksDB path (UCRT64 16.1.0 passes); only needed for a future MSVC-native delivery, which is untested."
     }
   ]
 }

@@ -13,6 +13,12 @@ The crash was traced to the server wrapper, not to the parser/indexer: a direct
 in-memory `ParserRegistry` + `Indexer` + `export_ndjson_v1` path succeeds on the
 same workspace.
 
+Postscript (2026-11-27): the historical `0xC0000005` was a Strawberry/winlibs
+GCC 13.2.0 runtime mismatch. With MSYS2 UCRT64 GCC 16.1.0, `codegraph --lib`
+passes 59/59 including `storage::rocksdb_backend::tests::test_delete`. The
+decision to ship the direct in-memory helper remains; it still does not open
+RocksDB.
+
 ## Decision
 
 Ship two additional binaries in both CLI bundles:

@@ -39,7 +39,8 @@ regex.workspace = true
 globset.workspace = true
 
 # CodeGraph ecosystem
-codegraph.workspace = true
+# The server's persistent backend needs the optional RocksDB storage engine.
+codegraph = { workspace = true, features = ["rocksdb-backend"] }
 codegraph-parser-api.workspace = true
 codegraph-python.workspace = true
 codegraph-rust.workspace = true

@@ -23,7 +23,7 @@ fn default_paths_are_stable_and_project_scoped() {
 
 #[test]
 fn mcp_plans_render_real_client_commands() {
-    let state = Path::new("F:/state");
+    let state = Path::new("state-root");
     let claude = onboard::plan_mcp_install("claude", state, "project.demo").unwrap();
     assert_eq!(claude["client"], "claude");
     assert_eq!(claude["command"][0], "claude");

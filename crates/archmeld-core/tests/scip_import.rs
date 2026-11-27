@@ -93,14 +93,24 @@ fn document(doc: &Doc<'_>) -> Vec<u8> {
 }
 
 fn index(documents: &[Doc<'_>], external: &[Vec<u8>]) -> Vec<u8> {
+    index_with_protocol(documents, external, None)
+}
+
+fn index_with_protocol(
+    documents: &[Doc<'_>],
+    external: &[Vec<u8>],
+    protocol_version: Option<u64>,
+) -> Vec<u8> {
     let tool = concat(vec![
         length_delimited(1, b"scip-test"),
         length_delimited(2, b"1.0.0"),
     ]);
-    let metadata = concat(vec![
-        length_delimited(2, &tool),
-        integer(4, 1),
-    ]);
+    let mut metadata_parts = vec![length_delimited(2, &tool)];
+    if let Some(version) = protocol_version {
+        metadata_parts.push(integer(1, version));
+    }
+    metadata_parts.push(integer(4, 1));
+    let metadata = concat(metadata_parts);
     let mut parts = vec![length_delimited(1, &metadata)];
     parts.extend(documents.iter().map(|doc| length_delimited(2, &document(doc))));
     parts.extend(external.iter().cloned().map(|symbol| length_delimited(3, &symbol)));
@@ -304,6 +314,45 @@ fn documents_outside_the_snapshot_are_explicitly_partial() {
             .unwrap()
             .entities,
         0
+    );
+}
+
+#[test]
+fn unspecified_scip_protocol_version_is_accepted() {
+    let doc = Doc {
+        path: "main.py",
+        language: "python",
+        encoding: 1,
+        occurrences: Vec::new(),
+        symbols: Vec::new(),
+    };
+    let bytes = index_with_protocol(&[doc], &[], Some(0));
+    let mut f = fixture(&[("main.py", "print('ok')\n")]);
+    let digest = config_digest(&f);
+    let cfg = config(&f.snapshot_id, &digest);
+    let report = import_scip(&mut f.store, &cfg, &f.files, &bytes).expect("import");
+    assert_eq!(report.documents, 1);
+}
+
+#[test]
+fn unsupported_scip_protocol_version_is_rejected() {
+    let doc = Doc {
+        path: "main.py",
+        language: "python",
+        encoding: 1,
+        occurrences: Vec::new(),
+        symbols: Vec::new(),
+    };
+    let bytes = index_with_protocol(&[doc], &[], Some(1));
+    let mut f = fixture(&[("main.py", "print('ok')\n")]);
+    let digest = config_digest(&f);
+    let cfg = config(&f.snapshot_id, &digest);
+    let error = import_scip(&mut f.store, &cfg, &f.files, &bytes).unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("unsupported SCIP protocol version 1"),
+        "{error}"
     );
 }
 

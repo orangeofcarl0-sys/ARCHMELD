@@ -245,7 +245,8 @@
             "generated",
             "protocol",
             "test",
-            "other"
+            "other",
+            "vendored"
           ]
         },
         "executable": {
@@ -259,6 +260,13 @@
             "generated",
             "external"
           ]
+        },
+        "git_blob": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Git index blob for tracked, clean files; null for dirty/untracked."
         }
       },
       "required": [
@@ -335,6 +343,55 @@
         },
         "stable": {
           "type": "boolean"
+        },
+        "git_tree_digest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Git content identity; stable across checkout line endings."
+        },
+        "workspace_policy": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "include_untracked": {
+              "type": "boolean"
+            },
+            "max_file_bytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "excluded_dirs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_depth": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "include_untracked",
+            "max_file_bytes",
+            "excluded_dirs",
+            "max_depth"
+          ],
+          "additionalProperties": false
+        },
+        "files_origin": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
         }
       },
       "required": [
@@ -430,6 +487,20 @@
             "additionalProperties": false
           },
           "minItems": 0
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "source",
+            "test",
+            "config",
+            "generated",
+            "protocol",
+            "vendored",
+            "external",
+            "other"
+          ],
+          "description": "Role derived from the snapshot FileEntry; external entities use external."
         }
       },
       "required": [
@@ -618,6 +689,64 @@
             "observed",
             "declared",
             "unresolved"
+          ]
+        },
+        "call_site": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "line": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            },
+            "column": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        },
+        "occurrences": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Collapsed occurrences of this exact identity."
+        },
+        "producer_resolution": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "name_match",
+            "cross_file_resolution",
+            "direct",
+            "declared",
+            null
+          ]
+        },
+        "evidence_scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "artifact",
+            "site",
+            null
           ]
         }
       },
@@ -3312,6 +3441,96 @@
               "type": "null"
             }
           ]
+        },
+        "entity_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "file",
+              "module",
+              "symbol",
+              "type",
+              "callsite",
+              "component",
+              "process",
+              "thread",
+              "task",
+              "queue",
+              "resource",
+              "boundary",
+              "external"
+            ]
+          }
+        },
+        "entity_roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "source",
+              "test",
+              "config",
+              "generated",
+              "protocol",
+              "vendored",
+              "external",
+              "other"
+            ]
+          }
+        },
+        "exclude_entity_roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "source",
+              "test",
+              "config",
+              "generated",
+              "protocol",
+              "vendored",
+              "external",
+              "other"
+            ]
+          }
+        },
+        "exclude_entity_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "file",
+              "module",
+              "symbol",
+              "type",
+              "callsite",
+              "component",
+              "process",
+              "thread",
+              "task",
+              "queue",
+              "resource",
+              "boundary",
+              "external"
+            ]
+          }
+        },
+        "min_producer_resolution": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "name_match",
+            "cross_file_resolution",
+            "direct",
+            "declared",
+            null
+          ]
+        },
+        "require_call_site": {
+          "type": "boolean"
         }
       },
       "required": [

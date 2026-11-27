@@ -40,7 +40,16 @@ use std::process::{Command, ExitCode};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 #[derive(Parser)]
-#[command(name = "archmeld", version, about = "Offline code evidence CLI")]
+#[command(
+    name = "archmeld",
+    version = env!("CARGO_PKG_VERSION"),
+    long_version = concat!(
+        env!("CARGO_PKG_VERSION"),
+        "+",
+        env!("ARCHMELD_GIT_SHORT")
+    ),
+    about = "Offline code evidence CLI"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -134,6 +143,20 @@ struct InitArgs {
     check: bool,
     #[arg(long, default_value_t = 5000)]
     max_files: usize,
+    /// Include a directory name the indexer would otherwise exclude.
+    #[arg(long = "include-dir")]
+    include_dir: Vec<String>,
+    /// Add a directory name to the indexer exclusions.
+    #[arg(long = "exclude-dir")]
+    exclude_dir: Vec<String>,
+    #[arg(long)]
+    max_file_size: Option<u64>,
+    #[arg(long)]
+    max_depth: Option<u32>,
+    #[arg(long, conflicts_with = "include_untracked")]
+    tracked_only: bool,
+    #[arg(long = "include-untracked")]
+    include_untracked: bool,
     /// Override the packaged index helper (hidden; for tests and custom builds).
     #[arg(long, hide = true)]
     index_helper: Option<PathBuf>,
@@ -252,6 +275,25 @@ struct IndexArgs {
     index_helper: Option<PathBuf>,
     #[arg(long)]
     run_id: Option<String>,
+    /// Include a directory name the indexer would otherwise exclude
+    /// (repeatable; for example `examples`).
+    #[arg(long = "include-dir")]
+    include_dir: Vec<String>,
+    /// Add a directory name to the indexer exclusions.
+    #[arg(long = "exclude-dir")]
+    exclude_dir: Vec<String>,
+    /// Override the helper's maximum file size.
+    #[arg(long)]
+    max_file_size: Option<u64>,
+    /// Override the helper's maximum directory depth.
+    #[arg(long)]
+    max_depth: Option<u32>,
+    /// Exclude untracked files even when they are not gitignored.
+    #[arg(long, conflicts_with = "include_untracked")]
+    tracked_only: bool,
+    /// Explicitly include untracked, non-ignored files (the default).
+    #[arg(long = "include-untracked")]
+    include_untracked: bool,
 }
 
 #[derive(clap::Args)]
@@ -298,6 +340,20 @@ struct RefreshArgs {
     index_helper: Option<PathBuf>,
     #[arg(long)]
     run_id: Option<String>,
+    /// Include a directory name the indexer would otherwise exclude.
+    #[arg(long = "include-dir")]
+    include_dir: Vec<String>,
+    /// Add a directory name to the indexer exclusions.
+    #[arg(long = "exclude-dir")]
+    exclude_dir: Vec<String>,
+    #[arg(long)]
+    max_file_size: Option<u64>,
+    #[arg(long)]
+    max_depth: Option<u32>,
+    #[arg(long, conflicts_with = "include_untracked")]
+    tracked_only: bool,
+    #[arg(long = "include-untracked")]
+    include_untracked: bool,
 }
 
 #[derive(clap::Args)]
@@ -605,9 +661,43 @@ fn run_status(args: StatusArgs) -> Result<Value, String> {
     Ok(result)
 }
 
+fn helper_exit_hint(status: Option<i32>) -> String {
+    match status {
+        Some(-1073741511) => {
+            "0xC0000139 ENTRYPOINT_NOT_FOUND: the helper is missing a MinGW runtime DLL; add its bin directory to PATH (ARCHMELD_MINGW_BIN, alias ARCHMELD_STRAWBERRY_BIN) or rebuild it statically".to_string()
+        }
+        Some(-1073741515) => {
+            "0xC0000135 DLL_NOT_FOUND: a helper dependency is missing from PATH".to_string()
+        }
+        Some(code) if code < 0 => format!("0x{:08X}", code as u32),
+        Some(code) => format!("exit {code}"),
+        None => "terminated without an exit code".to_string(),
+    }
+}
+
+#[cfg(test)]
+mod helper_hint_tests {
+    use super::helper_exit_hint;
+
+    #[test]
+    fn windows_helper_status_codes_are_decoded() {
+        assert!(helper_exit_hint(Some(-1073741511)).contains("0xC0000139"));
+        assert!(helper_exit_hint(Some(-1073741511)).contains("ENTRYPOINT_NOT_FOUND"));
+        assert!(helper_exit_hint(Some(-1073741515)).contains("0xC0000135"));
+        assert!(helper_exit_hint(Some(-1073741515)).contains("DLL_NOT_FOUND"));
+        assert_eq!(helper_exit_hint(Some(-1)), "0xFFFFFFFF");
+        assert_eq!(helper_exit_hint(Some(3)), "exit 3");
+        assert!(helper_exit_hint(None).contains("without an exit code"));
+    }
+}
+
 fn helper_runner(
     state_root: PathBuf,
     max_files: usize,
+    include_dirs: Vec<String>,
+    exclude_dirs: Vec<String>,
+    max_file_size: Option<u64>,
+    max_depth: Option<u32>,
 ) -> impl FnMut(
     &PathBuf,
     &std::path::Path,
@@ -615,11 +705,25 @@ fn helper_runner(
     &std::path::Path,
 ) -> Result<HelperOutput, String> {
     move |helper, analysis_input, export, _state| {
-        let output = Command::new(helper)
+        let mut command = Command::new(helper);
+        command
             .arg(analysis_input)
             .arg(export)
             .arg(&state_root)
-            .arg(max_files.to_string())
+            .arg(max_files.to_string());
+        for dir in &include_dirs {
+            command.arg("--include-dir").arg(dir);
+        }
+        for dir in &exclude_dirs {
+            command.arg("--exclude-dir").arg(dir);
+        }
+        if let Some(limit) = max_file_size {
+            command.arg("--max-file-size").arg(limit.to_string());
+        }
+        if let Some(depth) = max_depth {
+            command.arg("--max-depth").arg(depth.to_string());
+        }
+        let output = command
             .output()
             .map_err(|error| format!("run {}: {error}", helper.display()))?;
         Ok(HelperOutput {
@@ -633,13 +737,27 @@ fn helper_runner(
 
 fn run_index(args: IndexArgs) -> Result<Value, String> {
     let helper = helper_path(args.index_helper.clone())?;
-    let mut runner = helper_runner(args.state.join("codegraph"), args.max_files);
+    let mut runner = helper_runner(
+        args.state.join("codegraph"),
+        args.max_files,
+        args.include_dir.clone(),
+        args.exclude_dir.clone(),
+        args.max_file_size,
+        args.max_depth,
+    );
     run_index_with(args, &helper, &mut runner)
 }
 
 fn run_refresh(args: RefreshArgs) -> Result<Value, String> {
     let helper = helper_path(args.index_helper.clone())?;
-    let mut runner = helper_runner(args.state.join("codegraph"), args.max_files);
+    let mut runner = helper_runner(
+        args.state.join("codegraph"),
+        args.max_files,
+        args.include_dir.clone(),
+        args.exclude_dir.clone(),
+        args.max_file_size,
+        args.max_depth,
+    );
     run_refresh_with(args, &helper, &mut runner)
 }
 
@@ -678,6 +796,12 @@ fn run_refresh_with(
             max_files: args.max_files,
             index_helper: None,
             run_id: Some(run_id),
+            include_dir: args.include_dir.clone(),
+            tracked_only: args.tracked_only,
+            include_untracked: args.include_untracked,
+            exclude_dir: args.exclude_dir.clone(),
+            max_file_size: args.max_file_size,
+            max_depth: args.max_depth,
         },
         helper,
         runner,
@@ -787,7 +911,13 @@ fn run_init(args: InitArgs) -> Result<Value, String> {
     if clients.is_empty() {
         clients = vec!["claude".to_string(), "codex".to_string()];
     }
-    let preflight = onboard::count_source_files(&workspace, args.max_files)?;
+    let preflight = onboard::count_source_files_with(
+        &workspace,
+        args.max_files,
+        &args.include_dir,
+        &args.exclude_dir,
+        args.max_file_size,
+    )?;
     if args.dry_run {
         return Ok(json!({
             "command": "init",
@@ -842,6 +972,12 @@ fn run_init(args: InitArgs) -> Result<Value, String> {
             max_files: args.max_files,
             index_helper: args.index_helper.clone(),
             run_id: None,
+            include_dir: args.include_dir.clone(),
+            tracked_only: args.tracked_only,
+            include_untracked: args.include_untracked,
+            exclude_dir: args.exclude_dir.clone(),
+            max_file_size: args.max_file_size,
+            max_depth: args.max_depth,
         })?,
     };
     let mut mcp = Vec::new();
@@ -1078,6 +1214,43 @@ fn run_review_diff(args: ReviewDiffArgs) -> Result<Value, String> {
     Ok(result)
 }
 
+/// The ledger's `parse` block. Export schema 1.2 carries the indexer's own
+/// counters, including parser-error paths; older helpers only print a summary
+/// on stdout, so fall back to it field by field.
+fn parse_block(index: &Value, helper_summary: &Value) -> Value {
+    fn pick(primary: &Value, fallback: &Value, key: &str) -> Value {
+        primary
+            .get(key)
+            .filter(|value| !value.is_null())
+            .cloned()
+            .unwrap_or_else(|| fallback.get(key).cloned().unwrap_or(Value::Null))
+    }
+    if index.is_object() {
+        json!({
+            "files_total": pick(index, helper_summary, "files_total"),
+            "files_parsed": pick(index, helper_summary, "files_parsed"),
+            "files_skipped": pick(index, helper_summary, "files_skipped"),
+            "by_language": pick(index, helper_summary, "by_language"),
+            "skipped_by_reason": pick(index, helper_summary, "skipped_by_reason"),
+            "parser_errors": pick(index, helper_summary, "parser_errors"),
+            "max_files_reached": pick(index, helper_summary, "max_files_reached"),
+            "max_depth_reached": pick(index, helper_summary, "max_depth_reached"),
+            "cross_file_implements": pick(index, helper_summary, "cross_file_implements"),
+        })
+    } else {
+        json!({
+            "files_total": helper_summary["files_total"],
+            "files_parsed": helper_summary["files_parsed"],
+            "files_skipped": helper_summary["files_skipped"],
+            "by_language": helper_summary["by_language"],
+            "skipped_by_reason": helper_summary["skipped_by_reason"],
+            "parser_errors": helper_summary["parser_error_details"],
+            "max_files_reached": helper_summary["max_files_reached"],
+            "max_depth_reached": helper_summary["max_depth_reached"],
+        })
+    }
+}
+
 fn run_index_with(
     args: IndexArgs,
     helper: &PathBuf,
@@ -1135,6 +1308,8 @@ fn run_index_with(
                 "variant": "default",
                 "producer": "codegraph-export-v1",
                 "helper": "archmeld-index",
+                "product_build": concat!(env!("CARGO_PKG_VERSION"), "+", env!("ARCHMELD_GIT_SHORT")),
+                "product_dirty": env!("ARCHMELD_GIT_DIRTY"),
                 "analysis_input": "snapshot_materialization",
             }),
             environment: json!({
@@ -1145,7 +1320,7 @@ fn run_index_with(
             }),
         },
         &SnapshotOptions {
-            include_untracked: true,
+            include_untracked: !args.tracked_only,
             ..SnapshotOptions::default()
         },
     )
@@ -1184,8 +1359,10 @@ fn run_index_with(
     if !output.success {
         let _ = fs::remove_dir_all(&analysis_root);
         return Err(format!(
-            "archmeld-index exited {:?}: {}; snapshot {} was captured but not indexed",
+            "archmeld-index ({}) exited {:?} ({}): {}; snapshot {} was captured but not indexed",
+            helper.display(),
             output.status,
+            helper_exit_hint(output.status),
             if stderr.is_empty() { &stdout } else { &stderr },
             captured.snapshot_id
         ));
@@ -1236,6 +1413,39 @@ fn run_index_with(
     let counts = store
         .published_counts(&args.project, &captured.snapshot_id)
         .map_err(|error| error.to_string())?;
+    let index_run = json!({
+        "project_id": args.project.clone(),
+        "snapshot_id": captured.snapshot_id.clone(),
+        "run_id": run_id.clone(),
+        "cli_commit": env!("ARCHMELD_GIT_SHORT"),
+        "cli_dirty": env!("ARCHMELD_GIT_DIRTY") == "true",
+        "helper_commit": bridge.producer_commit.clone(),
+        "helper_dirty": bridge.producer_dirty,
+        "export_schema": bridge.export_schema_version.clone(),
+        "index_config": {
+            "max_files": args.max_files,
+            "include_dirs": args.include_dir.clone(),
+            "exclude_dirs": args.exclude_dir.clone(),
+            "max_file_size": args.max_file_size,
+            "max_depth": args.max_depth,
+            "helper": helper,
+        },
+        "parse": parse_block(&bridge.index, &helper_summary),
+        "transport": {
+            "nodes_expected": bridge.coverage["expected_count"],
+            "nodes_observed": bridge.coverage["observed_count"],
+            "edges_exported": helper_summary["edges"],
+            "relations_imported": bridge.relations,
+            "collapsed_edges": bridge.collapsed_edges,
+            "relations_with_call_site": bridge.relations_with_call_site,
+            "relations_without_call_site": bridge.relations_without_call_site,
+            "unresolved": bridge.unresolved,
+        },
+        "coverage": bridge.coverage.clone(),
+    });
+    store
+        .insert_index_run(&index_run)
+        .map_err(|error| format!("record index run: {error}"))?;
     Ok(json!({
         "command": "index",
         "project_id": args.project,
@@ -1261,8 +1471,13 @@ fn run_index_with(
             "relations": bridge.relations,
             "diagnostics": bridge.diagnostics,
             "skipped_nodes": bridge.skipped_nodes,
+            "merged_nodes": bridge.merged_nodes,
+            "collapsed_edges": bridge.collapsed_edges,
+            "relations_with_call_site": bridge.relations_with_call_site,
+            "relations_without_call_site": bridge.relations_without_call_site,
             "unresolved": bridge.unresolved,
             "coverage": bridge.coverage,
+            "index": bridge.index,
             "export_schema_version": bridge.export_schema_version,
             "producer_commit": bridge.producer_commit,
             "producer_dirty": bridge.producer_dirty,
@@ -1804,6 +2019,12 @@ mod index_tests {
             max_files: 500,
             index_helper: None,
             run_id: Some("run.index.race".to_string()),
+            include_dir: Vec::new(),
+            tracked_only: false,
+            include_untracked: false,
+            exclude_dir: Vec::new(),
+            max_file_size: None,
+            max_depth: None,
         };
         let result = run_index_with(args, &dir.path().join("fake-helper.exe"), &mut runner)
             .expect("index run");
@@ -1861,6 +2082,93 @@ mod index_tests {
     }
 
     #[test]
+    fn index_prefers_the_manifest_index_block_over_helper_stdout() {
+        let dir = tempfile::tempdir().unwrap();
+        let workspace = dir.path().join("repo");
+        fs::create_dir_all(workspace.join("src")).unwrap();
+        fs::write(workspace.join("src/a.py"), "def a():\n    return 1\n").unwrap();
+        let state = dir.path().join("state");
+        let mut runner = |_helper: &PathBuf,
+                          analysis: &std::path::Path,
+                          export: &std::path::Path,
+                          _state: &std::path::Path|
+         -> Result<HelperOutput, String> {
+            let manifest = json!({
+                "type":"manifest","format":"archmeld-export-v1","source":"codegraph",
+                "schema_version":"1.2","version":"0.2.0","node_count":1,"edge_count":0,
+                "iteration":"real-iterators",
+                "index":{
+                    "files_total":1,"files_parsed":1,"files_skipped":0,
+                    "by_language":{"python":1},
+                    "skipped_by_reason":{"excluded_dir":2,"too_large":1},
+                    "parser_errors":[{
+                        "path":"src/broken.kt","language":"kotlin","message":"bad"
+                    }],
+                    "max_files_reached":false,"max_depth_reached":true,
+                    "cross_file_implements":{"resolved":3,"ambiguous":0}
+                }
+            });
+            let node = json!({
+                "type":"node","id":1,"node_type":"Function","properties":{
+                    "path": analysis.join("src/a.py").to_string_lossy(),
+                    "name":"a","line_start":1,"line_end":2
+                }
+            });
+            fs::write(export, format!("{manifest}\n{node}\n"))
+                .map_err(|error| format!("helper export: {error}"))?;
+            // Deliberately contradict the manifest: stdout says 999 files and
+            // a count-only parser error map. The ledger must follow the
+            // manifest, which carries paths.
+            let summary = json!({
+                "format":"archmeld-export-v1","nodes":1,"edges":0,
+                "files_total":999,"files_parsed":999,"files_skipped":0,
+                "by_language":{"python":999},"parser_errors":{"kotlin":9},
+                "elapsed_ms":1,"storage":"in_memory"
+            });
+            Ok(HelperOutput {
+                success: true,
+                status: Some(0),
+                stdout: serde_json::to_vec(&summary).unwrap(),
+                stderr: Vec::new(),
+            })
+        };
+        let args = IndexArgs {
+            workspace,
+            state: state.clone(),
+            project: "project.index.manifest".to_string(),
+            max_files: 500,
+            index_helper: None,
+            run_id: Some("run.index.manifest".to_string()),
+            include_dir: Vec::new(),
+            tracked_only: false,
+            include_untracked: false,
+            exclude_dir: Vec::new(),
+            max_file_size: None,
+            max_depth: None,
+        };
+        let result = run_index_with(args, &dir.path().join("fake-helper.exe"), &mut runner)
+            .expect("index run");
+        let snapshot_id = result["snapshot_id"].as_str().unwrap();
+        let store = Store::open(&state).unwrap();
+        let run = store
+            .latest_index_run("project.index.manifest", snapshot_id)
+            .unwrap()
+            .expect("index run recorded");
+        assert_eq!(run["parse"]["files_total"], 1, "{run}");
+        assert_eq!(run["parse"]["skipped_by_reason"]["too_large"], 1, "{run}");
+        assert_eq!(
+            run["parse"]["parser_errors"][0]["path"], "src/broken.kt",
+            "{run}"
+        );
+        assert_eq!(run["parse"]["max_depth_reached"], true, "{run}");
+        assert_eq!(
+            run["parse"]["cross_file_implements"]["resolved"], 3,
+            "{run}"
+        );
+        assert_eq!(run["export_schema"], "1.2", "{run}");
+    }
+
+    #[test]
     fn clean_workspace_reuses_the_indexed_snapshot() {
         let dir = tempfile::tempdir().unwrap();
         let workspace = dir.path().join("repo");
@@ -1904,6 +2212,12 @@ mod index_tests {
             max_files: 500,
             index_helper: None,
             run_id: Some("run.index.reuse.1".to_string()),
+            include_dir: Vec::new(),
+            tracked_only: false,
+            include_untracked: false,
+            exclude_dir: Vec::new(),
+            max_file_size: None,
+            max_depth: None,
         };
         let first = run_index_with(args(), &dir.path().join("fake-helper.exe"), &mut runner)
             .expect("index run");
@@ -2167,6 +2481,12 @@ mod diff_cli_tests {
                 max_files: 100,
                 index_helper: None,
                 run_id: Some("run.refresh.base".to_string()),
+            include_dir: Vec::new(),
+            tracked_only: false,
+            include_untracked: false,
+            exclude_dir: Vec::new(),
+            max_file_size: None,
+            max_depth: None,
             },
             &helper,
             &mut runner,
@@ -2183,6 +2503,12 @@ mod diff_cli_tests {
                 max_files: 100,
                 index_helper: None,
                 run_id: Some("run.refresh.new".to_string()),
+                include_dir: Vec::new(),
+                exclude_dir: Vec::new(),
+                max_file_size: None,
+                max_depth: None,
+                tracked_only: false,
+                include_untracked: false,
             },
             &helper,
             &mut runner,

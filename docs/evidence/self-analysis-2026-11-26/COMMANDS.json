@@ -1,0 +1,205 @@
+{
+ "schema_version": "1.0",
+ "recorded_at": "2026-11-26",
+ "cwd": "<path>",
+ "product": {
+  "archmeld": "0.1.0",
+  "archmeld_sha256": "be189df6e0159e5593f22559aaff5d6c8d4cc6bec0115e02bcf797e0c83051fa",
+  "archmeld_mcp_sha256": "109c19e6f13358265295a0f20db7b404430c0b96ff93d7bd83f6917dc0fd4afe",
+  "helper_sha256": "3deb42d2c5be3582fb33b2bab0f38cf5d6e8f3404b721cbf87724d6ae364fed2",
+  "rebuilt_at_head": true
+ },
+ "host": {
+  "platform": "Windows 11",
+  "python": "3.11.9",
+  "git": "2.53.0.windows.2"
+ },
+ "snapshot_id": "sha256:66aaec6db1355ce1f7b4259a37ea417bdc84cafe1e38716c9f955a336d62a896",
+ "head": "7b1dc2805214b287525109bf124bdf13fa12d92a",
+ "export": {
+  "sha256": "sha256:7e53e3ab083a9b0b0c2599e00ddd9c9e9b5f742e4833b3f113fb67faf2c9f48e",
+  "bytes": 18044004,
+  "manifest_schema": "1.1",
+  "producer_dirty": true,
+  "note": "producer_dirty describes the helper build worktree; the analyzed tree was clean"
+ },
+ "commands": [
+  {
+   "id": "self-index",
+   "argv": [
+    "target/debug/archmeld.exe",
+    "index",
+    "--workspace",
+    "<path>",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self",
+    "--index-helper",
+    "target/debug/examples/archmeld_export.exe",
+    "--max-files",
+    "5000",
+    "--run-id",
+    "run.self.index.2"
+   ],
+   "exit_code": 0,
+   "duration_s": 172,
+   "helper_elapsed_ms": 35473,
+   "artifact": "index.json",
+   "artifact_sha256": "568b1dc277ed34d7626e8ed34379ecde46f61c9e182c3f2cf8286fc0c19cde88"
+  },
+  {
+   "id": "self-status",
+   "argv": [
+    "target/debug/archmeld.exe",
+    "status",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self",
+    "--workspace",
+    "<path>"
+   ],
+   "exit_code": 0,
+   "duration_s": 236.757,
+   "artifact": "status.raw.json.gz",
+   "artifact_sha256": "95f7d70491c1c9ba867530bd5e9d60569892d01248aae37e81dc82768bc6d156",
+   "derived": "status.summary.json"
+  },
+  {
+   "id": "self-review-diff",
+   "argv": [
+    "target/debug/archmeld.exe",
+    "review-diff",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self",
+    "--workspace",
+    "<path>"
+   ],
+   "exit_code": 0,
+   "duration_s": 157.601,
+   "artifact": "review-diff.raw.json.gz",
+   "artifact_sha256": "1f39bc5a778b75ea15004fc65e0a6b1bf5915d342ac32d0ff82021e0375f506a",
+   "derived": "review-diff.summary.json"
+  },
+  {
+   "id": "self-brief-auto",
+   "argv": [
+    "target/debug/archmeld.exe",
+    "brief",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self",
+    "--markdown"
+   ],
+   "exit_code": 0,
+   "duration_s": 362.224,
+   "artifact": "brief-auto.md",
+   "artifact_sha256": "d9a475e6c2b71cf59f933e304530f6b5815ee252cbe10a92835458865ecb6204"
+  },
+  {
+   "id": "self-brief-project",
+   "argv": [
+    "target/debug/archmeld.exe",
+    "brief",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self",
+    "--recipe",
+    "project",
+    "--markdown"
+   ],
+   "exit_code": 0,
+   "duration_s": 174.897,
+   "artifact": "brief-project.md",
+   "artifact_sha256": "dfd18bffaa9bc866c081ffb614fa681b878a71bb3565814c181791b817274271"
+  },
+  {
+   "id": "self-map-status",
+   "argv": [
+    "target/debug/archmeld.exe",
+    "map",
+    "status",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self",
+    "--workspace",
+    "<path>"
+   ],
+   "exit_code": 0,
+   "artifact": "map-status.json",
+   "artifact_sha256": "fe874b4a563dcfeb066cc29d2069391357c3124cda75b2dc4c63633c2b0f61b5"
+  },
+  {
+   "id": "self-mcp-session",
+   "argv": [
+    "target/debug/archmeld-mcp.exe",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self"
+   ],
+   "exit_code": 0,
+   "artifact": "mcp-session-1.jsonl",
+   "artifact_sha256": "59b7953d7a2b240c07add7474ac0df66f41e8a0ebaa2ed1542259e6389275f83"
+  },
+  {
+   "id": "self-mcp-probe",
+   "argv": [
+    "py",
+    "-3.11",
+    "scripts/mcp_probe.py"
+   ],
+   "exit_code": 0,
+   "artifact": "mcp-probe-core.json.gz",
+   "artifact_sha256": "189ca63b7c031a560604a9afc35a76a4314d5c775c2935136857bc31f9a125aa"
+  },
+  {
+   "id": "self-mcp-path-source",
+   "argv": [
+    "py",
+    "-3.11",
+    "scripts/mcp_probe2.py"
+   ],
+   "exit_code": 0,
+   "artifact": "mcp-probe-path-source.json.gz",
+   "artifact_sha256": "f71a04ca8cd8dd3309c96bfdc8c80fac47100224ba4c7ec7be4447f8692de5fa"
+  },
+  {
+   "id": "self-context-repro",
+   "argv": [
+    "py",
+    "-3.11",
+    "scripts/ctx_type_repro.py"
+   ],
+   "exit_code": 0,
+   "artifact": "context-type-seed.json",
+   "artifact_sha256": "7979db6d0af7430a0405ed2031aa029d2ccd4759500bd1f92b57c94ece2585d0"
+  },
+  {
+   "id": "self-mcp-status",
+   "argv": [
+    "target/debug/archmeld-mcp.exe",
+    "--state",
+    "<temp>/state",
+    "--project",
+    "archmeld.self"
+   ],
+   "exit_code": 0,
+   "duration_s": 169.7,
+   "artifact": "mcp-status.jsonl.gz",
+   "artifact_sha256": "0f89f92b8f9afd87f4ca841ee4578e8e367947ec1afd9794137a58d09b353be5"
+  }
+ ],
+ "limitations": [
+  "raw status/review/probe JSON is stored gzip-compressed; SHA-256 above is of the stored .gz",
+  "scripts contain the as-run absolute temp paths; state and binaries are not committed",
+  "no test, build or runtime command was executed against this snapshot",
+  "the three binaries were rebuilt at HEAD after a stale-build check; producer_dirty=true is the helper build worktree"
+ ]
+}

@@ -63,7 +63,7 @@ user-authorized recorded data. MATLAB semantics were also listed as missing.
 ### Real authorized data
 
 6. The user authorized B029 real-data use. The evidence run reads
-   `<private-recorded-file>` (<redacted> rows, sha256
+   `<private-dataset>.json` (342 rows, sha256
    `2b7cda9a...`) from the shared workstation, processes it locally and does not
    upload it or copy raw/derived data into the repository.
 7. Positive gates are reproducibility on the recorded values:

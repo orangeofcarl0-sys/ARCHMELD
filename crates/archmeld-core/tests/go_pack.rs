@@ -6,22 +6,25 @@ use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions}
 use archmeld_core::store::Store;
 use serde_json::{json, Value};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::time::Duration;
+
+mod support;
 const PROJECT: &str = "project.gopack";
 fn copy(a: &Path, b: &Path) { fs::create_dir_all(b).unwrap(); for e in fs::read_dir(a).unwrap() { let e=e.unwrap(); let t=b.join(e.file_name()); if e.file_type().unwrap().is_dir(){copy(&e.path(),&t)} else {fs::copy(e.path(),t).unwrap();} } }
 fn pos(t:&str,n:&str)->(u64,u64){let i=t.find(n).unwrap();let b=&t[..i];(b.matches('\n').count() as u64,b.rsplit('\n').next().unwrap().encode_utf16().count() as u64)}
 fn has(e:&Value)->bool{e["documentChanges"].as_array().is_some_and(|c|c.iter().any(|x|x["edits"].as_array().is_some_and(|v|!v.is_empty())))||e["changes"].as_object().is_some_and(|c|c.values().any(|v|v.as_array().is_some_and(|a|!a.is_empty())))}
 #[test]
 fn gopls_cross_package_rename_and_indirect_calls(){
- let Some(server)=Some(PathBuf::from("<workspace>/_archmeld_tools/go/bin/gopls.exe")).filter(|p|p.is_file()) else {eprintln!("gopls missing");return};
- let dir=tempfile::tempdir().unwrap(); let root=dir.path().join("repo");
+ let Some(server)=support::require_tool("ARCHMELD_GOPLS", "go/bin/gopls.exe") else {return};
+ let dir=support::tempdir("go-pack-"); let root=dir.path().join("repo");
  copy(&Path::new(env!("CARGO_MANIFEST_DIR")).join("../../adapters/languages/fixtures/go"),&root);
  let mut store=Store::open(dir.path().join("state")).unwrap(); store.ensure_project(PROJECT,"expedition").unwrap();
  let snap=capture_snapshot(&mut store,PROJECT,&root,&SnapshotInputs{build_config:json!({"kind":"go"}),environment:json!({"os":"test"})},&SnapshotOptions{include_untracked:true,..SnapshotOptions::default()}).unwrap();
- let go="<workspace>/_archmeld_tools/go";
- let path=format!("{go}/go/bin;{}",std::env::var("PATH").unwrap_or_default());
- let s=LspSession::start(&LspServerSpec{id:"gopls".into(),program:server,args:vec![],cwd:root.clone(),env:vec![("PATH".into(),path),("GOROOT".into(),format!("{go}/go")),("GOPATH".into(),format!("{go}/gopath")),("GOMODCACHE".into(),format!("{go}/gopath/pkg/mod"))],initialization_options:None},&SpawnPermission::grant("grant.b014.go","Go language pack test"),&PathBuf::from("<temp>/go-audit.ndjson")).expect("gopls start");
+ let go_root=server.parent().expect("gopls parent").parent().expect("go root").to_path_buf();
+ let go=go_root.to_string_lossy().to_string();
+ let path=format!("{}/bin;{}",go_root.join("go").to_string_lossy(),std::env::var("PATH").unwrap_or_default());
+ let s=LspSession::start(&LspServerSpec{id:"gopls".into(),program:server,args:vec![],cwd:root.clone(),env:vec![("PATH".into(),path),("GOROOT".into(),go_root.join("go").to_string_lossy().to_string()),("GOPATH".into(),format!("{go}/gopath")),("GOMODCACHE".into(),format!("{go}/gopath/pkg/mod"))],initialization_options:None},&SpawnPermission::grant("grant.b014.go","Go language pack test"),&support::audit_path(&root,"go-audit")).expect("gopls start");
  s.initialize(&root).expect("initialize");
  for f in ["util/util.go","other/other.go","main.go"]{let t=fs::read_to_string(root.join(f)).unwrap();s.did_open(&root.join(f),"go",&t).unwrap();}
  let util=fs::read_to_string(root.join("util/util.go")).unwrap(); let (l,c)=pos(&util,"Helper");
