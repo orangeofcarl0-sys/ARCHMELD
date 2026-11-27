@@ -17,23 +17,20 @@ Run from the repository root:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import shutil
 import subprocess
 from datetime import date
 from pathlib import Path
 
+import common
 import portable_env as portable
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = ROOT / "docs" / "release-evidence" / f"ADAPTER-DRILL-{date.today().isoformat()}.json"
 TOOLCHAIN_LOCK = ROOT / "toolchains.lock.json"
 REGISTRY = ROOT / "upstreams.lock.json"
-
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+sha256 = common.sha256_file
 
 
 def run(argv: list[str], cwd: Path, env: dict[str, str]) -> dict:
@@ -50,8 +47,8 @@ def run(argv: list[str], cwd: Path, env: dict[str, str]) -> dict:
         "exit_code": result.returncode,
         "stdout": result.stdout.decode("utf-8", errors="replace")[-4096:],
         "stderr": result.stderr.decode("utf-8", errors="replace")[-4096:],
-        "stdout_sha256": hashlib.sha256(result.stdout).hexdigest(),
-        "stderr_sha256": hashlib.sha256(result.stderr).hexdigest(),
+        "stdout_sha256": common.sha256_bytes(result.stdout),
+        "stderr_sha256": common.sha256_bytes(result.stderr),
     }
 
 
@@ -116,7 +113,7 @@ def main() -> int:
         raise SystemExit("cargo not found; add it to PATH or set ARCHMELD_TOOLS_ROOT")
     cargo = str(cargo_path)
 
-    bridge = workspace / "archmeld-core" / "src" / "bridge.rs"
+    bridge = workspace / "archmeld-core" / "src" / "evidence" / "bridge.rs"
     original = bridge.read_text(encoding="utf-8")
     if args.dry_run:
         print(json.dumps({"temp": str(temp), "bridge": str(bridge), "pin": pin}, indent=2))

@@ -115,6 +115,46 @@ class ExportTests(unittest.TestCase):
             self.assertNotIn(DRIVE_PATH, (out / "keep.txt").read_text(encoding="utf-8"))
             self.assertTrue((out / "public-snapshot-manifest.json").is_file())
 
+    def test_export_omits_binary_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary) / "repo"
+            repo.mkdir()
+            subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+            subprocess.run(["git", "config", "user.name", "test"], cwd=repo, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=repo, check=True)
+            (repo / "keep.txt").write_text(f"cwd={DRIVE_PATH}\n", encoding="utf-8")
+            (repo / "state.sqlite3").write_bytes(b"SQLite format 3\x00binary")
+            (repo / "probe.json.gz").write_bytes(b"\x1f\x8b\x08\x00compressed")
+            (repo / "trace.trace").write_bytes(b"\x00\x01binary-trace")
+            policy = {
+                "schema_version": "1.0",
+                "omit": [
+                    {"glob": "*.sqlite3*", "reason": "test"},
+                    {"glob": "*.gz", "reason": "test"},
+                    {"glob": "*.trace", "reason": "test"},
+                ],
+                "allow": [],
+            }
+            (repo / "policy.json").write_text(json.dumps(policy), encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
+            subprocess.run(["git", "commit", "-m", "fixture"], cwd=repo, check=True, capture_output=True)
+
+            old_root = public_snapshot.ROOT
+            old_policy = public_snapshot.POLICY
+            public_snapshot.ROOT = repo
+            public_snapshot.POLICY = repo / "policy.json"
+            try:
+                out = Path(temporary) / "out"
+                public_snapshot.export_tree(out, "HEAD", None, None)
+            finally:
+                public_snapshot.ROOT = old_root
+                public_snapshot.POLICY = old_policy
+            self.assertTrue((out / "keep.txt").is_file())
+            self.assertFalse((out / "state.sqlite3").exists())
+            self.assertFalse((out / "probe.json.gz").exists())
+            self.assertFalse((out / "trace.trace").exists())
+            self.assertNotIn(DRIVE_PATH, (out / "keep.txt").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

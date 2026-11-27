@@ -21,12 +21,14 @@ checks, next executable tasks and a do-not-redo list.
 
 ## 2. Read in this order
 
-1. `docs/archmeld-progress.md` — current task status, commits, evidence paths,
+1. `docs/INDEX.md` — which document is authoritative for which question.
+2. `docs/archmeld-progress.md` — current task status, commits, evidence paths,
    residuals.
-2. `docs/release-evidence/B030-release.md` — language matrix and AT067 blockers.
-3. `docs/release-evidence/B031-*.json|md` — package hashes and platform claims.
-4. `docs/OPERATOR_GUIDE.md` — build/run/data/security/troubleshooting.
-5. The relevant ADR and test for the next task only.
+3. `docs/release-evidence/B030-release.md` — language matrix and AT067 blockers.
+4. `docs/release-evidence/B031-*.json|md` — package hashes and platform claims.
+5. `docs/OPERATOR_GUIDE.md` — build/run/data/security/troubleshooting.
+6. The relevant ADR and test for the next task only. ADR-001…016 are in the
+   frozen pack; ADR-017…060 are indexed in `docs/adr/README.md`.
 
 Do not re-audit closed tasks or rebuild a general indexer. The codebase is a
 thin fork of the pinned CodeGraph commit; preserve NOTICE/license and use the

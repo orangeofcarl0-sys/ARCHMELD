@@ -9,7 +9,6 @@ Usage: python tooling/lock_toolchains.py
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import platform
@@ -19,10 +18,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import common
 import portable_env as portable
 
 ROOT = Path(__file__).resolve().parents[1]
 PINNED = "1.94.1-x86_64-pc-windows-gnu"
+sha256 = common.sha256_file
 # cmake is inherited from the old Strawberry tree and is not invoked by the
 # current build (cargo/cc/ninja do the work). Record it as an optional missing
 # tool instead of failing the lock/doctor.
@@ -44,14 +45,6 @@ TOOLS = {
 # Binaries whose bytes are hashed. Large toolchain binaries are included on
 # purpose: the lock is only useful if it can detect a swapped compiler.
 HASH_CANDIDATES = ["git", "node", "python", "gcc", "g++", "cmake", "ninja", "perl"]
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def run(argv: list[str], cwd: str | None = None) -> tuple[int, str]:

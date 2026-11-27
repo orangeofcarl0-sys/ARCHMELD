@@ -9,10 +9,10 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+import common
+
+ROOT = common.ROOT
 PROGRESS = ROOT / "docs/archmeld-progress.md"
 OUT = ROOT / "docs/release-evidence/B032-handoff.json"
 
@@ -21,7 +21,7 @@ def latest_at077() -> dict:
     """Read AT077 from the newest real upstream-merge evidence."""
     for path in sorted((ROOT / "docs/release-evidence").glob("UPSTREAM-*.json"), reverse=True):
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data = common.read_json(path)
         except Exception:  # noqa: BLE001
             continue
         at077 = data.get("AT077")
@@ -34,7 +34,7 @@ def latest_at077() -> dict:
 
 
 def run(*argv: str) -> str:
-    return subprocess.run(argv, cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+    return common.run_checked(*argv, cwd=ROOT)
 
 
 def main() -> int:
@@ -147,8 +147,7 @@ def main() -> int:
             "handoff_checklist": "docs/HANDOFF_CHECKLIST.md",
         },
     }
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    common.write_json(OUT, evidence)
     print(json.dumps({
         "head": head,
         "branch": branch,

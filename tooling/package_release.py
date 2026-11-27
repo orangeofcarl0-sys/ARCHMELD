@@ -10,7 +10,6 @@ Binaries are produced outside this script:
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -20,6 +19,8 @@ import sys
 import zipfile
 from pathlib import Path
 
+import common
+
 try:
     import tomllib
 except ModuleNotFoundError:  # Python 3.10 fallback
@@ -28,6 +29,7 @@ except ModuleNotFoundError:  # Python 3.10 fallback
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 VERSION = os.environ.get("ARCHMELD_VERSION", "0.1.0")
+sha256 = common.sha256_file
 
 
 def upstream_commit() -> str:
@@ -218,14 +220,6 @@ PLATFORMS = {
         "installer": "install.sh",
     },
 }
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def cargo_components() -> list[dict]:

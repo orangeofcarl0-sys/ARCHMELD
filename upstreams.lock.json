@@ -38,7 +38,7 @@
         "format_field": "format",
         "schema_field": "schema_version",
         "producer": "crates/codegraph/src/export/ndjson.rs",
-        "consumer": "crates/archmeld-core/src/bridge.rs",
+        "consumer": "crates/archmeld-core/src/evidence/bridge.rs",
         "fail_closed_on_major": true
       },
       "update_policy": {
@@ -144,7 +144,7 @@
         "version_optional": true,
         "observed_version_field": "metadata.tree_spec.version",
         "producer": "external CodeBoarding process",
-        "consumer": "crates/archmeld-core/src/interpret.rs",
+        "consumer": "crates/archmeld-core/src/analysis/interpret/mod.rs",
         "fail_closed_on_major": false
       },
       "update_policy": {
@@ -195,7 +195,7 @@
       "pin": {
         "kind": "version",
         "version": "format scip-protobuf-v0.3; scip-clang v0.4.1; scip-python 0.6.8",
-        "recorded_by": "crates/archmeld-core/src/scip.rs; docs/release-evidence/B030-cpp-scip.json"
+        "recorded_by": "crates/archmeld-core/src/surface/scip.rs; docs/release-evidence/B030-cpp-scip.json"
       },
       "license": {
         "spdx": "Apache-2.0",
@@ -207,7 +207,7 @@
         "version_field": "metadata.version",
         "allowed_protocol_versions": [0],
         "producer": "external scip-clang / scip-python",
-        "consumer": "crates/archmeld-core/src/scip.rs",
+        "consumer": "crates/archmeld-core/src/surface/scip.rs",
         "fail_closed_on_major": true
       },
       "update_policy": {
@@ -279,7 +279,7 @@
         "id": "lsp",
         "version": "stdio-jsonrpc",
         "producer": "external language servers",
-        "consumer": "crates/archmeld-core/src/lsp.rs",
+        "consumer": "crates/archmeld-core/src/surface/lsp.rs",
         "fail_closed_on_major": false
       },
       "update_policy": {
@@ -390,7 +390,7 @@
         "version_field": "adapters/traces/fixtures.lock.json#tools[].version",
         "in_band_version": false,
         "producer": "external trace tools",
-        "consumer": "crates/archmeld-core/src/trace_adapters.rs",
+        "consumer": "crates/archmeld-core/src/trace/trace_adapters.rs",
         "fail_closed_on_major": false
       },
       "update_policy": {
@@ -462,7 +462,7 @@
         "version_optional": false,
         "unknown_major": "warn",
         "producer": "external AOCI producer",
-        "consumer": "crates/archmeld-core/src/cognition.rs",
+        "consumer": "crates/archmeld-core/src/analysis/cognition.rs",
         "fail_closed_on_major": false
       },
       "update_policy": {

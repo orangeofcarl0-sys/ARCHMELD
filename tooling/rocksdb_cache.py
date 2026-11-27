@@ -16,7 +16,6 @@ Examples:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -29,24 +28,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tooling"))
 import build_helper  # noqa: E402
+import common  # noqa: E402
 import portable_env  # noqa: E402
 
 FEATURES = ["bzip2", "lz4", "snappy", "static", "zlib", "zstd"]
 TARGET = "x86_64-pc-windows-gnu"
 LINK_ARGS = ["-lrpcrt4", "-lshlwapi"]
 SCHEMA = "archmeld-rocksdb-cache/1"
+sha256_file = common.sha256_file
 
 
 class CacheError(RuntimeError):
     pass
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def lock_version(name: str = "librocksdb-sys") -> str:
@@ -112,7 +105,7 @@ def key_material(env: dict[str, str]) -> dict[str, str]:
 def cache_key(env: dict[str, str]) -> str:
     material = key_material(env)
     payload = json.dumps(material, sort_keys=True, ensure_ascii=False)
-    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
+    digest = common.sha256_text(payload)[:12]
     crate = lock_version().replace("+", "_")
     match = re.search(r"(\d+\.\d+\.\d+)", material.get("gcc", ""))
     gcc = match.group(1) if match else "gcc"

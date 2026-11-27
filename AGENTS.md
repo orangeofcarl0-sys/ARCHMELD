@@ -35,6 +35,17 @@ cargo +1.94.1-x86_64-pc-windows-gnu <command> --locked
 - 所有命令通过 `python baseline/run_cmd.py` 执行并追加记录到 `baseline/commands.ndjson`（cwd、argv、退出码、耗时、工具版本、日志哈希）。
 - 编译器临时目录由 `ARCHMELD_TEMP` 决定；未设置时回退 `TMP`/`TEMP`/`TMPDIR`，再回退系统临时目录。C 盘空间紧张时显式设置 `ARCHMELD_TEMP`，不要在其上解压工具链或构建产物。
 
+## 结构导航
+
+先读 [`docs/INDEX.md`](docs/INDEX.md)。仓库有四层文档，不要混用：
+
+- `docs/archmeld/` 是**冻结设计包**（`PACK_MANIFEST.json` 封印），描述规格与计划，不代表当前实现状态；任何改动必须同批 `reseal_pack.py --write`。
+- `docs/adr/` 是现行决策（ADR-017…061）；ADR-001…016 在冻结包的 `03_ARCHITECTURE_DECISIONS.md`。
+- `HANDOFF_CHECKLIST.md` 是当前操作真相；`archmeld-progress.md` 是时间线；`REMAINING_BLOCKERS.md` 是阻塞项。状态陈述应链接，不要复制数字。
+- `docs/evidence/` 与 `docs/release-evidence/` 是只追加的执行证据；历史命令路径不得移动。
+
+工具入口以 [`tooling/README.md`](tooling/README.md) 为准：日常测试用 `test_lane.py --lane fast`，证据道用 `--lane evidence`；环境只从 `build_helper.cargo_env()` 取。
+
 ## 公开快照纪律
 
 - 公开 origin 只允许 `main` 和 `public-snapshot-*` 分支；本地启用 `.githooks/pre-push`（`tooling/publication_guard.py --install`），CI 同名 workflow 复核。私有分支不得推送。

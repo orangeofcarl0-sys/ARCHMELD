@@ -18,12 +18,12 @@ import argparse
 import fnmatch
 import json
 import os
-import subprocess
 import sys
-from pathlib import Path
 from typing import Iterable
 
-ROOT = Path(__file__).resolve().parents[1]
+import common
+
+ROOT = common.ROOT
 DEFAULT_PUBLIC_PATTERNS = ("*<identity>-sys/archmeld*",)
 ALLOWED_REFS = {"refs/heads/main"}
 SNAPSHOT_PREFIX = "refs/heads/public-snapshot-"
@@ -54,17 +54,14 @@ def is_deletion(local_sha: str, remote_sha: str) -> bool:
 def resolve_remote_url(remote: str) -> str:
     if not remote:
         return ""
-    try:
-        result = subprocess.run(
-            ["git", "remote", "get-url", remote],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
-    except (OSError, subprocess.SubprocessError):
-        return ""
-    return result.stdout.strip() if result.returncode == 0 else ""
+    result = common.run_capture(
+        ["git", "remote", "get-url", remote],
+        cwd=ROOT,
+        timeout=15,
+        text=True,
+        strip=True,
+    )
+    return result["stdout"] if result["exit"] == 0 else ""
 
 
 def override_enabled() -> bool:
@@ -156,16 +153,15 @@ def ci_remote_url() -> str:
 
 
 def install() -> int:
-    result = subprocess.run(
+    result = common.run_capture(
         ["git", "config", "core.hooksPath", ".githooks"],
         cwd=ROOT,
-        capture_output=True,
-        text=True,
         timeout=30,
+        text=True,
     )
-    if result.returncode != 0:
-        print(f"failed to set core.hooksPath: {result.stderr.strip()}", file=sys.stderr)
-        return result.returncode
+    if result["exit"] != 0:
+        print(f"failed to set core.hooksPath: {result['stderr'].strip()}", file=sys.stderr)
+        return 1 if result["exit"] is None else result["exit"]
     print("core.hooksPath=.githooks (pre-push guard enabled for this clone)")
     return 0
 

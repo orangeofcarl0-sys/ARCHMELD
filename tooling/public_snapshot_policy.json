@@ -54,6 +54,38 @@
       "reason": "screenshots may contain workstation UI and paths"
     },
     {
+      "glob": "docs/evidence/**/*.sqlite3*",
+      "reason": "binary ledger state; the text exporter must not rewrite it"
+    },
+    {
+      "glob": "docs/evidence/**/*.db",
+      "reason": "binary ledger state"
+    },
+    {
+      "glob": "docs/evidence/**/objects/**",
+      "reason": "content-addressed binary blobs"
+    },
+    {
+      "glob": "docs/evidence/**/*.gz",
+      "reason": "compressed evidence; not text-redactable"
+    },
+    {
+      "glob": "docs/evidence/**/*.trace",
+      "reason": "binary trace; not scanned"
+    },
+    {
+      "glob": "upstream-probes/**/*.trace",
+      "reason": "binary trace; not scanned"
+    },
+    {
+      "glob": "docs/evidence/e4a-2026-11-25/runs/**/stdout.jsonl",
+      "reason": "raw model transcripts"
+    },
+    {
+      "glob": "docs/evidence/e4a-2026-11-25/runs/**/pi-sessions/**",
+      "reason": "raw model sessions"
+    },
+    {
       "glob": "docs/release-evidence/PUBLIC-SNAPSHOT-*.json",
       "reason": "private publication evidence"
     },
@@ -92,7 +124,7 @@
       "reason": "deliberate fake secret fixture"
     },
     {
-      "glob": "crates/archmeld-core/src/cognition_map.rs",
+      "glob": "crates/archmeld-core/src/analysis/cognition_map.rs",
       "reason": "secret detector patterns, not credentials"
     },
     {

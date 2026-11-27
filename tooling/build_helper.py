@@ -14,7 +14,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -23,16 +22,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+import common
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUST_TOOLCHAIN = "1.94.1-x86_64-pc-windows-gnu"
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+sha256 = common.sha256_file
 
 
 def _effective_toolchain(env: dict[str, str]) -> str:
