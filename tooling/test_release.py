@@ -6,7 +6,6 @@ VSIX install, Linux Ubuntu container, SBOM and release-note honesty."""
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -17,6 +16,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import common
 import portable_env as portable
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,6 +26,7 @@ NOTES = ROOT / "docs/release-evidence/B031-release-notes.md"
 TEMP_BASE = portable.temp_root()
 VERSION = "0.1.0"
 PREVIOUS = "0.0.9"
+sha256 = common.sha256_file
 
 
 def latest_at077() -> dict:
@@ -52,14 +53,6 @@ def latest_at077() -> dict:
     }
 
 
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def run(
     argv: list[str],
     cwd: Path | None = None,
@@ -81,8 +74,8 @@ def run(
         "exit_code": started.returncode,
         "stdout": started.stdout[-65536:],
         "stderr": started.stderr[-65536:],
-        "stdout_sha256": hashlib.sha256(started.stdout.encode()).hexdigest(),
-        "stderr_sha256": hashlib.sha256(started.stderr.encode()).hexdigest(),
+        "stdout_sha256": common.sha256_text(started.stdout),
+        "stderr_sha256": common.sha256_text(started.stderr),
     }
 
 
@@ -153,8 +146,8 @@ def headless_open(url: str) -> dict | None:
         "exit_code": completed.returncode,
         "stdout": completed.stdout,
         "stderr": completed.stderr,
-        "stdout_sha256": hashlib.sha256(completed.stdout.encode()).hexdigest(),
-        "stderr_sha256": hashlib.sha256(completed.stderr.encode()).hexdigest(),
+        "stdout_sha256": common.sha256_text(completed.stdout),
+        "stderr_sha256": common.sha256_text(completed.stderr),
     }
 
 

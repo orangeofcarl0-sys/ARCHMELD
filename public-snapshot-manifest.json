@@ -3,7 +3,7 @@
   "generated_by": "tooling/public_snapshot.py export",
   "recorded_at": "2026-11-27",
   "ref": "HEAD",
-  "file_count": 1898,
+  "file_count": 1902,
   "skipped": [
     "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.deps.json",
     "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.dll",
@@ -30,9 +30,24 @@
     "adapters/languages/fixtures/csharp/obj/project.assets.json",
     "adapters/languages/fixtures/csharp/obj/project.nuget.cache",
     "crates/codegraph-python/tests/fixtures/test_project/__pycache__/ignored.py",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a1b/pi-sessions/2026-11-25T09-55-30-545Z_f53fc314-8382-4c69-929b-074d37c0529c.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a1b/stdout.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/pi-sessions/2026-11-25T10-06-06-528Z_cc80a408-3eec-457b-a440-e0c527f2a6d2.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/stdout.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/pi-sessions/2026-11-25T10-14-07-483Z_aec6c298-24b1-4136-9552-85a771c63010.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/stdout.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-b1/pi-sessions/2026-11-25T10-14-17-567Z_6fa38714-f465-4da1-89d7-10457de1a863.jsonl",
+    "docs/evidence/e4a-2026-11-25/runs/nonlexical3-b1/stdout.jsonl",
+    "docs/evidence/self-analysis-2026-11-26/mcp-probe-core.json.gz",
+    "docs/evidence/self-analysis-2026-11-26/mcp-probe-path-source.json.gz",
+    "docs/evidence/self-analysis-2026-11-26/mcp-status.jsonl.gz",
+    "docs/evidence/self-analysis-2026-11-26/review-diff.raw.json.gz",
+    "docs/evidence/self-analysis-2026-11-26/status.raw.json.gz",
     "docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-02.json",
     "docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-24.json",
-    "docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-25.json"
+    "docs/release-evidence/PUBLIC-SNAPSHOT-2026-11-25.json",
+    "upstream-probes/real-export/network-2.trace",
+    "upstream-probes/real-export/network.trace"
   ],
   "files": [
     {
@@ -361,7 +376,7 @@
     },
     {
       "path": "AGENTS.md",
-      "sha256": "26f4fb605dc3fe2c7b2eb4bbf203ea0aefaeb6eaefe8634d60a65a8f7d7e03e6"
+      "sha256": "3702aab247c3bc102559ad715bedc2d10bbf12664d09ec8ecfc095b20c96eb36"
     },
     {
       "path": "archmeld-vscode/media/cytoscape.min.js",
@@ -457,7 +472,7 @@
     },
     {
       "path": "archmeld.map.txt",
-      "sha256": "670d1cf1eb03798a06a2da3c1e29ed26b43ad729e2340a92a22b7cce8a2d5b02"
+      "sha256": "36836cbbbee41738856edacd732632804a44bb01f52e0720b2defd9ad700b48d"
     },
     {
       "path": "baseline/annotations.ndjson",
@@ -477,7 +492,7 @@
     },
     {
       "path": "baseline/run_cmd.py",
-      "sha256": "6c3548f0f86afa9598b12e2d5d2335b071a76daca2fa554378f0c4c9a27e0867"
+      "sha256": "cb71e3f45dfa404f3b7475a5f212097fa207377c0f39b87ab91df7372c6ad824"
     },
     {
       "path": "benchmarks/README.md",
@@ -585,7 +600,7 @@
     },
     {
       "path": "contracts/upstreams/archmeld-export-v1.md",
-      "sha256": "2f79ded8468b1ddcae04a317ab547e76381e9a4e5ea7950dcc9c13085c7339cf"
+      "sha256": "f057c279ccf7d4465e92980c95075457a9f4be11053f121150313c6b56e3bc3f"
     },
     {
       "path": "crates/archmeld-api/build.rs",
@@ -684,272 +699,324 @@
       "sha256": "246ab9537cf64f9367578f3a7a827ff3c1f5a39fd9ae3ef751d7d36853f5d7d3"
     },
     {
-      "path": "crates/archmeld-core/src/anchor.rs",
-      "sha256": "27b5e680312f7fb93743ae8a435c9d34d9bda0dded39c6ec987639e608b87cdb"
-    },
-    {
-      "path": "crates/archmeld-core/src/apply.rs",
-      "sha256": "e7b1eb2cc1fd33d1a2a670173cd1831cb418144dda65c00c5b789eb6a12284a8"
-    },
-    {
-      "path": "crates/archmeld-core/src/blueprint.rs",
+      "path": "crates/archmeld-core/src/analysis/blueprint.rs",
       "sha256": "0d42d5676317c5b0d54086fce97a3c1dc24c94823988791b0b67b5e67136a9d1"
     },
     {
-      "path": "crates/archmeld-core/src/bridge.rs",
-      "sha256": "d3c769d64e6e2d0582b9b6ab325a2c0d9cfece366b4ca1ced160ab7b8dfce045"
-    },
-    {
-      "path": "crates/archmeld-core/src/brief.rs",
-      "sha256": "5071d399b7636ca6dc4d722929b2bc17ac464b2910ed7c00b8753b62ed7301f4"
-    },
-    {
-      "path": "crates/archmeld-core/src/changeset.rs",
-      "sha256": "924cd15aa9c63b9548d711da87e32d6db33531492e467b31a393246b7ff2204a"
-    },
-    {
-      "path": "crates/archmeld-core/src/cognition.rs",
+      "path": "crates/archmeld-core/src/analysis/cognition.rs",
       "sha256": "bde0a4c317314438280786bac09c9e87a99a95537a1ee76e11c4443103983100"
     },
     {
-      "path": "crates/archmeld-core/src/cognition_map.rs",
+      "path": "crates/archmeld-core/src/analysis/cognition_map.rs",
       "sha256": "ffe3ca628a86dce6b68bec8351f824ed7bd47ad9bbaffaa1e5d1cd861dfa17be"
     },
     {
-      "path": "crates/archmeld-core/src/context.rs",
+      "path": "crates/archmeld-core/src/analysis/context.rs",
       "sha256": "3d68ec45776af051ac902e72c6c645ad0ef1635328ef10b149f0b25dce104c13"
     },
     {
-      "path": "crates/archmeld-core/src/drift.rs",
-      "sha256": "8c79217346349776dbe35c86bbe6f935d7b76dbe5be6a8e9fe87f5e36f2d019e"
+      "path": "crates/archmeld-core/src/analysis/interpret/architecture.rs",
+      "sha256": "173beef20523cd35d90978a206292dd8a185197469e7f5f53eba07e1ab314ed1"
     },
     {
-      "path": "crates/archmeld-core/src/encrypted_backup.rs",
-      "sha256": "8ddbf35f7fac2043eb814d4552cbfa11e387001ab82637866d84dc3c2c217217"
+      "path": "crates/archmeld-core/src/analysis/interpret/claims.rs",
+      "sha256": "76d8f51a405d05403c85f9ce04bd44ebe56fae105852b60ef9c787fb61d85e7a"
     },
     {
-      "path": "crates/archmeld-core/src/error.rs",
-      "sha256": "27c1ea3e99752d0379b90803a7e2cd944c163ce058531589f404ff6e850fe8a1"
+      "path": "crates/archmeld-core/src/analysis/interpret/codeboarding.rs",
+      "sha256": "dfa2435db6c5773d04243ac75749584dc82fb0f7d6ed1dd70e68e1605e6026e6"
     },
     {
-      "path": "crates/archmeld-core/src/events.rs",
-      "sha256": "600cd2779f11e9e3f1f75c385d4ac96009b709f3745bb3ec96aba1415ae502fe"
+      "path": "crates/archmeld-core/src/analysis/interpret/investigations.rs",
+      "sha256": "c466b009f861990486a8713ce075313acc2b9c5a1495d5a0021118375847aacc"
     },
     {
-      "path": "crates/archmeld-core/src/hash.rs",
-      "sha256": "8472703462759c18ed9ae75f8ab487d564c4b183ec5b6874f992b1dc3a1a5ad7"
+      "path": "crates/archmeld-core/src/analysis/interpret/mod.rs",
+      "sha256": "6b6a4d572f1863ff449c700fea24ef203620134fc216ad44ae06aaf07acd412b"
     },
     {
-      "path": "crates/archmeld-core/src/identity.rs",
-      "sha256": "6d1d8853a644cb60a00a01e9b1bbe048f44c91c1c9989c403e2add903fe68d01"
+      "path": "crates/archmeld-core/src/change/apply.rs",
+      "sha256": "e7b1eb2cc1fd33d1a2a670173cd1831cb418144dda65c00c5b789eb6a12284a8"
     },
     {
-      "path": "crates/archmeld-core/src/instigator.rs",
-      "sha256": "4657b5715098452779979a3d1fb42108a8e0e66567ea68912fbb27fdc31af28b"
+      "path": "crates/archmeld-core/src/change/changeset/mod.rs",
+      "sha256": "162538c05a887a0090340d8feea3070fe2b326f12d2a5aa9b235b5f9e24d101f"
     },
     {
-      "path": "crates/archmeld-core/src/interpret.rs",
-      "sha256": "a0f665d5699f7a17bbd76e09c59fcda54adf17ce13e5d14b1bd5c1567eef6d5c"
+      "path": "crates/archmeld-core/src/change/changeset/prepare.rs",
+      "sha256": "fd9459d4d2edb993972949abfe60ad2273e75f147406aea815a7a2c29a904755"
     },
     {
-      "path": "crates/archmeld-core/src/jobs.rs",
-      "sha256": "2ec02dbfd6879391689ac9995d9441d457771b23b9a5f6682171a436c0258d62"
+      "path": "crates/archmeld-core/src/change/changeset/staging.rs",
+      "sha256": "827324f0a81ccb8cdba962913eddde842cdb60468324dbea5b9c68edd9d33f16"
     },
     {
-      "path": "crates/archmeld-core/src/language.rs",
-      "sha256": "48c50ed42a4b8d541b24f4780e1507d772437703076718761d717adb7b784d96"
-    },
-    {
-      "path": "crates/archmeld-core/src/lib.rs",
-      "sha256": "2d446b8c8008b7fba97238f48c29d8b5ae58a75291608c8cbef2262942f34c8b"
-    },
-    {
-      "path": "crates/archmeld-core/src/lsp.rs",
-      "sha256": "4fae09e16d73c9349fa7ebbb520647c51b6a65f0765f8c0c274e1b9faf68bc80"
-    },
-    {
-      "path": "crates/archmeld-core/src/manager.rs",
-      "sha256": "55d0eaffab9ce6c5eb53edf367e54d8f4a0fe4dc55e48bb213d33e18b825dde2"
-    },
-    {
-      "path": "crates/archmeld-core/src/migrate.rs",
-      "sha256": "2d176bbc3895ec04ae4add8bbfd398cb8505f7a0a9bc0f32e54cb8046cf0cfcd"
-    },
-    {
-      "path": "crates/archmeld-core/src/perfetto.rs",
-      "sha256": "00b0632fbcf09f06f4abe929e4e04e8a83a33a5a2d9838411c290cbf63c33d21"
-    },
-    {
-      "path": "crates/archmeld-core/src/plan.rs",
+      "path": "crates/archmeld-core/src/change/plan.rs",
       "sha256": "54cb3fceb82f48bdd0d211cdb0060d06d3ce54239bc7e893677caa82b478a0d9"
     },
     {
-      "path": "crates/archmeld-core/src/predicate.rs",
-      "sha256": "1951790e0e88a57cf4b4298861d976649edc547f22669da3cb1e5284a173f971"
+      "path": "crates/archmeld-core/src/change/predicate/invariant.rs",
+      "sha256": "c7aa73cca33282e4f16c64de5fe476a55b07da3c235c421b629cdec5b967625d"
     },
     {
-      "path": "crates/archmeld-core/src/query.rs",
-      "sha256": "6a15d3bdccc1d5cd451d58023bb4ac2a480104b91d2e4af9b52939f07d5eb5fd"
+      "path": "crates/archmeld-core/src/change/predicate/mod.rs",
+      "sha256": "1ccfac75e29ab16af057913655ead71bd940a58e757d338cd58887092fd5c7eb"
     },
     {
-      "path": "crates/archmeld-core/src/report.rs",
-      "sha256": "614c4b74a71b545911e07e36fc3111660c40aafc53ad4838e742f7ddca523f7f"
+      "path": "crates/archmeld-core/src/change/predicate/numeric.rs",
+      "sha256": "aab05f79899928a45df0a08a445e5c58662eeb8979b622c6638eac8b9d1d113c"
     },
     {
-      "path": "crates/archmeld-core/src/retention.rs",
-      "sha256": "eaaf5e04e5332e790a5ca0f8504ea200b4d593ee774425b3ea9f3a3e5364c8ea"
+      "path": "crates/archmeld-core/src/change/predicate/performance.rs",
+      "sha256": "1a7e9bc93c1275005edd904a33357400d785353a3bd5d82ed7f6ef0f5f253cdf"
     },
     {
-      "path": "crates/archmeld-core/src/review.rs",
-      "sha256": "622aad5b6c1c27471c46a6038aef1d37758a6ceda81adea50270fbf562e85f04"
-    },
-    {
-      "path": "crates/archmeld-core/src/runtime.rs",
-      "sha256": "82abd067988bd9bcf2aed18dc700ee8300abaccf580be08586ca30ff3b18aab8"
-    },
-    {
-      "path": "crates/archmeld-core/src/sandbox.rs",
+      "path": "crates/archmeld-core/src/change/sandbox.rs",
       "sha256": "25ceb204646332f9b1641461708e05a0e6579143003900050e460a2410321720"
     },
     {
-      "path": "crates/archmeld-core/src/scenario.rs",
+      "path": "crates/archmeld-core/src/change/scenario.rs",
       "sha256": "fe95c8d4ed8d3bb3dfbacb5c4df132d034cfe03d10c02f1961086f0db198b712"
     },
     {
-      "path": "crates/archmeld-core/src/scip.rs",
-      "sha256": "93dd70b7afd4e21838e52c154bec93cd8ffb47e7ce9be93be94b3697bda47117"
-    },
-    {
-      "path": "crates/archmeld-core/src/snapshot.rs",
-      "sha256": "16a1f6641f45280c7ca1a1d8c90c8629d4446f30ef7d9cf3f13a469ebc87b0a3"
-    },
-    {
-      "path": "crates/archmeld-core/src/source.rs",
-      "sha256": "b2465e9577af375cf109eb11c609f4a1712d835012eea2c4449d976d6911514f"
-    },
-    {
-      "path": "crates/archmeld-core/src/source_api.rs",
-      "sha256": "e6a6db9b15a7439db603ae910372145de18d5f69079e5bb994bc33ba65f812b1"
-    },
-    {
-      "path": "crates/archmeld-core/src/status.rs",
-      "sha256": "f3f2df219dd84b6d2675d68375b6d6289de7e0783f757811996e1bba77551e10"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/import.rs",
-      "sha256": "07d6ee231e2db4644f8dbdd0f7ec68382fe9258c0b42f91289bf423cc1f94c76"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0001_init.sql",
-      "sha256": "92c74260d45735b87ccd85ffcbdaf76c71771fe79f93f537ce49279b7f9038af"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0002_jobs_events.sql",
-      "sha256": "b510a2906e8eb164e814e588a1e74e6d69b2b75eaff24eb1aa8f567c536fde8a"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0003_event_retention.sql",
-      "sha256": "3729efdcd59847d68a91b6efae5d401bb74bdcf87a453bf2f1b3169f298ba3aa"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0004_project_lifecycle.sql",
-      "sha256": "3f4b08cb93749e9b94b51c67a8dbcca6a3ab3b90d493697cb78fa09899f4c1a5"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0005_workspace_handles.sql",
-      "sha256": "c25f008952327de0c39193508f68fb6cf631238d946a91ef0b994ce46f933d64"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0006_runtime.sql",
-      "sha256": "41c552bed826b4d73935f3290ad8171e79504854c981d9780a8aac891ea91668"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0007_scenarios.sql",
-      "sha256": "5b22b700fcee58ca7442299f49377324641972078e52b62f69af8dfba7f45003"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0008_runtime_causal.sql",
-      "sha256": "049246702a611cc2f09d0098f559996758d36cc0b2246aac24135efbe4f121f5"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0009_interpretation.sql",
-      "sha256": "3e6c87f60c414d8f0346be73a7c881391fc8f265beb522990dce7b4586e332db"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0010_plans.sql",
-      "sha256": "4448b4d0f3f77502be76978b18e98dc1bc1575ea677c12caa3e4102c47ea79ef"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0011_changesets.sql",
-      "sha256": "815b1622e077535643118ac77ffd20bcd064febf27900bb0e71487e570894772"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0012_apply_journal.sql",
-      "sha256": "bc1263c7ac0214d61748874cce59b405f777888cf04dab3d97e590db6ba782ec"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0013_verification.sql",
-      "sha256": "5fb8ce7b1daa8f6ea4a340258c941757158f53f080f918d93339e17843be3816"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0014_instigator.sql",
-      "sha256": "27f16e2d7a31ed43a83151a45aabf83a8d758294fecd8c8ecfe7c017da9357a1"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0015_drift_backup.sql",
-      "sha256": "984e565fae2221857ec428addc1bc198382e1ec8825fefed6bdec422b2d25035"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0016_retention.sql",
-      "sha256": "88054ac2cfeab4008fb9eacef5f3bd2c3a4c1967283c9fcc1349f20eb4d3b747"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0017_runtime_metrics.sql",
-      "sha256": "268ea5e5b6efc0055abea0392c257c12dfe4ef095b58dfef5ca6cab071503237"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0018_scenario_trace_link.sql",
-      "sha256": "13930c6a17e750aa8d29015dd512e748796de576a635ca113a5b132a196288c2"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/migrations/0019_evidence_model.sql",
-      "sha256": "ffe0b05c6ca195e9e39fcfe93826959fb447a996380e67318dfb48555fcd0946"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/mod.rs",
-      "sha256": "add12f3b2413fe1a0a03f268afd08021e2aa89e9ea51e2f16b184781d6b94fe7"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/types.rs",
-      "sha256": "023a9d7f0eb1097f4345f7994128a7aba612ad305dff1799803ce3d35b5dc81a"
-    },
-    {
-      "path": "crates/archmeld-core/src/store/validate.rs",
-      "sha256": "762acb2ebe325cf8ebf245b54b9eaf7c9afb2a8bab76cee3738e9369b24b9e4b"
-    },
-    {
-      "path": "crates/archmeld-core/src/trace_adapters.rs",
-      "sha256": "58649db2c2deea4477e383d16c0b7cfee683edb023a3192f5c79159c2d557b5c"
-    },
-    {
-      "path": "crates/archmeld-core/src/trace_processor.rs",
-      "sha256": "73f7ed23ee2acf016dde53155baddf2dc76962222ef34c726f4810b44f11d964"
-    },
-    {
-      "path": "crates/archmeld-core/src/tracy_csv.rs",
-      "sha256": "d18b88683240e7b91e80a5b9a201c17f26817b082074b7c38e348393d255f7dc"
-    },
-    {
-      "path": "crates/archmeld-core/src/units.rs",
+      "path": "crates/archmeld-core/src/change/units.rs",
       "sha256": "ec156cb2d19755e8c33d0e5d04604f976eccee1250b3870f190c6e10f55f29b3"
     },
     {
-      "path": "crates/archmeld-core/src/verification.rs",
+      "path": "crates/archmeld-core/src/change/verification.rs",
       "sha256": "e9ee772e952c27fdb9ab66d01c414468b0a5f0678035f1ee4aa0a21b5e9f3b1b"
     },
     {
-      "path": "crates/archmeld-core/src/watch.rs",
+      "path": "crates/archmeld-core/src/evidence/anchor.rs",
+      "sha256": "27b5e680312f7fb93743ae8a435c9d34d9bda0dded39c6ec987639e608b87cdb"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/bridge.rs",
+      "sha256": "d3c769d64e6e2d0582b9b6ab325a2c0d9cfece366b4ca1ced160ab7b8dfce045"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/events.rs",
+      "sha256": "600cd2779f11e9e3f1f75c385d4ac96009b709f3745bb3ec96aba1415ae502fe"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/hash.rs",
+      "sha256": "8472703462759c18ed9ae75f8ab487d564c4b183ec5b6874f992b1dc3a1a5ad7"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/identity.rs",
+      "sha256": "6d1d8853a644cb60a00a01e9b1bbe048f44c91c1c9989c403e2add903fe68d01"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/query.rs",
+      "sha256": "88b080011be83f147e403fa9a8a4708174af7f0f8648158268150010f8476293"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/retention.rs",
+      "sha256": "eaaf5e04e5332e790a5ca0f8504ea200b4d593ee774425b3ea9f3a3e5364c8ea"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/snapshot.rs",
+      "sha256": "16a1f6641f45280c7ca1a1d8c90c8629d4446f30ef7d9cf3f13a469ebc87b0a3"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/source.rs",
+      "sha256": "b2465e9577af375cf109eb11c609f4a1712d835012eea2c4449d976d6911514f"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/source_api.rs",
+      "sha256": "e6a6db9b15a7439db603ae910372145de18d5f69079e5bb994bc33ba65f812b1"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/import.rs",
+      "sha256": "07d6ee231e2db4644f8dbdd0f7ec68382fe9258c0b42f91289bf423cc1f94c76"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0001_init.sql",
+      "sha256": "92c74260d45735b87ccd85ffcbdaf76c71771fe79f93f537ce49279b7f9038af"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0002_jobs_events.sql",
+      "sha256": "b510a2906e8eb164e814e588a1e74e6d69b2b75eaff24eb1aa8f567c536fde8a"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0003_event_retention.sql",
+      "sha256": "3729efdcd59847d68a91b6efae5d401bb74bdcf87a453bf2f1b3169f298ba3aa"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0004_project_lifecycle.sql",
+      "sha256": "3f4b08cb93749e9b94b51c67a8dbcca6a3ab3b90d493697cb78fa09899f4c1a5"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0005_workspace_handles.sql",
+      "sha256": "c25f008952327de0c39193508f68fb6cf631238d946a91ef0b994ce46f933d64"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0006_runtime.sql",
+      "sha256": "41c552bed826b4d73935f3290ad8171e79504854c981d9780a8aac891ea91668"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0007_scenarios.sql",
+      "sha256": "5b22b700fcee58ca7442299f49377324641972078e52b62f69af8dfba7f45003"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0008_runtime_causal.sql",
+      "sha256": "049246702a611cc2f09d0098f559996758d36cc0b2246aac24135efbe4f121f5"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0009_interpretation.sql",
+      "sha256": "3e6c87f60c414d8f0346be73a7c881391fc8f265beb522990dce7b4586e332db"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0010_plans.sql",
+      "sha256": "4448b4d0f3f77502be76978b18e98dc1bc1575ea677c12caa3e4102c47ea79ef"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0011_changesets.sql",
+      "sha256": "815b1622e077535643118ac77ffd20bcd064febf27900bb0e71487e570894772"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0012_apply_journal.sql",
+      "sha256": "bc1263c7ac0214d61748874cce59b405f777888cf04dab3d97e590db6ba782ec"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0013_verification.sql",
+      "sha256": "5fb8ce7b1daa8f6ea4a340258c941757158f53f080f918d93339e17843be3816"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0014_instigator.sql",
+      "sha256": "27f16e2d7a31ed43a83151a45aabf83a8d758294fecd8c8ecfe7c017da9357a1"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0015_drift_backup.sql",
+      "sha256": "984e565fae2221857ec428addc1bc198382e1ec8825fefed6bdec422b2d25035"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0016_retention.sql",
+      "sha256": "88054ac2cfeab4008fb9eacef5f3bd2c3a4c1967283c9fcc1349f20eb4d3b747"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0017_runtime_metrics.sql",
+      "sha256": "268ea5e5b6efc0055abea0392c257c12dfe4ef095b58dfef5ca6cab071503237"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0018_scenario_trace_link.sql",
+      "sha256": "13930c6a17e750aa8d29015dd512e748796de576a635ca113a5b132a196288c2"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/migrations/0019_evidence_model.sql",
+      "sha256": "ffe0b05c6ca195e9e39fcfe93826959fb447a996380e67318dfb48555fcd0946"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/mod.rs",
+      "sha256": "add12f3b2413fe1a0a03f268afd08021e2aa89e9ea51e2f16b184781d6b94fe7"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/types.rs",
+      "sha256": "023a9d7f0eb1097f4345f7994128a7aba612ad305dff1799803ce3d35b5dc81a"
+    },
+    {
+      "path": "crates/archmeld-core/src/evidence/store/validate.rs",
+      "sha256": "762acb2ebe325cf8ebf245b54b9eaf7c9afb2a8bab76cee3738e9369b24b9e4b"
+    },
+    {
+      "path": "crates/archmeld-core/src/lib.rs",
+      "sha256": "8c6b54bde347bd248e6a57f0b151a579e17d114a395cd875c82646a070e22f5e"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/drift.rs",
+      "sha256": "8c79217346349776dbe35c86bbe6f935d7b76dbe5be6a8e9fe87f5e36f2d019e"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/encrypted_backup.rs",
+      "sha256": "8ddbf35f7fac2043eb814d4552cbfa11e387001ab82637866d84dc3c2c217217"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/instigator.rs",
+      "sha256": "4657b5715098452779979a3d1fb42108a8e0e66567ea68912fbb27fdc31af28b"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/jobs.rs",
+      "sha256": "2ec02dbfd6879391689ac9995d9441d457771b23b9a5f6682171a436c0258d62"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/manager.rs",
+      "sha256": "55d0eaffab9ce6c5eb53edf367e54d8f4a0fe4dc55e48bb213d33e18b825dde2"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/migrate.rs",
+      "sha256": "2d176bbc3895ec04ae4add8bbfd398cb8505f7a0a9bc0f32e54cb8046cf0cfcd"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/report.rs",
+      "sha256": "614c4b74a71b545911e07e36fc3111660c40aafc53ad4838e742f7ddca523f7f"
+    },
+    {
+      "path": "crates/archmeld-core/src/ops/watch.rs",
       "sha256": "8d4bd75bc7765175932042f2687d2c9be081728eb89f0b5876cc549257b3a26f"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/brief.rs",
+      "sha256": "5071d399b7636ca6dc4d722929b2bc17ac464b2910ed7c00b8753b62ed7301f4"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/error.rs",
+      "sha256": "27c1ea3e99752d0379b90803a7e2cd944c163ce058531589f404ff6e850fe8a1"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/language.rs",
+      "sha256": "48c50ed42a4b8d541b24f4780e1507d772437703076718761d717adb7b784d96"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/lsp.rs",
+      "sha256": "4fae09e16d73c9349fa7ebbb520647c51b6a65f0765f8c0c274e1b9faf68bc80"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/review.rs",
+      "sha256": "622aad5b6c1c27471c46a6038aef1d37758a6ceda81adea50270fbf562e85f04"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/scip.rs",
+      "sha256": "93dd70b7afd4e21838e52c154bec93cd8ffb47e7ce9be93be94b3697bda47117"
+    },
+    {
+      "path": "crates/archmeld-core/src/surface/status.rs",
+      "sha256": "f3f2df219dd84b6d2675d68375b6d6289de7e0783f757811996e1bba77551e10"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/perfetto.rs",
+      "sha256": "00b0632fbcf09f06f4abe929e4e04e8a83a33a5a2d9838411c290cbf63c33d21"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/runtime/causal.rs",
+      "sha256": "19f259dd792ee23395fc44dc1511aed3c8f743c2de716487b090afd1f26e992d"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/runtime/import.rs",
+      "sha256": "510016b75a48061a8eab292467740271023509026d7ad782ac282fe7543289e0"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/runtime/metrics.rs",
+      "sha256": "723c770a02b02403afdd6af44d8ac38949ee809c75fc2d5def08454a7c3c04ba"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/runtime/mod.rs",
+      "sha256": "2a2f3c5b44dae71a2402d15fbe7c4a44bc289293f7ce668eb0332a08634b810d"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/runtime/timeline.rs",
+      "sha256": "0064000791446b4d0bb3ec7b58864bea9b44a95ff80b154d2e85d27a62483e21"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/trace_adapters.rs",
+      "sha256": "58649db2c2deea4477e383d16c0b7cfee683edb023a3192f5c79159c2d557b5c"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/trace_processor.rs",
+      "sha256": "73f7ed23ee2acf016dde53155baddf2dc76962222ef34c726f4810b44f11d964"
+    },
+    {
+      "path": "crates/archmeld-core/src/trace/tracy_csv.rs",
+      "sha256": "d18b88683240e7b91e80a5b9a201c17f26817b082074b7c38e348393d255f7dc"
     },
     {
       "path": "crates/archmeld-core/tests/apply_recovery.rs",
@@ -4520,6 +4587,14 @@
       "sha256": "489b4e2bf71317288a3f18c13ddbd7d5b7a5e6ea539f2dc611936bdab9842d8a"
     },
     {
+      "path": "docs/adr/ADR-061-module-groups-and-re-exports.md",
+      "sha256": "7e595494b7b157b85a4f1eeacc82bc34caf9ff9c9c01175b74e66b3e47938405"
+    },
+    {
+      "path": "docs/adr/README.md",
+      "sha256": "af732cec0c1a1cdc2bfad80fd68b4a919c92a0e068fa4c017d0e770cf20cf62c"
+    },
+    {
       "path": "docs/agent-rules/AGENTS.md",
       "sha256": "fe29ed8f7b7caf34205149b0b99786f2ec51a252b9ce5548a8ebd97271f734c1"
     },
@@ -5085,7 +5160,7 @@
     },
     {
       "path": "docs/archmeld-progress.md",
-      "sha256": "d22552048e7bdae5eb1352b2476f783628e81c2b558d0883b61c637da3d2cd77"
+      "sha256": "8ef8fb7d6436b2679b53106b18597ac94f1223532906e3b120cfcc4aa8442536"
     },
     {
       "path": "docs/assessments/AOCI-CODE-2026-11-24.md",
@@ -5098,6 +5173,10 @@
     {
       "path": "docs/assessments/E-EVIDENCE-COGNITION-PLAN-2026-11-24.md",
       "sha256": "1f1455f16a2f28dcd9a05ca6fe5b3598846d90eddae53af3f35790d49f013948"
+    },
+    {
+      "path": "docs/assessments/SELF-ANALYSIS-COMPLEXITY-2026-11-27.md",
+      "sha256": "67879116ce0c262cd8bcec51b22e5d96d1f2bf5660fbc65a67a69950e6e4439e"
     },
     {
       "path": "docs/assessments/UPSTREAM-INTEGRATION-AND-UPDATES-2026-11-25.md",
@@ -5460,10 +5539,6 @@
       "sha256": "8c72a0f9c776fd95194e5b46889ff94d535bafc78c2dd653ae6d4f301fa92d20"
     },
     {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a1b/pi-sessions/2026-11-25T09-55-30-545Z_f53fc314-8382-4c69-929b-074d37c0529c.jsonl",
-      "sha256": "ea11829a3ccd6ceafeed91e99a3715a383df7a0c92e5a7fd0b383b0f69b2085b"
-    },
-    {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a1b/prompt.txt",
       "sha256": "b49084d53a65a50b4bc1f7f916655d988a5479e7eeb8bfffe4025a705b8bc253"
     },
@@ -5474,10 +5549,6 @@
     {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a1b/stderr.log",
       "sha256": "9e8a3fcb9df69ef48d0ef214030b474d4f429e579f8eeb53fde5129a921555e7"
-    },
-    {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a1b/stdout.jsonl",
-      "sha256": "2ad8fd8402bb0fe071421d77ecd3398c858966488dea4168e0ceb4114eca1806"
     },
     {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/audit.jsonl",
@@ -5504,10 +5575,6 @@
       "sha256": "7fae2c2809725dbe97aa67e778918b20935454417240ceae4d48963b8adec4ab"
     },
     {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/pi-sessions/2026-11-25T10-06-06-528Z_cc80a408-3eec-457b-a440-e0c527f2a6d2.jsonl",
-      "sha256": "9c8b9bae843c7062107366799b6dd1b9377bed6c947ea41ca196e8102f17b012"
-    },
-    {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/prompt.txt",
       "sha256": "b49084d53a65a50b4bc1f7f916655d988a5479e7eeb8bfffe4025a705b8bc253"
     },
@@ -5518,10 +5585,6 @@
     {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/stderr.log",
       "sha256": "b25b79fb5fff13bf39badcb59b65d2b40f350e52177f8c52a38aa998504845e2"
-    },
-    {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/stdout.jsonl",
-      "sha256": "ed97bfbdb8a3ff9ff40abffb86448d9b5eab92559ae59ee6bd65e1b854dfc36f"
     },
     {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/audit.jsonl",
@@ -5548,10 +5611,6 @@
       "sha256": "424d01ff8bdb211ac139ecd2ece61a54948fc972d3e4beea7c64bfb36cd142cd"
     },
     {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/pi-sessions/2026-11-25T10-14-07-483Z_aec6c298-24b1-4136-9552-85a771c63010.jsonl",
-      "sha256": "90a1559bc12a7234f14f3363c81995ab9c22a1b921924620e0b7024fd808d6ee"
-    },
-    {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/prompt.txt",
       "sha256": "b49084d53a65a50b4bc1f7f916655d988a5479e7eeb8bfffe4025a705b8bc253"
     },
@@ -5562,10 +5621,6 @@
     {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/stderr.log",
       "sha256": "e4faff2c90e8680952eec8bd6c1f1edea06c772db5200198ededd6383f495b5b"
-    },
-    {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-a3/stdout.jsonl",
-      "sha256": "74832dcc169b8947c04ff99ac8df04a75cbb07f04abf76456463ce8d3063dfbe"
     },
     {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-b1/audit.jsonl",
@@ -5596,10 +5651,6 @@
       "sha256": "53f789452618e22d504aa13f6df821b886b037a98499f1ae7407d42891593e6a"
     },
     {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-b1/pi-sessions/2026-11-25T10-14-17-567Z_6fa38714-f465-4da1-89d7-10457de1a863.jsonl",
-      "sha256": "44b0ddb0311874bdd76956f39dc91ed2485e40f16fe66d4a8569c3677ec1fab6"
-    },
-    {
       "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-b1/prompt.txt",
       "sha256": "5c707c0534845ee9909b7b502ac05ae73c795806e1b4a0327bb3f5abd6a833b8"
     },
@@ -5612,8 +5663,8 @@
       "sha256": "eb6b16dd779323279fb079910638b30e1672ddcf48ddf8a5033f5cf18e4e2a19"
     },
     {
-      "path": "docs/evidence/e4a-2026-11-25/runs/nonlexical3-b1/stdout.jsonl",
-      "sha256": "398c10965c988d7ed0329799fe6bf4656e4b616ed18d6bd19764a9d39decf4eb"
+      "path": "docs/evidence/e4a-2026-11-25/SMOKE-ARCHIVE.md",
+      "sha256": "e86ad180760479dd7be81bc5aef2792a0fe225f80d28bbcdcb808ad28d3df46f"
     },
     {
       "path": "docs/evidence/e4a-2026-11-25/smoke-prompt.md",
@@ -5980,6 +6031,10 @@
       "sha256": "50a895d62d24dc8976ec8d2a289a26d356d8fb1616f32037df93edc0c3883896"
     },
     {
+      "path": "docs/evidence/README.md",
+      "sha256": "6a15bc15814b7f1bc6d9426495c47238affd9dabb4b651db6d95da8561c74576"
+    },
+    {
       "path": "docs/evidence/self-analysis-2026-11-26/aggregates.txt",
       "sha256": "908b69832000dcaadc8292644666c96e01b46ef9b6625c7420197fe31f1ff2d2"
     },
@@ -6012,20 +6067,8 @@
       "sha256": "b22f2a3c8fd85c9335a977d8cc20ac8517c83887289f7e93ebf4662b84d09d59"
     },
     {
-      "path": "docs/evidence/self-analysis-2026-11-26/mcp-probe-core.json.gz",
-      "sha256": "4bd4d5153bfb12ad442716460a29e2f58b5898a2c6938986d6c9d375d1ef59be"
-    },
-    {
-      "path": "docs/evidence/self-analysis-2026-11-26/mcp-probe-path-source.json.gz",
-      "sha256": "5c85e2ea1a4dea8f0be900e60b571fd5517de4776ed826ea488f0cb289a07103"
-    },
-    {
       "path": "docs/evidence/self-analysis-2026-11-26/mcp-session-1.jsonl",
       "sha256": "9e5370352a4c3ccd737981f5929d4319334073a2de2d0ca76d0759e34f628d57"
-    },
-    {
-      "path": "docs/evidence/self-analysis-2026-11-26/mcp-status.jsonl.gz",
-      "sha256": "74161f610186287753d855e95eaed77685dec55c23b216a3b348d5f16723610b"
     },
     {
       "path": "docs/evidence/self-analysis-2026-11-26/model-probe.txt",
@@ -6034,10 +6077,6 @@
     {
       "path": "docs/evidence/self-analysis-2026-11-26/README.md",
       "sha256": "7b0042eab01a3df2ad87591edb5f4e536524bcaef895335c4a44649650251e33"
-    },
-    {
-      "path": "docs/evidence/self-analysis-2026-11-26/review-diff.raw.json.gz",
-      "sha256": "11f337d9fafa0f5b783f5300ed55930a24325601dd2d633d0b23155e7a698dcd"
     },
     {
       "path": "docs/evidence/self-analysis-2026-11-26/review-diff.summary.json",
@@ -6066,10 +6105,6 @@
     {
       "path": "docs/evidence/self-analysis-2026-11-26/SHA256SUMS",
       "sha256": "7bdfe7fef263f815540b9ba27ae19c52e7b5312a521b7a0fc37e212b7d07e12f"
-    },
-    {
-      "path": "docs/evidence/self-analysis-2026-11-26/status.raw.json.gz",
-      "sha256": "9e4160c0be1b0f563edd25a9a576424044e9d1a403b9edb9491f349f96bd6ca1"
     },
     {
       "path": "docs/evidence/self-analysis-2026-11-26/status.summary.json",
@@ -6349,7 +6384,11 @@
     },
     {
       "path": "docs/HANDOFF_CHECKLIST.md",
-      "sha256": "ca066728b30217c973cf48b5ca0bd3e0a8e9896c6c8f32437207af8b1c128761"
+      "sha256": "14a32a8aa9e6022d2fba64500d74ff086b605fbe6b07fb2dabea32a502636055"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "sha256": "e31e21443842e99d090c081e0a22b56066a2ab69b72fa3972900e6303c5808cb"
     },
     {
       "path": "docs/OPERATOR_GUIDE.md",
@@ -6513,7 +6552,7 @@
     },
     {
       "path": "docs/release-evidence/B032-handoff.json",
-      "sha256": "5c2b1d7b4b0506e6b5add71aaa769c7ce231a1194449d11b789ea5c5f13b5e7c"
+      "sha256": "4bc23d398204eb5312ad9675e75bc1a3c9eef5f12b937e6ac8fc9a8083e72955"
     },
     {
       "path": "docs/release-evidence/CROSSREVIEW-2026-11-02.json",
@@ -6564,12 +6603,20 @@
       "sha256": "bf424b736be6bd6e168ea36baa10b4d6b2983626083215ef441a01debbb6bd36"
     },
     {
+      "path": "docs/release-evidence/README.md",
+      "sha256": "08fde6abc7c9c8bd97e623fe7bc47ce03631ea6788d1b09106ce83aa5b186cb0"
+    },
+    {
       "path": "docs/release-evidence/ROLLBACK-DRILL-2026-11-26.json",
       "sha256": "975c481670c4e73125e84a874e537887221a6828ba0c21195f2cd6354d8c68b9"
     },
     {
       "path": "docs/release-evidence/SELF-ANALYSIS-FIX-2026-11-27.json",
       "sha256": "9cf7bdc968242336e7debf4ad6e594bef1ee85d9df3d35daee1581de5e4c10b6"
+    },
+    {
+      "path": "docs/release-evidence/SURFACE-RETIRE-2026-11-27.json",
+      "sha256": "28c4b1418e6b4bb7011128c92683b4b304b235a8939410a575801b2bfdb1d421"
     },
     {
       "path": "docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json",
@@ -7205,7 +7252,7 @@
     },
     {
       "path": "tooling/build_helper.py",
-      "sha256": "38284cb83cc79e950a834b97c31dffa8070eb87b4a1a6f72a78398565d9eb317"
+      "sha256": "f0c29fe65494fe0cb48a5089f3cbc65b33bac862ec1e9308e02032e23dc9a6e3"
     },
     {
       "path": "tooling/cargo_test.py",
@@ -7216,8 +7263,12 @@
       "sha256": "f4e9a928b3abf28320a2b60f709ea401543697f9e4d66dcfa877ca060ba1e46f"
     },
     {
+      "path": "tooling/common.py",
+      "sha256": "0b2c1ec4d5c1d9d290f26aaf4eb2c56b763371eeeb55da0298f32096271240a6"
+    },
+    {
       "path": "tooling/doctor.py",
-      "sha256": "ea7638f6b4b56d890169390c0e4e58482644be6e45ad1512779b4b69b2046024"
+      "sha256": "13c86ad05e5f21c6712ef005e65ec05d4904ea0bee264f06ec538f09ae89e4a5"
     },
     {
       "path": "tooling/e4a_grade.py",
@@ -7249,15 +7300,15 @@
     },
     {
       "path": "tooling/gen_notices.py",
-      "sha256": "ae29ac8064be9c86c5f0c66d4e2466983ef405c9a4ae597a0e04556ad07e24ea"
+      "sha256": "d6c6bd1d69f760eccc9cd62368d50afef52acf848ae0ff549942119160272eeb"
     },
     {
       "path": "tooling/handoff_check.py",
-      "sha256": "e8704e46192ed2eaccb983dbb7b5d6ae685fa236c4810a50a90c6d6016187f5f"
+      "sha256": "68ecdd289ae940f1bc633bcb72b63927c87fc0b5134eba0d2cc77ed21b62bb64"
     },
     {
       "path": "tooling/install_sccache.py",
-      "sha256": "eb5c74a0501bc2bcdc3060ac3af4adbb7a4e3140bc39d3a795eef03c1b5443e3"
+      "sha256": "ac759fccafafd087a4ed54d148fec63c83e408a95b060d274f66498bb673b2cf"
     },
     {
       "path": "tooling/link_probe.py",
@@ -7265,11 +7316,11 @@
     },
     {
       "path": "tooling/lock_toolchains.py",
-      "sha256": "e91ca6e45cf119733d58634bc0d0dbd560f2967ae858a1ffe9099ac579c34bb9"
+      "sha256": "cd1f7cf80383d041ce09b421a9ae9bda0254373f6f3a7164fa03f13c52842adb"
     },
     {
       "path": "tooling/package_release.py",
-      "sha256": "217da7294b0399f1471eadeb20c5a85b3870b1a8681685973700d589007bc4ae"
+      "sha256": "5d4b9c92cff783211e15b610bc755cc802f0baa73a51a24b662982b3808a4dd5"
     },
     {
       "path": "tooling/perfetto_probe.cc",
@@ -7281,27 +7332,35 @@
     },
     {
       "path": "tooling/public_snapshot.py",
-      "sha256": "fef6a6c25a379ff07daaccf3e67d1167d999430a58245094ae48b1f364410152"
+      "sha256": "43b7827175d3fe2e794131158b9a1643df375123cd02e4dfce1b8fa073aa85d1"
     },
     {
       "path": "tooling/public_snapshot_policy.json",
-      "sha256": "6084f37a8bda089c35cceaa0ac8b2d3383952023c7a2c01e3e1d0e1430fdc9af"
+      "sha256": "f1131633dc3e1751967a56ff868db35f972e30ffaa4a8d91fd8dc2739d91dc4d"
     },
     {
       "path": "tooling/publication_guard.py",
-      "sha256": "bbec29963072ffea6d9c742a36152ece7f938f4a456561fa9beca2bb441d43da"
+      "sha256": "f65d4665e32f5532a060f6a49f65663f6e75d664d84150e69aea856dc3f587b9"
+    },
+    {
+      "path": "tooling/README.md",
+      "sha256": "83b9d352da47207e4143662299ffe79886e4c06f8180d005cf6cbdd1ede17f4c"
     },
     {
       "path": "tooling/reseal_pack.py",
-      "sha256": "251ad7a88adb8c124cc091816d439af541dcb92ab8e6c8a2d388ca3d70238b07"
+      "sha256": "eb638a8fa726f979adc102b687c4741253888dafd2a05c517572c227e18c41f7"
     },
     {
       "path": "tooling/rocksdb_cache.py",
-      "sha256": "1e9a7139a5686eb226687774119fa7d22ba1be571d506c311373313261e486ea"
+      "sha256": "254d53821808496b75cb6cb17d6e4599033e10707f1477f8debbff85252c530d"
     },
     {
       "path": "tooling/self_analysis_acceptance.py",
       "sha256": "62196b31bf689582a1796caaf8feaff1f601a95229c940e7fd80451016697f4c"
+    },
+    {
+      "path": "tooling/test_common.py",
+      "sha256": "16678c1ccab2b6d7d433bb6bb26bf0fe350a9c86b715eb825ef19460b8f1fa9e"
     },
     {
       "path": "tooling/test_lane.py",
@@ -7313,7 +7372,7 @@
     },
     {
       "path": "tooling/test_public_snapshot.py",
-      "sha256": "2c5651f5b0a45f8f120763369cdbc51abfc73d2f37cf96d2453c94655c528725"
+      "sha256": "9806d16833db0c538df333c76f47629b9ff53a15c96c4b0d6422143688142980"
     },
     {
       "path": "tooling/test_publication_guard.py",
@@ -7321,7 +7380,7 @@
     },
     {
       "path": "tooling/test_release.py",
-      "sha256": "123dd28851b0540055987dd4ddcb2c4584e7fe9c05495c5baa1d749ae87cab1a"
+      "sha256": "ae6047463f9cb2d500d9121423d4b88f6fedaa1c7894f3884b8a0771186146a2"
     },
     {
       "path": "tooling/test_upstream.py",
@@ -7333,11 +7392,11 @@
     },
     {
       "path": "tooling/upstream.py",
-      "sha256": "6ebe93dc4abd3f2a2fb18c73e19b26b895f3cfbeae41f94e69b1a64cea16adb7"
+      "sha256": "3bc69fb68e1239ac073fa0b0fdce453fa7eb62c276fdc7e125b72c901bfc2bcd"
     },
     {
       "path": "tooling/upstream_delta_drill.py",
-      "sha256": "5dc2ecc80aba6ea26a475de8ae7b37b7ac7517a2e6affd790759a67a3520484f"
+      "sha256": "b00133fe7fb77c530e92a04e15c38a75ff368de3a0024f03aeecc98424074259"
     },
     {
       "path": "tooling/verify_b030_evidence.py",
@@ -7366,14 +7425,6 @@
     {
       "path": "upstream-probes/real-export/linux-probes.log",
       "sha256": "a4de26539e73aa13f08c28d16451270cd0aac90e1c9c2eee081b0c087e85e3c0"
-    },
-    {
-      "path": "upstream-probes/real-export/network-2.trace",
-      "sha256": "9ce2f5ba60b06b9f7128be96baece26efb4b399b5e8554335d3c96c771176ad0"
-    },
-    {
-      "path": "upstream-probes/real-export/network.trace",
-      "sha256": "f5c2640e6b48ea606afe5bb2ef28572bdc6b5122d9eb6b8ba4f528819e5f743b"
     },
     {
       "path": "upstream-probes/real-export/server-run-2.log",
@@ -7421,31 +7472,11 @@
     },
     {
       "path": "UPSTREAM_PATCHES.md",
-      "sha256": "935578005ac5e3036ceccbcbf4ee18dc5014abe9ca72e6cf5c543e0cb9d82859"
+      "sha256": "0ebc26fb124e3614680471e53bd4b340f54a8af29bc962904b62d29a801cd802"
     },
     {
       "path": "upstreams.lock.json",
-      "sha256": "2a559e66c67ab2a860eea47aefa40a9dfe9f84437eee6f832a7c2b98f8483358"
-    },
-    {
-      "path": "vs-extension/DEVELOPMENT.md",
-      "sha256": "9cd42b6ee09adb55914b159f292c86d95a91c1447c28ef915917f294e8dd80e0"
-    },
-    {
-      "path": "vs-extension/src/CodegraphExtension/CodegraphExtension.csproj",
-      "sha256": "5f36a0d63d3fff8bad175e244f9ea6cbdedd2795933dd3100e11b9dad2897871"
-    },
-    {
-      "path": "vs-extension/src/CodegraphExtension/CodegraphLanguageClient.cs",
-      "sha256": "fbc19caf41b41feeab6c116e331dc6b40f575450120fc94e056db8ce11a6e837"
-    },
-    {
-      "path": "vs-extension/src/CodegraphExtension/CodegraphPackage.cs",
-      "sha256": "a47b3ad9afe7b1977b68b9ccf764e55644bbca764aad8f143ae655863b374ab3"
-    },
-    {
-      "path": "vs-extension/src/CodegraphExtension/source.extension.vsixmanifest",
-      "sha256": "52a4a3c7c9010dcbdfe7ae61b16d9e60d117e1814addff57557f8de775547dea"
+      "sha256": "2e5f9d01ef0fff58b31e9c0ff9e927f2e51fb9cbf5c00e141bdcf42920e3612a"
     },
     {
       "path": "vscode/.eslintrc.json",

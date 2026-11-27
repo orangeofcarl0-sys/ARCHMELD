@@ -379,4 +379,33 @@ is unexercised but not required for this path.
     未改 tolerance。`codegraph` 默认后端 lib 59/59、PHP 89/89、Python
     123/0/1、Rust 98 通过。B000 Ubuntu 套件复核、Ubuntu GUI/VS Code host 与
     macOS 仍是发布级延后项。
+- 结构梳理（2026-11-27）：新增 `docs/INDEX.md`（单一导航与权威顺序）、
+  `docs/adr/README.md`（ADR-001…016 与 017…060 的桥接索引）、
+  `docs/evidence/README.md` 与 `docs/release-evidence/README.md`（证据分层与重跑规则）、
+  `tooling/README.md`（35 个脚本的入口与约定），以及
+  `docs/assessments/SELF-ANALYSIS-COMPLEXITY-2026-11-27.md`（复杂度度量与 T1–T4 收敛计划）。
+  根 `AGENTS.md` 与 `HANDOFF_CHECKLIST.md` 的阅读顺序已指向该索引。本轮仅增加导航与说明，
+  不改产品代码、测试期望、证据或冻结包；T2（工具原语收敛）与 T3（core 模块分组）待单独验收。
+- 工具原语与 core 结构（2026-11-27）：`tooling/common.py` 收敛 ROOT/SHA-256/JSON/子进程原语，
+  维护脚本改用共享实现；`archmeld-core` 将 `predicate`、`runtime`、`changeset`、`interpret`
+  原地拆为子模块，并把 44 个模块移入 `evidence`/`change`/`trace`/`analysis`/`ops`/`surface`
+  六组。组模块保持私有，根级 `pub use` 保留全部旧路径；`anchor`/`units` 收窄为 `pub(crate)`。
+  决策记录为 `docs/adr/ADR-061-module-groups-and-re-exports.md`。`archmeld.map.txt` 已按
+  snapshot `sha256:2f28e8bd…` 重写，`map check` 为 `state=ok`、`errors=[]`、23 条 confirmed refs。
+  本轮不改契约版本、测试期望、证据或冻结包。
+- 表面与证据治理（2026-11-27）：公开导出策略新增 `.sqlite3`/`.db`/`objects/**`/`.gz`/`.trace`
+  与 E4a 原始 transcript 的 omit，并增加导出测试（9→10）；E4a 的 195 个 untracked
+  `smoke/` 文件（5.1 MB）移到仓库同级 `_archmeld_evidence_archive/e4a-2026-11-25/`，
+  带 `SHA256SUMS` 与 `SMOKE-ARCHIVE.md` 指针，51 个 tracked 路径未动；退役陈旧的
+  `vs-extension/`（5 文件，0.13.1），在 `UPSTREAM_PATCHES.md` 记为 P018 并新增
+  `docs/release-evidence/SURFACE-RETIRE-2026-11-27.json`。这是对“保留上游表面”纪律的
+  明确偏离，按用户授权的 T4 归档/退役范围执行；tracked 证据与命令账本未移动。
+- 验证（2026-11-27）：`test_lane.py --lane fast` 与 `--lane server` 通过；
+  core+api 全量套件为 81 个测试二进制、273 passed / 0 failed（含 benchmark、t3_stress
+  与全部 API integration tests）。`test_lane.py --lane full` 的第二组
+  `codegraph-server --lib` 在 canonical 源码 RocksDB 重编阶段以 exit 120 中止，日志无
+  测试失败、无错误文本，属于本机 16 GB 环境的重编限制；server 组已用 prebuilt RocksDB
+  的 `--lane server` 复核通过。`cargo doc -p archmeld-core --no-deps`、`map check`
+  （state=ok）、`doctor --json`（failed=0）、`upstream.py verify --skip-cargo`、
+  `patches --check`、`reseal_pack --check`、公开导出与守卫自测均通过。
 

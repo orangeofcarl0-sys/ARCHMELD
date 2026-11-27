@@ -13,24 +13,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+import common
+
+ROOT = common.ROOT
 PACK = ROOT / "docs" / "archmeld"
 MANIFEST = PACK / "PACK_MANIFEST.json"
 SUMS = PACK / "SHA256SUMS"
 EXCLUDES = {"PACK_MANIFEST.json", "SHA256SUMS"}
-
-
-def digest(path: Path) -> str:
-    value = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            value.update(chunk)
-    return "sha256:" + value.hexdigest()
 
 
 def pack_files() -> list[Path]:
@@ -42,7 +34,7 @@ def pack_files() -> list[Path]:
 
 
 def load_manifest() -> dict:
-    return json.loads(MANIFEST.read_text(encoding="utf-8"))
+    return common.read_json(MANIFEST)
 
 
 def current_entries() -> list[dict]:
@@ -50,7 +42,7 @@ def current_entries() -> list[dict]:
         {
             "path": path.relative_to(PACK).as_posix(),
             "size_bytes": path.stat().st_size,
-            "digest": digest(path),
+            "digest": common.sha256_file(path, prefix="sha256:"),
         }
         for path in pack_files()
     ]
@@ -77,9 +69,7 @@ def write(manifest: dict) -> None:
     manifest["version"] = "1.1"
     manifest["specification_date"] = "2026-11-26"
     manifest["files"] = entries
-    MANIFEST.write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    common.write_json(MANIFEST, manifest)
     lines = [
         f"{entry['digest'].removeprefix('sha256:')}  {entry['path']}"
         for entry in entries

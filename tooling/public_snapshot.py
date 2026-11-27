@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
-import hashlib
 import io
 import json
 import os
@@ -30,10 +29,14 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+import common
+
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = ROOT / "tooling" / "public_snapshot_policy.json"
 MANIFEST = ROOT / "patches" / "codegraph" / "manifest.json"
 PUBLIC_MARKER = "PUBLIC_SNAPSHOT.md"
+sha256_bytes = common.sha256_bytes
+sha256_file = common.sha256_file
 
 GENERIC_RULES: list[tuple[str, re.Pattern[str]]] = [
     ("P01_windows_path", re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]")),
@@ -51,14 +54,6 @@ GENERIC_RULES: list[tuple[str, re.Pattern[str]]] = [
 ]
 
 TEXT_SKIP_SUFFIXES = {".scip", ".dll", ".pdb", ".png", ".jpg", ".jpeg", ".ico", ".zip", ".vsix", ".trace"}
-
-
-def sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def sha256_file(path: Path) -> str:
-    return sha256_bytes(path.read_bytes())
 
 
 def load_json(path: Path) -> Any:

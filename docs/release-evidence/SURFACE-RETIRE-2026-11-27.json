@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-27",
+  "command": "#surface-retire-vs-extension-2026-11-27",
+  "status": "passed",
+  "decision": "Retire the stale upstream Visual Studio extension",
+  "authorization": "User selected the T4 archive/retire surface scope on 2026-11-27",
+  "paths": [
+    "vs-extension/DEVELOPMENT.md",
+    "vs-extension/src/CodegraphExtension/CodegraphExtension.csproj",
+    "vs-extension/src/CodegraphExtension/CodegraphLanguageClient.cs",
+    "vs-extension/src/CodegraphExtension/CodegraphPackage.cs",
+    "vs-extension/src/CodegraphExtension/source.extension.vsixmanifest"
+  ],
+  "inventory": {
+    "files": 5,
+    "bytes": 28674,
+    "manifest_version": "0.13.1",
+    "target_framework": ".NET Framework 4.8"
+  },
+  "checks": {
+    "build": "no build or test target references the directory",
+    "packaging": "package_release.py builds archmeld-vscode, not vs-extension",
+    "ci": "no workflow references the directory",
+    "patch_manifest": "not added; upstream.py patches --check remains complete",
+    "upstream_merge": "release-only merge does not reintroduce an unchanged deleted path; an upstream edit would be a delete/modify conflict"
+  },
+  "deviation": "Explicit user-authorized exception to the default preserve-upstream-surfaces rule; recorded in UPSTREAM_PATCHES.md as P018.",
+  "rollback": "git checkout <pre-change-commit> -- vs-extension"
+}

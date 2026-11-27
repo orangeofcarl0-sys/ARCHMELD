@@ -59,6 +59,21 @@ These changes are test/build-graph only; no product runtime behaviour is
 changed. The fixture patch preserves every exact path, count, line and column
 assertion.
 
+## Retired upstream surfaces (2026-11-27)
+
+| ID | Change | Paths | Upstream? | AT / evidence |
+|---|---|---|---|---|
+| P018 | Retire the stale Visual Studio extension (manifest 0.13.1, .NET Framework csproj, no build/test/release reference) | `vs-extension/DEVELOPMENT.md`, `vs-extension/src/CodegraphExtension/CodegraphExtension.csproj`, `CodegraphLanguageClient.cs`, `CodegraphPackage.cs`, `source.extension.vsixmanifest` | No — out-of-scope surface removal; no upstream code change | `docs/release-evidence/SURFACE-RETIRE-2026-11-27.json` |
+
+This is an explicit deviation from the default "preserve upstream surfaces"
+rule, authorized with the T4 archive/retire scope. The path is deliberately not
+added to `patches/codegraph/manifest.json`: the manifest only covers
+`Cargo.toml`, `Cargo.lock`, `README.md` and `crates/codegraph*`, and adding a
+deleted path would make `upstream.py patches --check` report a missing path.
+A release-only upstream merge does not reintroduce an unchanged deleted path;
+an upstream edit to these files would surface as a delete/modify conflict.
+
+
 | # | Change | Paths | Necessity | Upstream? | AT |
 |---|---|---|---|---|---|
 | 1 | Workspace member for the evidence core | `Cargo.toml` | ARCHMELD crate must build with the pinned workspace | No (product code) | B003+ |

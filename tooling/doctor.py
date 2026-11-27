@@ -10,7 +10,6 @@ Exit code 0 only when every recorded tool resolves and hash-matches.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import shutil
@@ -18,18 +17,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+import common
 import portable_env
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = ROOT / "toolchains.lock.json"
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+sha256_file = common.sha256_file
 
 
 def resolve_tool(tool: dict) -> tuple[Path | None, str]:
@@ -135,7 +128,7 @@ def main() -> int:
     if not LOCK.exists():
         print("FAIL toolchains.lock.json is missing; run tooling/lock_toolchains.py")
         return 1
-    lock = json.loads(LOCK.read_text(encoding="utf-8"))
+    lock = common.read_json(LOCK)
     checks = []
     for tool in lock.get("tools", []):
         name = tool.get("name")

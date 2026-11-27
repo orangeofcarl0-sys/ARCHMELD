@@ -8,7 +8,6 @@ re-run adds a new record instead of rewriting history.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import platform
@@ -25,17 +24,12 @@ RECORD_FILE = ROOT / "baseline" / "commands.ndjson"
 
 sys.path.insert(0, str(ROOT / "tooling"))
 import build_helper  # noqa: E402
+import common  # noqa: E402
 import portable_env as portable  # noqa: E402
 
 
 def sha256_file(path: Path) -> str | None:
-    if not path.exists():
-        return None
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    return common.sha256_file(path, missing_ok=True)
 
 
 def tool_version(argv: list[str], env: dict[str, str] | None = None) -> dict:

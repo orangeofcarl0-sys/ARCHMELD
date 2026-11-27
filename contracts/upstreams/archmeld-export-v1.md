@@ -4,7 +4,7 @@ Status: additive revisions (`schema_version` 1.1 and 1.2), 2026-11-26.
 1.1 adds producer provenance; 1.2 adds the optional `index` manifest block.
 
 The producer is the pinned CodeGraph fork (`crates/codegraph/src/export/ndjson.rs`);
-the consumer is the private evidence core (`crates/archmeld-core/src/bridge.rs`).
+the consumer is the private evidence core (`crates/archmeld-core/src/evidence/bridge.rs`).
 The format tag stays `archmeld-export-v1`: it names the protocol family, while
 `schema_version` names an additive revision inside that family. Do not rename the
 format tag for additive changes.

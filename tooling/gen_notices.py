@@ -7,11 +7,11 @@ Requires the pinned Rust toolchain (cargo +1.94.1-x86_64-pc-windows-gnu).
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+import common
+
+ROOT = common.ROOT
 sys.path.insert(0, str(ROOT / "tooling"))
 import build_helper  # noqa: E402
 
@@ -21,14 +21,13 @@ def main() -> int:
     command = build_helper.resolve_executable(
         ["cargo", "metadata", "--format-version", "1", "--locked"], env
     )
-    metadata = subprocess.run(
+    metadata = common.run_capture(
         command,
         cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
         env=env,
-    ).stdout
+        check=True,
+        text=True,
+    )["stdout"]
     data = json.loads(metadata)
     packages = sorted(data["packages"], key=lambda pkg: (pkg["name"], pkg["version"]))
     lines = [
