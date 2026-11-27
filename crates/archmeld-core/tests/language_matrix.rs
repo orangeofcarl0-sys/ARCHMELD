@@ -14,7 +14,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-const TOOLS: &str = "<workspace>/_archmeld_tools";
+mod support;
 
 fn copy_dir(source: &Path, destination: &Path) {
     fs::create_dir_all(destination).unwrap();
@@ -37,15 +37,7 @@ fn copy_dir(source: &Path, destination: &Path) {
 }
 
 fn matrix_tempdir() -> tempfile::TempDir {
-    let base = PathBuf::from("<temp>");
-    if base.is_dir() {
-        tempfile::Builder::new()
-            .prefix("b030-matrix-")
-            .tempdir_in(base)
-            .unwrap()
-    } else {
-        tempfile::tempdir().unwrap()
-    }
+    support::tempdir("b030-matrix-")
 }
 
 fn fixture_root(language: &str) -> PathBuf {
@@ -82,6 +74,14 @@ fn require_ok(result: &Value, label: &str) -> String {
     result["stdout"].as_str().unwrap_or("").trim().to_string()
 }
 
+fn run_ok(result: &Value) -> bool {
+    result["exit_code"].as_i64() == Some(0)
+}
+
+fn evidence_verified(result: &Value) -> bool {
+    result["state"].as_str() == Some("verified")
+}
+
 fn tool_version(argv: Vec<String>) -> Value {
     let cwd = std::env::current_dir().unwrap();
     let capture = run_command_capture(&argv, &cwd, &[], Duration::from_secs(30), None).ok();
@@ -101,34 +101,82 @@ fn tool_version(argv: Vec<String>) -> Value {
 
 #[test]
 fn seven_language_groups_build_and_execute_real_fixtures() {
+    let required = [
+        ("ARCHMELD_NODE", "node.exe"),
+        ("ARCHMELD_TSC", "lang-servers/node_modules/typescript/bin/tsc"),
+        ("ARCHMELD_JAVAC", "jdk25/jdk-25.0.5+8/bin/javac.exe"),
+        ("ARCHMELD_JAVA", "jdk25/jdk-25.0.5+8/bin/java.exe"),
+        ("ARCHMELD_DOTNET", "dotnet8/dotnet.exe"),
+        ("ARCHMELD_GXX", "c/bin/g++.exe"),
+        ("ARCHMELD_CLANGXX", "llvm18/bin/clang++.exe"),
+        ("ARCHMELD_GO", "go/go/bin/go.exe"),
+        ("ARCHMELD_PYTHON", "python.exe"),
+    ];
+    if required
+        .iter()
+        .any(|(env, relative)| support::require_tool(env, relative).is_none())
+    {
+        return;
+    }
     let base = matrix_tempdir();
-    let node = "node".to_string();
-    let tsc = format!("{TOOLS}/lang-servers/node_modules/typescript/bin/tsc");
-    let javac = format!("{TOOLS}/jdk25/jdk-25.0.5+8/bin/javac.exe");
-    let java = format!("{TOOLS}/jdk25/jdk-25.0.5+8/bin/java.exe");
-    let dotnet = format!("{TOOLS}/dotnet8/dotnet.exe");
-    let gpp = "D:/Strawberry/c/bin/g++.exe".to_string();
-    let clang = format!("{TOOLS}/llvm18/bin/clang++.exe");
-    let go = format!("{TOOLS}/go/go/bin/go.exe");
-    let rust_env = vec![(
-        "RUSTUP_TOOLCHAIN".to_string(),
-        "1.94.1-x86_64-pc-windows-gnu".to_string(),
-    )];
+    let node = support::require_tool("ARCHMELD_NODE", "node.exe")
+        .expect("node")
+        .to_string_lossy()
+        .to_string();
+    let tsc = support::require_tool("ARCHMELD_TSC", "lang-servers/node_modules/typescript/bin/tsc")
+        .expect("tsc")
+        .to_string_lossy()
+        .to_string();
+    let javac = support::require_tool("ARCHMELD_JAVAC", "jdk25/jdk-25.0.5+8/bin/javac.exe")
+        .expect("javac")
+        .to_string_lossy()
+        .to_string();
+    let java = support::require_tool("ARCHMELD_JAVA", "jdk25/jdk-25.0.5+8/bin/java.exe")
+        .expect("java")
+        .to_string_lossy()
+        .to_string();
+    let dotnet = support::require_tool("ARCHMELD_DOTNET", "dotnet8/dotnet.exe")
+        .expect("dotnet")
+        .to_string_lossy()
+        .to_string();
+    let gpp = support::require_tool("ARCHMELD_GXX", "c/bin/g++.exe")
+        .expect("g++")
+        .to_string_lossy()
+        .to_string();
+    let clang = support::require_tool("ARCHMELD_CLANGXX", "llvm18/bin/clang++.exe")
+        .expect("clang++")
+        .to_string_lossy()
+        .to_string();
+    let go = support::require_tool("ARCHMELD_GO", "go/go/bin/go.exe")
+        .expect("go")
+        .to_string_lossy()
+        .to_string();
+    let rust_env = vec![("RUSTUP_TOOLCHAIN".to_string(), support::rust_toolchain())];
     let mut groups = serde_json::Map::new();
 
     // Python
     let python = base.path().join("python");
     copy_dir(&fixture_root("python"), &python);
+    let python_cmd = support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string();
     let build = run(
         &python,
-        vec!["python".to_string(), "-m".to_string(), "compileall".to_string(), "-q".to_string(), ".".to_string()],
+        vec![
+            python_cmd.clone(),
+            "-m".to_string(),
+            "compileall".to_string(),
+            "-q".to_string(),
+            ".".to_string(),
+        ],
         &[],
     );
     require_ok(&build, "python compileall");
     let runtime = run(
         &python,
         vec![
-            "python".to_string(),
+            python_cmd.clone(),
             "-c".to_string(),
             "import app; print(app.main(3))".to_string(),
         ],
@@ -179,14 +227,14 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
     fs::write(&package_path, serde_json::to_vec_pretty(&package).unwrap()).unwrap();
     let js_build = run(
         &javascript,
-        vec!["node".to_string(), "--check".to_string(), "src/app.js".to_string()],
+        vec![node.clone(), "--check".to_string(), "src/app.js".to_string()],
         &[],
     );
     require_ok(&js_build, "javascript node --check");
     let js_runtime = run(
         &javascript,
         vec![
-            "node".to_string(),
+            node.clone(),
             "-e".to_string(),
             "import('./src/app.js').then((m) => console.log(m.value))".to_string(),
         ],
@@ -257,10 +305,12 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
             sources.push(entry.path().to_string_lossy().to_string());
         }
     }
-    let java_env = vec![(
-        "JAVA_HOME".to_string(),
-        format!("{TOOLS}/jdk25/jdk-25.0.5+8"),
-    )];
+    let java_home = Path::new(&java)
+        .parent()
+        .and_then(|bin| bin.parent())
+        .map(|root| root.to_string_lossy().to_string())
+        .unwrap_or_default();
+    let java_env = vec![("JAVA_HOME".to_string(), java_home)];
     let build = run(&java_root, sources, &java_env);
     require_ok(&build, "java build");
     let runtime = run(
@@ -287,37 +337,23 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
     // C#
     let csharp = base.path().join("csharp");
     copy_dir(&fixture_root("csharp"), &csharp);
-    let csharp_env = vec![
-        (
-            "DOTNET_ROOT".to_string(),
-            format!("{TOOLS}/dotnet8"),
-        ),
-        (
-            "NUGET_PACKAGES".to_string(),
-            "<user>/.nuget/packages".to_string(),
-        ),
-        ("DOTNET_CLI_TELEMETRY_OPTOUT".to_string(), "1".to_string()),
-        ("DOTNET_NOLOGO".to_string(), "1".to_string()),
-        (
-            "DOTNET_CLI_HOME".to_string(),
-            csharp.to_string_lossy().to_string(),
-        ),
-        ("HOMEDRIVE".to_string(), "C:".to_string()),
-        ("HOMEPATH".to_string(), "<user>".to_string()),
-        (
-            "ProgramFiles".to_string(),
-            "C:/Program Files".to_string(),
-        ),
-        (
-            "ProgramFiles(x86)".to_string(),
-            "C:/Program Files (x86)".to_string(),
-        ),
-        (
-            "PROCESSOR_ARCHITECTURE".to_string(),
-            "AMD64".to_string(),
-        ),
-        ("COMPUTERNAME".to_string(), "LOCALHOST".to_string()),
-    ];
+    let mut csharp_env = support::tool_env(&csharp);
+    if let Some(root) = Path::new(&dotnet).parent() {
+        csharp_env.push(("DOTNET_ROOT".to_string(), root.to_string_lossy().to_string()));
+    }
+    if let Some(nuget) = support::nuget_root() {
+        csharp_env.push(("NUGET_PACKAGES".to_string(), nuget.to_string_lossy().to_string()));
+    }
+    csharp_env.push(("DOTNET_CLI_TELEMETRY_OPTOUT".to_string(), "1".to_string()));
+    csharp_env.push(("DOTNET_NOLOGO".to_string(), "1".to_string()));
+    csharp_env.push(("DOTNET_CLI_HOME".to_string(), csharp.to_string_lossy().to_string()));
+    csharp_env.push(("PROCESSOR_ARCHITECTURE".to_string(), "AMD64".to_string()));
+    csharp_env.push(("COMPUTERNAME".to_string(), "LOCALHOST".to_string()));
+    for key in ["ProgramFiles", "ProgramFiles(x86)"] {
+        if let Ok(value) = std::env::var(key) {
+            csharp_env.push((key.to_string(), value));
+        }
+    }
     let build = run(
         &csharp,
         vec![
@@ -436,11 +472,12 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
     );
 
     let tool_versions = json!({
-        "python": tool_version(vec!["python".into(), "--version".into()]),
-        "node": tool_version(vec!["node".into(), "--version".into()]),
+        "python": tool_version(vec![python_cmd, "--version".into()]),
+        "node": tool_version(vec![node.clone(), "--version".into()]),
         "typescript": tool_version(vec![node.clone(), tsc, "--version".to_string()]),
         "javac": tool_version(vec![javac, "-version".to_string()]),
         "dotnet": tool_version(vec![dotnet, "--version".to_string()]),
+        "g++": tool_version(vec![gpp, "--version".to_string()]),
         "clang++": tool_version(vec![clang, "--version".to_string()]),
         "go": tool_version(vec![go, "version".to_string()]),
         "rustc": tool_version(vec!["rustc".into(), "--version".into()]),
@@ -552,7 +589,56 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
             }
         }
     }
-    let blockers: Vec<&str> = Vec::new();
+    let mut blockers: Vec<String> = Vec::new();
+    if runtime_evidence.is_none() {
+        blockers.push("runtime-linkage evidence missing".to_string());
+    }
+    if medium.is_none() {
+        blockers.push("medium-project evidence missing".to_string());
+    }
+    if rename.is_none() {
+        blockers.push("controlled-change evidence missing".to_string());
+    }
+    for (name, group) in &groups {
+        if name == "javascript_typescript" {
+            for part in ["typescript", "javascript"] {
+                if !run_ok(&group[part]["build"]) {
+                    blockers.push(format!("{name}.{part}: build not ok"));
+                }
+                if !run_ok(&group[part]["runtime"]) {
+                    blockers.push(format!("{name}.{part}: runtime not ok"));
+                }
+            }
+            for part in ["javascript", "typescript"] {
+                if !evidence_verified(&group["runtime_linkage"][part]) {
+                    blockers.push(format!("{name}.{part}: runtime linkage not verified"));
+                }
+                if !evidence_verified(&group["controlled_change"][part]) {
+                    blockers.push(format!("{name}.{part}: controlled change not verified"));
+                }
+            }
+        } else {
+            if !run_ok(&group["build"]) {
+                blockers.push(format!("{name}: build not ok"));
+            }
+            if !run_ok(&group["runtime"]) {
+                blockers.push(format!("{name}: runtime not ok"));
+            }
+            if !evidence_verified(&group["runtime_linkage"]) {
+                blockers.push(format!("{name}: runtime linkage not verified"));
+            }
+            if !evidence_verified(&group["controlled_change"]) {
+                blockers.push(format!("{name}: controlled change not verified"));
+            }
+        }
+        if !evidence_verified(&group["medium_project"]) {
+            blockers.push(format!("{name}: medium project not verified"));
+        } else if group["medium_project"]["build_exit_code"].as_i64() != Some(0) {
+            blockers.push(format!("{name}: medium project build failed"));
+        }
+    }
+    let status = if blockers.is_empty() { "passed" } else { "failed" };
+    let r1_naming_allowed = blockers.is_empty();
     let limitations = vec![
         "C/C++ full SCIP indexing still requires a Linux/WSL worker on Windows; Windows clangd definition/reference and rename apply are verified",
     ];
@@ -560,6 +646,8 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
         "schema_version": "1.0",
         "generated_by": "crates/archmeld-core/tests/language_matrix.rs",
         "platform": {"os": std::env::consts::OS, "arch": std::env::consts::ARCH},
+        "recorded_at_unix": support::recorded_at_unix(),
+        "product_head": support::product_head(),
         "tool_versions": tool_versions,
         "groups": groups,
         "runtime_linkage_evidence": {
@@ -570,18 +658,26 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
             "path": "docs/release-evidence/B030-medium-projects.json",
             "loaded": medium.is_some(),
         },
+        "rename_evidence": {
+            "path": "docs/release-evidence/B030-rename-apply.json",
+            "loaded": rename.is_some(),
+        },
         "blockers": blockers,
         "limitations": limitations,
         "AT067": {
-            "status": "passed",
-            "reason": "all seven language groups have real definition/reference evidence, native runtime capture imported and mapped to source, a pinned medium real project with a real build, and a semantic rename applied through the prepared-digest ChangeSet gate",
+            "status": status,
+            "reason": if r1_naming_allowed {
+                "all seven language groups have real build/runtime evidence, imported and mapped runtime linkage, a pinned medium real project with a real build, and a semantic rename applied through the prepared-digest ChangeSet gate"
+            } else {
+                "one or more language groups are missing build/runtime, runtime linkage, medium-project or controlled-change evidence; see blockers"
+            },
             "evidence": [
                 "docs/release-evidence/B030-runtime-linkage.json",
                 "docs/release-evidence/B030-medium-projects.json",
                 "docs/release-evidence/B030-rename-apply.json",
                 "docs/release-evidence/B030-language-matrix.json"
             ],
-            "r1_naming_allowed": true,
+            "r1_naming_allowed": r1_naming_allowed,
             "limitations": limitations,
         },
     });
@@ -594,4 +690,9 @@ fn seven_language_groups_build_and_execute_real_fixtures() {
             .join("../../docs/evidence/B030-language-matrix.json");
         fs::write(evidence, serde_json::to_string_pretty(&matrix).unwrap() + "\n").unwrap();
     }
+    assert!(
+        r1_naming_allowed,
+        "AT067 blockers: {}",
+        matrix["blockers"]
+    );
 }

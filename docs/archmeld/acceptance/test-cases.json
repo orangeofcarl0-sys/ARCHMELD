@@ -1428,8 +1428,16 @@
       "required_evidence": [
         "release evidence matrix"
       ],
-      "status": "not_run",
-      "execution_environment": "see language/platform profile; actual implementation required",
+      "status": "passed",
+      "execution_environment": "Windows 11 x64; Rust 1.94.1 GNU; UCRT64 GCC 16.1.0; Node/JDK25/.NET8/Go/Clang18 from ARCHMELD_TOOLS_ROOT",
+      "evidence": [
+        "docs/release-evidence/B030-language-matrix.json",
+        "docs/release-evidence/B030-runtime-linkage.json",
+        "docs/release-evidence/B030-medium-projects.json",
+        "docs/release-evidence/B030-rename-apply.json"
+      ],
+      "command_id": "b030-language_matrix-perf-20261127-111213",
+      "recorded_at": "2026-11-27",
       "synthetic_fixture_alone_is_sufficient": false
     },
     {

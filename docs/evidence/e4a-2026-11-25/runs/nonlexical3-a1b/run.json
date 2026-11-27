@@ -4,7 +4,7 @@
   "fixture": "nonlexical",
   "arm": "a",
   "backend": "pi",
-  "client": "<user>\\AppData\\Roaming\\npm\\pi.cmd",
+  "client": "<path><identity>\\AppData\\Roaming\\npm\\pi.cmd",
   "exit_code": 0,
   "timed_out": false,
   "duration_ms": 325711,
@@ -88,7 +88,7 @@
   "shell_calls": 7,
   "edits": 3,
   "session_id": "f53fc314-8382-4c69-929b-074d37c0529c",
-  "session_dir": "<workspace>\\<e4a-run>\\runs\\nonlexical3-a1b\\pi-sessions",
+  "session_dir": "<path>",
   "model": "deepseek-v4.1-flash",
   "provider": "omni-anthropic",
   "result": {
@@ -106,11 +106,11 @@
   },
   "environment": {
     "os": "nt",
-    "cwd": "<workspace>\\<e4a-run>\\runs\\nonlexical3-a1b\\repo",
+    "cwd": "<path>",
     "toolchain": null,
     "client_version": {
       "found": true,
-      "path": "<user>\\AppData\\Roaming\\npm\\pi.cmd",
+      "path": "<path><identity>\\AppData\\Roaming\\npm\\pi.cmd",
       "version": [
         "1.0.4"
       ],

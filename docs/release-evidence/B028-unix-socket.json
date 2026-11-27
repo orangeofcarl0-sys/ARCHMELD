@@ -14,9 +14,9 @@
     "build": "docker rust:1.94.1-bookworm; cargo build --release -p archmeld-api --bin archmeld --bin archmeld-serve"
   },
   "remote": {
-    "host": "<remote-host>",
+    "host": "<private-ip>.158",
     "port": 2222,
-    "user": "<remote-user>",
+    "user": "<identity>",
     "kernel": "6.6.87.2-microsoft-standard-WSL2",
     "python": "3.12.3",
     "working_dir": "/tmp/archmeld-b028"

@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_get_ai_context
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 8
     intent: test
 expect:
@@ -36,7 +36,7 @@ expect:
           start:
             character: 0
             line: 9
-        uri: file://${fixture}
+        uri: file://<path>
       name: compute_total
       type: function
     relatedSymbols:
@@ -53,7 +53,7 @@ expect:
           start:
             character: 0
             line: 4
-        uri: file://${fixture}
+        uri: file://<path>
       name: Order
       relationship: dependency_to_mock
       relevanceScore: 0.7
@@ -81,4 +81,4 @@ expect:
           start:
             character: 0
             line: 18
-        uri: file://${fixture}
+        uri: file://<path>

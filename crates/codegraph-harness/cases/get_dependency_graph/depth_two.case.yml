@@ -6,7 +6,7 @@ setup:
 invoke:
   tool: codegraph_get_dependency_graph
   args:
-    uri: file://${workspace}/mod_a.py
+    uri: file://<path>
     depth: 2
 expect:
   match: contains

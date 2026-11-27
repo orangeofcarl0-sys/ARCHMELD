@@ -994,6 +994,44 @@ impl ModelProvenance<'_> {
     }
 }
 
+/// Read the optional CodeBoarding contract version. The pinned 0.15.3 output
+/// has no `analysis_schema_version`, so a missing field is recorded as
+/// `unversioned` instead of rejecting the only real artifact. An explicit
+/// unknown major version is rejected before it can be cached as an idempotent
+/// result.
+fn codeboarding_contract(analysis: &Value) -> Result<Value> {
+    let (status, declared_version, declared_major) =
+        match analysis.get("analysis_schema_version") {
+            None | Some(Value::Null) => ("unversioned", Value::Null, Value::Null),
+            Some(Value::String(text)) => {
+                let text = text.trim();
+                let major_text = text.split('.').next().unwrap_or("");
+                let major: u64 = major_text.parse().map_err(|_| {
+                    CoreError::invalid(
+                        "CodeBoarding analysis_schema_version must start with a numeric major version",
+                    )
+                })?;
+                if major > 1 {
+                    return Err(CoreError::invalid(format!(
+                        "unsupported CodeBoarding analysis_schema_version {text}; supported major version is 1"
+                    )));
+                }
+                ("declared", json!(text), json!(major))
+            }
+            Some(_) => {
+                return Err(CoreError::invalid(
+                    "CodeBoarding analysis_schema_version must be a string",
+                ))
+            }
+        };
+    Ok(json!({
+        "declared_version": declared_version,
+        "declared_major": declared_major,
+        "status": status,
+        "observed_tree_spec_version": analysis["metadata"]["tree_spec"]["version"].as_u64(),
+    }))
+}
+
 /// Import a real CodeBoarding `analysis.json`. Components, dependencies and
 /// source references are mapped to candidates; missing references are recorded
 /// as unverified and no ledger entity/relation is created.
@@ -1035,6 +1073,7 @@ pub fn import_codeboarding(
             "CodeBoarding analysis is missing the components array",
         ));
     }
+    let analysis_contract = codeboarding_contract(analysis)?;
     if request.commands.len() > 100
         || request.commands.iter().any(|command| command.len() > 10_000)
     {
@@ -1116,6 +1155,7 @@ pub fn import_codeboarding(
     );
     verification["commands_ignored"] = json!(request.commands.len());
     verification["commands_executed"] = json!(0);
+    verification["analysis_contract"] = analysis_contract;
     let mut producer = json!({
         "name": "CodeBoarding",
         "version": request.provider_version,

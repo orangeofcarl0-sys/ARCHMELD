@@ -91,6 +91,13 @@ pub fn import_scip(
     let file_by_path: HashMap<&str, &FileEntry> =
         files.iter().map(|file| (file.path.as_str(), file)).collect();
     let mut diagnostics: Vec<Value> = Vec::new();
+    if index.tool_name == "unknown" && index.tool_version == "unknown" {
+        diagnostics.push(diagnostic(
+            "scip_tool_info_missing",
+            "warning",
+            "SCIP metadata has no tool_info; producer identity is unknown",
+        ));
+    }
     let mut entities: Vec<Value> = Vec::new();
     let mut relations: Vec<Value> = Vec::new();
     let mut entity_ids: HashMap<String, String> = HashMap::new();
@@ -651,6 +658,14 @@ fn parse_metadata(bytes: &[u8], index: &mut ScipIndex) -> Result<()> {
     while !reader.eof() {
         let (field, wire) = reader.tag()?;
         match (field, wire) {
+            (1, 0) => {
+                let version = reader.varint()? as i32;
+                if version != 0 {
+                    return Err(CoreError::invalid(format!(
+                        "unsupported SCIP protocol version {version}; scip-protobuf-v0.3 accepts only 0"
+                    )));
+                }
+            }
             (2, 2) => {
                 let (name, version) = parse_tool_info(reader.length_delimited()?)?;
                 if !name.is_empty() {

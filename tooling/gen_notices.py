@@ -8,25 +8,26 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tooling"))
+import build_helper  # noqa: E402
 
 
 def main() -> int:
+    env = build_helper.cargo_env()
+    command = build_helper.resolve_executable(
+        ["cargo", "metadata", "--format-version", "1", "--locked"], env
+    )
     metadata = subprocess.run(
-        [
-            "cargo",
-            "+1.94.1-x86_64-pc-windows-gnu",
-            "metadata",
-            "--format-version",
-            "1",
-            "--locked",
-        ],
+        command,
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=True,
+        env=env,
     ).stdout
     data = json.loads(metadata)
     packages = sorted(data["packages"], key=lambda pkg: (pkg["name"], pkg["version"]))

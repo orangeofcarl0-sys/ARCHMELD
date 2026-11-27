@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-26",
+  "scope": "U4b narrow structured version probes",
+  "generated_by": "tooling/upstream.py probes + tooling/test_upstream.py",
+  "results": {
+    "upstream_tooling_tests": {"passed": 43, "failed": 0},
+    "verify": {"status": "passed_with_warnings", "failed_checks": []},
+    "probes": {
+      "total": 16,
+      "update": 8,
+      "ok": 3,
+      "skipped": 5,
+      "error": 0,
+      "warnings": 0,
+      "behind": "not computed"
+    }
+  },
+  "updates_observed": [
+    {"id": "scip-clang", "pin": "v0.4.1", "latest": "0.4.3"},
+    {"id": "scip-format", "pin": "v0.3", "latest": "0.3.3"},
+    {"id": "pyright", "pin": "1.1.408", "latest": "1.1.414"},
+    {"id": "typescript-language-server", "pin": "4.3.4", "latest": "6.1.0"},
+    {"id": "gopls", "pin": "0.20.0", "latest": "v0.24.0"},
+    {"id": "csharp-ls", "pin": "0.14.0", "latest": "0.29.0"},
+    {"id": "tracy", "pin": "0.13.1", "latest": "0.15.0"},
+    {"id": "cytoscape", "pin": "3.30.2", "latest": "3.35.0"}
+  ],
+  "skipped": [
+    {"id": "clangd", "reason": "LLVM tag stream is not a single comparable release"},
+    {"id": "rust-analyzer", "reason": "pinned through the rustup toolchain"},
+    {"id": "viztracer", "reason": "no pinned fixture in adapters/traces/fixtures.lock.json"},
+    {"id": "aoci", "reason": "aoci-spec/aoci-code is not a Git URL"},
+    {"id": "toolchain", "reason": "environment pin; doctor.py is authoritative"}
+  ],
+  "providers": ["git ls-remote --tags --refs", "registry.npmjs.org", "pypi.org", "proxy.golang.org"],
+  "hashes": {
+    "upstreams.lock.json": "43dd88df6543151a17e392be77783f8302d2c7e27d680aa18a37410a4f138c15",
+    "tooling/upstream.py": "81202e423f705016785c667c5ab1ed2f6413fc87a430fc3d57c89313149887c2",
+    "tooling/test_upstream.py": "479590aa1e2ee77837e9265c42f0f08590df88139d45b38b425307bcfad85dff",
+    "docs/evidence/upstream-probes-2026-11-26/probes.json": "d7e067b9f9589d5a8a3e2846b2ff622e0eb4e2523587996a90b6ddf11d0990d0"
+  },
+  "commands": ["u4b-upstream-tests", "u4b-probes", "u4b-verify"],
+  "limitations": [
+    "GitHub REST API is not used; unauthenticated requests were rate-limited on this host",
+    "behind is null; version pins are not commit ranges",
+    "version updates are informational and never change a pin",
+    "clangd/rust-analyzer/AOCI/toolchain are intentionally not remotely probed"
+  ]
+}

@@ -10,7 +10,12 @@
       {
         "name": "dotnet",
         "version": "8.0.427",
-        "path": "<workspace>/_archmeld_tools/dotnet8/dotnet.exe"
+        "path": "<path>",
+        "observed_path": "<path>",
+        "path_env": "DOTNET_ROOT",
+        "relative_path": "dotnet.exe",
+        "strategy": "env_file",
+        "path_kind": "file"
       },
       {
         "name": "csharp-ls",

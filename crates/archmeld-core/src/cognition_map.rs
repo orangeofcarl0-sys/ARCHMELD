@@ -14,9 +14,10 @@
 //! ```
 //!
 //! `F`/`A`/`S` are model-authored prose. `R` is a list of logical references
-//! (`file:` or `entity:`; `relation:` is deferred until the Python same-name
-//! binding is fixed). This module only parses and validates; it never writes a
-//! map, never runs a repository command and never promotes a candidate edge.
+//! (`file:` or `entity:`; `relation:` is not implemented because E3 was not
+//! promoted after the E4a no-go). This module only parses and validates; it
+//! never writes a map, never runs a repository command and never promotes a
+//! candidate edge.
 
 use crate::error::{CoreError, Result};
 use crate::hash;
@@ -1166,7 +1167,7 @@ fn parse_reference(raw: &str, line_no: usize) -> std::result::Result<Reference, 
     if core.starts_with("relation:") {
         return Err(vec![issue(
             "ref_relation_deferred",
-            "relation references are deferred until the Python same-name binding is fixed",
+            "relation references are not implemented; E3 was not promoted after the E4a no-go",
             None,
             Some(raw),
             Some(line_no),

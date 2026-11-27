@@ -51,6 +51,24 @@ def main() -> int:
     next_task = next_line.split("：", 1)[1] if "：" in next_line else next_line
     upstream_state = latest_at077()
     at077 = upstream_state["status"]
+    release_notes_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (
+            ROOT / "docs/release-evidence/B030-release.md",
+            ROOT / "docs/release-evidence/B031-release-notes.md",
+        )
+        if path.is_file()
+    )
+    p_evidence = json.loads(
+        (ROOT / "docs/release-evidence/SELF-ANALYSIS-FIX-2026-11-27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    pending_p = [
+        issue["id"]
+        for issue in p_evidence.get("issues", [])
+        if issue.get("status") == "implemented_pending_acceptance"
+    ]
     required_truths = {
         "B030_gate_passed": "AT066 passed；AT067 passed" in text,
         "AT066_passed": "AT066 passed" in text,
@@ -59,7 +77,11 @@ def main() -> int:
         "AT068_passed": "AT068 passed" in text,
         "AT069_passed": "AT069 passed" in text,
         f"AT077_{at077}": f"AT077 {at077}" in text,
+        "AT077_closed": "AT077 已闭" in text,
         "release_gate_deferred": "项目测试阶段" in text and "延后" in text,
+        "release_notes_no_stale_at077": "AT077 remains partial" not in release_notes_text
+        and "AT077 real newer-upstream upgrade is blocked" not in release_notes_text,
+        "next_task_names_pending_p": all(issue in next_task for issue in pending_p),
     }
     missing_truths = [name for name, present in required_truths.items() if not present]
 
@@ -87,7 +109,7 @@ def main() -> int:
                 recorded.add(json.loads(line)["id"])
             except Exception:
                 continue
-    missing_commands = [command for command in command_ids if command.startswith("b") and command not in recorded]
+    missing_commands = [command for command in command_ids if command not in recorded]
 
     do_not_redo = [
         "do not rebuild a general indexer or replace the pinned CodeGraph fork",
@@ -110,7 +132,7 @@ def main() -> int:
         "missing_truths": missing_truths,
         "evidence_checks": evidence_checks,
         "missing_evidence": missing_evidence,
-        "command_ids_checked": len([c for c in command_ids if c.startswith("b")]),
+        "command_ids_checked": len(command_ids),
         "missing_commands": missing_commands,
         "do_not_redo": do_not_redo,
         "AT070": {

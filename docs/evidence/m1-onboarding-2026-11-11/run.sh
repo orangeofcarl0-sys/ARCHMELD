@@ -3,8 +3,8 @@
 # The fixture and state are outside the repository so no source is uploaded.
 set -euo pipefail
 
-ROOT=<repo>
-FIX=<workspace>/_archmeld_m1_fixture
+ROOT=<path>
+FIX=<path>
 OUT="$ROOT/docs/evidence/m1-onboarding-2026-11-11"
 BIN="$ROOT/target/debug/archmeld.exe"
 MCP="$ROOT/target/debug/archmeld-mcp.exe"

@@ -34,7 +34,7 @@ impl TraceLocator {
     }
 
     /// Declare an entity for a source file/line. Paths are matched after
-    /// normalizing separators and `file://` prefixes.
+    /// normalizing separators and `file://<path> prefixes.
     pub fn add_location(&mut self, path: &str, line: u64, entity_id: &str) {
         self.locations
             .insert((normalize_path(path), line), entity_id.to_string());
@@ -173,7 +173,7 @@ impl SpanDraft {
 
 fn normalize_path(path: &str) -> String {
     let mut value = path.trim().replace('\\', "/");
-    for prefix in ["file:///", "file://"] {
+    for prefix in ["file://<path>", "file://<path>"] {
         if let Some(rest) = value.strip_prefix(prefix) {
             value = rest.to_string();
             break;

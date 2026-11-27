@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -16,11 +17,13 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import portable_env as portable
+
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 EVIDENCE = ROOT / "docs/release-evidence/B031-install-tests.json"
 NOTES = ROOT / "docs/release-evidence/B031-release-notes.md"
-TEMP_BASE = Path("<temp>")
+TEMP_BASE = portable.temp_root()
 VERSION = "0.1.0"
 PREVIOUS = "0.0.9"
 
@@ -57,7 +60,12 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def run(argv: list[str], cwd: Path | None = None, timeout: int = 180) -> dict:
+def run(
+    argv: list[str],
+    cwd: Path | None = None,
+    timeout: int = 180,
+    env: dict[str, str] | None = None,
+) -> dict:
     started = subprocess.run(
         argv,
         cwd=str(cwd) if cwd else None,
@@ -65,6 +73,7 @@ def run(argv: list[str], cwd: Path | None = None, timeout: int = 180) -> dict:
         text=True,
         errors="replace",
         timeout=timeout,
+        env=env,
     )
     return {
         "argv": argv,
@@ -81,6 +90,21 @@ def check(result: dict, label: str) -> dict:
     if result["exit_code"] != 0:
         raise SystemExit(f"{label} failed: {result}")
     return result
+
+
+def parse_binary_version(text: str) -> dict | None:
+    match = re.search(
+        r"(?P<version>\d+\.\d+\.\d+)\+(?P<commit>[0-9a-f]{7,40})(?P<dirty>-dirty)?",
+        text,
+    )
+    if not match:
+        return None
+    return {
+        "version": match.group("version"),
+        "commit": match.group("commit"),
+        "dirty": bool(match.group("dirty")),
+        "line": text.strip(),
+    }
 
 
 def extract(zip_path: Path, target: Path) -> None:
@@ -104,13 +128,7 @@ def verify_checksums(bundle: Path) -> dict:
 
 
 def chrome_path() -> Path | None:
-    for candidate in [
-        Path("C:/Program Files/Google/Chrome/Application/chrome.exe"),
-        Path("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"),
-    ]:
-        if candidate.is_file():
-            return candidate
-    return None
+    return portable.find_chrome()
 
 
 def headless_open(url: str) -> dict | None:
@@ -175,6 +193,9 @@ def main() -> int:
         extract(DIST / f"archmeld-cli-{VERSION}-windows-x64.zip", win_cur)
         extract(DIST / f"archmeld-cli-{PREVIOUS}-windows-x64.zip", win_prev)
         win_checks = verify_checksums(win_cur)
+        win_bundle = json.loads((win_cur / "bundle.json").read_text(encoding="utf-8"))
+        assert win_bundle["schema_version"] == "1.1", win_bundle
+        assert win_bundle["release_status"] == "provisional", win_bundle
         serve_help = check(run([str(win_cur / "bin/archmeld-serve.exe"), "--help"]), "windows serve")
         mcp_help = check(run([str(win_cur / "bin/archmeld-mcp.exe"), "--help"]), "windows mcp")
         prefix = temp_root / "win-prefix"
@@ -214,6 +235,61 @@ def main() -> int:
         )
         index_result = json.loads(index["stdout"].strip().splitlines()[-1])
         assert index_result["ledger"]["entities"] > 0
+        assert index_result["bridge"]["export_schema_version"] == "1.2", index_result
+        assert "skipped_by_reason" in index_result["bridge"]["index"], index_result
+        assert "cross_file_implements" in index_result["bridge"]["index"], index_result
+        version = check(
+            run([str(prefix / "bin/archmeld.exe"), "--version"]),
+            "windows version",
+        )
+        binary_version = parse_binary_version(version["stdout"])
+        assert binary_version is not None, version
+        assert binary_version["version"] == VERSION, binary_version
+        assert binary_version["commit"] == win_bundle["product_build_commit"], (
+            binary_version,
+            win_bundle["product_build_commit"],
+        )
+        assert binary_version["dirty"] is False, binary_version
+        helper_schema = check(
+            run([str(prefix / "bin/archmeld-index.exe"), "--schema"]),
+            "windows helper schema",
+        )
+        assert helper_schema["stdout"].strip() == "1.2", helper_schema
+        system_root = os.environ.get("SystemRoot") or os.environ.get("WINDIR", "")
+        clean_path = os.pathsep.join([str(Path(system_root) / "System32"), system_root])
+        clean_env = dict(os.environ)
+        clean_env["PATH"] = clean_path
+        clean_version = check(
+            run([str(prefix / "bin/archmeld.exe"), "--version"], env=clean_env),
+            "windows clean-path version",
+        )
+        clean_parsed = parse_binary_version(clean_version["stdout"])
+        assert clean_parsed == binary_version, clean_parsed
+        clean_helper = check(
+            run([str(prefix / "bin/archmeld-index.exe"), "--schema"], env=clean_env),
+            "windows clean-path helper schema",
+        )
+        assert clean_helper["stdout"].strip() == "1.2", clean_helper
+        clean_path_state = temp_root / "clean-state-clean-path"
+        clean_path_index = check(
+            run([
+                str(prefix / "bin/archmeld.exe"), "index",
+                "--workspace", str(clean_workspace),
+                "--state", str(clean_path_state),
+                "--project", "project.cleanpath",
+            ], env=clean_env),
+            "windows clean-path index",
+        )
+        clean_path_result = json.loads(clean_path_index["stdout"].strip().splitlines()[-1])
+        assert clean_path_result["ledger"]["entities"] > 0, clean_path_result
+        clean_path_evidence = {
+            "PATH": clean_path,
+            "cargo_on_path": shutil.which("cargo", path=clean_path),
+            "version": clean_parsed,
+            "helper_schema": clean_helper["stdout"].strip(),
+            "index": clean_path_index,
+            "index_result": clean_path_result,
+        }
         init = check(
             run([
                 str(prefix / "bin/archmeld.exe"), "init",
@@ -248,7 +324,7 @@ def main() -> int:
             "windows clean verify report",
         )
         browser = headless_open(
-            "file:///" + (clean_state / "report/report.html").as_posix()
+            "file://<path>" + (clean_state / "report/report.html").as_posix()
         )
         if browser is not None:
             check(browser, "windows offline report open")
@@ -279,6 +355,10 @@ def main() -> int:
             "install_previous": install_prev,
             "install_current": install_cur,
             "installed_version": installed["version"],
+            "binary_version": binary_version,
+            "bundle_build_commit": win_bundle["product_build_commit"],
+            "bundle_packaging_commit": win_bundle["packaging_git_commit"],
+            "bundle_release_status": win_bundle["release_status"],
             "backup_present": True,
             "rollback": rollback,
             "uninstall": uninstall,
@@ -292,6 +372,7 @@ def main() -> int:
                 "verify": verify,
                 "offline_open": browser,
                 "no_network": "Chrome host resolver maps every host to NOTFOUND; report has no scripts or remote assets",
+                "clean_path": clean_path_evidence,
             },
             "upgrade_note": "previous bundle is a locally built 0.0.9 drill artifact, not a shipped historical release",
         }
@@ -302,6 +383,9 @@ def main() -> int:
         extract(DIST / f"archmeld-cli-{VERSION}-linux-x64.zip", linux_cur)
         extract(DIST / f"archmeld-cli-{PREVIOUS}-linux-x64.zip", linux_prev)
         linux_checks = verify_checksums(linux_cur)
+        linux_bundle = json.loads((linux_cur / "bundle.json").read_text(encoding="utf-8"))
+        assert linux_bundle["schema_version"] == "1.1", linux_bundle
+        assert linux_bundle["release_status"] == "provisional", linux_bundle
         docker_tmp = temp_root / "linux-mnt"
         shutil.copytree(linux_cur, docker_tmp / "cur")
         shutil.copytree(linux_prev, docker_tmp / "prev")
@@ -315,8 +399,13 @@ def main() -> int:
                 "-e", "ARCHMELD_PREFIX=/mnt/prefix", "ubuntu:24.04", "sh", "-c",
                 "sh /mnt/prev/install.sh && sh /mnt/cur/install.sh && "
                 "cat /mnt/prefix/install.json && ls /mnt/prefix/backup && "
+                "/mnt/prefix/bin/archmeld --version && "
+                "/mnt/prefix/bin/archmeld --version | grep -q '+' && "
+                "/mnt/prefix/bin/archmeld-index --schema | grep -qx '1.2' && "
                 "out=$(/mnt/prefix/bin/archmeld index --workspace /mnt/workspace "
                 "--state /mnt/state --project project.clean) && echo \"$out\" && "
+                "printf '%s' \"$out\" | grep -q '\"export_schema_version\":\"1.2\"' && "
+                "printf '%s' \"$out\" | grep -q '\"skipped_by_reason\"' && "
                 "snap=$(printf '%s' \"$out\" | sed -n 's/.*\"snapshot_id\":\"\([^\"]*\)\".*/\\1/p') && "
                 "test -n \"$snap\" && "
                 "/mnt/prefix/bin/archmeld report --state /mnt/state --project project.clean "
@@ -335,6 +424,14 @@ def main() -> int:
         assert "usage: archmeld-serve" in docker["stdout"]
         assert "archmeld-export-v1" in docker["stdout"]
         assert '"checked_files":4' in docker["stdout"]
+        linux_version = parse_binary_version(docker["stdout"])
+        assert linux_version is not None, docker["stdout"][-2000:]
+        assert linux_version["version"] == VERSION, linux_version
+        if linux_bundle["product_build_commit"] != "unknown":
+            assert linux_version["commit"] == linux_bundle["product_build_commit"], (
+                linux_version,
+                linux_bundle["product_build_commit"],
+            )
         mcp_help = check(
             run([
                 "docker", "run", "--rm", "-v", f"{docker_tmp}:/mnt",
@@ -347,6 +444,10 @@ def main() -> int:
             "status": "passed",
             "image": "ubuntu:24.04",
             "checksums": linux_checks,
+            "binary_version": linux_version,
+            "bundle_build_commit": linux_bundle["product_build_commit"],
+            "bundle_packaging_commit": linux_bundle["packaging_git_commit"],
+            "bundle_release_status": linux_bundle["release_status"],
             "install_upgrade_rollback_uninstall": docker,
             "project_data_preserved": True,
             "offline_binaries_start": True,
@@ -356,21 +457,23 @@ def main() -> int:
         }
 
         # VSIX install/uninstall.
-        code_cmd = Path("D:/Program Files/Microsoft VS Code/bin/code.cmd")
+        code_cmd = portable.find_vscode_code()
+        if code_cmd is None:
+            raise SystemExit("VS Code executable not found; set ARCHMELD_VSCODE or add code to PATH")
         extensions = temp_root / "vscode-ext"
         user_data = temp_root / "vscode-user"
         vsix = DIST / f"archmeld-workbench-{VERSION}.vsix"
         install = check(
             run([
                 "cmd.exe", "/c", str(code_cmd), "--install-extension", str(vsix),
-                "--extensions-dir", str(extensions), "--user-data-dir", str(user_data), "--force",
+                "--extensions-dir", str(extensions), "--user-data-dir", str(user_data), "--force", "--disable-updates",
             ]),
             "vsix install",
         )
         listing = check(
             run([
                 "cmd.exe", "/c", str(code_cmd), "--list-extensions",
-                "--extensions-dir", str(extensions), "--user-data-dir", str(user_data),
+                "--extensions-dir", str(extensions), "--user-data-dir", str(user_data), "--disable-updates",
             ]),
             "vsix list",
         )
@@ -379,7 +482,7 @@ def main() -> int:
             run([
                 "cmd.exe", "/c", str(code_cmd), "--uninstall-extension",
                 "archmeld.archmeld-workbench", "--extensions-dir", str(extensions),
-                "--user-data-dir", str(user_data),
+                "--user-data-dir", str(user_data), "--disable-updates",
             ]),
             "vsix uninstall",
         )
@@ -408,11 +511,26 @@ def main() -> int:
                 f"- AT077 real newer-upstream upgrade is {at077}: "
                 f"{upstream_state['reason']}."
             )
+        matrix_path = ROOT / "docs/release-evidence/B030-language-matrix.json"
+        at067_status = "not_run"
+        if matrix_path.is_file():
+            try:
+                at067_status = json.loads(matrix_path.read_text(encoding="utf-8")).get(
+                    "AT067", {}
+                ).get("status", "not_run")
+            except (OSError, json.JSONDecodeError):
+                at067_status = "unreadable"
         lines = [
             f"# ARCHMELD {VERSION} release notes",
             "",
-            "Status: **packaging evidence only; R1 is not declared complete.** "
-            f"AT067 passed for the seven-language gate; {at077_sentence}",
+            "Status: **packaging evidence only; release_status=provisional; "
+            "R1 is not declared complete.** "
+            f"Binaries were not rebuilt from HEAD: Windows "
+            f"`{win_bundle['product_build_commit']}` "
+            f"(dirty={win_bundle['product_build_dirty']}), Linux "
+            f"`{linux_bundle['product_build_commit']}` "
+            f"(dirty={linux_bundle['product_build_dirty']}); see `bundle.json` "
+            f"builds. AT067 is `{at067_status}` for the seven-language gate; {at077_sentence}",
             "",
             "## Artifacts",
             "",
@@ -443,6 +561,9 @@ def main() -> int:
             "browser check ran on Windows Chrome headless.",
             "- The upgrade drill uses a locally built 0.0.9 bundle, not a published "
             "historical release.",
+            "- Binaries were built before the current packaging HEAD; this package "
+            "is repackaged from existing artifacts and is provisional, not a "
+            "release built from HEAD.",
             at077_limit,
             "",
             "## Verification",

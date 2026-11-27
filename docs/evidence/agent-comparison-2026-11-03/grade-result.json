@@ -251,7 +251,7 @@
     "uncertainties": -1
   },
   "run": {
-    "cwd": "<repo>",
+    "cwd": "<path>",
     "argv": [
       "docs/evidence/agent-comparison-2026-11-03/grade.py"
     ],

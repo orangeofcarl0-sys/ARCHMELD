@@ -24,6 +24,15 @@ use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::time::Duration;
 
+mod support;
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
+
 static EVIDENCE_LOCK: Mutex<()> = Mutex::new(());
 
 const REFACTORED: &str = r#"# Copyright 2026 ARCHMELD contributors
@@ -229,7 +238,7 @@ fn contract_and_plan(
             "kind": "behavior",
             "required": true,
             "description": "golden harness runs units/shape/boundary/determinism checks",
-            "command": {"argv": ["python", "harness.py"], "cwd": null, "timeout_ms": 10000},
+            "command": {"argv": [python(), "harness.py"], "cwd": null, "timeout_ms": 10000},
             "checker_id": null,
             "sandbox": {"mode": "workspace", "include": [], "exclude": []},
             "predicate": {
@@ -428,7 +437,7 @@ fn contract_and_plan(
 
 fn run_python(root: &Path, script: &str) -> Value {
     let capture = run_command_capture(
-        &["python".to_string(), script.to_string()],
+        &[python(), script.to_string()],
         root,
         &[],
         Duration::from_secs(60),
@@ -446,6 +455,9 @@ fn run_python(root: &Path, script: &str) -> Value {
 
 #[test]
 fn scientific_refactor_preserves_units_shape_dynamics_and_phase_boundaries() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() {
+        return;
+    }
     let (fixture, mut store) = setup();
     let golden = golden(&fixture);
     let tolerance = (
@@ -575,7 +587,7 @@ fn scientific_refactor_preserves_units_shape_dynamics_and_phase_boundaries() {
             "changeset_id": changeset_id,
             "expected_revision": prepared["revision"],
             "prepared_digest": prepared["prepared_digest"],
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "b029-approve",
         }),
     )
@@ -588,7 +600,7 @@ fn scientific_refactor_preserves_units_shape_dynamics_and_phase_boundaries() {
             "expected_revision": prepared["revision"],
             "prepared_digest": prepared["prepared_digest"],
             "approval_id": approval["approval"]["approval_id"],
-            "actor": "operator",
+            "actor": "<identity>",
             "workspace_handle": fixture.handle,
             "idempotency_key": "b029-apply",
         }),
@@ -647,7 +659,7 @@ fn scientific_refactor_preserves_units_shape_dynamics_and_phase_boundaries() {
             "expected_revision": verifying["revision"],
             "verification_id": verification["verification_id"],
             "workspace_handle": fixture.handle,
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "b029-accept",
         }),
     )

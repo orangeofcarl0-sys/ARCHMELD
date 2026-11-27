@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_get_call_graph
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 24
     direction: callees
     depth: 2

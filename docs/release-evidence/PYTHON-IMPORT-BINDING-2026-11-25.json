@@ -54,7 +54,7 @@
       "state": "ok"
     },
     "m2.5d_fixture": {
-      "path": "<workspace>/_archmeld_experiment_2026-11-24/fixture",
+      "path": "<path>",
       "export": "docs/evidence/python-binding-2026-11-25/m2.5d-export.ndjson",
       "bindings": "docs/evidence/python-binding-2026-11-25/m2.5d-bindings.json",
       "pricing_apply_discount": 15,
@@ -82,7 +82,7 @@
   "environment": {
     "toolchain": "1.94.1-x86_64-pc-windows-gnu",
     "python": "3.11",
-    "LIBCLANG_PATH": "<workspace>/_archmeld_tools/pylibclang/clang/native",
+    "LIBCLANG_PATH": "<path>",
     "BINDGEN_EXTRA_CLANG_ARGS": "MinGW GCC 13.2.0 include paths"
   },
   "boundaries": {

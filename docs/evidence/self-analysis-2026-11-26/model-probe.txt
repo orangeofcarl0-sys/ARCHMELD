@@ -1,0 +1,56 @@
+== snapshot ==
+snapshot_id sha256:66aaec6db1355ce1f7b4259a37ea417bdc84cafe1e38716c9f955a336d62a896
+git_commit 7b1dc2805214b287525109bf124bdf13fa12d92a
+files 1828
+bytes 34042848
+coverage {'expected_count': 8458, 'limitations': ['binary: 24 file(s)', 'excluded_dir: 7 file(s)', 'gitignored: 6552 file(s)', 'too_large: 47 file(s)'], 'observed_count': 1828, 'omitted_count': 6630, 'scope': 'workspace manifest under the declared root; content only', 'state': 'partial', 'unresolved_count': 0}
+previous_snapshot_id sha256:72a51d623dd67ab3d6adf1dbaebefc1796a6f6f078432025f028a0181994e6b2
+same_paths 1828
+digest_differ ['docs/archmeld-progress.md']
+
+== export edge model ==
+edges 51518
+types {'Calls': 34030, 'Contains': 9011, 'References': 4227, 'Imports': 4246, 'Implements': 2, 'Extends': 2}
+distinct_source_target_kind 46254
+duplicate_occurrences 5264 {'Calls': 5212, 'References': 33, 'Imports': 19}
+edge_properties
+  ('Calls', 'cross_file_resolution', 'true') 18716
+  ('Calls', None, None) 13836
+  ('Contains', None, None) 9011
+  ('Imports', None, None) 4102
+  ('References', 'cross_file_resolution', None) 2977
+  ('References', None, None) 1250
+  ('Calls', None, True) 911
+  ('Calls', None, 'true') 567
+
+== ledger relation model ==
+  static_call_candidate candidate 28818
+  contains declared 9001
+  imports declared 4227
+  references candidate 4194
+  implements declared 4
+evidence_rows 1
+relation_evidence_rows 46244
+evidence_coverage partial ['structural export; call edges are syntax candidates']
+evidence_source_anchor None
+relation_payload_sample {"basis":"syntax","conditions":["codegraph-edge:Calls","syntax-only; not a resolved call"],"config_digest":"sha256:40be931b9cfbf5a23e27ef59bf7cfa0cfddcb85b5e4d58aeff48beda6b1acd78","evidence_ids":["evidence.codegraph.export.run.self.index.2"],"id":"rel.00016072ad3fa6a2615ff30bfa469af0ba2f62f1cb8c15c3f439b9d00f3a5911","kind":"static_call_candidate","project_id":"archmeld.self","resolution":"candida
+bridge_coverage_from_index_json see index.json: complete
+
+== entity model ==
+entities 11043
+languages [{'language': 'rust', 'c': 8164}, {'language': 'unknown', 'c': 1762}, {'language': 'typescript', 'c': 413}, {'language': 'python', 'c': 382}, {'language': 'javascript', 'c': 305}, {'language': 'csharp', 'c': 11}, {'language': 'cpp', 'c': 6}]
+unknown_breakdown {'no_anchor:module': 634, 'no_anchor:external': 523, 'anchor.kt': 316, 'anchor.toml': 273, 'anchor.sh': 14, 'anchor.kts': 2}
+test_entities 1268
+src_entities 7733
+module_name_collisions 151 top [('PropertyMap', 3, 1), ('events', 2, 2), ('validate', 2, 2), ('compare', 2, 1), ('language', 1, 50), ('config', 1, 42), ('metrics', 1, 38), ('node', 1, 9)]
+store_module_paths ['crate::store::Store']
+examples_file_entities 0
+files_over_1mib_without_file_entity
+  4176254 crates/codegraph-r/tree-sitter-r-src/parser.c file_entity 0
+  5986433 crates/codegraph-zig/tree-sitter-zig-src/parser.c file_entity 0
+  2014697 docs/evidence/B017-model-analysis.json file_entity 0
+  1049863 docs/evidence/e4a-2026-11-25/runs/nonlexical3-a2/stdout.jsonl file_entity 0
+store_incoming 268 from_tests 19
+parse_source_definitions 40
+implements_relations 4
+code_parser_entities 12

@@ -1,0 +1,140 @@
+AREAS (top 25)
+crates/archmeld-core               1768 {'file': 111, 'symbol': 1410, 'type': 247}
+crates/codegraph-server            1535 {'file': 74, 'symbol': 1173, 'type': 288}
+vscode                              418 {'external': 1, 'file': 33, 'symbol': 273, 'type': 111}
+crates/codegraph                    391 {'file': 38, 'symbol': 330, 'type': 23}
+crates/codegraph-c                  350 {'file': 14, 'symbol': 300, 'type': 36}
+crates/archmeld-api                 337 {'file': 20, 'symbol': 256, 'type': 61}
+jetbrains                           325 {'file': 40, 'symbol': 220, 'type': 65}
+tooling                             310 {'file': 26, 'symbol': 256, 'type': 28}
+crates/codegraph-memory             302 {'file': 14, 'symbol': 243, 'type': 45}
+archmeld-vscode                     286 {'file': 19, 'symbol': 264, 'type': 3}
+crates/codegraph-python             212 {'file': 14, 'symbol': 184, 'type': 14}
+crates/codegraph-parser-api         191 {'file': 20, 'symbol': 148, 'type': 23}
+crates/codegraph-php                168 {'file': 7, 'symbol': 154, 'type': 7}
+crates/codegraph-tcl                164 {'file': 11, 'symbol': 137, 'type': 16}
+crates/codegraph-typescript         163 {'file': 7, 'symbol': 149, 'type': 7}
+crate                               162 {'module': 162}
+crates/codegraph-rust               161 {'file': 7, 'symbol': 147, 'type': 7}
+crates/codegraph-csharp             144 {'file': 8, 'symbol': 128, 'type': 8}
+crates/codegraph-kotlin             136 {'file': 9, 'symbol': 119, 'type': 8}
+crates/codegraph-harness            135 {'file': 10, 'symbol': 103, 'type': 22}
+crates/codegraph-java               124 {'file': 7, 'symbol': 110, 'type': 7}
+crates/codegraph-go                 122 {'file': 7, 'symbol': 108, 'type': 7}
+crates/codegraph-cpp                115 {'file': 7, 'symbol': 101, 'type': 7}
+archmeld_core                       111 {'external': 111}
+crates/codegraph-verilog            110 {'file': 9, 'symbol': 93, 'type': 8}
+
+CALL CANDIDATES cross first-party areas (top 30)
+  995 crates/archmeld-core -> crates/codegraph-server
+  901 crates/codegraph-server -> crates/codegraph
+  648 crates/archmeld-core -> crates/codegraph
+  382 crates/archmeld-api -> crates/archmeld-core
+  280 crates/archmeld-core -> crates/codegraph-harness
+  278 crates/codegraph -> crates/codegraph-server
+  269 crates/archmeld-core -> archmeld-vscode
+  241 crates/codegraph-c -> crates/codegraph-server
+  232 crates/codegraph-python -> crates/codegraph-server
+  229 crates/codegraph-c -> crates/codegraph
+  210 crates/codegraph-server -> crates/archmeld-core
+  210 crates/codegraph-server -> archmeld-vscode
+  193 crates/archmeld-api -> crates/codegraph-server
+  189 crates/codegraph-server -> crates/codegraph-harness
+  179 crates/codegraph-python -> crates/codegraph
+  164 crates/archmeld-core -> crates/codegraph-memory
+  159 crates/codegraph-server -> crates/codegraph-memory
+  145 crates/codegraph-typescript -> crates/codegraph-server
+  141 crates/codegraph-rust -> crates/codegraph-server
+  140 crates/codegraph-typescript -> crates/codegraph
+  129 crates/codegraph-php -> crates/codegraph-server
+  124 crates/codegraph-rust -> crates/codegraph
+  118 crates/codegraph-csharp -> crates/codegraph-server
+  108 crates/archmeld-api -> crates/codegraph
+  107 crates/codegraph-php -> crates/codegraph
+  106 crates/codegraph-go -> crates/codegraph-server
+  100 crates/codegraph-java -> crates/codegraph-server
+   96 crates/codegraph-memory -> crates/codegraph
+   92 crates/codegraph-kotlin -> crates/codegraph-server
+   88 crates/codegraph-csharp -> crates/codegraph
+
+MOST AMBIGUOUS SIMPLE NAMES (distinct files)
+ 135 new
+  73 ir_to_graph
+  66 default
+  52 main
+  50 language
+  46 package
+  45 dependencies
+  44 dev-dependencies
+  43 lib
+  42 config
+  40 with_config
+  40 parse_source
+  40 parse_file
+  39 test_can_parse
+  39 extract
+
+TOP CALL-CANDIDATE TARGET FILES
+ 1697 crates/codegraph-server/src/index_state.rs
+ 1673 crates/codegraph/src/graph/codegraph.rs
+ 1599 crates/codegraph-server/src/branch_watcher.rs
+ 1488 crates/codegraph/src/graph/property.rs
+ 1022 crates/codegraph-harness/src/report.rs
+ 1006 archmeld-vscode/media/cytoscape.min.js
+  960 crates/codegraph-memory/src/node.rs
+  766 crates/codegraph-server/src/index.rs
+  540 crates/archmeld-core/src/store/types.rs
+  477 crates/codegraph-harness/src/compare.rs
+  433 crates/codegraph/src/export/dot.rs
+  403 crates/codegraph-server/src/ai_query/engine.rs
+
+TOP CALL-CANDIDATE SOURCE FILES
+  714 crates/codegraph-server/src/ai_query/engine.rs
+  609 crates/codegraph-server/src/backend.rs
+  393 crates/codegraph-server/src/mcp/server.rs
+  343 crates/codegraph-tcl/src/visitor.rs
+  339 crates/codegraph-server/src/watcher.rs
+  320 crates/codegraph-php/src/visitor.rs
+  320 crates/archmeld-api/src/lib.rs
+  288 crates/codegraph-c/tests/integration_tests.rs
+  276 crates/codegraph-csharp/src/visitor.rs
+  275 crates/codegraph-rust/src/visitor.rs
+  267 crates/codegraph-kotlin/src/visitor.rs
+  263 crates/archmeld-core/src/predicate.rs
+
+IMPORT TARGET NAMESPACES from archmeld-core/archmeld-api files
+  354 archmeld_core
+  325 std
+  145 crate
+  123 serde_json
+   22 support
+   19 serde
+   16 super
+   11 common
+    7 axum
+    4 rusqlite
+    3 archmeld_api
+    2 import
+    2 predicate
+    2 types
+    2 error
+    1 runtime
+    1 interpret
+    1 pipe_security
+
+TOP FILES BY SYMBOLS
+ 117 sym   2 type crates/codegraph-server/src/ai_query/engine.rs
+ 103 sym   0 type archmeld-vscode/media/cytoscape.min.js
+  91 sym   3 type crates/codegraph-server/src/backend.rs
+  86 sym   1 type crates/codegraph-php/src/visitor.rs
+  80 sym  11 type crates/archmeld-api/src/lib.rs
+  69 sym   1 type crates/codegraph-tcl/src/visitor.rs
+  69 sym   1 type crates/codegraph-rust/src/visitor.rs
+  65 sym   7 type crates/archmeld-core/src/predicate.rs
+  64 sym   4 type crates/codegraph-server/src/watcher.rs
+  64 sym   1 type crates/codegraph-csharp/src/visitor.rs
+  63 sym   1 type crates/codegraph-kotlin/src/visitor.rs
+  62 sym   3 type crates/codegraph-server/src/mcp/server.rs
+  59 sym   1 type crates/codegraph-server/src/mcp/tools.rs
+  58 sym   1 type crates/codegraph-cpp/src/visitor.rs
+  54 sym   1 type crates/codegraph-java/src/visitor.rs

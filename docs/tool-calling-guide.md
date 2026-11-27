@@ -19,11 +19,11 @@ Most tools need to identify a specific symbol. Two methods:
 
 ### Method 1: uri + line
 
-Use `file://` prefix. Lines are **0-indexed** (line 1 in editor = line 0 in tool).
+Use `file://<path> prefix. Lines are **0-indexed** (line 1 in editor = line 0 in tool).
 
 ```json
 {
-  "uri": "file:///Users/you/project/src/main.rs",
+  "uri": "file://<path>",
   "line": 42
 }
 ```
@@ -136,7 +136,7 @@ Find tests that exercise a given function.
 
 ```json
 {
-  "uri": "file:///path/to/src/parser.rs",
+  "uri": "file://<path>",
   "line": 50
 }
 ```
@@ -151,7 +151,7 @@ Quick metadata: signature, visibility, kind. Lightweight.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 83
 }
 ```
@@ -175,7 +175,7 @@ Who calls this function? Use `depth > 1` for transitive callers.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 83,
   "depth": 2
 }
@@ -217,7 +217,7 @@ Full call chain (callers + callees) with depth control.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 83,
   "depth": 3
 }
@@ -229,7 +229,7 @@ File/module import relationships.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "direction": "both",
   "depth": 2
 }
@@ -260,7 +260,7 @@ Primary context tool. Intent-aware with token budgeting.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 83,
   "intent": "modify"
 }
@@ -274,7 +274,7 @@ Everything needed before editing: source + callers + tests + memories + git hist
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 83
 }
 ```
@@ -299,7 +299,7 @@ Cyclomatic complexity metrics. Omit `line` to analyze all functions in a file.
 
 ```json
 {
-  "uri": "file:///path/to/server.rs",
+  "uri": "file://<path>",
   "threshold": 10
 }
 ```
@@ -340,7 +340,7 @@ Single function:
 
 ```json
 {
-  "uri": "file:///path/to/server.rs",
+  "uri": "file://<path>",
   "line": 83
 }
 ```
@@ -351,7 +351,7 @@ Blast radius prediction. What breaks if you modify, delete, or rename?
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 83,
   "changeType": "delete"
 }
@@ -420,7 +420,7 @@ Find imports that are never referenced by any function in the importing file.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "limit": 100
 }
 ```
@@ -549,7 +549,7 @@ Module coupling metrics and instability scores. (Pro)
 
 ```json
 {
-  "uri": "file:///path/to/module.rs"
+  "uri": "file://<path>"
 }
 ```
 
@@ -569,7 +569,7 @@ Full or incremental workspace reindex. Use `force: true` after parser upgrades.
 
 ### index_files
 
-Add/update specific files. Paths are **absolute, without `file://` prefix**.
+Add/update specific files. Paths are **absolute, without `file://<path> prefix**.
 
 ```json
 {
@@ -672,7 +672,7 @@ Get memories relevant to a specific file.
 
 ```json
 {
-  "uri": "file:///path/to/auth.rs"
+  "uri": "file://<path>"
 }
 ```
 
@@ -727,7 +727,7 @@ Dead code detection with confidence scoring.
 
 ```json
 {
-  "uri": "file:///path/to/module.rs"
+  "uri": "file://<path>"
 }
 ```
 
@@ -800,7 +800,7 @@ Git history for a specific file.
 
 ```json
 {
-  "uri": "file:///path/to/file.rs"
+  "uri": "file://<path>"
 }
 ```
 
@@ -820,7 +820,7 @@ Map every execution path through a function. Answers "can this return without hi
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 42,
   "format": "summary"
 }
@@ -871,7 +871,7 @@ Follow a variable from birth to death. Answers "does user input reach this SQL q
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 42,
   "variable": "response"
 }
@@ -936,7 +936,7 @@ Map every execution path through a function — same schema as `get_control_flow
 
 ```json
 {
-  "uri": "file:///path/to/file.rs",
+  "uri": "file://<path>",
   "line": 42,
   "format": "summary"
 }
@@ -948,7 +948,7 @@ Follow a variable from birth to death — same schema as `trace_data_flow` above
 
 ```json
 {
-  "uri": "file:///path/to/handler.py",
+  "uri": "file://<path>",
   "line": 18,
   "variable": "user_input"
 }
@@ -1768,7 +1768,7 @@ For each scan, check three numbers:
 - **crypto:** the detector's context-aware severity already classifies `verify_*`/`sign_*`/`hmac_*`/`hash_password` functions as high and `cache_key`/`etag`/`dedup` as low. Confirm the classification matches the actual use site. FP filters already drop public-key compares, cleanup functions, and content-addressable ID compares (git OIDs, OCI digests, etags).
 - **integer_overflow:** trace size/length operands back to their source. If the operand is bounded (small constant, validated against a maximum), mark as FP. High-severity cases: length derived from an attacker-supplied header field without a prior `if (len > MAX)` check.
 - **null_deref:** verify the allocation is actually reachable and not guarded by an earlier check (e.g., a custom panic-on-OOM wrapper). The detector's 25-line window can miss checks further down; confirm the pattern by reading the function body. Kernel `kmalloc` + dereference on the next line is almost always a real bug — ship as high.
-- **ssrf:** check the trust-tier classification in the description. `server-admin`-tier findings are demoted automatically. `org-admin` is the multi-tenant CVE lane — those are real-shape against multi-org self-hosted Grafana / GitLab / etc. Verify the URL flows from the configured field into the fetch sink without an `IsPrivateIP`/`safeurl` check; trace the per-request taint to confirm an org-admin-only attacker can hit internal endpoints (169.254.169.254, 10.0.0.0/8, etc.).
+- **ssrf:** check the trust-tier classification in the description. `server-admin`-tier findings are demoted automatically. `org-admin` is the multi-tenant CVE lane — those are real-shape against multi-org self-hosted Grafana / GitLab / etc. Verify the URL flows from the configured field into the fetch sink without an `IsPrivateIP`/`safeurl` check; trace the per-request taint to confirm an org-admin-only attacker can hit internal endpoints (169.254.169.254, <private-ip>.0/8, etc.).
 - **idor:** the detector already suppresses route-level authz middleware (`routing.Wrap` + `authorizeInOrg`/`@PreAuthorize`/etc.) and session-derived ID lookups (`c.SignedInUser.UserID`). Remaining findings need cross-check: trace the lookup variable back to its source — if it's a URL `:id` parameter and the handler doesn't appear in the project's route registration with an authz wrap, that's a real candidate. Confirm by issuing a request as a low-privilege user against another tenant's resource.
 - **fail_open_verify:** `verify-flag-conditional` findings are typically real — check the strict branch returns the error AND the default branch only logs/warns then returns nil. Aggregator patterns (`return errors.Join(errs...)`) are auto-suppressed.
 - **injection:** trace the dangerous string back to its source. If it's a constant or sanitized variable, mark as FP.
@@ -1788,12 +1788,12 @@ Use the [`/bounty` skill](#) to scaffold a triage doc. The skill workflow:
 
 | Issue | Fix |
 |---|---|
-| "Could not find symbol" | Use `file://` prefix: `file:///path/to/file.rs` not `/path/to/file.rs` |
+| "Could not find symbol" | Use `file://<path> prefix: `file://<path> not `/path/to/file.rs` |
 | Wrong function found | Lines are 0-indexed. Line 1 in editor = `"line": 0` |
-| "paths parameter required" | `index_files` takes absolute paths **without** `file://` prefix |
+| "paths parameter required" | `index_files` takes absolute paths **without** `file://<path> prefix |
 | nodeId type error | Pass as string: `"1549"` not `1549` |
 | Empty results after restart | Run `reindex_workspace` or wait for auto-indexing |
-| "Invalid URI" | Missing `file://` prefix on URI parameters |
+| "Invalid URI" | Missing `file://<path> prefix on URI parameters |
 
 ## Supported Languages (38)
 

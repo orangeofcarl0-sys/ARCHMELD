@@ -10,7 +10,7 @@
       "C/C++ full SCIP indexing still requires a Linux/WSL worker on Windows; Windows clangd definition/reference and rename apply are verified"
     ],
     "r1_naming_allowed": true,
-    "reason": "all seven language groups have real definition/reference evidence, native runtime capture imported and mapped to source, a pinned medium real project with a real build, and a semantic rename applied through the prepared-digest ChangeSet gate",
+    "reason": "all seven language groups have real build/runtime evidence, imported and mapped runtime linkage, a pinned medium real project with a real build, and a semantic rename applied through the prepared-digest ChangeSet gate",
     "status": "passed"
   },
   "blockers": [],
@@ -19,7 +19,7 @@
     "c_cpp": {
       "build": {
         "argv": [
-          "D:/Strawberry/c/bin/g++.exe",
+          "<path>",
           "-std=c++17",
           "-DFACTOR=2",
           "-Isrc",
@@ -29,19 +29,31 @@
           "-o",
           "e2e.exe"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\c-cpp",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 1,
+          "observed": 3,
           "processes": [
             {
-              "first_seen_ms": 43,
+              "first_seen_ms": 567,
+              "name": "collect2.exe",
+              "parent_pid": 52964,
+              "pid": 46208
+            },
+            {
+              "first_seen_ms": 567,
+              "name": "ld.exe",
+              "parent_pid": 46208,
+              "pid": 52856
+            },
+            {
+              "first_seen_ms": 41,
               "name": "cc1plus.exe",
-              "parent_pid": 6048,
-              "pid": 48380
+              "parent_pid": 52964,
+              "pid": 54580
             }
           ],
           "state": "complete",
@@ -53,7 +65,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 572
+        "wall_ms": 790
       },
       "controlled_change": {
         "after_output": "12.57 6",
@@ -82,9 +94,9 @@
       },
       "runtime": {
         "argv": [
-          "<temp>\\b030-matrix-tTMmIU\\c-cpp\\e2e.exe"
+          "<path>"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\c-cpp",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -101,7 +113,7 @@
         "stdout": "12.57 6\r\n",
         "stdout_digest": "sha256:b3cda623424e6d233cd3ec7d0840474832f1111b12cc3a4e1bebc7d026b224cd",
         "timed_out": false,
-        "wall_ms": 166
+        "wall_ms": 163
       },
       "runtime_linkage": {
         "capture_tool": "archmeld-explicit-probe",
@@ -110,7 +122,7 @@
         "lossy": false,
         "mapped_spans": 8001,
         "observed_relations": 4,
-        "raw_artifact_digest": "sha256:230950776128f5e2ba515beea88650c234f0cafbff6a0f9db7cae861f986293b",
+        "raw_artifact_digest": "sha256:7aae9c041ab84b5baae4c20beb33c592cabdbbb8cf82b9372e66d3f31a051eda",
         "state": "verified",
         "unmapped_spans": 0
       }
@@ -118,12 +130,12 @@
     "csharp": {
       "build": {
         "argv": [
-          "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
+          "<path>",
           "build",
           "-nologo",
           "-v:q"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\csharp",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -137,10 +149,10 @@
         },
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout": "\r\n已成功生成。\r\n    0 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:01.58\r\n",
-        "stdout_digest": "sha256:ae6ae2ab2b503a8537537ac176b313b2eae9947c45b8e9254d8ba6c45805d435",
+        "stdout": "\r\n已成功生成。\r\n    0 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:02.10\r\n",
+        "stdout_digest": "sha256:28ab581835d62ced8054d0560bc469f0af7b0da26648de4df3d6903a421bad95",
         "timed_out": false,
-        "wall_ms": 2209
+        "wall_ms": 3026
       },
       "controlled_change": {
         "after_output": "12",
@@ -168,10 +180,10 @@
       },
       "runtime": {
         "argv": [
-          "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
+          "<path>",
           "bin/Debug/net8.0/LangPack.dll"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\csharp",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -188,35 +200,42 @@
         "stdout": "12\r\n",
         "stdout_digest": "sha256:f2bf6cb915ec521520920f625e9a641f22bae7808a5f5db7867c431c1a79440f",
         "timed_out": false,
-        "wall_ms": 158
+        "wall_ms": 201
       },
       "runtime_linkage": {
         "capture_tool": "dotnet-trace",
         "capture_version": "10.0.750501",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 55,
+        "mapped_spans": 51,
         "observed_relations": 0,
-        "raw_artifact_digest": "sha256:e37a690d474e3f41fa45be17e65ab2c75a7222290f2496127ee61a068df4af4d",
+        "raw_artifact_digest": "sha256:5ba136bc57093e8e02665debfff8e17d91acf4192d3b6a0c1faf7899189b680d",
         "state": "verified",
-        "unmapped_spans": 681
+        "unmapped_spans": 642
       }
     },
     "go": {
       "build": {
         "argv": [
-          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+          "<path>",
           "build",
           "./..."
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\go",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 0,
-          "processes": [],
+          "observed": 1,
+          "processes": [
+            {
+              "first_seen_ms": 555,
+              "name": "link.exe",
+              "parent_pid": 53380,
+              "pid": 48176
+            }
+          ],
           "state": "complete",
           "survivors": [],
           "tool": "Toolhelp32 CreateToolhelp32Snapshot"
@@ -226,7 +245,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 785
+        "wall_ms": 978
       },
       "controlled_change": {
         "after_output": "2 4 6",
@@ -254,11 +273,11 @@
       },
       "runtime": {
         "argv": [
-          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+          "<path>",
           "run",
           "."
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\go",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -275,33 +294,46 @@
         "stdout": "2 4 6\n",
         "stdout_digest": "sha256:0e60e83c810f5a61560d0f86c2e250db87bb98d0adb500dac7fb1f58cfd842d5",
         "timed_out": false,
-        "wall_ms": 1356
+        "wall_ms": 1398
       },
       "runtime_linkage": {
         "capture_tool": "go-pprof",
         "capture_version": "go1.27.3",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 4,
+        "mapped_spans": 2,
         "observed_relations": 1,
-        "raw_artifact_digest": "sha256:9c16e768a11c0ef2b38ef313c0570a95c3b8a9625bce3713f6756f160db53fd2",
+        "raw_artifact_digest": "sha256:6e169428e187883c02be9dadd84449fb44f55b19bf802766756d356505d7a8e9",
         "state": "verified",
-        "unmapped_spans": 4
+        "unmapped_spans": 9
       },
       "test": {
         "argv": [
-          "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+          "<path>",
           "test",
           "./..."
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\go",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 0,
-          "processes": [],
+          "observed": 2,
+          "processes": [
+            {
+              "first_seen_ms": 1080,
+              "name": "vet.exe",
+              "parent_pid": 33628,
+              "pid": 23600
+            },
+            {
+              "first_seen_ms": 1080,
+              "name": "vet.exe",
+              "parent_pid": 33628,
+              "pid": 36376
+            }
+          ],
           "state": "complete",
           "survivors": [],
           "tool": "Toolhelp32 CreateToolhelp32Snapshot"
@@ -311,24 +343,24 @@
         "stdout": "?   \texample.com/langpack\t[no test files]\n?   \texample.com/langpack/other\t[no test files]\n?   \texample.com/langpack/util\t[no test files]\n",
         "stdout_digest": "sha256:fa2be54549ed07d8be84eccad87a7907a6c3b1b445214252c4a53b2c5ec5ded8",
         "timed_out": false,
-        "wall_ms": 357
+        "wall_ms": 1251
       }
     },
     "java": {
       "build": {
         "argv": [
-          "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+          "<path>",
           "-d",
           "out",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\App.java",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Doubler.java",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Main.java",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Marker.java",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Other.java",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Transformer.java",
-          "<temp>\\b030-matrix-tTMmIU\\java\\src/main/java/pkg\\Util.java"
+          "<path>",
+          "<path>",
+          "<path>",
+          "<path>",
+          "<path>",
+          "<path>",
+          "<path>"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\java",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -345,7 +377,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 885
+        "wall_ms": 976
       },
       "controlled_change": {
         "after_output": "compiled",
@@ -373,12 +405,12 @@
       },
       "runtime": {
         "argv": [
-          "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/java.exe",
+          "<path>",
           "-cp",
           "out",
           "pkg.Main"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\java",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -395,18 +427,18 @@
         "stdout": "24\r\n",
         "stdout_digest": "sha256:f6bca0e7f46a94bd3349fdb86511cbec4a9091e409b62dd2d6b8c1fdb9a3ce00",
         "timed_out": false,
-        "wall_ms": 154
+        "wall_ms": 248
       },
       "runtime_linkage": {
         "capture_tool": "jfr",
         "capture_version": "25.0.5",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 9,
+        "mapped_spans": 5,
         "observed_relations": 0,
-        "raw_artifact_digest": "sha256:5b0c025c51256e9a69602377d86b08c8b71f7099deacaa21bc0e103d88ffabe6",
+        "raw_artifact_digest": "sha256:740062b72ca6563fe267a7464da00004cf4c307c4af673a4ed24bfc0c4dda81f",
         "state": "verified",
-        "unmapped_spans": 135
+        "unmapped_spans": 119
       }
     },
     "javascript_typescript": {
@@ -440,11 +472,11 @@
       "javascript": {
         "build": {
           "argv": [
-            "node",
+            "<path> Files\\nodejs\\node.exe",
             "--check",
             "src/app.js"
           ],
-          "cwd": "<temp>\\b030-matrix-tTMmIU\\javascript",
+          "cwd": "<path>",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -461,15 +493,15 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 103
+          "wall_ms": 159
         },
         "runtime": {
           "argv": [
-            "node",
+            "<path> Files\\nodejs\\node.exe",
             "-e",
             "import('./src/app.js').then((m) => console.log(m.value))"
           ],
-          "cwd": "<temp>\\b030-matrix-tTMmIU\\javascript",
+          "cwd": "<path>",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -511,9 +543,9 @@
           "lossy": true,
           "mapped_spans": 16,
           "observed_relations": 1,
-          "raw_artifact_digest": "sha256:c294a759d2a6fa756addb6f3df0ba3654377b9ec1dc7e0079df7a3dde93fd9bd",
+          "raw_artifact_digest": "sha256:9347c72d78878e3b04b68fba7a0c2acff723bb562eb59b87c81c5e5a98ca72ea",
           "state": "verified",
-          "unmapped_spans": 470
+          "unmapped_spans": 813
         },
         "state": "verified",
         "typescript": {
@@ -521,11 +553,11 @@
           "capture_version": "node 24.14.1",
           "evidence": "docs/release-evidence/B030-runtime-linkage.json",
           "lossy": true,
-          "mapped_spans": 12,
+          "mapped_spans": 14,
           "observed_relations": 1,
-          "raw_artifact_digest": "sha256:579d8203176aca254190c6e627432b13ad4cbf08c936faa1d49fce4d676849ea",
+          "raw_artifact_digest": "sha256:dcaf02a496ba91a9b2874cdf8bf94ef0b7a48a3090f0bd30e38ed628f59458a6",
           "state": "verified",
-          "unmapped_spans": 1499
+          "unmapped_spans": 1845
         }
       },
       "runtime_linkage_javascript": {
@@ -535,31 +567,31 @@
         "lossy": true,
         "mapped_spans": 16,
         "observed_relations": 1,
-        "raw_artifact_digest": "sha256:c294a759d2a6fa756addb6f3df0ba3654377b9ec1dc7e0079df7a3dde93fd9bd",
+        "raw_artifact_digest": "sha256:9347c72d78878e3b04b68fba7a0c2acff723bb562eb59b87c81c5e5a98ca72ea",
         "state": "verified",
-        "unmapped_spans": 470
+        "unmapped_spans": 813
       },
       "runtime_linkage_typescript": {
         "capture_tool": "v8-cpu-profiler",
         "capture_version": "node 24.14.1",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 12,
+        "mapped_spans": 14,
         "observed_relations": 1,
-        "raw_artifact_digest": "sha256:579d8203176aca254190c6e627432b13ad4cbf08c936faa1d49fce4d676849ea",
+        "raw_artifact_digest": "sha256:dcaf02a496ba91a9b2874cdf8bf94ef0b7a48a3090f0bd30e38ed628f59458a6",
         "state": "verified",
-        "unmapped_spans": 1499
+        "unmapped_spans": 1845
       },
       "typescript": {
         "build": {
           "argv": [
-            "node",
-            "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+            "<path> Files\\nodejs\\node.exe",
+            "<path>",
             "--noEmit",
             "-p",
             "."
           ],
-          "cwd": "<temp>\\b030-matrix-tTMmIU\\typescript",
+          "cwd": "<path>",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -576,18 +608,18 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 1403
+          "wall_ms": 1501
         },
         "emit": {
           "argv": [
-            "node",
-            "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+            "<path> Files\\nodejs\\node.exe",
+            "<path>",
             "-p",
             ".",
             "--outDir",
             "out"
           ],
-          "cwd": "<temp>\\b030-matrix-tTMmIU\\typescript",
+          "cwd": "<path>",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -604,15 +636,15 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 1360
+          "wall_ms": 1398
         },
         "runtime": {
           "argv": [
-            "node",
+            "<path> Files\\nodejs\\node.exe",
             "-e",
             "console.log(require('./out/app.js').value)"
           ],
-          "cwd": "<temp>\\b030-matrix-tTMmIU\\typescript",
+          "cwd": "<path>",
           "exit_code": 0,
           "process_audit": {
             "cleanup": [],
@@ -629,20 +661,20 @@
           "stdout": "4\n",
           "stdout_digest": "sha256:7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
           "timed_out": false,
-          "wall_ms": 153
+          "wall_ms": 159
         }
       }
     },
     "python": {
       "build": {
         "argv": [
-          "python",
+          "<path><identity>\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
           "-m",
           "compileall",
           "-q",
           "."
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\python",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -659,7 +691,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 192
+        "wall_ms": 205
       },
       "controlled_change": {
         "after_output": "6",
@@ -687,11 +719,11 @@
       },
       "runtime": {
         "argv": [
-          "python",
+          "<path><identity>\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
           "-c",
           "import app; print(app.main(3))"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\python",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -708,7 +740,7 @@
         "stdout": "6\r\n",
         "stdout_digest": "sha256:92961e9752250efa971147344b22295db32d7b75e940e0971e5fb34f21d0bc67",
         "timed_out": false,
-        "wall_ms": 101
+        "wall_ms": 100
       },
       "runtime_linkage": {
         "capture_tool": "viztracer",
@@ -717,7 +749,7 @@
         "lossy": false,
         "mapped_spans": 4002,
         "observed_relations": 0,
-        "raw_artifact_digest": "sha256:b833ad7639c418c42ef057c79aacb315964e27ff230551f5bad076e16c8a615c",
+        "raw_artifact_digest": "sha256:fd85635850adc1e0a56d201ccad4c9d7186681aa8e1392398c6b93f6c710c0a6",
         "state": "verified",
         "unmapped_spans": 943
       }
@@ -730,7 +762,7 @@
           "--quiet",
           "--offline"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\rust",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -747,7 +779,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 408
+        "wall_ms": 455
       },
       "controlled_change": {
         "after_output": "2",
@@ -769,7 +801,7 @@
         ],
         "sample": "codegraph-core",
         "source_file_count": 44,
-        "source_tree_digest": "sha256:59dc6a4f744aeb6a1688b221787f966f02a1eab731b3975996155949f9c8573f",
+        "source_tree_digest": "sha256:a5ded5fabae0412487e0d30d5af33785d38306761a4a9556a36ce74eb2ca6a79",
         "state": "verified",
         "version": "workspace pinned at the ARCHMELD checkout"
       },
@@ -782,7 +814,7 @@
           "--example",
           "run"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\rust",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
@@ -799,7 +831,7 @@
         "stdout": "2\n",
         "stdout_digest": "sha256:53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
         "timed_out": false,
-        "wall_ms": 305
+        "wall_ms": 297
       },
       "runtime_linkage": {
         "capture_tool": "archmeld-explicit-probe",
@@ -808,7 +840,7 @@
         "lossy": false,
         "mapped_spans": 4001,
         "observed_relations": 2,
-        "raw_artifact_digest": "sha256:9a159408dd762db667febd1a90965f650d3b0fdaa6df79e7f9468a4355e6c1bc",
+        "raw_artifact_digest": "sha256:1640f85d60f1d61f5cbfba34a4b4b395aa6a27706cab74ac88bdcc5f826143af",
         "state": "verified",
         "unmapped_spans": 0
       },
@@ -819,55 +851,61 @@
           "--quiet",
           "--offline"
         ],
-        "cwd": "<temp>\\b030-matrix-tTMmIU\\rust",
+        "cwd": "<path>",
         "exit_code": 0,
         "process_audit": {
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 7,
+          "observed": 8,
           "processes": [
             {
-              "first_seen_ms": 558,
-              "name": "rustc.exe",
-              "parent_pid": 41288,
-              "pid": 6440
-            },
-            {
-              "first_seen_ms": 558,
+              "first_seen_ms": 552,
               "name": "collect2.exe",
-              "parent_pid": 38688,
-              "pid": 14436
+              "parent_pid": 46732,
+              "pid": 23424
             },
             {
-              "first_seen_ms": 558,
-              "name": "x86_64-w64-mingw32-gcc.exe",
-              "parent_pid": 6440,
-              "pid": 38688
-            },
-            {
-              "first_seen_ms": 558,
+              "first_seen_ms": 552,
               "name": "cargo.exe",
-              "parent_pid": 48924,
-              "pid": 41288
+              "parent_pid": 49680,
+              "pid": 31008
             },
             {
-              "first_seen_ms": 558,
+              "first_seen_ms": 552,
               "name": "rustc.exe",
-              "parent_pid": 41288,
-              "pid": 50272
+              "parent_pid": 31008,
+              "pid": 33164
             },
             {
-              "first_seen_ms": 558,
+              "first_seen_ms": 552,
+              "name": "rustc.exe",
+              "parent_pid": 31008,
+              "pid": 33632
+            },
+            {
+              "first_seen_ms": 552,
+              "name": "collect2.exe",
+              "parent_pid": 51808,
+              "pid": 42924
+            },
+            {
+              "first_seen_ms": 552,
+              "name": "x86_64-w64-mingw32-gcc.exe",
+              "parent_pid": 33632,
+              "pid": 46732
+            },
+            {
+              "first_seen_ms": 552,
               "name": "ld.exe",
-              "parent_pid": 14436,
-              "pid": 51064
+              "parent_pid": 23424,
+              "pid": 47304
             },
             {
-              "first_seen_ms": 1084,
-              "name": "rustdoc.exe",
-              "parent_pid": 41288,
-              "pid": 51104
+              "first_seen_ms": 552,
+              "name": "x86_64-w64-mingw32-gcc.exe",
+              "parent_pid": 33164,
+              "pid": 51808
             }
           ],
           "state": "complete",
@@ -879,7 +917,7 @@
         "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
         "stdout_digest": "sha256:d38e6ea6d69ddb377e4a4380b22926f3864806998a850d5e28c8459dfc09f014",
         "timed_out": false,
-        "wall_ms": 1156
+        "wall_ms": 1352
       }
     }
   },
@@ -894,6 +932,12 @@
     "arch": "x86_64",
     "os": "windows"
   },
+  "product_head": "7474343d",
+  "recorded_at_unix": 1795778383,
+  "rename_evidence": {
+    "loaded": true,
+    "path": "docs/release-evidence/B030-rename-apply.json"
+  },
   "runtime_linkage_evidence": {
     "loaded": true,
     "path": "docs/release-evidence/B030-runtime-linkage.json"
@@ -902,7 +946,7 @@
   "tool_versions": {
     "clang++": {
       "argv": [
-        "<workspace>/_archmeld_tools/llvm18/bin/clang++.exe",
+        "<path>",
         "--version"
       ],
       "exit_code": 0,
@@ -910,15 +954,23 @@
     },
     "dotnet": {
       "argv": [
-        "<workspace>/_archmeld_tools/dotnet8/dotnet.exe",
+        "<path>",
         "--version"
       ],
       "exit_code": 0,
       "first_line": "8.0.427"
     },
+    "g++": {
+      "argv": [
+        "<path>",
+        "--version"
+      ],
+      "exit_code": 0,
+      "first_line": "g++.exe (Rev6, Built by MSYS2 project) 16.1.0"
+    },
     "go": {
       "argv": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<path>",
         "version"
       ],
       "exit_code": 0,
@@ -926,7 +978,7 @@
     },
     "javac": {
       "argv": [
-        "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8/bin/javac.exe",
+        "<path>",
         "-version"
       ],
       "exit_code": 0,
@@ -934,7 +986,7 @@
     },
     "node": {
       "argv": [
-        "node",
+        "<path> Files\\nodejs\\node.exe",
         "--version"
       ],
       "exit_code": 0,
@@ -942,7 +994,7 @@
     },
     "python": {
       "argv": [
-        "python",
+        "<path><identity>\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
         "--version"
       ],
       "exit_code": 0,
@@ -958,8 +1010,8 @@
     },
     "typescript": {
       "argv": [
-        "node",
-        "<workspace>/_archmeld_tools/lang-servers/node_modules/typescript/bin/tsc",
+        "<path> Files\\nodejs\\node.exe",
+        "<path>",
         "--version"
       ],
       "exit_code": 0,

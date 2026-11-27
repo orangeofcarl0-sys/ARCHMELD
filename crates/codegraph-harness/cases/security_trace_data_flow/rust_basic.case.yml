@@ -6,7 +6,7 @@ invoke:
   tool: codegraph_security_trace_data_flow
   binary: /Users/anvanster/projects/codegraph-pro/target/release/codegraph-pro
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 8
 expect:
   match: contains

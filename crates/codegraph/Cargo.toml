@@ -43,6 +43,33 @@ tempfile = "3.0"
 name = "codegraph"
 path = "src/lib.rs"
 
+# These examples demonstrate the persistent backend; keep them out of
+# `cargo build --examples` when the optional RocksDB backend is disabled.
+[[example]]
+name = "basic_usage"
+required-features = ["rocksdb-backend"]
+
+[[example]]
+name = "call_graph"
+required-features = ["rocksdb-backend"]
+
+[[example]]
+name = "dependency_tree"
+required-features = ["rocksdb-backend"]
+
+[[example]]
+name = "impact_analysis"
+required-features = ["rocksdb-backend"]
+
+[[example]]
+name = "inspect_db"
+required-features = ["rocksdb-backend"]
+
+[[example]]
+name = "visualize"
+required-features = ["rocksdb-backend"]
+
 [[bench]]
 name = "graph_operations"
 harness = false
+required-features = ["rocksdb-backend"]

@@ -1,4 +1,4 @@
-   Compiling archmeld-core v0.1.0 (<repo>\crates\archmeld-core)
+   Compiling archmeld-core v0.1.0 (<path>
 warning: unused import: `PathBuf`
   --> crates\archmeld-core\src\drift.rs:20:23
    |
@@ -45,7 +45,7 @@ warning: method `next_event_sequence` is never used
 953 |     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {
     |                   ^^^^^^^^^^^^^^^^^^^
 
-   Compiling archmeld-api v0.1.0 (<repo>\crates\archmeld-api)
+   Compiling archmeld-api v0.1.0 (<path>
 warning: `archmeld-core` (lib) generated 5 warnings (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)
 warning: unused import: `Stdio`
  --> crates\archmeld-api\tests\unix_socket.rs:9:29

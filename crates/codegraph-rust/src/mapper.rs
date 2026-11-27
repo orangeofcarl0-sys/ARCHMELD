@@ -19,6 +19,17 @@ pub fn ir_to_graph(
     file_path: &Path,
 ) -> Result<FileInfo, ParserError> {
     let mut node_map: HashMap<String, NodeId> = HashMap::new();
+    // Trait definitions may live in another file (for example the shared
+    // CodeParser trait). Keep a unique name index over the graph so an impl
+    // block can still emit Implements; ambiguous names are not guessed.
+    let mut graph_traits: HashMap<String, Vec<NodeId>> = HashMap::new();
+    for (id, node) in graph.nodes_iter() {
+        if node.node_type == NodeType::Interface {
+            if let Some(name) = node.properties.get_string("name") {
+                graph_traits.entry(name.to_string()).or_default().push(*id);
+            }
+        }
+    }
     let mut function_ids = Vec::new();
     let mut class_ids = Vec::new();
     let mut trait_ids = Vec::new();
@@ -335,18 +346,47 @@ pub fn ir_to_graph(
 
     // Add implementation relationships
     for impl_rel in &ir.implementations {
-        if let (Some(&implementor_id), Some(&trait_id)) = (
-            node_map.get(&impl_rel.implementor),
-            node_map.get(&impl_rel.trait_name),
-        ) {
-            graph
-                .add_edge(
-                    implementor_id,
-                    trait_id,
-                    EdgeType::Implements,
-                    PropertyMap::new(),
-                )
-                .map_err(|e| ParserError::GraphError(e.to_string()))?;
+        let implementor_id = node_map.get(&impl_rel.implementor).copied();
+        let trait_id = node_map
+            .get(&impl_rel.trait_name)
+            .copied()
+            .or_else(|| match graph_traits.get(&impl_rel.trait_name) {
+                Some(ids) if ids.len() == 1 => Some(ids[0]),
+                _ => None,
+            });
+        match (implementor_id, trait_id) {
+            (Some(implementor_id), Some(trait_id)) => {
+                graph
+                    .add_edge(
+                        implementor_id,
+                        trait_id,
+                        EdgeType::Implements,
+                        PropertyMap::new(),
+                    )
+                    .map_err(|e| ParserError::GraphError(e.to_string()))?;
+            }
+            (Some(implementor_id), None) => {
+                // The trait may live in a file parsed later. Remember the name
+                // so `resolve_pending_implements` can add the edge once the
+                // whole workspace is in the graph. Ambiguous names stay
+                // pending; guessing would invent architecture.
+                let mut pending = graph
+                    .get_node(implementor_id)
+                    .ok()
+                    .and_then(|node| node.properties.get_string_list_compat("unresolved_implements"))
+                    .unwrap_or_default();
+                if !pending.iter().any(|name| name == &impl_rel.trait_name) {
+                    pending.push(impl_rel.trait_name.clone());
+                    if let Ok(node) = graph.get_node(implementor_id) {
+                        let props = node
+                            .properties
+                            .clone()
+                            .with("unresolved_implements", pending);
+                        let _ = graph.update_node_properties(implementor_id, props);
+                    }
+                }
+            }
+            _ => {}
         }
     }
 
@@ -373,6 +413,97 @@ pub fn ir_to_graph(
         line_count: 0,              // Will be set by caller
         byte_count: 0,              // Will be set by caller
     })
+}
+
+/// Outcome of resolving deferred `Implements` edges.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct ImplementsResolution {
+    /// Implementor/trait pairs whose edge now exists (newly added or already
+    /// present).
+    pub resolved: usize,
+    /// Names that match more than one trait in the graph. They stay pending;
+    /// the resolver never guesses between same-named traits.
+    pub ambiguous: usize,
+}
+
+/// Add the `Implements` edges that could not be resolved while a file was
+/// being mapped, now that every file in the workspace may be in the graph.
+///
+/// This is idempotent: an implementor that already has an `Implements` edge to
+/// the unique trait is not given a second edge.
+pub fn resolve_pending_implements(graph: &mut CodeGraph) -> ImplementsResolution {
+    let mut traits_by_name: HashMap<String, Vec<NodeId>> = HashMap::new();
+    let mut pending: Vec<(NodeId, Vec<String>)> = Vec::new();
+    for (id, node) in graph.nodes_iter() {
+        if node.node_type == NodeType::Interface {
+            if let Some(name) = node.properties.get_string("name") {
+                traits_by_name
+                    .entry(name.to_string())
+                    .or_default()
+                    .push(*id);
+            }
+        }
+        if let Some(names) = node
+            .properties
+            .get_string_list_compat("unresolved_implements")
+        {
+            if !names.is_empty() {
+                pending.push((*id, names));
+            }
+        }
+    }
+
+    let mut resolution = ImplementsResolution::default();
+    for (implementor, names) in pending {
+        let mut remaining = Vec::new();
+        for name in names {
+            match traits_by_name.get(&name) {
+                Some(ids) if ids.len() == 1 => {
+                    let trait_id = ids[0];
+                    let already_linked = graph
+                        .get_edges_between(implementor, trait_id)
+                        .map(|edges| {
+                            edges.iter().any(|edge_id| {
+                                graph
+                                    .get_edge(*edge_id)
+                                    .map(|edge| edge.edge_type == EdgeType::Implements)
+                                    .unwrap_or(false)
+                            })
+                        })
+                        .unwrap_or(false);
+                    if already_linked
+                        || graph
+                            .add_edge(
+                                implementor,
+                                trait_id,
+                                EdgeType::Implements,
+                                PropertyMap::new(),
+                            )
+                            .is_ok()
+                    {
+                        resolution.resolved += 1;
+                    } else {
+                        remaining.push(name);
+                    }
+                }
+                Some(_) => {
+                    resolution.ambiguous += 1;
+                    remaining.push(name);
+                }
+                None => remaining.push(name),
+            }
+        }
+        if let Ok(node) = graph.get_node(implementor) {
+            let mut props = node.properties.clone();
+            if remaining.is_empty() {
+                props.remove("unresolved_implements");
+            } else {
+                props.insert("unresolved_implements", remaining);
+            }
+            let _ = graph.update_node_properties(implementor, props);
+        }
+    }
+    resolution
 }
 
 #[cfg(test)]

@@ -18,7 +18,7 @@ pinned upstream extension.
 2. Point VS Code at it:
 
    ```sh
-   code --extensionDevelopmentPath=<repo>\archmeld-vscode
+   code --extensionDevelopmentPath=<path>
    ```
 
    Settings (or environment variables, which win):

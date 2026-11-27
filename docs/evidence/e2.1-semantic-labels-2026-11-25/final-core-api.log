@@ -293,7 +293,7 @@ test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
      Running tests\apply_recovery.rs (target\debug\deps\apply_recovery-ba13c3948575ed2a.exe)
 
 running 5 tests
-Îª <user>\AppData\Local\Temp\.tmpZ8PAkr\repo\src <<===>> <user>\AppData\Local\Temp\.tmpZ8PAkr\outside ´´½¨µÄÁª½Ó
+Îª <path><identity><temp> <<===>> <path><identity><temp> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 test path_and_link_races_are_rechecked_before_any_write ... ok
 test recovery_preserves_a_later_user_edit_of_an_updated_file ... ok
 test case_only_move_new_file_and_delete_are_recoverable ... ok

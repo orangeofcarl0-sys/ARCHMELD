@@ -98,7 +98,7 @@ fi
 
 # Build the nudge text. Keep it short — Claude reads this verbatim.
 if [ "$INDEXED" = "1" ]; then
-  NUDGE="codegraph: ${FILE_PATH##*/} is in an indexed workspace (${WORKSPACE_ROOT}). Before this edit, consider calling \`codegraph_get_edit_context\` (uri='file://${FILE_PATH}') to see callers, callees, and related symbols. If you're changing a function signature, also run \`codegraph_analyze_impact\` to see the blast radius. Skip these if you've already gathered the context this turn."
+  NUDGE="codegraph: ${FILE_PATH##*/} is in an indexed workspace (${WORKSPACE_ROOT}). Before this edit, consider calling \`codegraph_get_edit_context\` (uri='file://<path>') to see callers, callees, and related symbols. If you're changing a function signature, also run \`codegraph_analyze_impact\` to see the blast radius. Skip these if you've already gathered the context this turn."
 else
   NUDGE="codegraph: ${FILE_PATH##*/} is in a project (${WORKSPACE_ROOT}) that doesn't appear to be indexed by codegraph. If this edit changes a function signature or moves code across modules, consider running \`codegraph_reindex_workspace\` or \`codegraph_index_directory\` first so impact analysis works."
 fi

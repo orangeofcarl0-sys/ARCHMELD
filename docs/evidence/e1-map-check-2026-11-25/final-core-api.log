@@ -71,7 +71,7 @@ warning: unused import: `Stdio`
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `archmeld-api` (test "unix_socket") generated 1 warning (run `cargo fix --test "unix_socket" -p archmeld-api` to apply 1 suggestion)
-   Compiling archmeld-api v0.1.0 (<repo>\crates\archmeld-api)
+   Compiling archmeld-api v0.1.0 (<path>
 warning: calls to `std::mem::forget` with a value that implements `Copy` does nothing
    --> crates\archmeld-api\src\memory_limit.rs:114:9
     |
@@ -300,7 +300,7 @@ test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
      Running tests\apply_recovery.rs (target\debug\deps\apply_recovery-ba13c3948575ed2a.exe)
 
 running 5 tests
-Îª <temp>\.tmpYHpSz6\repo\src <<===>> <temp>\.tmpYHpSz6\outside ´´½¨µÄÁª½Ó
+Îª <path> <<===>> <path> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 test path_and_link_races_are_rechecked_before_any_write ... ok
 test recovery_preserves_a_later_user_edit_of_an_updated_file ... ok
 test case_only_move_new_file_and_delete_are_recoverable ... ok

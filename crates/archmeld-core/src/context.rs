@@ -907,6 +907,11 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         }
     }
 
+    // Omissions are diagnostics, not content. Keep a bounded sample per kind
+    // and account for what was hidden before the final size check.
+    let (omissions, hidden_omissions) = compact_omissions(&omissions, 5);
+    omissions_truncated += hidden_omissions;
+
     // Unresolved material is mandatory; add it before the final size check.
     let mut unresolved: Vec<String> = Vec::new();
     for claim in pack["claims"].as_array().into_iter().flatten() {
@@ -959,6 +964,7 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
     pack["omissions"] = json!(omissions);
     pack["next_cursor"] = next_cursor.map(Value::String).unwrap_or(Value::Null);
 
+    let explicit_seed = !request.entity_ids.is_empty();
     let mut truncated = omissions_truncated > 0;
     while serde_json::to_string(&pack)
         .map(|text| text.len())
@@ -966,53 +972,59 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         .saturating_add(256)
         > budget_bytes
     {
-        // Drop the largest optional slice first; unresolved/objective stay.
+        // Optional content first; metadata and the mandatory seed survive.
         let dropped = {
             let mut popped = false;
-            for key in [
-                "graph_slices",
-                "evidence_refs",
-                "source_snippets",
-                "non_goals",
-                "selected_entities",
-            ] {
+            for key in ["graph_slices", "evidence_refs"] {
                 if let Some(array) = pack[key].as_array_mut() {
                     if array.pop().is_some() {
-                        if key != "non_goals" {
-                            pack["omissions"]
-                                .as_array_mut()
-                                .unwrap()
-                                .push(json!({"kind": key, "reason": "final_budget_trim"}));
-                        }
+                        push_trim_omission(&mut pack, key);
                         popped = true;
                         break;
                     }
                 }
             }
-            popped
-        };
-        let dropped = if dropped {
-            dropped
-        } else {
-            let removed = {
-                let object = pack.as_object_mut().unwrap();
-                ["page", "relevance"]
-                    .into_iter()
-                    .find(|key| object.contains_key(*key))
-                    .map(|key| {
-                        object.remove(key);
-                        key.to_string()
-                    })
-            };
-            if let Some(key) = removed {
-                pack["omissions"]
-                    .as_array_mut()
-                    .unwrap()
-                    .push(json!({"kind": key, "reason": "final_budget_trim"}));
-                true
-            } else {
-                false
+            if !popped {
+                let keep_snippet = if explicit_seed { 1 } else { 0 };
+                if let Some(array) = pack["source_snippets"].as_array_mut() {
+                    if array.len() > keep_snippet && array.pop().is_some() {
+                        push_trim_omission(&mut pack, "source_snippets");
+                        popped = true;
+                    }
+                }
             }
+            if !popped {
+                if let Some(array) = pack["non_goals"].as_array_mut() {
+                    if array.pop().is_some() {
+                        popped = true;
+                    }
+                }
+            }
+            if !popped && !explicit_seed {
+                if let Some(array) = pack["selected_entities"].as_array_mut() {
+                    if array.pop().is_some() {
+                        push_trim_omission(&mut pack, "selected_entities");
+                        popped = true;
+                    }
+                }
+            }
+            if !popped {
+                let removed = {
+                    let object = pack.as_object_mut().unwrap();
+                    ["relevance", "page"]
+                        .into_iter()
+                        .find(|key| object.contains_key(*key))
+                        .map(|key| {
+                            object.remove(key);
+                            key.to_string()
+                        })
+                };
+                if let Some(key) = removed {
+                    push_trim_omission(&mut pack, &key);
+                    popped = true;
+                }
+            }
+            popped
         };
         if !dropped {
             let compacted_omissions = pack["omissions"]
@@ -1063,6 +1075,15 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
         }
         truncated = true;
     }
+    let returned_entities = pack["selected_entities"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0);
+    let has_more = pack["next_cursor"].as_str().is_some();
+    if let Some(page) = pack["page"].as_object_mut() {
+        page.insert("returned_entities".to_string(), json!(returned_entities));
+        page.insert("has_more".to_string(), json!(has_more));
+    }
     let estimated_tokens = (serde_json::to_string(&pack)
         .map(|text| text.len())
         .unwrap_or(0)
@@ -1084,6 +1105,43 @@ pub fn create_context_pack(store: &mut Store, raw: &Value) -> Result<Value> {
     let artifact = store.put_blob(bytes.as_bytes(), "application/json")?;
     final_pack["pack_artifact"] = json!(artifact);
     Ok(final_pack)
+}
+
+fn push_trim_omission(pack: &mut Value, kind: &str) {
+    if let Some(items) = pack["omissions"].as_array_mut() {
+        items.push(json!({"kind": kind, "reason": "final_budget_trim"}));
+    }
+}
+
+/// Keep at most `per_kind` sample records for each omission kind and replace
+/// the rest with one aggregate record per kind. Returns the compacted list and
+/// the number of records that were hidden.
+fn compact_omissions(items: &[Value], per_kind: usize) -> (Vec<Value>, usize) {
+    let mut grouped: BTreeMap<String, (Vec<Value>, usize)> = BTreeMap::new();
+    for item in items {
+        let kind = item["kind"].as_str().unwrap_or("omitted").to_string();
+        let entry = grouped.entry(kind).or_insert_with(|| (Vec::new(), 0));
+        entry.1 += 1;
+        if entry.0.len() < per_kind {
+            entry.0.push(item.clone());
+        }
+    }
+    let mut out = Vec::new();
+    let mut hidden = 0usize;
+    for (kind, (kept, total)) in grouped {
+        let kept_len = kept.len();
+        out.extend(kept);
+        if total > kept_len {
+            hidden += total - kept_len;
+            out.push(json!({
+                "kind": kind,
+                "count": total - kept_len,
+                "reason": "omitted",
+                "note": "additional omissions of this kind were aggregated",
+            }));
+        }
+    }
+    (out, hidden)
 }
 
 fn append_fits(pack: &Value, item: &Value, budget_bytes: usize, reserve: usize) -> bool {

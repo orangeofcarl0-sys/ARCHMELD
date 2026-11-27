@@ -27,7 +27,7 @@
   },
   "cli_run": {
     "command": "b025-cli-os-watch",
-    "cwd": "<temp>/b016_trace_evidence",
+    "cwd": "<path>",
     "argv": [
       "archmeld",
       "watch",

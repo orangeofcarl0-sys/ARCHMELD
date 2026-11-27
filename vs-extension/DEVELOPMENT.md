@@ -10,8 +10,8 @@
 
 Workloads already installed on this machine via:
 ```
-"C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe" modify ^
-  --installPath "C:\Program Files\Microsoft Visual Studio\2022\Community" ^
+"<path> Files (x86)\Microsoft Visual Studio\Installer\setup.exe" modify ^
+  --installPath "<path> Files\Microsoft Visual Studio\2022\Community" ^
   --add Microsoft.VisualStudio.Workload.ManagedDesktop ^
   --add Microsoft.VisualStudio.Workload.VisualStudioExtension ^
   --passive --wait
@@ -20,7 +20,7 @@ Workloads already installed on this machine via:
 ## Project Location
 
 ```
-C:\Users\Administrator\projects\codegraph-pro\vs-extension\src\CodegraphExtension\
+<path>
 ```
 
 ## Known Issue: Project Format
@@ -68,7 +68,7 @@ The extension looks for the server in this order:
 3. `codegraph-pro.exe` in PATH
 
 For development, either:
-- Copy `C:\Users\Administrator\projects\codegraph\target\release\codegraph-server.exe` to the project's `server\` directory
+- Copy `<path> to the project's `server\` directory
 - Or install globally: `npm install -g @astudioplus/codegraph-mcp`
 
 ## Development Workflow
@@ -129,4 +129,4 @@ These are WPF UserControls registered as `ToolWindowPane` in the package.
 
 | Repo | Location | Remote |
 |------|----------|--------|
-| codegraph (public) | `C:\Users\Administrator\projects\codegraph` | https://github.com/codegraph-ai/CodeGraph.git |
+| codegraph (public) | `<path> | https://github.com/codegraph-ai/CodeGraph.git |

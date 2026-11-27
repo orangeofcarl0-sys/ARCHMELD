@@ -22,20 +22,34 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+mod support;
+
 fn bench_tempdir(prefix: &str) -> tempfile::TempDir {
-    let base = std::env::var_os("ARCHMELD_BENCH_TEMP")
-        .map(PathBuf::from)
-        .or_else(|| {
-            let candidate = PathBuf::from("<temp>");
-            candidate.is_dir().then_some(candidate)
-        });
-    match base {
+    match std::env::var_os("ARCHMELD_BENCH_TEMP").map(PathBuf::from) {
         Some(base) => tempfile::Builder::new()
             .prefix(prefix)
             .tempdir_in(base)
-            .unwrap(),
-        None => tempfile::tempdir().unwrap(),
+            .expect("create benchmark tempdir"),
+        None => support::tempdir(prefix),
     }
+}
+
+fn python() -> String {
+    support::tool("ARCHMELD_PYTHON", "python.exe")
+        .map(|path| path.to_string_lossy().to_string())
+        .unwrap_or_else(|| "python".to_string())
+}
+
+fn node() -> String {
+    support::tool("ARCHMELD_NODE", "node.exe")
+        .map(|path| path.to_string_lossy().to_string())
+        .unwrap_or_else(|| "node".to_string())
+}
+
+fn powershell() -> String {
+    support::which("powershell")
+        .map(|path| path.to_string_lossy().to_string())
+        .unwrap_or_else(|| "powershell".to_string())
 }
 
 fn copy_dir(source: &Path, destination: &Path) {
@@ -155,7 +169,7 @@ fn working_set_mb(cwd: &Path) -> Option<f64> {
     }
     let pid = std::process::id();
     let argv = vec![
-        "powershell".to_string(),
+        powershell(),
         "-NoProfile".to_string(),
         "-Command".to_string(),
         format!("(Get-Process -Id {pid}).WorkingSet64"),
@@ -169,6 +183,16 @@ fn working_set_mb(cwd: &Path) -> Option<f64> {
 
 #[test]
 fn scale_cancellation_and_budget_measurements_are_repeatable() {
+    let required = [
+        ("ARCHMELD_PYTHON", "python.exe"),
+        ("ARCHMELD_NODE", "node.exe"),
+    ];
+    if required
+        .iter()
+        .any(|(env, relative)| support::require_tool(env, relative).is_none())
+    {
+        return;
+    }
     let repository_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let environment_digest = hash::digest_value(&json!({
         "os": std::env::consts::OS,
@@ -476,7 +500,7 @@ fn scale_cancellation_and_budget_measurements_are_repeatable() {
     let handle = std::thread::spawn(move || {
         run_command_capture(
             &[
-                "python".to_string(),
+                python(),
                 "-c".to_string(),
                 "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); time.sleep(60)"
                     .to_string(),
@@ -584,7 +608,7 @@ fn scale_cancellation_and_budget_measurements_are_repeatable() {
     assert!(import_limit.to_string().contains("resource_exhausted"));
     let output_cap = run_command_capture(
         &[
-            "python".to_string(),
+            python(),
             "-c".to_string(),
             "import sys;sys.stdout.write('x'*(5*1024*1024))".to_string(),
         ],
@@ -601,7 +625,7 @@ fn scale_cancellation_and_budget_measurements_are_repeatable() {
     // editor host. The limitation is recorded, not hidden.
     let ui_capture = run_command_capture(
         &[
-            "node".to_string(),
+            node(),
             repository_root
                 .join("benchmarks/ui-latency.js")
                 .to_string_lossy()

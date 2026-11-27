@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "omit": [
+    {
+      "glob": "adapters/languages/fixtures/csharp/bin/**",
+      "reason": "transient C# build output"
+    },
+    {
+      "glob": "adapters/languages/fixtures/csharp/obj/**",
+      "reason": "transient C# build output"
+    },
+    {
+      "glob": "target/**",
+      "reason": "build output"
+    },
+    {
+      "glob": "target-linux/**",
+      "reason": "build output"
+    },
+    {
+      "glob": "dist/**",
+      "reason": "generated release artifacts"
+    },
+    {
+      "glob": "baseline/logs/**",
+      "reason": "local-only command logs"
+    },
+    {
+      "glob": "**/__pycache__/**",
+      "reason": "Python cache"
+    },
+    {
+      "glob": "docs/evidence/ui-state/**",
+      "reason": "ignored UI state"
+    },
+    {
+      "glob": "docs/evidence/ui-trace-state/**",
+      "reason": "ignored UI state"
+    },
+    {
+      "glob": "docs/evidence/ui-export.ndjson",
+      "reason": "ignored generated export"
+    },
+    {
+      "glob": "docs/evidence/**/*.png",
+      "reason": "screenshots may contain workstation UI and paths"
+    },
+    {
+      "glob": "docs/evidence/**/*.jpg",
+      "reason": "screenshots may contain workstation UI and paths"
+    },
+    {
+      "glob": "docs/evidence/**/*.jpeg",
+      "reason": "screenshots may contain workstation UI and paths"
+    },
+    {
+      "glob": "docs/release-evidence/PUBLIC-SNAPSHOT-*.json",
+      "reason": "private publication evidence"
+    },
+    {
+      "glob": "upstream-probes/**/state-*/**",
+      "reason": "regenerable ledger state"
+    },
+    {
+      "glob": ".archmeld-private/**",
+      "reason": "untracked private map"
+    }
+  ],
+  "allow": [
+    {
+      "glob": "crates/codegraph-c/tests/**",
+      "reason": "pristine upstream public path"
+    },
+    {
+      "glob": "crates/codegraph-cobol/tests/**",
+      "reason": "pristine upstream public path"
+    },
+    {
+      "glob": "crates/codegraph-fortran/tests/**",
+      "reason": "pristine upstream public path"
+    },
+    {
+      "glob": "crates/codegraph-harness/cases/security_check_secrets_entropy/**",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "glob": "crates/codegraph-harness/fixtures/secrets_demo/**",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "glob": "crates/archmeld-core/tests/cognition_map.rs",
+      "reason": "deliberate fake secret fixture"
+    },
+    {
+      "glob": "crates/archmeld-core/src/cognition_map.rs",
+      "reason": "secret detector patterns, not credentials"
+    },
+    {
+      "glob": "tooling/e4a_launcher.py",
+      "reason": "secret detector patterns, not credentials"
+    },
+    {
+      "glob": "tooling/public_snapshot.py",
+      "reason": "scanner patterns, not credentials"
+    },
+    {
+      "glob": "tooling/test_public_snapshot.py",
+      "reason": "scanner test markers"
+    }
+  ]
+}

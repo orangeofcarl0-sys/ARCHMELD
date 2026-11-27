@@ -6,9 +6,9 @@ invoke:
   tool: codegraph_compare_symbols
   binary: /Users/anvanster/projects/codegraph-pro/target/release/codegraph-pro
   args:
-    uri_a: file://${fixture}
+    uri_a: file://<path>
     line_a: 8
-    uri_b: file://${fixture}
+    uri_b: file://<path>
     line_b: 23
   retry_on_warmup: true
 expect:

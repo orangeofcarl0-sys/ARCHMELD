@@ -18,7 +18,7 @@
 
 协议内使用仓库相对、POSIX `/` 分隔、大小写保真的路径。拒绝绝对路径、`..`、空字节、URI 混用、Windows ADS 和不在声明根目录内的符号链接/junction。大小写不敏感磁盘上的冲突必须报错；不能把大小写折叠后的不同 Unix 文件静默合并。
 
-Windows、WSL 和容器路径用明确 `path_mapping` 表转换，并记录执行位置。不能直接将 `C:\...` 填进 Linux 的 compile_commands.json；不明确的映射返回 unmapped_source。
+Windows、WSL 和容器路径用明确 `path_mapping` 表转换，并记录执行位置。不能直接将 `<path> 填进 Linux 的 compile_commands.json；不明确的映射返回 unmapped_source。
 
 ## 4. 字节与行列
 

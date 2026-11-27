@@ -19,9 +19,7 @@ use tempfile::TempDir;
 
 // Helper to create test graph
 fn create_test_graph() -> codegraph::Result<CodeGraph> {
-    let temp_dir = TempDir::new().unwrap();
-    let db_path = temp_dir.path().join("test.graph");
-    let mut graph = CodeGraph::open(&db_path)?;
+    let mut graph = CodeGraph::in_memory()?;
 
     // Create a small code graph
     let main_file = helpers::add_file(&mut graph, "src/main.rs", "rust")?;
@@ -274,9 +272,7 @@ fn test_export_triples_rdf_format() {
 // T113: Test size limit warnings for large graphs
 #[test]
 fn test_size_limit_warnings() {
-    let temp_dir = TempDir::new().unwrap();
-    let db_path = temp_dir.path().join("large.graph");
-    let mut graph = CodeGraph::open(&db_path).unwrap();
+    let mut graph = CodeGraph::in_memory().unwrap();
 
     // Create a graph with >10K nodes
     let file = helpers::add_file(&mut graph, "test.rs", "rust").unwrap();

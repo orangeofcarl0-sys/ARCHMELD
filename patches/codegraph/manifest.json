@@ -11,12 +11,17 @@
       "id": "P001",
       "title": "Workspace members and lockfile for the ARCHMELD crates",
       "kind": "build_lock",
-      "paths": ["Cargo.toml", "Cargo.lock"],
+      "paths": [
+        "Cargo.toml",
+        "Cargo.lock"
+      ],
       "necessity": "archmeld-core/archmeld-api must build in the pinned workspace; rusqlite/sha2 dependencies enter the lockfile.",
       "upstreamable": "no",
-      "acceptance": ["B003+"],
+      "acceptance": [
+        "B003+"
+      ],
       "conflict_hotspot": true,
-      "diff_sha256": "503863019d65128001427e88560cf025821cfa42db192de6fdb35f74374c9bbe"
+      "diff_sha256": "9b9d5494ef59f53170e66e63565b1c03da84d19d44b485f702d0d613f14fe37f"
     },
     {
       "id": "P002",
@@ -28,9 +33,13 @@
       ],
       "necessity": "export_json iterates 0..node_count and drops live objects after deletions; the bridge needs real node/edge iterators, stable sparse IDs and a manifest.",
       "upstreamable": "candidate",
-      "acceptance": ["AT004", "AT013", "export_contract"],
+      "acceptance": [
+        "AT004",
+        "AT013",
+        "export_contract"
+      ],
       "conflict_hotspot": true,
-      "diff_sha256": "c6dd599e895be4ed5ad23f56d7b34235212b11c2a5960d8aa66634fc37ceee47"
+      "diff_sha256": "7adc94fb26095fbecfaab3c53213c664274f9396b98a0df5b7f76bddcbe8bd58"
     },
     {
       "id": "P003",
@@ -42,18 +51,27 @@
       ],
       "necessity": "The bridge consumes a complete index without opening RocksDB, loading a model, starting a watcher or serving MCP; the example is packaged as archmeld-index.",
       "upstreamable": "no",
-      "acceptance": ["AT013", "B031"],
+      "acceptance": [
+        "AT013",
+        "B031"
+      ],
       "conflict_hotspot": false,
-      "diff_sha256": "97d4d9377c297b954563fc0b580862deebeb567a6298e5113f8d578b714a683a"
+      "diff_sha256": "f5748919dd7bba38073528148e0fdf3cf5c01b375462522b8254623da03686c5"
     },
     {
       "id": "P004",
       "title": "Server flags, state root and crash-marker ordering",
       "kind": "modified_upstream",
-      "paths": ["crates/codegraph-server/src/main.rs"],
+      "paths": [
+        "crates/codegraph-server/src/main.rs"
+      ],
       "necessity": "--archmeld-export-v1 and --archmeld-state-root are product requirements; the state root must be installed after Args::parse and before the crash marker, lock or cache path.",
       "upstreamable": "candidate",
-      "acceptance": ["AT005", "AT013", "B031"],
+      "acceptance": [
+        "AT005",
+        "AT013",
+        "B031"
+      ],
       "conflict_hotspot": true,
       "diff_sha256": "4867db8f3d6f2f3b5809922d0245b8e26b4c7a8fde8356c04792042d99294825"
     },
@@ -69,9 +87,11 @@
       ],
       "necessity": "Never write ~/.codegraph during bridge/index/export runs; HOME, daemon heartbeats, crash markers and index_state all follow ARCHMELD_STATE_ROOT.",
       "upstreamable": "candidate",
-      "acceptance": ["AT005"],
+      "acceptance": [
+        "AT005"
+      ],
       "conflict_hotspot": true,
-      "diff_sha256": "9cd817e6f597c0c574757051a6212953fd35cfb836c0e2c765eb4e45c85274d2"
+      "diff_sha256": "81d6b408785a0cf65d4f3632a47144974454708428c8c6aa6291f710e6bc1d94"
     },
     {
       "id": "P006",
@@ -83,9 +103,12 @@
       ],
       "necessity": "Reproducible evidence for sparse IDs and process-level state isolation; upstream tests are untouched.",
       "upstreamable": "no",
-      "acceptance": ["AT004", "AT005"],
+      "acceptance": [
+        "AT004",
+        "AT005"
+      ],
       "conflict_hotspot": false,
-      "diff_sha256": "ef2a2ccd47035b09483127bedeeaa9a873de1d9cad2660af17b47548712aae32"
+      "diff_sha256": "f6517872ff748e83f4b17b78339872bb0b193e1b365f901000a3f89d38b36e0d"
     },
     {
       "id": "P007",
@@ -97,7 +120,9 @@
       ],
       "necessity": "`from m import x as y` dropped the local alias; the graph edge now carries symbols=[x] and alias=y, with a documented alias field.",
       "upstreamable": "candidate",
-      "acceptance": ["python_alias_binding"],
+      "acceptance": [
+        "python_alias_binding"
+      ],
       "conflict_hotspot": false,
       "diff_sha256": "6ce0113468d7b64221d1b50e9f33959a87203b29279d783350bd1d385a6515ff"
     },
@@ -105,34 +130,108 @@
       "id": "P008",
       "title": "Python per-file import binding resolver",
       "kind": "modified_upstream",
-      "paths": ["crates/codegraph-server/src/watcher.rs"],
+      "paths": [
+        "crates/codegraph-server/src/watcher.rs"
+      ],
       "necessity": "A global bare-name map misbound same-name imports and aliases; per-file imported_locals/shadowed_locals prevent wrong-target calls and global-homonym fallback.",
       "upstreamable": "candidate",
-      "acceptance": ["python_same_name_binding", "python_alias_binding"],
+      "acceptance": [
+        "python_same_name_binding",
+        "python_alias_binding"
+      ],
       "conflict_hotspot": true,
-      "diff_sha256": "2c1e457c4e236a58baad669e5259ff330862c2764005ebfb0f7dc0b725b84586"
+      "diff_sha256": "9f7c4245c50fd92f09fb3726630c5331f8c08965503badef146689ad0f443009"
     },
     {
       "id": "P009",
       "title": "Upstream parser test addition for alias edges",
       "kind": "upstream_test_addition",
-      "paths": ["crates/codegraph-python/tests/parser_impl_tests.rs"],
+      "paths": [
+        "crates/codegraph-python/tests/parser_impl_tests.rs"
+      ],
       "necessity": "Adds an assertion for symbols=[exported] and alias=local; no upstream test was deleted, weakened or ignored.",
       "upstreamable": "candidate",
-      "acceptance": ["python_alias_binding"],
+      "acceptance": [
+        "python_alias_binding"
+      ],
       "conflict_hotspot": false,
       "diff_sha256": "220a7e202a4b4ec64317d0dc44b5f29f50355be67a6d1a7f9fdb38dbe58c992a"
+    },
+    {
+      "id": "P011",
+      "title": "Index coverage counters and cross-file trait implementations",
+      "kind": "modified_upstream",
+      "paths": [
+        "crates/codegraph-server/src/indexer.rs",
+        "crates/codegraph-server/src/backend.rs",
+        "crates/codegraph-rust/src/mapper.rs",
+        "crates/codegraph-rust/src/lib.rs",
+        "crates/codegraph-server/tests/cross_file_trait.rs",
+        "crates/codegraph-server/tests/index_coverage.rs"
+      ],
+      "necessity": "The indexer must report skipped-by-reason, per-file parser errors and cross-file Implements counts so coverage is auditable; the Rust mapper records deferred trait names and resolves only unique graph-wide matches, so file order does not change the graph. The two integration tests exercise the real Indexer. Neither change promotes candidate calls or invents architecture.",
+      "upstreamable": "candidate",
+      "acceptance": [
+        "P13",
+        "P14",
+        "P15"
+      ],
+      "conflict_hotspot": true,
+      "diff_sha256": "93e5e0432859e9fa0f124c406e31d164369ddbcefcb0a3ab10941feee15fd646"
     },
     {
       "id": "P010",
       "title": "ARCHMELD product README",
       "kind": "product_doc",
-      "paths": ["README.md"],
+      "paths": [
+        "README.md"
+      ],
       "necessity": "The first screen must describe ARCHMELD init/MCP, not the inherited CodeGraph quick start.",
       "upstreamable": "no",
-      "acceptance": ["M1"],
+      "acceptance": [
+        "M1"
+      ],
       "conflict_hotspot": false,
       "diff_sha256": "9ee9b34327a11b7735bbc93ea76ccc32ae9dc7e29cf64201b153988b29744de8"
+    },
+    {
+      "id": "P015",
+      "title": "Windows test-fixture portability and adjacent test path lookup",
+      "kind": "modified_upstream",
+      "paths": [
+        "crates/codegraph-server/src/handlers/custom.rs",
+        "crates/codegraph-server/src/handlers/navigation.rs",
+        "crates/codegraph-server/src/domain/unused_code.rs"
+      ],
+      "necessity": "Windows rejects drive-less POSIX file paths in Url::from_file_path/to_file_path; the fixtures now use a platform-absolute root. The related-test path generator also emits the native separator variant so an exact graph property lookup finds adjacent tests on Windows.",
+      "upstreamable": "candidate",
+      "acceptance": [
+        "WINDOWS-VERIFICATION-2026-11-27",
+        "codegraph-server-lib"
+      ],
+      "conflict_hotspot": false,
+      "diff_sha256": "1f0fd79689a857e241d9e8c07929b2493f910bcdeefc20a918cf6645e026d540"
+    },
+    {
+      "id": "P016",
+      "title": "Parser/RocksDB feature split and build-time provenance",
+      "kind": "modified_upstream",
+      "paths": [
+        "crates/codegraph-server/Cargo.toml",
+        "crates/codegraph/Cargo.toml",
+        "crates/codegraph-server/build.rs",
+        "crates/codegraph/build.rs",
+        "crates/codegraph/tests/integration/mod.rs",
+        "crates/codegraph/tests/unit/export_test.rs"
+      ],
+      "necessity": "Parser-only crates no longer enable the RocksDB default feature; codegraph-server opts back in. Build scripts accept explicit commit overrides and track the repository .git. Test modules and examples are gated so --no-default-features still compiles.",
+      "upstreamable": "candidate",
+      "acceptance": [
+        "self-fix-parser-suites-2026-11-27",
+        "self-fix-codegraph-lib-run-2026-11-27"
+      ],
+      "conflict_hotspot": true,
+      "diff_sha256": "5ccaf7d732a4b22bc68e081fb3f0f56d06e47707596275ea25e52d28ea699636"
     }
   ],
   "unaccounted_paths": [],

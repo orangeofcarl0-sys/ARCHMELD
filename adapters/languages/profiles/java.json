@@ -17,7 +17,12 @@
         "name": "JDK",
         "status": "present",
         "version": "Temurin 25.0.5+8",
-        "path": "<workspace>/_archmeld_tools/jdk25/jdk-25.0.5+8"
+        "path": "<path>",
+        "observed_path": "<path>",
+        "path_env": "ARCHMELD_JDK25",
+        "relative_path": "bin/java.exe",
+        "strategy": "env_file",
+        "path_kind": "directory"
       },
       {
         "name": "maven/gradle",

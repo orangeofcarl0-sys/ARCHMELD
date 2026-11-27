@@ -431,7 +431,7 @@
                 "name": "codegraph_get_dependency_graph",
                 "displayName": "Get Dependency Graph",
                 "description": "Retrieve the dependency graph for a source file showing imports and dependencies",
-                "modelDescription": "Analyzes file import/dependency relationships. USE WHEN: understanding module architecture, finding circular dependencies, planning refactoring, or tracing import chains. RETURNS: Graph with nodes (files/modules) and edges (import relationships). Set direction='importedBy' to find reverse dependencies. EXAMPLE: To see what imports utils.ts, call with uri='file:///path/to/utils.ts' and direction='importedBy'. LIMITATIONS: External packages shown only with includeExternal=true.",
+                "modelDescription": "Analyzes file import/dependency relationships. USE WHEN: understanding module architecture, finding circular dependencies, planning refactoring, or tracing import chains. RETURNS: Graph with nodes (files/modules) and edges (import relationships). Set direction='importedBy' to find reverse dependencies. EXAMPLE: To see what imports utils.ts, call with uri='file://<path>' and direction='importedBy'. LIMITATIONS: External packages shown only with includeExternal=true.",
                 "canBeReferencedInPrompt": true,
                 "toolReferenceName": "dependency_graph",
                 "userDescription": "Analyzes file dependencies and import relationships in your codebase",
@@ -447,7 +447,7 @@
                     "properties": {
                         "uri": {
                             "type": "string",
-                            "description": "The file URI to analyze (e.g., file:///path/to/file.ts)"
+                            "description": "The file URI to analyze (e.g., file://<path>"
                         },
                         "depth": {
                             "type": "number",
@@ -1007,7 +1007,7 @@
                     "properties": {
                         "uri": {
                             "type": "string",
-                            "description": "File URI (e.g., file:///path/to/file.ts). Use with line to identify the starting symbol."
+                            "description": "File URI (e.g., file://<path> Use with line to identify the starting symbol."
                         },
                         "line": {
                             "type": "number",
@@ -1074,7 +1074,7 @@
                     "properties": {
                         "uri": {
                             "type": "string",
-                            "description": "File URI (e.g., file:///path/to/file.ts). Use with line to identify the function."
+                            "description": "File URI (e.g., file://<path> Use with line to identify the function."
                         },
                         "line": {
                             "type": "number",
@@ -1112,7 +1112,7 @@
                     "properties": {
                         "uri": {
                             "type": "string",
-                            "description": "File URI (e.g., file:///path/to/file.ts). Use with line to identify the function."
+                            "description": "File URI (e.g., file://<path> Use with line to identify the function."
                         },
                         "line": {
                             "type": "number",
@@ -1150,7 +1150,7 @@
                     "properties": {
                         "uri": {
                             "type": "string",
-                            "description": "File URI (e.g., file:///path/to/file.ts). Use with line to identify the symbol."
+                            "description": "File URI (e.g., file://<path> Use with line to identify the symbol."
                         },
                         "line": {
                             "type": "number",

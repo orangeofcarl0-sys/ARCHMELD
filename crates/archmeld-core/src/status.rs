@@ -48,12 +48,21 @@ pub fn status_report(
         });
         if let Some(snapshot_id) = latest_snapshot_id.as_deref() {
             if let Some(payload) = store.snapshot_payload(&project, snapshot_id)? {
+                let mut origin_counts: std::collections::BTreeMap<String, u64> =
+                    std::collections::BTreeMap::new();
+                for file in payload["files"].as_array().into_iter().flatten() {
+                    let origin = file["origin"].as_str().unwrap_or("unknown");
+                    *origin_counts.entry(origin.to_string()).or_insert(0) += 1;
+                }
                 entry["snapshot"] = json!({
                     "created_at": payload["created_at"],
                     "git_commit": payload["git_commit"],
+                    "git_tree_digest": payload.get("git_tree_digest"),
                     "config_digest": payload["config_digest"],
+                    "workspace_policy": payload.get("workspace_policy"),
                     "coverage": payload["coverage"],
                     "file_count": payload["files"].as_array().map(Vec::len),
+                    "files_origin": origin_counts,
                     "stable": payload["stable"],
                 });
             }
@@ -74,6 +83,9 @@ pub fn status_report(
                     "entities": entities,
                 }))
                 .collect::<Vec<_>>());
+            if let Some(index_run) = store.latest_index_run(&project, snapshot_id)? {
+                entry["index"] = index_run;
+            }
             if let Some(root) = workspace {
                 match analyze_drift(store, &project, snapshot_id, root, None) {
                     Ok(report) => {
@@ -84,6 +96,9 @@ pub fn status_report(
                             "changed": report["changed"],
                             "added": report["added"],
                             "deleted": report["deleted"],
+                            "omitted": report["omitted"],
+                            "policy": report["policy"],
+                            "coverage": report["coverage"],
                             "affected_entities": report["affected_entities"],
                             "affected_relations": report["affected_relations"],
                             "affected_claims": report["affected_claims"],

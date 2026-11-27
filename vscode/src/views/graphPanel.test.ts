@@ -250,7 +250,7 @@ describe('GraphVisualizationPanel', () => {
       (GraphVisualizationPanel as any).currentPanel = undefined;
 
       mockClient.sendRequest.mockResolvedValue({
-        uri: 'file:///test/file.ts',
+        uri: 'file://<path>',
         range: {
           start: { line: 10, character: 0 },
           end: { line: 20, character: 0 },
@@ -307,7 +307,7 @@ describe('GraphVisualizationPanel', () => {
 
       // Simulate refresh message (no 'position' means dependency graph)
       if (messageHandler) {
-        await messageHandler({ command: 'refresh', params: { uri: 'file:///test.ts' } });
+        await messageHandler({ command: 'refresh', params: { uri: 'file://<path>' } });
       }
 
       expect(postedMessages.some(m => m.command === 'renderGraph')).toBe(true);
@@ -332,7 +332,7 @@ describe('GraphVisualizationPanel', () => {
       if (messageHandler) {
         await messageHandler({
           command: 'refresh',
-          params: { uri: 'file:///test.ts', position: { line: 10, character: 5 } }
+          params: { uri: 'file://<path>', position: { line: 10, character: 5 } }
         });
       }
 
@@ -353,7 +353,7 @@ describe('GraphVisualizationPanel', () => {
       postedMessages = [];
 
       if (messageHandler) {
-        await messageHandler({ command: 'refresh', params: { uri: 'file:///test.ts' } });
+        await messageHandler({ command: 'refresh', params: { uri: 'file://<path>' } });
       }
 
       expect(postedMessages.some(m => m.command === 'error')).toBe(true);

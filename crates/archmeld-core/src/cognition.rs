@@ -37,6 +37,8 @@ struct Volume {
 
 struct Map {
     root: Option<String>,
+    root_manifest: Option<String>,
+    format_version: Option<String>,
     volumes: Vec<Volume>,
     entries: Vec<Entry>,
     warnings: Vec<String>,
@@ -53,6 +55,8 @@ pub fn summarize(workspace: Option<&Path>) -> Value {
         "provider": "aoci",
         "present": true,
         "root": map.root,
+        "root_manifest": map.root_manifest,
+        "format_version": map.format_version,
         "volumes": map.volumes.iter().map(|volume| json!({
             "kind": volume.kind,
             "path": volume.path,
@@ -120,6 +124,8 @@ pub fn affected(workspace: Option<&Path>, changed_paths: &[String]) -> Value {
         "provider": "aoci",
         "present": true,
         "root": map.root,
+        "root_manifest": map.root_manifest,
+        "format_version": map.format_version,
         "volumes": map.volumes.iter().map(|volume| json!({
             "kind": volume.kind,
             "path": volume.path,
@@ -136,6 +142,8 @@ pub fn affected(workspace: Option<&Path>, changed_paths: &[String]) -> Value {
 fn load(workspace: Option<&Path>) -> Map {
     let mut map = Map {
         root: None,
+        root_manifest: None,
+        format_version: None,
         volumes: Vec::new(),
         entries: Vec::new(),
         warnings: Vec::new(),
@@ -149,6 +157,21 @@ fn load(workspace: Option<&Path>) -> Map {
         map.root = Some("aoci.txt".to_string());
         match read_text(&root_path) {
             Ok(text) => {
+                let (root_manifest, format_version) = parse_manifest_headers(&text);
+                map.root_manifest = root_manifest;
+                map.format_version = format_version;
+                match &map.format_version {
+                    Some(version) if format_major(version) == Some(1) => {}
+                    Some(version) => map.warnings.push(format!(
+                        "AOCI format version {version} has an unknown major version; parsing as cognition-volumes/v1"
+                    )),
+                    None => map.warnings.push(
+                        "aoci.txt has no #Format-Version; assuming cognition-volumes/v1".to_string(),
+                    ),
+                }
+                if map.root_manifest.is_none() {
+                    map.warnings.push("aoci.txt has no #AOCI-ROOT-MANIFEST".to_string());
+                }
                 map.volumes = parse_root(&text);
                 if let Some(volume) = map.volumes.iter().find(|volume| volume.kind == "code") {
                     code_path = Some(workspace.join(&volume.path));
@@ -203,6 +226,35 @@ fn read_text(path: &Path) -> Result<String, String> {
     }
     fs::read_to_string(path)
         .map_err(|error| format!("{} is not UTF-8 text: {error}", path.display()))
+}
+
+fn parse_manifest_headers(text: &str) -> (Option<String>, Option<String>) {
+    let mut root_manifest = None;
+    let mut format_version = None;
+    for line in text.lines() {
+        let line = line.trim_end_matches('\r').trim();
+        if let Some(value) = line.strip_prefix("#AOCI-ROOT-MANIFEST:") {
+            let value = value.trim();
+            if !value.is_empty() {
+                root_manifest = Some(value.to_string());
+            }
+        } else if let Some(value) = line.strip_prefix("#Format-Version:") {
+            let value = value.trim();
+            if !value.is_empty() {
+                format_version = Some(value.to_string());
+            }
+        }
+    }
+    (root_manifest, format_version)
+}
+
+/// AOCI names the format as `<family>/v<major>`; only the major is a gate.
+fn format_major(version: &str) -> Option<u64> {
+    version
+        .rsplit('/')
+        .next()
+        .and_then(|tail| tail.strip_prefix('v'))
+        .and_then(|digits| digits.parse().ok())
 }
 
 fn parse_root(text: &str) -> Vec<Volume> {

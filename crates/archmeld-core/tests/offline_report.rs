@@ -5,6 +5,14 @@
 //! Manager promotion with full object validation.
 
 mod common;
+mod support;
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
 
 use archmeld_core::changeset::get_changeset;
 use archmeld_core::hash;
@@ -169,7 +177,7 @@ fn failed_verification_plan(fixture: &mut common::Fixture) -> String {
         "required": true,
         "description": "intentional failure for report evidence",
         "command": {
-            "argv": ["python", "-c", "import sys; sys.exit(1)"],
+            "argv": [python(), "-c", "import sys; sys.exit(1)"],
             "cwd": null,
             "timeout_ms": 5000,
         },
@@ -323,8 +331,8 @@ fn failed_verification(fixture: &mut common::Fixture) -> Value {
 
 fn chrome_path() -> Option<PathBuf> {
     [
-        "C:/Program Files/Google/Chrome/Application/chrome.exe",
-        "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+        "<path> Files/Google/Chrome/Application/chrome.exe",
+        "<path> Files (x86)/Microsoft/Edge/Application/msedge.exe",
     ]
     .iter()
     .map(PathBuf::from)
@@ -333,6 +341,9 @@ fn chrome_path() -> Option<PathBuf> {
 
 #[test]
 fn offline_report_is_self_contained_and_promotion_preserves_objects() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() {
+        return;
+    }
     let mut fixture = common::setup("b027-report");
     let (evidence_id, claim_id) = seed_evidence_and_claim(&mut fixture);
     let verification = failed_verification(&mut fixture);
@@ -392,7 +403,7 @@ fn offline_report_is_self_contained_and_promotion_preserves_objects() {
     let browser = chrome_path().map(|chrome| {
         let profile = fixture._dir.path().join("chrome-profile");
         let uri = format!(
-            "file:///{}",
+            "file://<path>",
             bundle_dir.join("report.html").to_string_lossy().replace('\\', "/")
         );
         let capture = run_command_capture(

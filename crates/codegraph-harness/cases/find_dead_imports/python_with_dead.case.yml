@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_find_dead_imports
   args:
-    uri: file://${fixture}
+    uri: file://<path>
 expect:
   match: contains
   data:

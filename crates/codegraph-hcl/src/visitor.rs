@@ -284,7 +284,7 @@ variable "instance_type" {
         let source = br#"
 module "vpc" {
   source = "./modules/vpc"
-  cidr   = "10.0.0.0/16"
+  cidr   = "<private-ip>.0/16"
 }
 "#;
         let visitor = parse_and_visit(source);
@@ -341,7 +341,7 @@ resource "aws_instance" "web" {
 
 module "vpc" {
   source = "./modules/vpc"
-  cidr   = "10.0.0.0/16"
+  cidr   = "<private-ip>.0/16"
 }
 
 output "instance_ip" {

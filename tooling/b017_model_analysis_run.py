@@ -26,7 +26,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def default_uv() -> str:
-    candidate = Path(os.path.expandvars(r"%USERPROFILE%\.local\bin\uv.exe"))
+    explicit = os.environ.get("ARCHMELD_UV")
+    candidate = Path(explicit) if explicit else Path.home() / ".local" / "bin" / "uv.exe"
     return str(candidate) if candidate.is_file() else "uv"
 
 
@@ -37,7 +38,10 @@ def main() -> int:
     parser.add_argument("--depth-cap", type=int, default=2)
     parser.add_argument(
         "--provider-config",
-        default=os.path.expandvars(r"%USERPROFILE%\.zcode\v2\provider_config.json"),
+        default=os.environ.get(
+            "ARCHMELD_PROVIDER_CONFIG",
+            str(Path.home() / ".zcode/v2/provider_config.json"),
+        ),
     )
     parser.add_argument("--provider-name", default="opencode go orange")
     parser.add_argument("--model", default="deepseek-v4.1-flash")

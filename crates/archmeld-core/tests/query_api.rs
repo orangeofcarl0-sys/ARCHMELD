@@ -129,7 +129,7 @@ fn request(fx: &Fixture, kind: &str, extra: Value) -> Value {
         "kind": kind,
         "query": "",
         "entity_ids": [],
-        "relation_kinds": ["static_call_candidate"],
+        "relation_kinds": [],
         "max_nodes": 2,
         "max_depth": 4,
         "cursor": null,

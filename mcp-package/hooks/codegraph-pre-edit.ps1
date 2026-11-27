@@ -88,15 +88,15 @@ $indexed = Test-Path (Join-Path $workspaceRoot '.codegraph') -PathType Container
 
 # Build the nudge text.
 $baseName = [System.IO.Path]::GetFileName($filePath)
-# Convert backslashes to forward slashes for the file:// URI form.
+# Convert backslashes to forward slashes for the file://<path> URI form.
 $uriPath = $filePath -replace '\\', '/'
 if ($uriPath -notmatch '^/') {
-    # Windows drive path → file:///C:/foo/bar.rs
+    # Windows drive path → file://<path><path>
     $uriPath = "/$uriPath"
 }
 
 if ($indexed) {
-    $nudge = "codegraph: $baseName is in an indexed workspace ($workspaceRoot). Before this edit, consider calling ``codegraph_get_edit_context`` (uri='file://$uriPath') to see callers, callees, and related symbols. If you're changing a function signature, also run ``codegraph_analyze_impact`` to see the blast radius. Skip these if you've already gathered the context this turn."
+    $nudge = "codegraph: $baseName is in an indexed workspace ($workspaceRoot). Before this edit, consider calling ``codegraph_get_edit_context`` (uri='file://<path>') to see callers, callees, and related symbols. If you're changing a function signature, also run ``codegraph_analyze_impact`` to see the blast radius. Skip these if you've already gathered the context this turn."
 } else {
     $nudge = "codegraph: $baseName is in a project ($workspaceRoot) that doesn't appear to be indexed by codegraph. If this edit changes a function signature or moves code across modules, consider running ``codegraph_reindex_workspace`` or ``codegraph_index_directory`` first so impact analysis works."
 }

@@ -120,7 +120,7 @@ pub struct InitializeParams {
 /// A workspace root provided by the MCP client.
 #[derive(Debug, Clone, Deserialize)]
 pub struct Root {
-    /// Root URI (typically file:///path/to/dir)
+    /// Root URI (typically file://<path>
     pub uri: String,
     /// Optional human-readable name
     #[serde(default)]

@@ -1,0 +1,303 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-26",
+  "generated_by": "tooling/upstream.py rollback-drill",
+  "upstream": "codegraph",
+  "from": "bda420887839df1f3127708754ac01961bec122c",
+  "to": "903bfe0a",
+  "target_commit": "903bfe0a888e290a8618c714ffc1a11d27390261",
+  "target_is_ancestor": true,
+  "matrix": "quick",
+  "tests": [
+    {
+      "argv": [
+        "<path><identity>\\.cargo\\bin\\cargo.EXE",
+        "test",
+        "--offline",
+        "-p",
+        "archmeld-core",
+        "-p",
+        "archmeld-api",
+        "--no-fail-fast",
+        "-j",
+        "2"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:09:54.032971+00:00",
+      "finished_at": "2026-11-26T00:27:43.560944+00:00",
+      "duration_s": 1069.528,
+      "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 6 tests\ntest memory_limit::tests::limit_validation_rejects_zero_and_overflow ... ok\ntest status_tests::status_reports_the_latest_snapshot_and_workspace_freshness_without_mutation ... ok\ntest diff_cli_tests::review_diff_cli_reports_changed_entity_and_not_run_verification ... ok\ntest index_tests::index_parses_the_captured_snapshot_not_a_concurrent_save ... ok\ntest index_tests::clean_workspace_reuses_the_indexed_snapshot ... ok\ntest diff_cli_tests::refresh_creates_a_new_snapshot_and_diffs_from_the_base ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest stale_event_cursor_is_resync_required_and_tokens_are_enforced ... ok\ntest health_query_source_and_cancel_are_real_http_requests ... ok\ntest lifecycle_routes_use_allowlisted_handles_and_idempotency ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.76s\n\n\nrunning 1 test\ntest claims_architectures_and_capabilities_are_real_http_routes ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s\n\n\nrunning 1 test\ntest mcp_has_no_approval_tool_and_refuses_writes_and_paths ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.80s\n\n\nrunning 2 tests\ntest malformed_named_pipe_name_is_refused ... ok\ntest named_pipe_requires_the_bearer_token ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s\n\n\nrunning 6 tests\ntest state_inside_workspace_is_rejected ... ok\ntest preflight_skips_vendor_and_metadata_directories ... ok\ntest default_paths_are_stable_and_project_scoped ... ok\ntest mcp_plans_render_real_client_commands ... ok\ntest rule_block_is_previewed_written_and_idempotent ... ok\ntest real_mcp_handshake_reports_root_and_tools ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s\n\n\nrunning 1 test\ntest report_route_owns_the_output_directory_and_rejects_unsafe_names ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s\n\n\nrunning 4 tests\ntest status_and_workspace_review_are_read_only_http_entries ... ok\ntest scenario_http_requires_grant_and_persists_the_run ... ok\ntest scenario_http_sandbox_uses_the_snapshot_and_rejects_unknown_fields ... ok\ntest queries_do_not_wait_for_a_long_scenario_run ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s\n\n\nrunning 1 test\ntest local_service_rejects_foreign_hosts_origins_and_url_tokens ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s\n\n\nrunning 1 test\ntest repository_instructions_remain_untrusted_and_are_not_executed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.86s\n\n\nrunning 10 tests\ntest trace_processor_backend_imports_the_fixture_through_the_cli ... ok\ntest a_memory_ceiling_below_the_import_footprint_fails_the_process ... ok\ntest perfetto_import_runs_through_the_cli ... ok\ntest normalized_trace_import_accepts_an_explicit_envelope ... ok\ntest cli_refuses_unbound_and_mismatched_traces ... ok\ntest tracy_import_retains_the_native_capture_through_the_cli ... ok\ntest numeric_check_cli_exposes_statistical_ulp_and_dimension_modes ... ok\ntest ledger_migrate_cli_copies_and_refuses_an_existing_target ... ok\ntest scenario_cli_runs_a_snapshot_copy_and_refuses_unpinned_containers ... ok\ntest explicit_scenario_run_association_runs_through_the_cli ... ok\n\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.00s\n\n\nrunning 1 test\ntest unix_socket_mode_is_refused_explicitly_on_windows ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 1 test\ntest cli_watch_os_mode_runs_the_notify_watcher ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s\n\n\nrunning 31 tests\ntest snapshot::tests::rfc3339_formats_epoch_and_known_instant ... ok\ntest anchor::tests::byte_anchors_reject_ranges_outside_the_blob ... ok\ntest anchor::tests::crlf_and_utf8_line_anchors_stay_on_character_boundaries ... ok\ntest anchor::tests::line_anchors_resolve_to_the_target_line_not_the_file_start ... ok\ntest hash::tests::escapes_control_characters ... ok\ntest hash::tests::sorts_ascii_keys_and_keeps_unicode ... ok\ntest hash::tests::rejects_floats_and_large_integers ... ok\ntest hash::tests::rejects_duplicate_keys_at_parse_time ... ok\ntest source::tests::ranges_must_be_utf8_boundaries ... ok\ntest hash::tests::digest_matches_spec_vector ... ok\ntest source::tests::line_starts_and_crlf ... ok\ntest identity::tests::semantic_identity_tracks_scope_and_config ... ok\ntest identity::tests::syntax_identity_is_stable_and_discriminates ... ok\ntest snapshot::tests::roles_classify_paths ... ok\ntest source::tests::utf16_columns_account_for_surrogate_pairs ... ok\ntest units::tests::affine_and_unknown_units_are_refused ... ok\ntest units::tests::declared_unit_cycles_and_unknown_bases_are_refused ... ok\ntest units::tests::scale_and_dimension_both_participate ... ok\ntest units::tests::derived_si_units_are_equivalent_to_base_expressions ... ok\ntest units::tests::declared_units_extend_the_table_without_shadowing_builtins ... ok\ntest predicate::numeric_mode_tests::matlab_semantics_are_refused_not_approximated ... ok\ntest predicate::numeric_mode_tests::unknown_mode_is_a_contract_error ... ok\ntest predicate::matlab_comparison_tests::ignore_nan_skips_nan_pairs_but_infinity_must_match ... ok\ntest predicate::numeric_mode_tests::ulp_mode_detects_one_bit_and_respects_the_declared_budget ... ok\ntest predicate::matlab_comparison_tests::matlab_eps_tolerance_uses_spacing_at_the_magnitude ... ok\ntest predicate::matlab_comparison_tests::declared_units_are_available_to_dimension_mode ... ok\ntest predicate::matlab_comparison_tests::sample_and_population_variance_are_distinct ... ok\ntest predicate::numeric_mode_tests::statistical_mode_gates_the_error_distribution ... ok\ntest predicate::numeric_mode_tests::dimension_mode_accepts_equivalent_units_and_refuses_unknown_ones ... ok\ntest query::tests::edge_cap_is_detected_and_reported_as_partial ... ok\ntest query::tests::production_edge_cap_detects_200001_rows_without_claiming_completeness ... ok\n\ntest result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 22.12s\n\n\nrunning 5 tests\nΪ <path> <<===>> <path> ����������\r\ntest path_and_link_races_are_rechecked_before_any_write ... ok\ntest recovery_preserves_a_later_user_edit_of_an_updated_file ... ok\ntest case_only_move_new_file_and_delete_are_recoverable ... ok\ntest external_edits_make_the_change_stale_and_old_leases_cannot_write ... ok\ntest crash_after_partial_replacements_is_recovered_from_the_journal ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.49s\n\n\nrunning 1 test\ntest real_model_analysis_imports_with_provider_provenance ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest scale_cancellation_and_budget_measurements_are_repeatable has been running for over 60 seconds\ntest scale_cancellation_and_budget_measurements_are_repeatable ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 123.76s\n\n\nrunning 3 tests\ntest target_graph_diff_never_touches_source_and_rules_find_direct_and_indirect_paths ... ok\ntest acyclic_rule_passes_only_on_a_complete_declared_graph ... ok\ntest declarative_architecture_checkers_are_executable_and_explain_coverage ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s\n\n\nrunning 3 tests\ntest repeated_import_is_idempotent_and_conflicting_payload_is_rejected ... ok\ntest import_maps_nodes_and_edges_without_using_backend_ids_as_identity ... ok\ntest unresolved_endpoint_and_heuristic_runtime_edge_stay_visible_but_unimported ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s\n\n\nrunning 3 tests\ntest brief_returns_needs_init_without_a_snapshot ... ok\ntest project_brief_reports_counts_and_next_actions ... ok\ntest change_brief_is_static_and_keeps_candidate_resolution ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s\n\n\nrunning 1 test\ntest case_b_scenarios_expose_backpressure_cancellation_and_disconnect ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.49s\n\n\nrunning 1 test\ntest real_async_handoff_creates_only_the_correlated_observed_edge ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.45s\n\n\nrunning 2 tests\ntest staging_does_not_touch_the_repository_and_records_both_sides ... ok\ntest out_of_scope_and_unsafe_staging_content_is_rejected ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.68s\n\n\nrunning 2 tests\ntest context_pack_reads_the_requested_lines_not_the_file_header ... ok\ntest context_pack_is_bounded_traceable_and_preserves_counterexamples ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s\n\n\nrunning 3 tests\ntest unmatched_objective_falls_back_and_says_so ... ok\ntest small_budget_cursor_pages_cover_the_same_entities_as_a_large_budget ... ok\ntest objective_selects_the_target_and_unrelated_claims_do_not_crowd_it_out ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s\n\n\nrunning 1 test\ntest clangd_uses_compile_commands_for_macros_virtuals_and_indirect_calls ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.45s\n\n\nrunning 1 test\ntest real_cpp_scip_index_imports_references_without_promoting_calls ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s\n\n\nrunning 1 test\ntest csharp_ls_partial_delegates_and_cross_file_rename ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.03s\n\n\nrunning 1 test\ntest workspace_review_locates_changed_entities_and_snapshot_diff_is_exact ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s\n\n\nrunning 2 tests\ntest drift_is_reported_and_old_snapshot_and_decisions_survive_restart ... ok\ntest count_based_retention_preserves_referenced_history_and_honors_pins ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.61s\n\n\nrunning 3 tests\ntest polling_watcher_records_drift_and_keeps_the_workspace_read_only ... ok\ntest os_notification_watcher_honors_a_stop_flag_between_events ... ok\ntest os_notification_watcher_reacts_to_a_real_file_change_without_polling ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s\n\n\nrunning 1 test\ntest case_b_capture_estimator_ui_is_traceable_and_verified ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.57s\n\n\nrunning 3 tests\ntest path_retention_copies_verifies_and_reports_key_provenance ... ok\ntest encrypted_backup_authenticates_and_restores ... ok\ntest rotation_reencrypts_with_a_new_key_and_records_provenance ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.57s\n\n\nrunning 10 tests\ntest resolved_call_needs_semantic_evidence_not_just_syntax ... ok\ntest batch_publishes_atomically_and_retry_is_idempotent ... ok\ntest model_evidence_cannot_support_resolved_call ... ok\ntest scope_mismatch_is_rejected ... ok\ntest dangling_relation_endpoint_is_rejected ... ok\ntest missing_batch_is_not_published_as_complete ... ok\ntest same_sequence_with_different_payload_conflicts ... ok\ntest anchor_offsets_must_fit_the_blob_and_utf8_boundaries ... ok\ntest injected_crash_before_commit_leaves_no_partial_state ... ok\ntest ledger_survives_reopen ... ok\n\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s\n\n\nrunning 1 test\ntest gopls_cross_package_rename_and_indirect_calls ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.49s\n\n\nrunning 3 tests\ntest reject_cases_are_rejected ... ok\ntest blob_digests_hash_raw_bytes ... ok\ntest canonical_forms_and_digests_match_vectors ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s\n\n\nrunning 1 test\ntest instigator_is_optional_bounded_and_never_blocks ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s\n\n\nrunning 4 tests\ntest manual_architecture_is_candidate_and_never_writes_ledger_relations ... ok\ntest architecture_accept_and_reject_append_history_without_touching_source ... ok\ntest counterexample_rejects_the_hypothesis_and_records_the_next_experiment ... ok\ntest real_codeboarding_output_is_candidate_only_and_stale_refs_are_visible ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.15s\n\n\nrunning 1 test\ntest jdtls_overloads_interfaces_annotations_reflection_and_cross_file_rename ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 49.33s\n\n\nrunning 5 tests\ntest execution_commands_need_permission_and_are_never_automatic ... ok\ntest contract_profiles_never_grant_unverified_capabilities ... ok\ntest overlapping_ranges_resource_ops_and_absolute_uris_are_refused ... ok\ntest preview_converts_utf16_ranges_and_never_writes ... ok\ntest out_of_scope_edits_abort_the_whole_preview ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s\n\n\nrunning 1 test\ntest seven_language_groups_build_and_execute_real_fixtures ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.66s\n\n\nrunning 1 test\ntest seven_groups_have_pinned_medium_real_projects_with_real_builds ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 59.96s\n\n\nrunning 3 tests\ntest javascript_alias_imports_same_names_and_dynamic_index ... ok\ntest typescript_alias_imports_same_names_and_dynamic_index ... ok\ntest python_alias_imports_same_names_and_dynamic_getattr ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.46s\n\n\nrunning 1 test\ntest seven_groups_apply_semantic_renames_through_the_changeset_gate has been running for over 60 seconds\ntest seven_groups_apply_semantic_renames_through_the_changeset_gate ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 137.11s\n\n\nrunning 1 test\ntest seven_language_groups_capture_and_import_real_native_traces ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 34.55s\n\n\nrunning 3 tests\ntest migration_refuses_an_existing_target_an_overlap_and_an_empty_reason ... ok\ntest a_tampered_source_object_fails_and_leaves_no_destination ... ok\ntest a_complete_ledger_is_copied_and_remains_queryable ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s\n\n\nrunning 5 tests\ntest lifecycle_rejects_pollution_paths_and_mode_changes ... ok\ntest both_modes_open_without_touching_the_workspace ... ok\ntest promotion_keeps_evidence_and_turns_expedition_into_manager ... ok\ntest manager_survives_restart_relocation_without_changing_identity ... ok\ntest expedition_analysis_and_close_leave_the_dirty_repo_untouched ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.90s\n\n\nrunning 2 tests\ntest spawn_requires_an_explicit_grant_and_is_audited ... ok\ntest real_rename_roundtrip_feeds_the_preview_and_leaves_no_orphans ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.67s\n\n\nrunning 2 tests\ntest opted_in_source_trace_export_is_labelled_and_verified ... ok\ntest offline_report_is_self_contained_and_promotion_preserves_objects ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.70s\n\n\nrunning 5 tests\ntest probe_metric_validation_rejects_fabricated_values ... ok\ntest chrome_counter_tracks_are_series_not_spans ... ok\ntest perfetto_native_decodes_slices_counters_and_states ... ok\ntest probe_events_capture_state_and_counters_with_explicit_mapping ... ok\ntest counters_and_states_are_imported_without_relations ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s\n\n\nrunning 1 test\ntest trace_processor_query_matches_the_in_process_decoder ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest invalid_plans_are_rejected_without_side_effects_and_contract_changes_invalidate_approval ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s\n\n\nrunning 6 tests\ntest job_transitions_and_cancel_idempotency ... ok\ntest events_replay_and_resync_after_pruning ... ok\ntest search_and_entity_reads_are_snapshot_scoped ... ok\ntest source_reads_old_snapshot_bytes_after_the_file_moves ... ok\ntest impact_walks_incoming_edges_and_path_is_shortest ... ok\ntest neighbors_are_bounded_paginated_and_cycle_safe ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s\n\n\nrunning 1 test\ntest page_boundary_edges_survive_pagination ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s\n\n\nrunning 2 tests\ntest multiple_clock_domains_are_never_falsely_total_ordered ... ok\ntest causal_edges_require_explicit_links_and_never_promote_candidates ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s\n\n\nrunning 1 test\ntest runtime_imports_big_decimal_ns_and_reports_binding_and_loss ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s\n\n\nrunning 1 test\ntest rust_analyzer_trait_cfg_macro_and_function_pointer ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.28s\n\n\nrunning 2 tests\ntest scenarios_require_grant_capture_artifacts_and_timeout ... ok\ntest cancellation_kills_the_process_tree_and_is_never_complete ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.14s\n\n\nrunning 4 tests\ntest container_scenario_is_removed_after_timeout ... ok\ntest container_scenario_isolates_filesystem_and_network ... ok\ntest sandbox_declarations_that_cannot_be_enforced_are_rejected ... ok\ntest snapshot_copy_ignores_live_workspace_changes ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s\n\n\nrunning 4 tests\ntest producer_declared_scenario_id_is_recorded_as_unverified ... ok\ntest missing_and_mismatched_scenario_runs_are_rejected ... ok\ntest explicit_matching_scenario_run_is_linked_and_queryable ... ok\ntest scenario_run_from_another_snapshot_is_rejected ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s\n\n\nrunning 1 test\ntest scientific_refactor_preserves_units_shape_dynamics_and_phase_boundaries ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.36s\n\n\nrunning 5 tests\ntest utf16_ranges_convert_to_utf8_bytes ... ok\ntest documents_outside_the_snapshot_are_explicitly_partial ... ok\ntest real_rust_analyzer_index_imports_without_promoting_references ... ok\ntest definitions_references_and_external_symbols_are_separated ... ok\ntest real_python_scip_index_imports_references_without_calls ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s\n\n\nrunning 1 test\ntest external_write_is_visible_and_blocks_the_old_prepared_patch ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s\n\n\nrunning 6 tests\ntest utf8_ranges_and_utf16_columns_cover_cjk_and_emoji ... ok\ntest single_mutation_is_retried_and_new_bytes_are_captured ... ok\ntest persistent_mutation_is_rejected_as_unstable ... ok\ntest same_bytes_reuse_the_snapshot_identity ... ok\ntest build_variants_have_distinct_config_digests_and_ids ... ok\ntest dirty_workspace_hashes_disk_bytes_and_keeps_git_state ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.76s\n\n\nrunning 3 tests\ntest source_file_clamps_lines_and_reports_truncation ... ok\ntest source_file_rejects_escapes_missing_paths_and_bad_windows ... ok\ntest source_file_excerpt_is_line_accurate_and_snapshot_bound ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s\n\n\nrunning 1 test\ntest source_search_finds_body_text_and_paginates_without_duplicates ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s\n\n\nrunning 2 tests\ntest incremental_evidence_storm_stays_within_budget ... ok\ntest million_event_trace_import_stays_within_budget has been running for over 60 seconds\ntest million_event_trace_import_stays_within_budget ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 87.39s\n\n\nrunning 1 test\ntest write_trace_ui_fixture_when_requested ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tracy_csv_rejects_declared_corruption ... ok\ntest tracy_csv_maps_zones_and_plots ... ok\ntest tracy_capture_is_retained_and_imported ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s\n\n\nrunning 9 tests\ntest container_sandbox_isolates_filesystem_and_network ... ok\ntest sandbox_declarations_are_validated_before_a_contract_is_frozen ... ok\ntest sandboxed_check_cwd_must_stay_inside_the_materialized_copy ... ok\ntest staged_or_changed_snapshots_can_never_be_accepted ... ok\ntest sandboxed_check_cannot_see_excluded_snapshot_files ... ok\ntest sandboxed_check_reads_applied_snapshot_and_never_writes_the_workspace ... ok\ntest numeric_invariant_and_performance_predicates_are_deterministic ... ok\ntest missing_unsupported_and_zero_test_checks_never_pass ... ok\ntest timeout_is_explicit_and_the_spawned_tree_is_reaped ... ok\n\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.02s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling windows-link v0.2.1\n   Compiling proc-macro2 v1.0.106\n   Compiling windows-sys v0.61.2\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.45\n   Compiling syn v2.0.117\n   Compiling version_check v0.9.5\n   Compiling cfg-if v1.0.4\n   Compiling itoa v1.0.18\n   Compiling once_cell v1.21.4\n   Compiling find-msvc-tools v0.1.9\n   Compiling shlex v1.3.0\n   Compiling cc v1.2.59\n   Compiling typenum v1.19.0\n   Compiling serde_core v1.0.228\n   Compiling generic-array v0.14.7\n   Compiling zerocopy v0.8.48\n   Compiling ahash v0.8.12\n   Compiling windows_x86_64_gnu v0.48.5\n   Compiling log v0.4.29\n   Compiling serde v1.0.228\n   Compiling crossbeam-utils v0.8.21\n   Compiling pkg-config v0.3.32\n   Compiling vcpkg v0.2.15\n   Compiling smallvec v1.15.1\n   Compiling zmij v1.0.21\n   Compiling libsqlite3-sys v0.30.1\n   Compiling serde_derive v1.0.228\n   Compiling winapi-util v0.1.11\n   Compiling serde_json v1.0.149\n   Compiling libc v0.2.184\n   Compiling same-file v1.0.6\n   Compiling windows-targets v0.48.5\n   Compiling hashbrown v0.14.5\n   Compiling block-buffer v0.10.4\n   Compiling crypto-common v0.1.7\n   Compiling ring v0.17.14\n   Compiling memchr v2.8.0\n   Compiling thiserror v1.0.69\n   Compiling digest v0.10.7\n   Compiling crossbeam-channel v0.5.15\n   Compiling hashlink v0.9.1\n   Compiling windows-sys v0.48.0\n   Compiling walkdir v2.5.0\n   Compiling filetime v0.2.27\n   Compiling getrandom v0.2.17\n   Compiling thiserror-impl v1.0.69\n   Compiling cpufeatures v0.2.17\n   Compiling bitflags v2.11.0\n   Compiling fallible-iterator v0.3.0\n   Compiling untrusted v0.9.0\n   Compiling fallible-streaming-iterator v0.1.9\n   Compiling sha2 v0.10.9\n   Compiling notify v6.1.1\n   Compiling rusqlite v0.32.1\n   Compiling similar v2.7.0\n   Compiling getrandom v0.4.2\n   Compiling archmeld-core v0.1.0 (<path>   Compiling fastrand v2.3.0\n   Compiling tempfile v3.27.0\nwarning: unused import: `PathBuf`\n  --> crates\\archmeld-core\\src\\drift.rs:20:23\n   |\n20 | use std::path::{Path, PathBuf};\n   |                       ^^^^^^^\n   |\n   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\n   Compiling bytes v1.11.1\n   Compiling pin-project-lite v0.2.17\n   Compiling futures-core v0.3.32\n   Compiling http v1.4.0\n   Compiling http-body v1.0.1\n   Compiling tokio-macros v2.7.0\n   Compiling mio v1.2.0\nwarning: variable does not need to be mutable\n   --> crates\\archmeld-core\\src\\apply.rs:326:9\n    |\n326 |     let mut applying = append_state_with_journal(\n    |         ----^^^^^^^^\n    |         |\n    |         help: remove this `mut`\n    |\n    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default\n\n   Compiling socket2 v0.6.3\n   Compiling httparse v1.10.1\n   Compiling tokio v1.51.0\nwarning: variable does not need to be mutable\n  --> crates\\archmeld-core\\src\\units.rs:75:13\n   |\n75 |         let mut registry = Self {\n   |             ----^^^^^^^^\n   |             |\n   |             help: remove this `mut`\n\nwarning: field `session_id` is never read\n  --> crates\\archmeld-core\\src\\lsp.rs:92:5\n   |\n85 | pub struct LspSession {\n   |            ---------- field in this struct\n...\n92 |     session_id: String,\n   |     ^^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `next_event_sequence` is never used\n   --> crates\\archmeld-core\\src\\store\\mod.rs:953:19\n    |\n 61 | impl Store {\n    | ---------- method in this implementation\n...\n953 |     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {\n    |                   ^^^^^^^^^^^^^^^^^^^\n\n   Compiling tracing-core v0.1.36\n   Compiling tower-service v0.3.3\n   Compiling once_cell_polyfill v1.70.2\n   Compiling utf8parse v0.2.2\n   Compiling anstyle v1.0.14\n   Compiling anstyle-wincon v3.0.11\n   Compiling anstyle-parse v1.0.0\n   Compiling tracing v0.1.44\n   Compiling futures-channel v0.3.32\n   Compiling anstyle-query v1.1.5\n   Compiling tower-layer v0.3.3\n   Compiling slab v0.4.12\n   Compiling is_terminal_polyfill v1.70.2\n   Compiling atomic-waker v1.1.2\n   Compiling httpdate v1.0.3\n   Compiling futures-task v0.3.32\n   Compiling colorchoice v1.0.5\n   Compiling percent-encoding v2.3.2\n   Compiling sync_wrapper v1.0.2\n   Compiling form_urlencoded v1.2.2\n   Compiling anstream v1.0.0\n   Compiling futures-util v0.3.32\n   Compiling hyper v1.9.0\n   Compiling http-body-util v0.1.3\n   Compiling strsim v0.11.1\n   Compiling clap_lex v1.1.0\n   Compiling ryu v1.0.23\n   Compiling mime v0.3.17\n   Compiling heck v0.5.0\n   Compiling clap_derive v4.6.0\n   Compiling axum-core v0.5.6\n   Compiling serde_urlencoded v0.7.1\n   Compiling clap_builder v4.6.0\n   Compiling hyper-util v0.1.20\n   Compiling tower v0.5.3\n   Compiling serde_path_to_error v0.1.20\n   Compiling matchit v0.8.4\n   Compiling axum v0.8.9\nwarning: `archmeld-core` (lib) generated 5 warnings (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)\n   Compiling clap v4.6.0\n   Compiling archmeld-api v0.1.0 (<path> field `dir` is never read\n  --> crates\\archmeld-api\\tests\\http_contract.rs:23:5\n   |\n22 | struct Prepared {\n   |        -------- field in this struct\n23 |     dir: tempfile::TempDir,\n   |     ^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: `archmeld-api` (test \"http_contract\") generated 1 warning\nwarning: calls to `std::mem::forget` with a value that implements `Copy` does nothing\n   --> crates\\archmeld-api\\src\\memory_limit.rs:114:9\n    |\n114 |         std::mem::forget(job);\n    |         ^^^^^^^^^^^^^^^^^---^\n    |                          |\n    |                          argument has type `*mut c_void`\n    |\n    = note: `#[warn(forgetting_copy_types)]` on by default\nhelp: use `let _ = ...` to ignore the expression or result\n    |\n114 -         std::mem::forget(job);\n114 +         let _ = job;\n    |\n\nwarning: `archmeld-api` (bin \"archmeld\" test) generated 1 warning\nwarning: unused import: `Stdio`\n --> crates\\archmeld-api\\tests\\unix_socket.rs:9:29\n  |\n9 | use std::process::{Command, Stdio};\n  |                             ^^^^^\n  |\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: `archmeld-api` (test \"unix_socket\") generated 1 warning (run `cargo fix --test \"unix_socket\" -p archmeld-api` to apply 1 suggestion)\nwarning: `archmeld-api` (bin \"archmeld\") generated 1 warning (1 duplicate)\nwarning: unused import: `file_uri`\n --> crates\\archmeld-core\\tests\\lsp_roundtrip.rs:9:26\n  |\n9 | use archmeld_core::lsp::{file_uri, LspServerSpec, LspSession, SpawnPermission};\n  |                          ^^^^^^^^\n  |\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: field `root` is never read\n   --> crates\\archmeld-core\\tests\\scip_import.rs:113:5\n    |\n110 | struct Fixture {\n    |        ------- field in this struct\n...\n113 |     root: std::path::PathBuf,\n    |     ^^^^\n    |\n    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: `archmeld-core` (test \"lsp_roundtrip\") generated 1 warning (run `cargo fix --test \"lsp_roundtrip\" -p archmeld-core` to apply 1 suggestion)\nwarning: `archmeld-core` (test \"scip_import\") generated 1 warning\nwarning: unused variable: `root`\n  --> crates\\archmeld-core\\tests\\bridge_import.rs:54:11\n   |\n54 | fn export(root: &Path, nodes: Vec<Value>, edges: Vec<Value>) -> String {\n   |           ^^^^ help: if this is intentional, prefix it with an underscore: `_root`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: `archmeld-core` (test \"bridge_import\") generated 1 warning (run `cargo fix --test \"bridge_import\" -p archmeld-core` to apply 1 suggestion)\nwarning: `archmeld-core` (lib test) generated 5 warnings (5 duplicates)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 5m 18s\n     Running unittests src\\lib.rs (target\\debug\\deps\\archmeld_api-ce8be035294d463e.exe)\n     Running unittests src\\cli.rs (target\\debug\\deps\\archmeld-5c5b6dcf19a64bb3.exe)\n     Running unittests src\\mcp.rs (target\\debug\\deps\\archmeld_mcp-49bc79575462df80.exe)\n     Running unittests src\\main.rs (target\\debug\\deps\\archmeld_serve-eacf63cfd3cf3f78.exe)\n     Running tests\\http_contract.rs (target\\debug\\deps\\http_contract-047b34c64f96f2f1.exe)\n     Running tests\\interpretation_http.rs (target\\debug\\deps\\interpretation_http-20bfc35e980c520f.exe)\n     Running tests\\mcp_stdio.rs (target\\debug\\deps\\mcp_stdio-5f37de3ab39cfdaa.exe)\n     Running tests\\named_pipe.rs (target\\debug\\deps\\named_pipe-a648853f7864ef1d.exe)\n     Running tests\\onboard.rs (target\\debug\\deps\\onboard-4154b61f290863c9.exe)\n     Running tests\\report_http.rs (target\\debug\\deps\\report_http-49ab94d1302dcac2.exe)\n     Running tests\\scenario_http.rs (target\\debug\\deps\\scenario_http-66948467d44152b1.exe)\n     Running tests\\security_http.rs (target\\debug\\deps\\security_http-a2d6b4698886d617.exe)\n     Running tests\\security_mcp.rs (target\\debug\\deps\\security_mcp-b7ba729e87ca7aa3.exe)\n     Running tests\\trace_import_cli.rs (target\\debug\\deps\\trace_import_cli-be106e5275fabd0b.exe)\n     Running tests\\unix_socket.rs (target\\debug\\deps\\unix_socket-59ba8b95428d124a.exe)\n     Running tests\\watch_cli.rs (target\\debug\\deps\\watch_cli-9aa9184308bc63d8.exe)\n     Running unittests src\\lib.rs (target\\debug\\deps\\archmeld_core-85bc880a2bc438ac.exe)\n     Running tests\\apply_recovery.rs (target\\debug\\deps\\apply_recovery-a2107d3f7a12e319.exe)\n     Running tests\\b017_model_analysis.rs (target\\debug\\deps\\b017_model_analysis-c234c31abbb10de6.exe)\n     Running tests\\benchmark.rs (target\\debug\\deps\\benchmark-21e090a87f38a3b4.exe)\n     Running tests\\blueprint_rules.rs (target\\debug\\deps\\blueprint_rules-692b089f4166c6ea.exe)\n     Running tests\\bridge_import.rs (target\\debug\\deps\\bridge_import-21b4096af3e8f2ac.exe)\n     Running tests\\brief.rs (target\\debug\\deps\\brief-4f27faa07b30945e.exe)\n     Running tests\\case_b_scenarios.rs (target\\debug\\deps\\case_b_scenarios-df7858c7c9fcc2a2.exe)\n     Running tests\\causal_scenario.rs (target\\debug\\deps\\causal_scenario-8a2c2d6805435013.exe)\n     Running tests\\changeset_stage.rs (target\\debug\\deps\\changeset_stage-2cfc687eb92c8807.exe)\n     Running tests\\context_pack.rs (target\\debug\\deps\\context_pack-cc9469cd04865185.exe)\n     Running tests\\context_relevance.rs (target\\debug\\deps\\context_relevance-f33cbb4a29bfc0eb.exe)\n     Running tests\\cpp_pack.rs (target\\debug\\deps\\cpp_pack-b9a282d8f10f26e8.exe)\n     Running tests\\cpp_scip_real.rs (target\\debug\\deps\\cpp_scip_real-d7101e30c213203a.exe)\n     Running tests\\csharp_pack.rs (target\\debug\\deps\\csharp_pack-387db9ef47f4ab51.exe)\n     Running tests\\diff_review.rs (target\\debug\\deps\\diff_review-a165623095dc6b93.exe)\n     Running tests\\drift_recovery.rs (target\\debug\\deps\\drift_recovery-e34f1cc8bb4b0008.exe)\n     Running tests\\drift_watch.rs (target\\debug\\deps\\drift_watch-51046bda8b8b298a.exe)\n     Running tests\\e2e_case_b.rs (target\\debug\\deps\\e2e_case_b-32b5ae05be2d4ab3.exe)\n     Running tests\\encrypted_backup.rs (target\\debug\\deps\\encrypted_backup-4c41eb3e229b488e.exe)\n     Running tests\\evidence_transaction.rs (target\\debug\\deps\\evidence_transaction-446084481bad2d7d.exe)\n     Running tests\\go_pack.rs (target\\debug\\deps\\go_pack-48305fc94b9c8646.exe)\n     Running tests\\hash_vectors.rs (target\\debug\\deps\\hash_vectors-1bde0ac6e5638953.exe)\n     Running tests\\instigator.rs (target\\debug\\deps\\instigator-5ef63593bf7ee96a.exe)\n     Running tests\\interpretation.rs (target\\debug\\deps\\interpretation-5f4a5522aa390b41.exe)\n     Running tests\\java_pack.rs (target\\debug\\deps\\java_pack-fd3edcf200ffdf7a.exe)\n     Running tests\\language_broker.rs (target\\debug\\deps\\language_broker-5b15efe5cfb5bef8.exe)\n     Running tests\\language_matrix.rs (target\\debug\\deps\\language_matrix-458770bb75fc16a7.exe)\n     Running tests\\language_medium_projects.rs (target\\debug\\deps\\language_medium_projects-a71e58374e736539.exe)\n     Running tests\\language_packs.rs (target\\debug\\deps\\language_packs-42436b60f13341a9.exe)\n     Running tests\\language_rename_apply.rs (target\\debug\\deps\\language_rename_apply-c70021ed95d74357.exe)\n     Running tests\\language_runtime_linkage.rs (target\\debug\\deps\\language_runtime_linkage-5facfbd444cf7db8.exe)\n     Running tests\\ledger_migration.rs (target\\debug\\deps\\ledger_migration-b4c22148440ffc29.exe)\n     Running tests\\lifecycle.rs (target\\debug\\deps\\lifecycle-bd80dcf8db8dbbcb.exe)\n     Running tests\\lsp_roundtrip.rs (target\\debug\\deps\\lsp_roundtrip-a7f1e6635ff8e802.exe)\n     Running tests\\offline_report.rs (target\\debug\\deps\\offline_report-f9bd7692d266d241.exe)\n     Running tests\\perfetto_native.rs (target\\debug\\deps\\perfetto_native-82cbc97006159ba9.exe)\n     Running tests\\perfetto_trace_processor.rs (target\\debug\\deps\\perfetto_trace_processor-f7da95dfaa66123a.exe)\n     Running tests\\plan_contract.rs (target\\debug\\deps\\plan_contract-5f2083394b59c606.exe)\n     Running tests\\query_api.rs (target\\debug\\deps\\query_api-2835c2dda295bde9.exe)\n     Running tests\\query_pagination.rs (target\\debug\\deps\\query_pagination-70a8c6e57e4c3950.exe)\n     Running tests\\runtime_causal.rs (target\\debug\\deps\\runtime_causal-ab8a60e54052b140.exe)\n     Running tests\\runtime_timeline.rs (target\\debug\\deps\\runtime_timeline-dd25c6142e9137ab.exe)\n     Running tests\\rust_pack.rs (target\\debug\\deps\\rust_pack-e803645b10a131e8.exe)\n    Checking langpack-rust v0.1.0 (<path>    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.31s\n    Checking langpack-rust v0.1.0 (<path>    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s\n     Running tests\\scenario_run.rs (target\\debug\\deps\\scenario_run-a0d4374fde1d070c.exe)\n     Running tests\\scenario_sandbox.rs (target\\debug\\deps\\scenario_sandbox-ef946218f88c39e5.exe)\n     Running tests\\scenario_trace_link.rs (target\\debug\\deps\\scenario_trace_link-72cc5315ddad8890.exe)\n     Running tests\\scientific_profile.rs (target\\debug\\deps\\scientific_profile-cbd601712c750e14.exe)\n     Running tests\\scip_import.rs (target\\debug\\deps\\scip_import-f40cf91f5f0c9aab.exe)\n     Running tests\\security_external_write.rs (target\\debug\\deps\\security_external_write-3476faae9a06ef64.exe)\n     Running tests\\snapshot_capture.rs (target\\debug\\deps\\snapshot_capture-8ec7d768ed501733.exe)\nwarning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'src/app.py', LF will be replaced by CRLF the next time Git touches it\n     Running tests\\source_file_api.rs (target\\debug\\deps\\source_file_api-4c4c7ea6e2ef71cc.exe)\n     Running tests\\source_search.rs (target\\debug\\deps\\source_search-2b4e30c2f4e318ef.exe)\n     Running tests\\t3_stress.rs (target\\debug\\deps\\t3_stress-d19ef5da876fdfcb.exe)\n     Running tests\\trace_ui_fixture.rs (target\\debug\\deps\\trace_ui_fixture-c08a69688999112c.exe)\n     Running tests\\tracy_native.rs (target\\debug\\deps\\tracy_native-d5a91e376ef4775e.exe)\n     Running tests\\verification.rs (target\\debug\\deps\\verification-1d059139b1d1d096.exe)\n   Doc-tests archmeld_api\n   Doc-tests archmeld_core\n",
+      "stdout_sha256": "b594ad318cdf9af2e870c4cfbbd74aa1ac5dc4bead5f96cda6f9930f209b45ff",
+      "stderr_sha256": "2d5fd539cc31d6d4f79359dcd251622a0c50330cb108b16152ab3c1bf19ebbd1"
+    },
+    {
+      "argv": [
+        "<path><identity>\\.cargo\\bin\\cargo.EXE",
+        "test",
+        "--offline",
+        "-p",
+        "archmeld-core",
+        "--test",
+        "bridge_import",
+        "-j",
+        "2"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:27:43.616364+00:00",
+      "finished_at": "2026-11-26T00:28:52.010117+00:00",
+      "duration_s": 68.394,
+      "stdout": "\nrunning 3 tests\ntest unresolved_endpoint_and_heuristic_runtime_edge_stay_visible_but_unimported ... ok\ntest repeated_import_is_idempotent_and_conflicting_payload_is_rejected ... ok\ntest import_maps_nodes_and_edges_without_using_backend_ids_as_identity ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s\n\n",
+      "stderr": "   Compiling windows-sys v0.61.2\n   Compiling once_cell v1.21.4\n   Compiling syn v2.0.117\n   Compiling serde_core v1.0.228\n   Compiling ahash v0.8.12\n   Compiling winapi-util v0.1.11\n   Compiling same-file v1.0.6\n   Compiling hashbrown v0.14.5\n   Compiling serde_json v1.0.149\n   Compiling hashlink v0.9.1\n   Compiling walkdir v2.5.0\n   Compiling thiserror-impl v1.0.69\n   Compiling serde_derive v1.0.228\n   Compiling smallvec v1.15.1\n   Compiling memchr v2.8.0\n   Compiling serde v1.0.228\n   Compiling rusqlite v0.32.1\n   Compiling notify v6.1.1\n   Compiling thiserror v1.0.69\n   Compiling archmeld-core v0.1.0 (<path>   Compiling tempfile v3.27.0\nwarning: unused import: `PathBuf`\n  --> crates\\archmeld-core\\src\\drift.rs:20:23\n   |\n20 | use std::path::{Path, PathBuf};\n   |                       ^^^^^^^\n   |\n   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: variable does not need to be mutable\n   --> crates\\archmeld-core\\src\\apply.rs:326:9\n    |\n326 |     let mut applying = append_state_with_journal(\n    |         ----^^^^^^^^\n    |         |\n    |         help: remove this `mut`\n    |\n    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default\n\nwarning: variable does not need to be mutable\n  --> crates\\archmeld-core\\src\\units.rs:75:13\n   |\n75 |         let mut registry = Self {\n   |             ----^^^^^^^^\n   |             |\n   |             help: remove this `mut`\n\nwarning: field `session_id` is never read\n  --> crates\\archmeld-core\\src\\lsp.rs:92:5\n   |\n85 | pub struct LspSession {\n   |            ---------- field in this struct\n...\n92 |     session_id: String,\n   |     ^^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `next_event_sequence` is never used\n   --> crates\\archmeld-core\\src\\store\\mod.rs:953:19\n    |\n 61 | impl Store {\n    | ---------- method in this implementation\n...\n953 |     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {\n    |                   ^^^^^^^^^^^^^^^^^^^\n\nwarning: `archmeld-core` (lib) generated 5 warnings (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)\nwarning: unused variable: `root`\n  --> crates\\archmeld-core\\tests\\bridge_import.rs:54:11\n   |\n54 | fn export(root: &Path, nodes: Vec<Value>, edges: Vec<Value>) -> String {\n   |           ^^^^ help: if this is intentional, prefix it with an underscore: `_root`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: `archmeld-core` (test \"bridge_import\") generated 1 warning (run `cargo fix --test \"bridge_import\" -p archmeld-core` to apply 1 suggestion)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 07s\n     Running tests\\bridge_import.rs (target\\debug\\deps\\bridge_import-671c3c3b3c010eab.exe)\n",
+      "stdout_sha256": "946b4393d655540379d4930aafede7477513d5f6aeed672b87c4261673c95b32",
+      "stderr_sha256": "3dffb5496425a6d9529c2ae65900d02a6f4fac8a575722975a114fca9d38cd30"
+    },
+    {
+      "argv": [
+        "<path><identity>\\.cargo\\bin\\cargo.EXE",
+        "test",
+        "--offline",
+        "-p",
+        "codegraph",
+        "--test",
+        "archmeld_probes",
+        "--no-default-features",
+        "-j",
+        "2"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:28:52.058836+00:00",
+      "finished_at": "2026-11-26T00:29:40.097338+00:00",
+      "duration_s": 48.038,
+      "stdout": "\nrunning 3 tests\ntest probe_sparse_ids_after_delete_and_reinsert ... ok\ntest probe_sparse_edges_after_delete_and_reinsert ... ok\ntest export_ndjson_v1_matches_real_iterators ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling serde_core v1.0.228\n   Compiling crossbeam-utils v0.8.21\n   Compiling serde v1.0.228\n   Compiling zerocopy v0.8.48\n   Compiling zerocopy-derive v0.8.48\n   Compiling autocfg v1.5.0\n   Compiling num-traits v0.2.19\n   Compiling crossbeam-epoch v0.9.18\n   Compiling either v1.15.0\n   Compiling rayon-core v1.13.0\n   Compiling serde_json v1.0.149\n   Compiling crossbeam-deque v0.8.6\n   Compiling ciborium-io v0.2.2\n   Compiling regex-syntax v0.8.10\n   Compiling half v2.7.1\n   Compiling plotters-backend v0.3.7\n   Compiling plotters-svg v0.3.7\n   Compiling clap_builder v4.6.0\n   Compiling ciborium-ll v0.2.2\n   Compiling regex-automata v0.4.14\n   Compiling itertools v0.10.5\n   Compiling codegraph v0.2.0 (<path>   Compiling cast v0.3.0\n   Compiling criterion-plot v0.5.0\n   Compiling rayon v1.11.0\n   Compiling plotters v0.3.7\n   Compiling regex v1.12.3\n   Compiling clap v4.6.0\n   Compiling ciborium v0.2.2\n   Compiling uuid v1.23.0\n   Compiling tinytemplate v1.2.1\n   Compiling is-terminal v0.4.17\n   Compiling oorandom v11.1.5\n   Compiling anes v0.1.6\n   Compiling tempfile v3.27.0\n   Compiling criterion v0.5.1\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 47.01s\n     Running tests\\archmeld_probes.rs (target\\debug\\deps\\archmeld_probes-aedda7c802c2acb2.exe)\n",
+      "stdout_sha256": "7585d8fc6856a0dc64ea6a543a36c5c4bffd5989115f30d08f03bf4a44c262fa",
+      "stderr_sha256": "0694763e46cca2ed302dbb7b37ed6364f9ab97952d8001bedd8142d94514d66c"
+    }
+  ],
+  "revert_probe": {
+    "merge_commit": "1ca0ae8b",
+    "exit_code": 1,
+    "conflicts": [
+      "UPSTREAM_PATCHES.md",
+      "crates/codegraph-server/src/watcher.rs"
+    ],
+    "status": "conflicted",
+    "note": "conflicts are expected when later local commits touch merged files; they are not resolved by this drill"
+  },
+  "status": "passed",
+  "auto_follow_latest": false,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:09:50.977213+00:00",
+      "finished_at": "2026-11-26T00:09:51.026478+00:00",
+      "duration_s": 0.049,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:09:51.069767+00:00",
+      "finished_at": "2026-11-26T00:09:51.098395+00:00",
+      "duration_s": 0.029,
+      "stdout": "bda420887839df1f3127708754ac01961bec122c\n",
+      "stderr": "",
+      "stdout_sha256": "d587fcec6acdf107736a8e22f0a305408889b9531e4097578e5ff7963cd9de0e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "903bfe0a^{commit}"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:09:51.140252+00:00",
+      "finished_at": "2026-11-26T00:09:51.171903+00:00",
+      "duration_s": 0.032,
+      "stdout": "903bfe0a888e290a8618c714ffc1a11d27390261\n",
+      "stderr": "",
+      "stdout_sha256": "145140a21b5f33d0380f941aa37e085f8d04cb3563cf5bcc5e6f7ac10cf5cc3f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "903bfe0a888e290a8618c714ffc1a11d27390261",
+        "HEAD"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:09:51.215536+00:00",
+      "finished_at": "2026-11-26T00:09:51.342386+00:00",
+      "duration_s": 0.127,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "<path>",
+        "903bfe0a888e290a8618c714ffc1a11d27390261"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:09:51.388721+00:00",
+      "finished_at": "2026-11-26T00:09:53.903810+00:00",
+      "duration_s": 2.515,
+      "stdout": "HEAD is now at 903bfe0a docs: record public snapshot 1f724ad\n",
+      "stderr": "Preparing worktree (detached HEAD 903bfe0a)\nUpdating files:  37% (591/1561)\rUpdating files:  38% (594/1561)\rUpdating files:  39% (609/1561)\rUpdating files:  40% (625/1561)\rUpdating files:  41% (641/1561)\rUpdating files:  42% (656/1561)\rUpdating files:  43% (672/1561)\rUpdating files:  44% (687/1561)\rUpdating files:  45% (703/1561)\rUpdating files:  46% (719/1561)\rUpdating files:  47% (734/1561)\rUpdating files:  48% (750/1561)\rUpdating files:  49% (765/1561)\rUpdating files:  50% (781/1561)\rUpdating files:  51% (797/1561)\rUpdating files:  52% (812/1561)\rUpdating files:  53% (828/1561)\rUpdating files:  54% (843/1561)\rUpdating files:  55% (859/1561)\rUpdating files:  56% (875/1561)\rUpdating files:  57% (890/1561)\rUpdating files:  58% (906/1561)\rUpdating files:  59% (921/1561)\rUpdating files:  60% (937/1561)\rUpdating files:  61% (953/1561)\rUpdating files:  62% (968/1561)\rUpdating files:  63% (984/1561)\rUpdating files:  64% (1000/1561)\rUpdating files:  65% (1015/1561)\rUpdating files:  66% (1031/1561)\rUpdating files:  67% (1046/1561)\rUpdating files:  68% (1062/1561)\rUpdating files:  69% (1078/1561)\rUpdating files:  70% (1093/1561)\rUpdating files:  71% (1109/1561)\rUpdating files:  72% (1124/1561)\rUpdating files:  73% (1140/1561)\rUpdating files:  74% (1156/1561)\rUpdating files:  75% (1171/1561)\rUpdating files:  76% (1187/1561)\rUpdating files:  77% (1202/1561)\rUpdating files:  78% (1218/1561)\rUpdating files:  79% (1234/1561)\rUpdating files:  80% (1249/1561)\rUpdating files:  81% (1265/1561)\rUpdating files:  81% (1270/1561)\rUpdating files:  82% (1281/1561)\rUpdating files:  83% (1296/1561)\rUpdating files:  84% (1312/1561)\rUpdating files:  85% (1327/1561)\rUpdating files:  86% (1343/1561)\rUpdating files:  87% (1359/1561)\rUpdating files:  88% (1374/1561)\rUpdating files:  89% (1390/1561)\rUpdating files:  90% (1405/1561)\rUpdating files:  91% (1421/1561)\rUpdating files:  92% (1437/1561)\rUpdating files:  93% (1452/1561)\rUpdating files:  94% (1468/1561)\rUpdating files:  95% (1483/1561)\rUpdating files:  96% (1499/1561)\rUpdating files:  97% (1515/1561)\rUpdating files:  98% (1530/1561)\rUpdating files:  99% (1546/1561)\rUpdating files: 100% (1561/1561)\rUpdating files: 100% (1561/1561), done.\n",
+      "stdout_sha256": "c9111dde20d52d409c7f38002ed9025b3aa7facfd07b748932639c97ed96d951",
+      "stderr_sha256": "e161a7d17695bb0b3a4682286a35f61a679e0a0767084e24409bd0de89338e14"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "<path>",
+        "HEAD"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:29:40.145745+00:00",
+      "finished_at": "2026-11-26T00:29:43.512971+00:00",
+      "duration_s": 3.367,
+      "stdout": "HEAD is now at bda42088 docs: record U4b probe evidence\n",
+      "stderr": "Preparing worktree (detached HEAD bda42088)\nUpdating files:  28% (527/1847)\rUpdating files:  29% (536/1847)\rUpdating files:  30% (555/1847)\rUpdating files:  31% (573/1847)\rUpdating files:  32% (592/1847)\rUpdating files:  33% (610/1847)\rUpdating files:  34% (628/1847)\rUpdating files:  35% (647/1847)\rUpdating files:  36% (665/1847)\rUpdating files:  37% (684/1847)\rUpdating files:  38% (702/1847)\rUpdating files:  39% (721/1847)\rUpdating files:  40% (739/1847)\rUpdating files:  41% (758/1847)\rUpdating files:  42% (776/1847)\rUpdating files:  43% (795/1847)\rUpdating files:  44% (813/1847)\rUpdating files:  45% (832/1847)\rUpdating files:  46% (850/1847)\rUpdating files:  47% (869/1847)\rUpdating files:  48% (887/1847)\rUpdating files:  49% (906/1847)\rUpdating files:  50% (924/1847)\rUpdating files:  51% (942/1847)\rUpdating files:  52% (961/1847)\rUpdating files:  53% (979/1847)\rUpdating files:  54% (998/1847)\rUpdating files:  55% (1016/1847)\rUpdating files:  56% (1035/1847)\rUpdating files:  57% (1053/1847)\rUpdating files:  58% (1072/1847)\rUpdating files:  59% (1090/1847)\rUpdating files:  60% (1109/1847)\rUpdating files:  61% (1127/1847)\rUpdating files:  62% (1146/1847)\rUpdating files:  63% (1164/1847)\rUpdating files:  64% (1183/1847)\rUpdating files:  65% (1201/1847)\rUpdating files:  66% (1220/1847)\rUpdating files:  67% (1238/1847)\rUpdating files:  68% (1256/1847)\rUpdating files:  69% (1275/1847)\rUpdating files:  70% (1293/1847)\rUpdating files:  71% (1312/1847)\rUpdating files:  72% (1330/1847)\rUpdating files:  73% (1349/1847)\rUpdating files:  74% (1367/1847)\rUpdating files:  75% (1386/1847)\rUpdating files:  76% (1404/1847)\rUpdating files:  77% (1423/1847)\rUpdating files:  78% (1441/1847)\rUpdating files:  79% (1460/1847)\rUpdating files:  80% (1478/1847)\rUpdating files:  81% (1497/1847)\rUpdating files:  82% (1515/1847)\rUpdating files:  83% (1534/1847)\rUpdating files:  84% (1552/1847)\rUpdating files:  85% (1570/1847)\rUpdating files:  86% (1589/1847)\rUpdating files:  87% (1607/1847)\rUpdating files:  88% (1626/1847)\rUpdating files:  89% (1644/1847)\rUpdating files:  90% (1663/1847)\rUpdating files:  91% (1681/1847)\rUpdating files:  92% (1700/1847)\rUpdating files:  93% (1718/1847)\rUpdating files:  94% (1737/1847)\rUpdating files:  95% (1755/1847)\rUpdating files:  95% (1772/1847)\rUpdating files:  96% (1774/1847)\rUpdating files:  97% (1792/1847)\rUpdating files:  98% (1811/1847)\rUpdating files:  99% (1829/1847)\rUpdating files: 100% (1847/1847)\rUpdating files: 100% (1847/1847), done.\n",
+      "stdout_sha256": "babca2d88c36bcab86d820c79205a906c4765a22aff7b969d0a04b01fd28eeb6",
+      "stderr_sha256": "a58e554d91fe8d33fd7d313fa8736abca49f24a8eac3e2dc9a7e6c4074ad0c40"
+    },
+    {
+      "argv": [
+        "git",
+        "revert",
+        "--no-commit",
+        "-m",
+        "1",
+        "1ca0ae8b"
+      ],
+      "cwd": "<path>",
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:29:43.595582+00:00",
+      "finished_at": "2026-11-26T00:29:43.922453+00:00",
+      "duration_s": 0.327,
+      "stdout": "Auto-merging AGENTS.md\nAuto-merging Cargo.lock\nAuto-merging UPSTREAM_PATCHES.md\nCONFLICT (content): Merge conflict in UPSTREAM_PATCHES.md\nAuto-merging crates/codegraph-server/src/watcher.rs\nCONFLICT (content): Merge conflict in crates/codegraph-server/src/watcher.rs\nAuto-merging toolchains.lock.json\nAuto-merging tooling/lock_toolchains.py\n",
+      "stderr": "error: could not revert 1ca0ae8b... merge: upstream CodeGraph 0.21.2\nhint: after resolving the conflicts, mark the corrected paths\nhint: with 'git add <paths>' or 'git rm <paths>'\nhint: Disable this message with \"git config set advice.mergeConflict false\"\n",
+      "stdout_sha256": "7f84202ade24110b0ae68a5fe8773c8beac82c0a602ab10bc2e2d2631c5fba22",
+      "stderr_sha256": "1f3cdb4587697990f54d713db327a08102debc94de52e851c53a11bbcb79a264"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "--diff-filter=U"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:29:43.974231+00:00",
+      "finished_at": "2026-11-26T00:29:44.111700+00:00",
+      "duration_s": 0.137,
+      "stdout": "UPSTREAM_PATCHES.md\ncrates/codegraph-server/src/watcher.rs\n",
+      "stderr": "",
+      "stdout_sha256": "520cf00455464c52c4a56552a9708d33e2893b368b851fde1b3783fc2f6b6e8e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "revert",
+        "--abort"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:29:44.159208+00:00",
+      "finished_at": "2026-11-26T00:29:44.402225+00:00",
+      "duration_s": 0.243,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "remove",
+        "--force",
+        "<path>"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:29:44.451116+00:00",
+      "finished_at": "2026-11-26T00:29:49.945929+00:00",
+      "duration_s": 5.495,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "remove",
+        "--force",
+        "<path>"
+      ],
+      "cwd": "<path>",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-11-26T00:29:49.998430+00:00",
+      "finished_at": "2026-11-26T00:29:50.844980+00:00",
+      "duration_s": 0.847,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "worktree_kept": false
+}

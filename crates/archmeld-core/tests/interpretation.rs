@@ -23,6 +23,8 @@ use std::process::Command;
 use std::sync::Mutex;
 use std::time::Duration;
 
+mod support;
+
 static EVIDENCE_LOCK: Mutex<()> = Mutex::new(());
 
 const P: &str = "project.b017";
@@ -220,7 +222,7 @@ with open(path, "w", encoding="utf-8") as handle:
             snapshot_id: fixture.snapshot_id.clone(),
             config_digest: fixture.config_digest.clone(),
             argv: vec![
-                "python".into(),
+                python(),
                 script_path.to_string_lossy().into_owned(),
                 trace_path.to_string_lossy().into_owned(),
             ],
@@ -278,6 +280,9 @@ with open(path, "w", encoding="utf-8") as handle:
 
 #[test]
 fn counterexample_rejects_the_hypothesis_and_records_the_next_experiment() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() {
+        return;
+    }
     let mut fixture = setup();
     let runtime_evidence = run_investigation_trace(&mut fixture);
 
@@ -464,15 +469,148 @@ fn manual_architecture_is_candidate_and_never_writes_ledger_relations() {
     assert_eq!(provider_capabilities()["model"]["state"], "unconfigured");
 }
 
-fn codeboarding_dir() -> PathBuf {
-    PathBuf::from("<workspace>/_archmeld_tools/codeboarding")
+fn codeboarding_analysis(version: Option<Value>) -> Value {
+    let mut analysis = json!({
+        "components": [{
+            "component_id": "1",
+            "name": "Core",
+            "description": "core component",
+            "key_entities": []
+        }],
+        "components_relations": []
+    });
+    if let Some(version) = version {
+        analysis["analysis_schema_version"] = version;
+    }
+    analysis
+}
+
+fn import_synthetic_codeboarding(fixture: &mut Fixture, analysis: &Value) -> Value {
+    import_codeboarding(
+        &mut fixture.store,
+        &CodeBoardingRequest {
+            project_id: P,
+            snapshot_id: &fixture.snapshot_id,
+            expected_revision: 1,
+            idempotency_key: "codeboarding-contract-1",
+            provider_version: "0.15.3",
+            run_id: "run.b017.codeboarding.contract",
+            commands: Vec::new(),
+            model: None,
+        },
+        analysis,
+    )
+    .unwrap()
+}
+
+#[test]
+fn codeboarding_without_a_schema_version_is_imported_as_unversioned() {
+    let mut fixture = setup();
+    let analysis = codeboarding_analysis(None);
+    let architecture = import_synthetic_codeboarding(&mut fixture, &analysis);
+    let review = architecture_review(
+        &fixture.store,
+        P,
+        architecture["id"].as_str().unwrap(),
+    )
+    .unwrap();
+    assert_eq!(review["analysis_contract"]["status"], "unversioned");
+    assert_eq!(review["analysis_contract"]["declared_version"], Value::Null);
+    assert_eq!(
+        review["analysis_contract"]["observed_tree_spec_version"],
+        Value::Null
+    );
+}
+
+#[test]
+fn codeboarding_schema_major_one_is_accepted_and_recorded() {
+    let mut fixture = setup();
+    let analysis = codeboarding_analysis(Some(json!("1.4")));
+    let architecture = import_synthetic_codeboarding(&mut fixture, &analysis);
+    let review = architecture_review(
+        &fixture.store,
+        P,
+        architecture["id"].as_str().unwrap(),
+    )
+    .unwrap();
+    assert_eq!(review["analysis_contract"]["status"], "declared");
+    assert_eq!(review["analysis_contract"]["declared_version"], "1.4");
+    assert_eq!(review["analysis_contract"]["declared_major"], 1);
+}
+
+#[test]
+fn codeboarding_unknown_schema_major_is_rejected() {
+    let mut fixture = setup();
+    let analysis = codeboarding_analysis(Some(json!("2.0")));
+    let error = import_codeboarding(
+        &mut fixture.store,
+        &CodeBoardingRequest {
+            project_id: P,
+            snapshot_id: &fixture.snapshot_id,
+            expected_revision: 1,
+            idempotency_key: "codeboarding-contract-2",
+            provider_version: "0.15.3",
+            run_id: "run.b017.codeboarding.contract.2",
+            commands: Vec::new(),
+            model: None,
+        },
+        &analysis,
+    )
+    .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("unsupported CodeBoarding analysis_schema_version 2.0"),
+        "{error}"
+    );
+}
+
+#[test]
+fn codeboarding_malformed_schema_version_is_rejected() {
+    let mut fixture = setup();
+    let analysis = codeboarding_analysis(Some(json!("banana")));
+    let error = import_codeboarding(
+        &mut fixture.store,
+        &CodeBoardingRequest {
+            project_id: P,
+            snapshot_id: &fixture.snapshot_id,
+            expected_revision: 1,
+            idempotency_key: "codeboarding-contract-3",
+            provider_version: "0.15.3",
+            run_id: "run.b017.codeboarding.contract.3",
+            commands: Vec::new(),
+            model: None,
+        },
+        &analysis,
+    )
+    .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("must start with a numeric major version"),
+        "{error}"
+    );
+}
+
+fn codeboarding_dir() -> Option<PathBuf> {
+    support::tool("ARCHMELD_CODEBOARDING", "codeboarding")
+}
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
 }
 
 #[test]
 fn real_codeboarding_output_is_candidate_only_and_stale_refs_are_visible() {
-    let cb = codeboarding_dir();
+    let Some(cb) = codeboarding_dir() else {
+        eprintln!("SKIP: CodeBoarding checkout missing; set ARCHMELD_CODEBOARDING");
+        return;
+    };
     if !cb.join(".codeboarding/analysis.json").is_file() {
-        eprintln!("CodeBoarding checkout is missing; real provider import not run");
+        eprintln!("SKIP: CodeBoarding checkout has no .codeboarding/analysis.json");
         return;
     }
     let dir = tempfile::tempdir().unwrap();
@@ -710,7 +848,7 @@ fn architecture_accept_and_reject_append_history_without_touching_source() {
             "expected_revision": 1,
             "action": "accept",
             "reason": "candidate matches the observed entry point",
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "review-arch-accept",
         }),
     )
@@ -748,7 +886,7 @@ fn architecture_accept_and_reject_append_history_without_touching_source() {
             "expected_revision": 1,
             "action": "reject",
             "reason": "stale caller",
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "review-arch-stale",
         }),
     )
@@ -763,7 +901,7 @@ fn architecture_accept_and_reject_append_history_without_touching_source() {
             "expected_revision": 2,
             "action": "reject",
             "reason": "ownership is not yet evidenced",
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "review-arch-reject",
         }),
     )
@@ -778,7 +916,7 @@ fn architecture_accept_and_reject_append_history_without_touching_source() {
             "expected_revision": 2,
             "action": "reject",
             "reason": "ownership is not yet evidenced",
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "review-arch-reject",
         }),
     )
@@ -792,7 +930,7 @@ fn architecture_accept_and_reject_append_history_without_touching_source() {
             "expected_revision": 2,
             "action": "reject",
             "reason": "different payload",
-            "actor": "operator",
+            "actor": "<identity>",
             "idempotency_key": "review-arch-reject",
         }),
     )

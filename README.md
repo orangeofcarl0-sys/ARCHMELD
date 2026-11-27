@@ -391,7 +391,7 @@ codegraph_memory_store(kind: "debug_context", title: "Nginx body size limit",
 
 **Get AI context with graph compression stats + design doc augmentation:**
 ```
-codegraph_get_ai_context(uri: "file:///projects/myapp/src/auth.rs", line: 42, intent: "modify")
+codegraph_get_ai_context(uri: "file://<path>", line: 42, intent: "modify")
 // → Code context + graphStats: {entitiesInGraph: 13555, entitiesTraversed: 47, entitiesKept: 8}
 // → design_context section from indexed docs mentioning "auth"
 ```

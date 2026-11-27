@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-26",
+  "scope": "P0-P3 decoupling of private machine information",
+  "generated_by": "tooling/public_snapshot.py + tooling/upstream.py verify",
+  "results": {
+    "portable_env_self_tests": {"passed": 14, "failed": 0},
+    "upstream_tooling_tests": {"passed": 23, "failed": 0},
+    "public_snapshot_tests": {"passed": 9, "failed": 0},
+    "core_tests_without_tools_root": "all hermetic tests passed; external-tool tests printed SKIP",
+    "private_scan": {"status": "passed_with_warnings", "unclassified": 1631, "note": "historical evidence and local tool paths; expected in the private tree, not failures"},
+    "exported_scan": {"status": "passed", "unclassified": 0},
+    "export": {"file_count": 1781, "skipped": 28, "private_identifiers_after_export": 0}
+  },
+  "changes": {
+    "tooling/portable_env.py": "ARCHMELD_TEMP/ARCHMELD_TOOLS_ROOT/ARCHMELD_STRAWBERRY_BIN/ARCHMELD_LIBCLANG_PATH resolution; no drive-absolute literals",
+    "crates/archmeld-core/tests/support": "configured=strict external-tool resolution; ARCHMELD_REQUIRE_TOOLS=1; temp/audit helpers",
+    "tooling/doctor.py": "path_env + relative_path, tools root, which/rustup_which, then recorded path",
+    "tooling/public_snapshot.py": "check/export/verify-export; path/identity/IP/secret rules; provenance via patches/codegraph/manifest.json; SCIP and dataset fail-closed",
+    "docs/upstream/README.md": "environment, test-skip and public-snapshot policy",
+    "AGENTS.md": "portable build environment and public snapshot discipline"
+  },
+  "hashes": {
+    "tooling/public_snapshot.py": "49aaec05f4c24e0a2dd44f885bd2902cf028073121b17b8c05488f77e37922d7",
+    "tooling/public_snapshot_policy.json": "a2798edf7c026a861398d6217e9e15207d0c1624889d4d6fb86c7fb08d620830",
+    "tooling/test_public_snapshot.py": "83fce4a3904c27903f356796919dbfbbd0544967a8f4fdda76db7ea13083a755",
+    "tooling/upstream.py": "dd161e6a73c243e0ab50f98e5155345ca5dd048827a02080f6db1ea6c69b2b32",
+    "docs/release-evidence/UPSTREAM-STATUS-2026-11-25.json": "5db79f63ee6a5bc2d1115c6a34ee468ec405e1e64278e6e9b9b5b97111b54f07",
+    "docs/evidence/privacy-decoupling-2026-11-26/export-scan.json": "07f23887bfe66725ba6db41db1a41d0651c87cc780675aa5fe71bc48c60b8e3b",
+    "docs/evidence/privacy-decoupling-2026-11-26/private-scan.json": "d721b5f26f74c1444220d22c9570b96b35af26034651bc606d88f6e08a34c331"
+  },
+  "commands": [
+    "p0-upstream-tests",
+    "p0-upstream-verify",
+    "p2-doctor",
+    "p2-upstream-verify",
+    "p3-public-snapshot-tests",
+    "p3-upstream-tests",
+    "p3-private-scan",
+    "p3-export",
+    "p3-verify-export-2",
+    "p3-upstream-verify"
+  ],
+  "limitations": [
+    "the scanner is pattern-based, not a full PII classifier",
+    "historical evidence keeps private paths in the private tree; only the exported tree is sanitized",
+    "the exported tree is a temp artifact; publishing it still requires a separate explicit push",
+    "docs/archmeld remains sealed and was copied byte-for-byte"
+  ]
+}

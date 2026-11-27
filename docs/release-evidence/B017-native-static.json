@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
   "tool": "codeboarding-static-analyzer",
-  "repo": "<user>\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\asyncio",
-  "codeboarding": "<workspace>\\_archmeld_tools\\codeboarding",
+  "repo": "<path><identity>\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\asyncio",
+  "codeboarding": "<path>",
   "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
   "python": "3.12.12",
-  "python_executable": "<workspace>\\_archmeld_tools\\codeboarding-venv\\Scripts\\python.exe",
-  "cache_dir": "<temp>\\cb-static-cache",
+  "python_executable": "<path>",
+  "cache_dir": "<path>",
   "languages": [
     "python"
   ],

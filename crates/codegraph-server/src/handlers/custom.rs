@@ -113,7 +113,7 @@ impl CodeGraphBackend {
                 let uri = if n.path.is_empty() {
                     self.symbol_index
                         .find_file_for_node(n.id.parse().unwrap_or_default())
-                        .and_then(|p| p.to_str().map(|s| format!("file://{s}")))
+                        .and_then(|p| p.to_str().map(|s| format!("file://<path>")))
                         .unwrap_or_default()
                 } else {
                     n.path
@@ -325,7 +325,7 @@ impl CodeGraphBackend {
                 let uri = if n.path.is_empty() {
                     self.symbol_index
                         .find_file_for_node(n.id.parse().unwrap_or_default())
-                        .and_then(|p| p.to_str().map(|s| format!("file://{s}")))
+                        .and_then(|p| p.to_str().map(|s| format!("file://<path>")))
                         .unwrap_or_default()
                 } else {
                     n.path.clone()
@@ -481,7 +481,7 @@ impl CodeGraphBackend {
             let uri = if sym.path.is_empty() {
                 self.symbol_index
                     .find_file_for_node(sym.node_id.parse().unwrap_or_default())
-                    .and_then(|p| p.to_str().map(|s| format!("file://{s}")))
+                    .and_then(|p| p.to_str().map(|s| format!("file://<path>")))
                     .unwrap_or_default()
             } else {
                 sym.path.clone()
@@ -630,6 +630,33 @@ mod tests {
     use std::sync::Arc;
     use tokio::sync::RwLock;
 
+    /// A platform-absolute fixture path. The file does not need to exist.
+    fn fixture_path(name: &str) -> std::path::PathBuf {
+        let root = if cfg!(windows) {
+            r"<path>"
+        } else {
+            "/codegraph-fixtures"
+        };
+        let mut path = std::path::PathBuf::from(root);
+        for part in name.split('/') {
+            path.push(part);
+        }
+        path
+    }
+
+    fn fixture_string(name: &str) -> String {
+        fixture_path(name)
+            .to_str()
+            .expect("fixture path must be UTF-8")
+            .to_string()
+    }
+
+    fn fixture_uri(name: &str) -> String {
+        Url::from_file_path(fixture_path(name))
+            .expect("fixture path must be absolute")
+            .to_string()
+    }
+
     /// Helper to add a node to the symbol index
     fn add_node_to_index(
         backend: &CodeGraphBackend,
@@ -676,7 +703,7 @@ mod tests {
             );
             props1.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/main.rs".to_string()),
+                PropertyValue::String(fixture_string("main.rs")),
             );
             props1.insert(
                 "language".to_string(),
@@ -694,7 +721,7 @@ mod tests {
             );
             props2.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/utils.rs".to_string()),
+                PropertyValue::String(fixture_string("utils.rs")),
             );
             props2.insert(
                 "language".to_string(),
@@ -734,7 +761,7 @@ mod tests {
             );
             props1.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/main.rs".to_string()),
+                PropertyValue::String(fixture_string("main.rs")),
             );
             props1.insert(
                 "signature".to_string(),
@@ -756,7 +783,7 @@ mod tests {
             );
             props2.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/main.rs".to_string()),
+                PropertyValue::String(fixture_string("main.rs")),
             );
             props2.insert(
                 "signature".to_string(),
@@ -783,9 +810,9 @@ mod tests {
         let backend = CodeGraphBackend::new_for_test(graph, query_engine);
 
         // Add to symbol index
-        let path = std::path::Path::new("/test/main.rs");
-        add_node_to_index(&backend, path, func1_id, "main", "Function", 1, 10);
-        add_node_to_index(&backend, path, func2_id, "helper", "Function", 15, 25);
+        let path = fixture_path("main.rs");
+        add_node_to_index(&backend, &path, func1_id, "main", "Function", 1, 10);
+        add_node_to_index(&backend, &path, func2_id, "helper", "Function", 15, 25);
 
         (backend, func1_id, func2_id)
     }
@@ -891,7 +918,7 @@ mod tests {
         let backend = create_test_backend().await;
 
         let params = DependencyGraphParams {
-            uri: "file:///nonexistent/file.rs".to_string(),
+            uri: fixture_uri("nonexistent/file.rs"),
             depth: Some(2),
             include_external: Some(false),
             direction: None,
@@ -910,7 +937,7 @@ mod tests {
         let (backend, _file1_id, _file2_id) = create_backend_with_imports().await;
 
         let params = DependencyGraphParams {
-            uri: "file:///test/main.rs".to_string(),
+            uri: fixture_uri("main.rs"),
             depth: Some(3),
             include_external: Some(false),
             direction: None,
@@ -952,7 +979,7 @@ mod tests {
         let backend = create_test_backend().await;
 
         let params = CallGraphParams {
-            uri: "file:///test/main.rs".to_string(),
+            uri: fixture_uri("main.rs"),
             position: Position {
                 line: 0,
                 character: 0,
@@ -976,7 +1003,7 @@ mod tests {
 
         // Position at line 1 (0-indexed = 0) which is within func1 (lines 1-10)
         let params = CallGraphParams {
-            uri: "file:///test/main.rs".to_string(),
+            uri: fixture_uri("main.rs"),
             position: Position {
                 line: 0,
                 character: 0,
@@ -1022,7 +1049,7 @@ mod tests {
         let backend = create_test_backend().await;
 
         let params = ImpactAnalysisParams {
-            uri: "file:///test/main.rs".to_string(),
+            uri: fixture_uri("main.rs"),
             position: Position {
                 line: 0,
                 character: 0,
@@ -1046,7 +1073,7 @@ mod tests {
         // Analyze impact on func2 which is called by func1
         // Position within func2 (lines 15-25, so 0-indexed = 14-24)
         let params = ImpactAnalysisParams {
-            uri: "file:///test/main.rs".to_string(),
+            uri: fixture_uri("main.rs"),
             position: Position {
                 line: 14,
                 character: 0,
@@ -1094,7 +1121,7 @@ mod tests {
         let backend = create_test_backend().await;
 
         let params = RelatedTestsParams {
-            uri: "file:///test/main.rs".to_string(),
+            uri: fixture_uri("main.rs"),
             position: Position {
                 line: 0,
                 character: 0,
@@ -1126,7 +1153,7 @@ mod tests {
             );
             props1.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/lib.rs".to_string()),
+                PropertyValue::String(fixture_string("lib.rs")),
             );
             props1.insert("line_start".to_string(), PropertyValue::Int(1));
             props1.insert("line_end".to_string(), PropertyValue::Int(10));
@@ -1140,7 +1167,7 @@ mod tests {
             );
             props2.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/tests/lib_test.rs".to_string()),
+                PropertyValue::String(fixture_string("tests/lib_test.rs")),
             );
             props2.insert("line_start".to_string(), PropertyValue::Int(1));
             props2.insert("line_end".to_string(), PropertyValue::Int(10));
@@ -1157,11 +1184,11 @@ mod tests {
         let backend = CodeGraphBackend::new_for_test(graph, query_engine);
 
         // Add to symbol index
-        let func_path = std::path::Path::new("/test/lib.rs");
-        let test_path = std::path::Path::new("/test/tests/lib_test.rs");
+        let func_path = fixture_path("lib.rs");
+        let test_path = fixture_path("tests/lib_test.rs");
         add_node_to_index(
             &backend,
-            func_path,
+            &func_path,
             func_id,
             "my_function",
             "Function",
@@ -1170,7 +1197,7 @@ mod tests {
         );
         add_node_to_index(
             &backend,
-            test_path,
+            &test_path,
             test_id,
             "test_my_function",
             "Function",
@@ -1179,7 +1206,7 @@ mod tests {
         );
 
         let params = RelatedTestsParams {
-            uri: "file:///test/lib.rs".to_string(),
+            uri: fixture_uri("lib.rs"),
             position: Position {
                 line: 0,
                 character: 0,

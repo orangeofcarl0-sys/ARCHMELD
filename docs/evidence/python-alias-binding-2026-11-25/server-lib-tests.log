@@ -1,5 +1,5 @@
     Blocking waiting for file lock on artifact directory
-   Compiling codegraph-server v0.21.2 (<repo>\crates\codegraph-server)
+   Compiling codegraph-server v0.21.2 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
   --> crates\codegraph-rust\src\visitor.rs:12:33
    |
@@ -63,7 +63,7 @@ warning: unused import: `BODY_PREFIX_MAX_CHARS`
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
 warning: `codegraph-go` (lib) generated 1 warning (run `cargo fix --lib -p codegraph-go` to apply 1 suggestion)
-   Compiling codegraph-python v0.4.3 (<repo>\crates\codegraph-python)
+   Compiling codegraph-python v0.4.3 (<path>
 warning: unused import: `BODY_PREFIX_MAX_CHARS`
   --> crates\codegraph-c\src\visitor.rs:14:16
    |

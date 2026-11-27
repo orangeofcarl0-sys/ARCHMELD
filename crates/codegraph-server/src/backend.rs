@@ -634,11 +634,11 @@ impl CodeGraphBackend {
             let config = self.config.read().await.clone();
             let idx_config = Self::index_config_from_lsp(&config, &self.launch);
             let counter = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
-            let (total, _parsed, _skipped, _by_lang, _errors) = self
+            let stats = self
                 .indexer
                 .index_directory(&self.graph, dir, &idx_config, 0, counter)
                 .await;
-            total
+            stats.total_files
         })
     }
 
@@ -2480,7 +2480,7 @@ impl LanguageServer for CodeGraphBackend {
                     ));
                 }
 
-                // Convert file:// URIs to paths
+                // Convert file://<path> URIs to paths
                 let files: Vec<std::path::PathBuf> = raw_files
                     .iter()
                     .map(|s| {
@@ -2556,12 +2556,12 @@ impl LanguageServer for CodeGraphBackend {
                 let lsp_config = self.config.read().await.clone();
                 let config = Self::index_config_from_lsp(&lsp_config, &self.launch);
                 let counter = Arc::new(std::sync::atomic::AtomicUsize::new(0));
-                let (total, _parsed, _skipped, _by_lang, _errors) = self
+                let stats = self
                     .indexer
                     .index_directory(&self.graph, &dir, &config, 0, counter)
                     .await;
 
-                if total > 0 {
+                if stats.total_files > 0 {
                     {
                         let mut graph = self.graph.write().await;
                         crate::watcher::GraphUpdater::resolve_cross_file_imports(&mut graph);
@@ -2574,10 +2574,10 @@ impl LanguageServer for CodeGraphBackend {
 
                 Ok(Some(serde_json::json!({
                     "status": "success",
-                    "files_indexed": total,
+                    "files_indexed": stats.total_files,
                     "directory": path,
                     "embedded": embed,
-                    "message": format!("Added {} files from {}{}", total, path,
+                    "message": format!("Added {} files from {}{}", stats.total_files, path,
                         if embed { " (with embeddings)" } else { "" })
                 })))
             }
@@ -4226,6 +4226,29 @@ mod tests {
     use std::path::Path;
     use tempfile::TempDir;
 
+    /// A platform-absolute fixture path. The file does not need to exist: the
+    /// LSP path helpers only require an absolute path that `Url` accepts.
+    /// Windows rejects drive-less POSIX paths, so the root is platform-specific.
+    fn fixture_path(name: &str) -> std::path::PathBuf {
+        let root = if cfg!(windows) {
+            r"<path>"
+        } else {
+            "/codegraph-fixtures"
+        };
+        let mut path = std::path::PathBuf::from(root);
+        for part in name.split('/') {
+            path.push(part);
+        }
+        path
+    }
+
+    fn fixture_string(name: &str) -> String {
+        fixture_path(name)
+            .to_str()
+            .expect("fixture path must be UTF-8")
+            .to_string()
+    }
+
     mod launch_options {
         use super::*;
 
@@ -4295,7 +4318,7 @@ mod tests {
             InitializeParams::default()
         }
 
-        fn uri(path: &str) -> Url {
+        fn uri(path: &Path) -> Url {
             Url::from_file_path(path).expect("test path must be absolute")
         }
 
@@ -4303,17 +4326,17 @@ mod tests {
         fn prefers_workspace_folders() {
             let mut p = params();
             p.workspace_folders = Some(vec![WorkspaceFolder {
-                uri: uri("/tmp/from-folders"),
+                uri: uri(&fixture_path("from-folders")),
                 name: "w".into(),
             }]);
             #[allow(deprecated)]
             {
-                p.root_uri = Some(uri("/tmp/from-root-uri"));
+                p.root_uri = Some(uri(&fixture_path("from-root-uri")));
             }
 
             assert_eq!(
                 workspace_paths_from(&p),
-                vec![std::path::PathBuf::from("/tmp/from-folders")]
+                vec![fixture_path("from-folders")]
             );
         }
 
@@ -4324,12 +4347,12 @@ mod tests {
             let mut p = params();
             #[allow(deprecated)]
             {
-                p.root_uri = Some(uri("/tmp/from-root-uri"));
+                p.root_uri = Some(uri(&fixture_path("from-root-uri")));
             }
 
             assert_eq!(
                 workspace_paths_from(&p),
-                vec![std::path::PathBuf::from("/tmp/from-root-uri")]
+                vec![fixture_path("from-root-uri")]
             );
         }
 
@@ -4338,12 +4361,12 @@ mod tests {
             let mut p = params();
             #[allow(deprecated)]
             {
-                p.root_path = Some("/tmp/from-root-path".into());
+                p.root_path = Some(fixture_string("from-root-path"));
             }
 
             assert_eq!(
                 workspace_paths_from(&p),
-                vec![std::path::PathBuf::from("/tmp/from-root-path")]
+                vec![fixture_path("from-root-path")]
             );
         }
 
@@ -4355,12 +4378,12 @@ mod tests {
             p.workspace_folders = Some(vec![]);
             #[allow(deprecated)]
             {
-                p.root_uri = Some(uri("/tmp/from-root-uri"));
+                p.root_uri = Some(uri(&fixture_path("from-root-uri")));
             }
 
             assert_eq!(
                 workspace_paths_from(&p),
-                vec![std::path::PathBuf::from("/tmp/from-root-uri")]
+                vec![fixture_path("from-root-uri")]
             );
         }
 
@@ -4369,11 +4392,11 @@ mod tests {
             let mut p = params();
             p.workspace_folders = Some(vec![
                 WorkspaceFolder {
-                    uri: uri("/tmp/one"),
+                    uri: uri(&fixture_path("one")),
                     name: "one".into(),
                 },
                 WorkspaceFolder {
-                    uri: uri("/tmp/two"),
+                    uri: uri(&fixture_path("two")),
                     name: "two".into(),
                 },
             ]);
@@ -4415,7 +4438,7 @@ mod tests {
             );
             props1.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/file.rs".to_string()),
+                PropertyValue::String(fixture_string("file.rs")),
             );
             props1.insert("line_start".to_string(), PropertyValue::Int(10));
             props1.insert("line_end".to_string(), PropertyValue::Int(20));
@@ -4435,7 +4458,7 @@ mod tests {
             );
             props2.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/file.rs".to_string()),
+                PropertyValue::String(fixture_string("file.rs")),
             );
             props2.insert("line_start".to_string(), PropertyValue::Int(30));
             props2.insert("line_end".to_string(), PropertyValue::Int(40));
@@ -4489,13 +4512,13 @@ mod tests {
     async fn test_find_node_at_position_empty_graph() {
         let backend = create_test_backend();
         let graph = backend.graph.read().await;
-        let path = Path::new("/test/file.rs");
+        let path = fixture_path("file.rs");
         let position = Position {
             line: 10,
             character: 5,
         };
 
-        let result = backend.find_node_at_position(&graph, path, position);
+        let result = backend.find_node_at_position(&graph, &path, position);
         assert!(result.is_ok());
         assert!(result.unwrap().is_none());
     }
@@ -4505,8 +4528,8 @@ mod tests {
         let (backend, func_id, _) = create_backend_with_nodes().await;
 
         // Add the node to the symbol index
-        let path = Path::new("/test/file.rs");
-        add_func_to_index(&backend, path, func_id, "test_function", 10, 20);
+        let path = fixture_path("file.rs");
+        add_func_to_index(&backend, &path, func_id, "test_function", 10, 20);
 
         let graph = backend.graph.read().await;
         // Position within the function (line 15, 0-indexed is 14, but we add 1 = 15)
@@ -4515,7 +4538,7 @@ mod tests {
             character: 10,
         };
 
-        let result = backend.find_node_at_position(&graph, path, position);
+        let result = backend.find_node_at_position(&graph, &path, position);
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), Some(func_id));
     }
@@ -4525,8 +4548,8 @@ mod tests {
         let (backend, func_id, _) = create_backend_with_nodes().await;
 
         // Add the node to the symbol index
-        let path = Path::new("/test/file.rs");
-        add_func_to_index(&backend, path, func_id, "test_function", 10, 20);
+        let path = fixture_path("file.rs");
+        add_func_to_index(&backend, &path, func_id, "test_function", 10, 20);
 
         let graph = backend.graph.read().await;
         let position = Position {
@@ -4534,7 +4557,7 @@ mod tests {
             character: 10,
         };
 
-        let result = backend.find_nearest_node(&graph, path, position);
+        let result = backend.find_nearest_node(&graph, &path, position);
         assert!(result.is_ok());
         let (node_id, was_fallback) = result.unwrap().unwrap();
         assert_eq!(node_id, func_id);
@@ -4546,8 +4569,8 @@ mod tests {
         let (backend, func_id, _) = create_backend_with_nodes().await;
 
         // Add the node to the symbol index
-        let path = Path::new("/test/file.rs");
-        add_func_to_index(&backend, path, func_id, "test_function", 10, 20);
+        let path = fixture_path("file.rs");
+        add_func_to_index(&backend, &path, func_id, "test_function", 10, 20);
 
         let graph = backend.graph.read().await;
         // Position before the function
@@ -4556,7 +4579,7 @@ mod tests {
             character: 0,
         };
 
-        let result = backend.find_nearest_node(&graph, path, position);
+        let result = backend.find_nearest_node(&graph, &path, position);
         assert!(result.is_ok());
         let (node_id, was_fallback) = result.unwrap().unwrap();
         assert_eq!(node_id, func_id);
@@ -4699,7 +4722,7 @@ mod tests {
             kind: SymbolKind::FUNCTION,
             tags: None,
             detail: None,
-            uri: Url::parse("file:///test.rs").unwrap(),
+            uri: Url::parse("file://<path>").unwrap(),
             range: Range::default(),
             selection_range: Range::default(),
             data: Some(serde_json::json!({ "nodeId": "123" })),
@@ -4719,7 +4742,7 @@ mod tests {
             kind: SymbolKind::FUNCTION,
             tags: None,
             detail: None,
-            uri: Url::parse("file:///test.rs").unwrap(),
+            uri: Url::parse("file://<path>").unwrap(),
             range: Range::default(),
             selection_range: Range::default(),
             data: None,
@@ -4738,7 +4761,7 @@ mod tests {
             kind: SymbolKind::FUNCTION,
             tags: None,
             detail: None,
-            uri: Url::parse("file:///test.rs").unwrap(),
+            uri: Url::parse("file://<path>").unwrap(),
             range: Range::default(),
             selection_range: Range::default(),
             data: Some(serde_json::json!({ "nodeId": "not_a_number" })),
@@ -4751,7 +4774,7 @@ mod tests {
     #[tokio::test]
     async fn test_file_cache_operations() {
         let backend = create_test_backend();
-        let uri = Url::parse("file:///test.rs").unwrap();
+        let uri = Url::parse("file://<path>").unwrap();
 
         assert!(backend.file_cache.is_empty());
 
@@ -4801,10 +4824,10 @@ mod tests {
     #[tokio::test]
     async fn test_symbol_index_integration() {
         let (backend, func_id, _) = create_backend_with_nodes().await;
-        let path = Path::new("/test/file.rs");
+        let path = fixture_path("file.rs");
 
         // Add to symbol index using test helper
-        add_func_to_index(&backend, path, func_id, "test_function", 10, 20);
+        add_func_to_index(&backend, &path, func_id, "test_function", 10, 20);
 
         // Search by name
         let results = backend.symbol_index.search_by_name("test_function");
@@ -4812,12 +4835,12 @@ mod tests {
         assert!(results.contains(&func_id));
 
         // Get file symbols
-        let file_symbols = backend.symbol_index.get_file_symbols(path);
+        let file_symbols = backend.symbol_index.get_file_symbols(&path);
         assert!(!file_symbols.is_empty());
 
         // Remove file
-        backend.symbol_index.remove_file(path);
-        let file_symbols = backend.symbol_index.get_file_symbols(path);
+        backend.symbol_index.remove_file(&path);
+        let file_symbols = backend.symbol_index.get_file_symbols(&path);
         assert!(file_symbols.is_empty());
     }
 }

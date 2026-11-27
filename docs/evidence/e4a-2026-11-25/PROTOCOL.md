@@ -37,16 +37,16 @@ direct` and `toolExposure: {"*":"direct"}`; the launcher passes
 `--no-extensions -e builtin:mcp` so broken global extensions do not block the
 run and MCP stays enabled.
 
-Run root: `<workspace>/<e4a-run>` (outside the git
+Run root: `<path> (outside the git
 worktree). A run repo inside `docs/evidence/` would be ignored by the
 evidence `.gitignore`, and `archmeld init` would capture no files.
 
 ```sh
 python tooling/e4a_launcher.py --probe
 python tooling/e4a_launcher.py --backend pi --fixture nonlexical --arm a \
-  --out <workspace>/<e4a-run>
+  --out <path>
 python tooling/e4a_launcher.py --backend pi --fixture nonlexical --arm b \
-  --out <workspace>/<e4a-run>
+  --out <path>
 ```
 
 The launcher:

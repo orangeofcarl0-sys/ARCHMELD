@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "generated_by": "tooling/upstream.py status",
+  "upstreams": [
+    {
+      "id": "codegraph",
+      "reuse_mode": "thin_fork",
+      "pin_kind": "commit",
+      "pin": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+      "version": "0.21.2",
+      "contract": "archmeld-export-v1 1.1",
+      "last_drill": "passed",
+      "update_available": false,
+      "latest": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+      "probe": {
+        "target": "upstream",
+        "ref": "refs/heads/main"
+      }
+    },
+    {
+      "id": "codeboarding",
+      "reuse_mode": "artifact_import",
+      "pin_kind": "commit",
+      "pin": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
+      "version": "0.15.3",
+      "contract": "analysis.json unversioned",
+      "last_drill": "passed",
+      "update_available": true,
+      "latest": "b5341f2e2af2dd951a5bbe87cccee4c48eaf8bf8",
+      "probe": {
+        "target": "https://github.com/CodeBoarding/CodeBoarding.git",
+        "ref": "HEAD"
+      }
+    },
+    {
+      "id": "scip",
+      "reuse_mode": "artifact_import",
+      "pin_kind": "version",
+      "pin": "format scip-protobuf-v0.3; scip-clang v0.4.1; scip-python 0.6.8",
+      "version": "format scip-protobuf-v0.3; scip-clang v0.4.1; scip-python 0.6.8",
+      "contract": "scip-protobuf v0.3",
+      "last_drill": "passed",
+      "update_available": null,
+      "latest": null,
+      "probe": null
+    },
+    {
+      "id": "lsp",
+      "reuse_mode": "process_adapter",
+      "pin_kind": "lockfile",
+      "pin": "pyright 1.1.408; typescript-language-server 4.3.4; clangd 18.1.8; rust-analyzer 1.94.1; jdtls 1.64.0; csharp-ls 0.14.0; gopls 0.20.0",
+      "version": "pyright 1.1.408; typescript-language-server 4.3.4; clangd 18.1.8; rust-analyzer 1.94.1; jdtls 1.64.0; csharp-ls 0.14.0; gopls 0.20.0",
+      "contract": "lsp stdio-jsonrpc",
+      "last_drill": null,
+      "update_available": null,
+      "latest": null,
+      "probe": null
+    },
+    {
+      "id": "traces",
+      "reuse_mode": "artifact_import",
+      "pin_kind": "lockfile",
+      "pin": "Perfetto v59.1; Tracy 0.13.1; VizTracer fixtures",
+      "version": "Perfetto v59.1; Tracy 0.13.1; VizTracer fixtures",
+      "contract": "trace-artifact format-specific",
+      "last_drill": null,
+      "update_available": null,
+      "latest": null,
+      "probe": null
+    },
+    {
+      "id": "aoci",
+      "reuse_mode": "text_interop",
+      "pin_kind": "version",
+      "pin": "0.2.0-rc4",
+      "version": "0.2.0-rc4",
+      "contract": "aoci-text 0.2.0-rc4",
+      "last_drill": null,
+      "update_available": null,
+      "latest": null,
+      "probe": null
+    },
+    {
+      "id": "cytoscape",
+      "reuse_mode": "vendored_asset",
+      "pin_kind": "version",
+      "pin": "3.30.2",
+      "version": "3.30.2",
+      "contract": "static-asset 3.30.2",
+      "last_drill": null,
+      "update_available": null,
+      "latest": null,
+      "probe": null
+    },
+    {
+      "id": "toolchain",
+      "reuse_mode": "environment_pin",
+      "pin_kind": "lockfile",
+      "pin": "rust 1.94.1; node 24.14.1; python 3.11.9; gcc 13.2; jdk 25.0.5; go 1.27.3; dotnet 8.0.427",
+      "version": "rust 1.94.1; node 24.14.1; python 3.11.9; gcc 13.2; jdk 25.0.5; go 1.27.3; dotnet 8.0.427",
+      "contract": "toolchain-lock 1.0",
+      "last_drill": null,
+      "update_available": null,
+      "latest": null,
+      "probe": null
+    }
+  ],
+  "warnings": []
+}

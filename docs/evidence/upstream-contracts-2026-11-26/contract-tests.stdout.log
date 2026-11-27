@@ -1,0 +1,67 @@
+
+running 1 test
+test real_model_analysis_imports_with_provider_provenance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+test missing_map_is_reported_as_absent_not_an_error ... ok
+test an_absolute_section_root_still_matches_by_suffix ... ok
+test crlf_and_malformed_lines_are_tolerated ... ok
+test format_version_v1_is_recorded_without_a_version_warning ... ok
+test neutral_root_maps_entries_and_affected_changes ... ok
+test missing_format_headers_are_warnings_not_failures ... ok
+test newer_format_major_is_a_warning_and_entries_still_parse ... ok
+test markdown_card_mentions_the_cognition_map ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 8 tests
+test counterexample_rejects_the_hypothesis_and_records_the_next_experiment ... ok
+test real_codeboarding_output_is_candidate_only_and_stale_refs_are_visible ... ok
+test codeboarding_malformed_schema_version_is_rejected ... ok
+test codeboarding_unknown_schema_major_is_rejected ... ok
+test architecture_accept_and_reject_append_history_without_touching_source ... ok
+test codeboarding_without_a_schema_version_is_imported_as_unversioned ... ok
+test manual_architecture_is_candidate_and_never_writes_ledger_relations ... ok
+test codeboarding_schema_major_one_is_accepted_and_recorded ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+
+running 4 tests
+test complete_initialize_probe_matches_the_expected_version ... ok
+test missing_capabilities_are_unparsed_and_downgrade_all ... ok
+test missing_rename_capability_degrades_bounded_refactor ... ok
+test version_mismatch_degrades_the_server_version ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test spawn_requires_an_explicit_grant_and_is_audited ... ok
+test real_rename_roundtrip_feeds_the_preview_and_leaves_no_orphans ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.05s
+
+
+running 2 tests
+test processor_identity_mismatch_fails_closed ... ok
+test trace_processor_query_matches_the_in_process_decoder ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.54s
+
+
+running 7 tests
+test unspecified_scip_protocol_version_is_accepted ... ok
+test unsupported_scip_protocol_version_is_rejected ... ok
+test documents_outside_the_snapshot_are_explicitly_partial ... ok
+test utf16_ranges_convert_to_utf8_bytes ... ok
+test definitions_references_and_external_symbols_are_separated ... ok
+test real_rust_analyzer_index_imports_without_promoting_references ... ok
+test real_python_scip_index_imports_references_without_calls ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s
+

@@ -269,6 +269,35 @@ fn validate_relation(header: &EvidenceBatch, relation: &Relation) -> Result<()> 
     for condition in &relation.conditions {
         require_non_empty("relation.conditions[]", condition)?;
     }
+    if relation.occurrences == 0 {
+        return Err(CoreError::invalid(format!(
+            "relation {}: occurrences must be >= 1",
+            relation.id
+        )));
+    }
+    if let Some(site) = &relation.call_site {
+        if let Some(path) = &site.path {
+            validate_path("relation.call_site.path", path)?;
+        }
+        if site.line == Some(0) {
+            return Err(CoreError::invalid(format!(
+                "relation {}: call_site.line must be >= 1",
+                relation.id
+            )));
+        }
+    }
+    if relation.evidence_scope == Some(crate::store::EvidenceScope::Site)
+        && relation
+            .call_site
+            .as_ref()
+            .and_then(|site| site.line)
+            .is_none()
+    {
+        return Err(CoreError::invalid(format!(
+            "relation {}: evidence_scope=site requires call_site.line",
+            relation.id
+        )));
+    }
 
     match relation.kind {
         RelationKind::ResolvedCall => {

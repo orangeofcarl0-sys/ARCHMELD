@@ -7,7 +7,7 @@ the snapshot, commit, coverage, workspace state, counts and
 
 ## Clean fixture
 
-`<temp>/m2.5b-clean` (2 Python files, indexed with
+`<path> (2 Python files, indexed with
 `archmeld init`):
 
 - `clean-brief-write.json`: card written.

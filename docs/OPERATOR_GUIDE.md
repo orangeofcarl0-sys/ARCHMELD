@@ -6,23 +6,150 @@ Ubuntu GUI/VS Code host and macOS release runs remain open. AT068 clean-machine
 delivery and the real 0.21.2 upstream upgrade (AT077) passed. See
 `docs/REMAINING_BLOCKERS.md`.
 
-## 1. Build and test (Windows reference machine)
+## 1. Build and test (reference machine setup)
+
+Tool and temp locations are resolved by `tooling/portable_env.py`; the commands
+below are placeholders, not product defaults.
 
 ```sh
-cd <repo>
-RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
-PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
-cargo test -p archmeld-core -p archmeld-api
+cd <repo-root>
+export ARCHMELD_TOOLS_ROOT=<tools-root>
+export ARCHMELD_TEMP=<temp-root>
+export ARCHMELD_MINGW_BIN=<path>   # ARCHMELD_STRAWBERRY_BIN remains an alias
+export RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu
+python tooling/cargo_test.py -- -p archmeld-core -p archmeld-api
+python tooling/portable_env.py --json
 ```
+
+`cargo_test.py` is the supported test entry point: it sets the GNU toolchain,
+prepends `ARCHMELD_MINGW_BIN` (so UCRT64's libstdc++ wins over Git's), resolves
+libclang/bindgen includes, sets `CXXFLAGS` and `CARGO_INCREMENTAL=0`. A plain
+`cargo test` resolves the MSVC host from `rust-toolchain.toml` and can load the
+wrong `libstdc++-6.dll` at test runtime.
 
 Release binaries:
 
 ```sh
-RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu \
-PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH \
+export ARCHMELD_LIBCLANG_PATH=<tools-root>/pylibclang/clang/native
 cargo build --release -p archmeld-api --bins
-RUSTUP_TOOLCHAIN=1.94.1-x86_64-pc-windows-gnu PATH=/d/Strawberry/c/bin:/c/Users/<user>/.cargo/bin:$PATH LIBCLANG_PATH=<workspace>/_archmeld_tools/pylibclang/clang/native cargo build --release -p codegraph-server --example archmeld_export
 ```
+
+AT067/B030 language matrix (strict; fail instead of silently skipping):
+
+```sh
+export ARCHMELD_TOOLS_ROOT=<path>
+export ARCHMELD_REQUIRE_TOOLS=1
+export ARCHMELD_WRITE_EVIDENCE=1
+export ARCHMELD_GCC=<path>
+export ARCHMELD_GXX=<path>
+export ARCHMELD_PYTHON=<absolute-python.exe>
+python tooling/cargo_test.py -- -p archmeld-core --test language_runtime_linkage
+python tooling/cargo_test.py -- -p archmeld-core --test language_medium_projects
+python tooling/cargo_test.py -- -p archmeld-core --test language_rename_apply
+python tooling/cargo_test.py -- -p archmeld-core --test language_matrix
+python tooling/verify_b030_evidence.py --since <run-start-unix> --expect-head <short-head>
+```
+
+Helper builds (canonical; also writes the schema and provenance sidecars used by packaging):
+
+```sh
+export ARCHMELD_MINGW_BIN=<path>
+export ARCHMELD_TEMP=<path>
+python tooling/build_helper.py --profile dev --sidecar target/debug/helper-schema.txt
+python tooling/build_helper.py --profile release --sidecar target/release/helper-schema.txt
+```
+
+The script reuses `cargo_env()`: it sets `CXXFLAGS=-include cstdint`, discovers
+MinGW/GCC includes for bindgen, keeps the dev-profile `librocksdb-sys`
+debuginfo disabled, and writes `helper-provenance.json` next to the helper
+(schema/version/commit/dirty/sha256). A prose `BINDGEN_EXTRA_CLANG_ARGS` is
+replaced with the resolved `-I` list. Keep `-j 2` for a source-built RocksDB on
+the 16 GB host and never interrupt the C++ phase. The canonical environment now
+sets both `CXXFLAGS` and `CXXFLAGS_x86_64_pc_windows_gnu` to the same value for
+dev and release, so switching profiles does not create a second fingerprint.
+
+### Fast and evidence test lanes
+
+`tooling/test_lane.py` is the day-to-day entry point. The `fast` lane drops
+`benchmark`, `t3_stress`, the four `language_*` AT067 tests and the seven
+LSP/nested-cargo pack tests (`rust_pack`, `java_pack`, `go_pack`, `csharp_pack`,
+`cpp_pack`, `language_packs`, `lsp_roundtrip`) from the routine loop, then runs
+the remaining core tests, `archmeld-api --lib`, the parser suite and the stable
+server tests in one invocation per group:
+
+```sh
+python tooling/test_lane.py --lane fast --dry-run   # show argv + env fingerprint
+python tooling/test_lane.py --lane fast
+python tooling/test_lane.py --lane core             # or server / parser
+python tooling/test_lane.py --lane full             # everything, including packs
+python tooling/test_lane.py --lane fast --include-timing
+python tooling/test_lane.py --lane fast --include-external  # add the LSP packs
+```
+
+The excluded packs are not weakened: `--lane full` runs all of them, and
+`--include-external` adds them to the fast selection when their coverage is
+needed.
+
+The fast lane defaults to the verified RocksDB cache, lld (after the probes
+pass) and sccache (when installed). Every switch has an explicit fallback:
+`--rocksdb source`, `--linker bfd`, `--sccache off`. The evidence lane always
+uses source-built RocksDB, BFD and `-j 2`:
+
+```sh
+export ARCHMELD_TOOLS_ROOT=<path>
+export ARCHMELD_REQUIRE_TOOLS=1
+export ARCHMELD_WRITE_EVIDENCE=1
+export ARCHMELD_GCC=<path>
+export ARCHMELD_GXX=<path>
+python tooling/test_lane.py --lane evidence
+```
+
+Reference run on the 24-core/16 GB host (2026-11-27): the warm fast lane took
+**2m15s** (core 124s, API 1.1s, parser 4.8s, server 2.8s); a fresh target with
+the prebuilt RocksDB archive built and ran `test_delete` in **1m43s**, versus
+**16m14s** for the same server library with a source-built RocksDB. The
+evidence lane keeps the source-built/BFD path and is expected to be slower.
+
+### Prebuilt RocksDB cache (fast lane only)
+
+The cache skips the 322 RocksDB C++ translation units. It is keyed by crate
+version, features, target, rustc, GCC and `CXXFLAGS`, and a mismatch is a hard
+error rather than a silent fallback:
+
+```sh
+python tooling/rocksdb_cache.py create --source-dir target/debug/build/librocksdb-sys-<hash>/out
+python tooling/rocksdb_cache.py status
+python tooling/rocksdb_cache.py verify --full   # link + test_delete runtime smoke
+```
+
+The archive and its `provenance.json` live under
+`_archmeld_tools/rocksdb/<key>/`; the sha256 is recorded in fast-lane output.
+The evidence lane never uses the cache.
+
+### lld and sccache
+
+```sh
+python tooling/link_probe.py --probe --workspace --json
+python tooling/install_sccache.py install --version 0.20.1
+python tooling/install_sccache.py smoke
+```
+
+lld is used only after a real C link, a real Rust link and (when a cache is
+available) a workspace link probe succeed; otherwise the fast lane stays on
+BFD. sccache is pinned and installed from crates.io with `--locked`; its
+version/sha256 are recorded in `provenance.json`, and it is never resolved from
+"latest" at runtime. Both are fast-lane optimizations, not evidence inputs.
+
+### Test debuginfo and temp root
+
+`[profile.test] debug = 1` keeps file/line backtraces while shrinking the 100+
+test executables; `dev` builds keep full debuginfo. For a failure that needs
+variables, rerun the single test with `CARGO_PROFILE_TEST_DEBUG=2`.
+
+Long GCC/linker command lines use response files. Keep `ARCHMELD_TEMP` on the
+worktree drive (`_archmeld_temp` is the default when it exists); BFD `ld` on
+Windows rejects `@<path> response-file paths.
+
 
 Offline clean-machine flow (installed bundle; no Cargo, model or network):
 
@@ -30,17 +157,17 @@ Offline clean-machine flow (installed bundle; no Cargo, model or network):
 # One-command onboarding: index, register the workspace root, render MCP
 # configuration and run a real MCP handshake. Source files are not edited
 # unless --write is passed for the AGENTS.md/CLAUDE.md rule block.
-archmeld init --workspace F:/path/to/repo --state F:/state --client claude,codex
+archmeld init --workspace <path> --state <path> --client claude,codex
 
 # One-screen project/change brief (uses the registered workspace root).
-archmeld brief --state F:/state --project project.local --markdown
+archmeld brief --state <path> --project project.local --markdown
 
-archmeld index --workspace F:/path/to/repo --state F:/state --project project.local
-archmeld status --state F:/state --project project.local --workspace F:/path/to/repo
-archmeld review-diff --state F:/state --project project.local --workspace F:/path/to/repo
-archmeld refresh --state F:/state --project project.local --workspace F:/path/to/repo
-archmeld report --state F:/state --project project.local   --snapshot <snapshot_id> --out F:/state/report
-archmeld verify-report --dir F:/state/report
+archmeld index --workspace <path> --state <path> --project project.local
+archmeld status --state <path> --project project.local --workspace <path>
+archmeld review-diff --state <path> --project project.local --workspace <path>
+archmeld refresh --state <path> --project project.local --workspace <path>
+archmeld report --state <path> --project project.local   --snapshot <snapshot_id> --out <path>
+archmeld verify-report --dir <path>
 ```
 
 `archmeld index` also registers the workspace root, so a later `archmeld-mcp`
@@ -58,8 +185,8 @@ The default bundle has no source or trace bytes. Opting in copies them from
 the ledger's CAS and marks the whole bundle sensitive:
 
 ```sh
-archmeld report --state F:/state --project project.local \
-  --snapshot <snapshot_id> --out F:/state/report-with-source \
+archmeld report --state <path> --project project.local \
+  --snapshot <snapshot_id> --out <path> \
   --include-source --include-raw-traces
 ```
 
@@ -77,7 +204,7 @@ before exporting a sensitive bundle.
 Copy a complete ledger to a new location with integrity checks:
 
 ```sh
-archmeld ledger-migrate --from F:/old-state --to F:/new-state \
+archmeld ledger-migrate --from <path> --to <path> \
   --reason "move the evidence ledger to the archive disk"
 ```
 
@@ -90,8 +217,8 @@ sandboxes are not copied.
 Evaluate a numeric predicate directly (no ChangeSet is created):
 
 ```sh
-archmeld numeric-check --state F:/state --root F:/artifacts \
-  --predicate F:/predicates/ulp.json
+archmeld numeric-check --state <path> --root <path> \
+  --predicate <path>
 ```
 
 `mode` may be `absolute_relative` (default), `ulp` (`max_ulps`) or
@@ -110,9 +237,9 @@ Encrypted local backup (passphrase from the environment, never argv):
 
 ```sh
 export ARCHMELD_BACKUP_PASSPHRASE='...'
-archmeld backup --state F:/state --project project.local --out F:/backups/enc
-archmeld verify-backup --dir F:/backups/enc
-archmeld restore-backup --dir F:/backups/enc --target F:/restored-state
+archmeld backup --state <path> --project project.local --out <path>
+archmeld verify-backup --dir <path>
+archmeld restore-backup --dir <path> --target <path>
 ```
 
 The backup uses PBKDF2-HMAC-SHA256 (120k), AES-256-GCM per file and an
@@ -124,11 +251,11 @@ Rotate the passphrase and keep an off-host copy on a mounted path:
 
 ```sh
 export ARCHMELD_BACKUP_NEW_PASSPHRASE='...'
-archmeld rotate-backup --dir F:/backups/enc --out F:/backups/enc-v2
-archmeld verify-backup --dir F:/backups/enc-v2        # with the new passphrase
-archmeld retain-backup --dir F:/backups/enc-v2 \
-  --target F:/mounted-remote/archmeld --retention-id retention.2026-10-31
-archmeld verify-backup --dir F:/mounted-remote/archmeld/retention.2026-10-31
+archmeld rotate-backup --dir <path> --out <path>
+archmeld verify-backup --dir <path>        # with the new passphrase
+archmeld retain-backup --dir <path> \
+  --target <path> --retention-id retention.2026-10-31
+archmeld verify-backup --dir <path>
 ```
 
 Rotation re-encrypts every file with a fresh salt and nonce and records
@@ -142,7 +269,7 @@ Run one scenario against an existing snapshot (the cwd must resolve inside the
 authorized workspace; the grant is explicit):
 
 ```sh
-archmeld scenario --state F:/state --project project.local   --snapshot <snapshot_id> --workspace F:/path/to/repo   --grant-id grant.local.1 --reason "run the project test command" --   python -m pytest -q
+archmeld scenario --state <path> --project project.local   --snapshot <snapshot_id> --workspace <path>   --grant-id grant.local.1 --reason "run the project test command" --   python -m pytest -q
 ```
 
 stdout/stderr artifacts, exit code, timeout and process-tree audit are stored in
@@ -152,8 +279,8 @@ A scenario can run against the captured snapshot instead of the live workspace,
 and optionally inside a pinned container:
 
 ```sh
-archmeld scenario --state F:/state --project project.local \
-  --snapshot <snapshot_id> --workspace F:/path/to/repo \
+archmeld scenario --state <path> --project project.local \
+  --snapshot <snapshot_id> --workspace <path> \
   --grant-id grant.local.1 --reason "run the project test command" \
   --sandbox-mode container --sandbox-include src --sandbox-include tests \
   --sandbox-image debian@sha256:<digest> --sandbox-network none \
@@ -201,15 +328,15 @@ optional and maps only exact locations or explicit probe symbols; counters and
 states never create causal edges.
 
 ```sh
-archmeld trace-import --state F:/state --project project.local \
+archmeld trace-import --state <path> --project project.local \
   --run-id run.pftrace.1 --snapshot <snapshot_id> \
-  --format perfetto --input F:/traces/capture.pftrace \
+  --format perfetto --input <path> \
   --tool perfetto-sdk --tool-version 59.1
 
-archmeld trace-import --state F:/state --project project.local \
+archmeld trace-import --state <path> --project project.local \
   --run-id run.tracy.1 --snapshot <snapshot_id> \
-  --format tracy --tracy-capture F:/traces/capture.tracy \
-  --tracy-csv F:/traces/capture.csv --locator F:/traces/locator.json \
+  --format tracy --tracy-capture <path> \
+  --tracy-csv <path> --locator <path> \
   --tool tracy --tool-version 0.13.1
 ```
 
@@ -236,9 +363,9 @@ See ADR-045.
 Add a hard memory ceiling to an import (applied before the trace is read):
 
 ```sh
-archmeld trace-import --state F:/state --project project.local \
+archmeld trace-import --state <path> --project project.local \
   --run-id run.t3.1 --snapshot <snapshot_id> \
-  --format normalized --input F:/traces/t3.json \
+  --format normalized --input <path> \
   --memory-limit-mb 4096 --tool t3 --tool-version 1
 ```
 
@@ -251,16 +378,16 @@ Poll a workspace for drift against a base snapshot (the watcher never writes the
 workspace):
 
 ```sh
-archmeld watch --state F:/state --project project.local --snapshot <snapshot_id> \
-  --workspace F:/path/to/repo --interval-ms 1000 --iterations 10
+archmeld watch --state <path> --project project.local --snapshot <snapshot_id> \
+  --workspace <path> --interval-ms 1000 --iterations 10
 ```
 
 Omit `--iterations` to run until the process is terminated. The default mode is
 polling. Use `--mode os` to wait for real OS file notifications instead:
 
 ```sh
-archmeld watch --state F:/state --project project.local --snapshot <snapshot_id> \
-  --workspace F:/path/to/repo --mode os --debounce-ms 200 --iterations 10
+archmeld watch --state <path> --project project.local --snapshot <snapshot_id> \
+  --workspace <path> --mode os --debounce-ms 200 --iterations 10
 ```
 
 In OS mode the initial report is always written, each event only wakes the
@@ -279,7 +406,7 @@ Linux release build (pinned image):
 
 ```sh
 MSYS_NO_PATHCONV=1 docker run --rm \
-  -v <repo>:/work -w /work \
+  -v <repo-root>:/work -w /work \
   -e CARGO_TARGET_DIR=/work/target-linux \
   rust:1.94.1-bookworm cargo build --release -p archmeld-api
 ```
@@ -291,8 +418,16 @@ python tooling/package_release.py
 ARCHMELD_VERSION=0.0.9 python tooling/package_release.py   # upgrade drill only
 ARCHMELD_VERSION=0.1.0 python tooling/package_release.py
 python tooling/test_release.py
-python tooling/upstream_delta_drill.py
+python tooling/upstream.py status --remote --json
+python tooling/upstream.py verify --skip-cargo --json
+python tooling/upstream.py drill codegraph --ref <candidate-ref> --run --matrix quick --json
+python tooling/upstream.py rollback-drill codegraph --to 903bfe0a --run --matrix full \
+  --probe-revert 1ca0ae8b --json
 ```
+
+Upgrade and rollback procedures are in
+`docs/upstream/UPGRADE_PLAYBOOK.md` and `docs/upstream/ROLLBACK.md`. The old
+`upstream_delta_drill.py` is superseded by `upstream.py`.
 
 `dist/` is ignored by Git; release-evidence files record exact artifact hashes.
 Artifacts are local and must not be uploaded without an explicit release
@@ -304,8 +439,8 @@ The server binds loopback only. Every request must use a loopback `Host` and mus
 not send `Origin`; bearer tokens are accepted only in `Authorization`.
 
 ```sh
-target/release/archmeld-serve.exe --state <workspace>/_archmeld_state \
-  --allow-workspace F:/path/to/repo --port 0
+target/release/archmeld-serve.exe --state <state-root> \
+  --allow-workspace <workspace> --port 0
 ```
 
 The single stdout control line contains the endpoint and generated token. Do not
@@ -323,7 +458,7 @@ Windows rejects `--unix-socket` explicitly instead of falling back to TCP. Use a
 named pipe there:
 
 ```powershell
-archmeld-serve --state F:/state --named-pipe "\\.\pipe\archmeld" --token <token>
+archmeld-serve --state <path> --named-pipe "\\.\pipe\archmeld" --token <token>
 ```
 
 The pipe uses the default owner/SYSTEM/administrators DACL plus the bearer
@@ -332,8 +467,8 @@ token; a custom security descriptor is not set. See ADR-047 and ADR-048.
 MCP read-only server:
 
 ```sh
-target/release/archmeld-mcp.exe --state <workspace>/_archmeld_state \
-  --project <project_id> --audit <temp>/mcp-audit.jsonl
+target/release/archmeld-mcp.exe --state <state-root> \
+  --project <project_id> --audit <temp-root>/mcp-audit.jsonl
 ```
 
 The MCP surface advertises only handlers this build can execute:
@@ -416,12 +551,13 @@ and never call a partial/unsupported check accepted.
   verification or acceptance. Re-snapshot and review; do not force apply.
 - Missing CAS object: restore from a consistent backup; promotion and reports
   fail closed.
-- Tool missing or wrong version: `tooling/doctor.py` and
-  `toolchains.lock.json` are the source of truth. Do not auto-install from a
-  repository script.
-- Clang/libclang build errors: use the locked toolchain paths in `AGENTS.md`.
-- C: drive pressure: set `TMP/TEMP` and benchmark/temp roots to
-  `<temp>`; `target-linux/` and `dist/` are ignored.
+- Tool missing or wrong version: `tooling/doctor.py`, `toolchains.lock.json`
+  and `tooling/portable_env.py --json` are the source of truth. Do not
+  auto-install from a repository script.
+- Clang/libclang build errors: set `ARCHMELD_LIBCLANG_PATH` (or
+  `ARCHMELD_TOOLS_ROOT`); do not hardcode a local path in product code.
+- C: drive pressure: set `ARCHMELD_TEMP` (and `TMP`/`TEMP` if a child tool needs
+  them); `target-linux/` and `dist/` are ignored.
 
 ## 6. Current release status
 

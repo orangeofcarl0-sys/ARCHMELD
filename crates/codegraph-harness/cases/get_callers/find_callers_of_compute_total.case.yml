@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_get_callers
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 8
     depth: 1
 expect:

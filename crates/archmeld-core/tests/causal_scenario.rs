@@ -19,6 +19,12 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
+mod support;
+
+fn python() -> Option<String> {
+    support::require_program("ARCHMELD_PYTHON", "python.exe")
+}
+
 const P: &str = "project.b016";
 
 fn fixture_dir() -> PathBuf {
@@ -77,6 +83,7 @@ fn entity_json(
 
 #[test]
 fn real_async_handoff_creates_only_the_correlated_observed_edge() {
+    let Some(python) = python() else { return; };
     let dir = tempfile::tempdir().unwrap();
     let root = dir.path().join("repo");
     copy_fixtures(&root);
@@ -200,7 +207,7 @@ fn real_async_handoff_creates_only_the_correlated_observed_edge() {
         snapshot_id: snapshot_id.clone(),
         config_digest: config_digest.clone(),
         argv: vec![
-            "python".into(),
+            python.clone(),
             producer_script.to_string_lossy().into_owned(),
             trace_path.to_string_lossy().into_owned(),
             worker_script.to_string_lossy().into_owned(),
@@ -309,7 +316,7 @@ fn real_async_handoff_creates_only_the_correlated_observed_edge() {
         snapshot_id: snapshot_id.clone(),
         config_digest: config_digest.clone(),
         argv: vec![
-            "python".into(),
+            python.clone(),
             "-c".into(),
             "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); time.sleep(60)".into(),
         ],

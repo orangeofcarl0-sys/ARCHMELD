@@ -490,7 +490,7 @@ describe('VSForge Host Runner Integration', () => {
     it('should open a virtual document', async () => {
       const response = await client.sendRequest({
         type: 'openDocument',
-        uri: 'file:///test/document.ts',
+        uri: 'file://<path>',
         content: 'const x = 1;\nconst y = 2;',
         languageId: 'typescript',
       });
@@ -502,7 +502,7 @@ describe('VSForge Host Runner Integration', () => {
       // Open first
       await client.sendRequest({
         type: 'openDocument',
-        uri: 'file:///test/document.ts',
+        uri: 'file://<path>',
         content: 'const x = 1;',
         languageId: 'typescript',
       });
@@ -510,7 +510,7 @@ describe('VSForge Host Runner Integration', () => {
       // Then close
       const response = await client.sendRequest({
         type: 'closeDocument',
-        uri: 'file:///test/document.ts',
+        uri: 'file://<path>',
       });
 
       expect(response.success).toBe(true);

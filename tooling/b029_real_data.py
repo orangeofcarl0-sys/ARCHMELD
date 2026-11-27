@@ -24,7 +24,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEFAULT_SOURCE_SHA256 = "<redacted>"
+DEFAULT_SOURCE_SHA256 = "2b7cda9a4ab9f7d8672c888c5c803b872a98125dbaec8194d24ce14db8de0201"
 
 
 def sha256(path):
@@ -313,11 +313,11 @@ def main():
             "sha256": source_sha256,
             "bytes": len(source_bytes),
             "rows": len(rows),
-            "selected_columns": [
-                "<redacted-column>",
-                "<redacted-column>",
-                "<redacted-column>",
-                "<redacted-column>",
+            "<selected-columns>": [
+                "model.conditional_SD_mm",
+                "MC.all_output_SD_mm",
+                "model.bias_mm",
+                "MC.all_output_bias_mm",
             ],
         },
         "extraction": {

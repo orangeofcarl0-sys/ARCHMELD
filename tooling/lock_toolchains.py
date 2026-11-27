@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -18,8 +19,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import portable_env as portable
+
 ROOT = Path(__file__).resolve().parents[1]
 PINNED = "1.94.1-x86_64-pc-windows-gnu"
+# cmake is inherited from the old Strawberry tree and is not invoked by the
+# current build (cargo/cc/ninja do the work). Record it as an optional missing
+# tool instead of failing the lock/doctor.
+OPTIONAL_TOOLS = {"cmake"}
 
 # Tool metadata: (display name, executable candidates, version argv, source, license)
 TOOLS = {
@@ -69,9 +76,11 @@ def which_any(candidates: list[str]) -> str | None:
 def tool_entry(name: str, candidates: list[str], version_argv: list[str], source: str, license_id: str) -> dict:
     path = which_any(candidates)
     if path is None:
+        optional = name in OPTIONAL_TOOLS
         return {
             "name": name,
-            "status": "missing",
+            "status": "missing_optional" if optional else "missing",
+            "optional": optional,
             "path": None,
             "version": None,
             "sha256": None,
@@ -94,6 +103,52 @@ def tool_entry(name: str, candidates: list[str], version_argv: list[str], source
         "sha256": file_hash,
         "source": source,
         "license": license_id,
+        "verified": code == 0 and bool(first_line),
+        "probe_exit": code,
+    }
+
+
+SCCACHE_VERSION = "0.20.1"
+
+
+def sccache_entry() -> dict:
+    """Record the pinned sccache binary when installed under the tools root."""
+    candidates: list[Path] = []
+    explicit = os.environ.get("ARCHMELD_SCCACHE")
+    if explicit:
+        candidates.append(Path(explicit))
+    root = portable.tools_root()
+    if root is not None:
+        candidates.extend(
+            sorted((root / "sccache").glob("*/bin/sccache.exe"), reverse=True)
+        )
+    found = shutil.which("sccache")
+    if found:
+        candidates.append(Path(found))
+    path = next((candidate for candidate in candidates if candidate.is_file()), None)
+    if path is None:
+        return {
+            "name": "sccache",
+            "status": "missing_optional",
+            "optional": True,
+            "path": None,
+            "version": None,
+            "sha256": None,
+            "source": "https://github.com/mozilla/sccache",
+            "license": "Apache-2.0",
+            "verified": False,
+        }
+    code, output = run([str(path), "--version"])
+    first_line = output.splitlines()[0] if output else ""
+    return {
+        "name": "sccache",
+        "status": "present",
+        "optional": True,
+        "path": str(path),
+        "version": first_line,
+        "sha256": sha256(path),
+        "source": "https://github.com/mozilla/sccache",
+        "license": "Apache-2.0",
         "verified": code == 0 and bool(first_line),
         "probe_exit": code,
     }
@@ -184,17 +239,22 @@ def rust_entries() -> list[dict]:
 
 
 def libclang_entry() -> dict:
-    path = Path(r"<workspace>\_archmeld_tools\pylibclang\clang\native")
+    path = portable.libclang_path()
     dll = None
-    for candidate in ("libclang.dll", "libclang.so", "libclang.dylib"):
-        if (path / candidate).exists():
-            dll = path / candidate
-            break
+    if path is not None:
+        if path.is_file():
+            dll = path
+            path = path.parent
+        else:
+            for candidate in ("libclang.dll", "libclang.so", "libclang.dylib"):
+                if (path / candidate).exists():
+                    dll = path / candidate
+                    break
     if dll is None:
         return {
             "name": "libclang",
             "status": "missing",
-            "path": str(path),
+            "path": None,
             "version": None,
             "sha256": None,
             "source": "https://pypi.org/project/libclang/",
@@ -221,6 +281,68 @@ def docker_image_digest() -> str | None:
     return output if code == 0 else None
 
 
+def annotate_portable(lock: dict) -> None:
+    """Add environment-resolvable fields without removing the observed path."""
+    lock["lock_version"] = "1.1"
+    for tool in lock.get("tools", []):
+        path = tool.get("path")
+        tool["observed_path"] = path
+        tool["path_kind"] = "directory" if path and Path(path).is_dir() else "file"
+        name = tool.get("name", "")
+        if name in {"rustc-pinned-gnu", "cargo-pinned-gnu", "rust-analyzer-pinned"}:
+            tool["strategy"] = "rustup_which"
+            tool["strategy_args"] = {
+                "toolchain": PINNED,
+                "tool": name.replace("-pinned-gnu", "").replace("-pinned", ""),
+            }
+            tool["path_env"] = "RUSTUP_HOME"
+            tool["relative_path"] = (
+                f"toolchains/{PINNED}/bin/{Path(path).name}" if path else None
+            )
+        elif name == "python":
+            local_python = (
+                Path(os.environ.get("LOCALAPPDATA", ""))
+                / "Programs/Python/Python311"
+                / Path(path).name
+                if path
+                else None
+            )
+            if (
+                path
+                and local_python is not None
+                and local_python.is_file()
+                and local_python.resolve() == Path(path).resolve()
+            ):
+                tool["strategy"] = "env_file"
+                tool["path_env"] = "LOCALAPPDATA"
+                tool["relative_path"] = f"Programs/Python/Python311/{Path(path).name}"
+            else:
+                # `which python` found a different interpreter (e.g. MSYS2
+                # 3.14); record it as a PATH-resolved tool so doctor checks the
+                # same bytes instead of the system Python311.
+                tool["strategy"] = "which"
+                tool["which_name"] = "python"
+                tool["relative_path"] = Path(path).name if path else None
+        elif name in {"gcc", "gxx"}:
+            tool["strategy"] = "env_file"
+            tool["path_env"] = "ARCHMELD_MINGW_BIN"
+            tool["relative_path"] = Path(path).name if path else None
+        elif name in {"cmake", "ninja"}:
+            tool["strategy"] = "which"
+            tool["which_name"] = name
+            tool["relative_path"] = Path(path).name if path else None
+        elif name == "libclang":
+            tool["strategy"] = "env_file"
+            tool["path_env"] = "ARCHMELD_TOOLS_ROOT"
+            tool["relative_path"] = "pylibclang/clang/native/libclang.dll"
+        else:
+            tool["strategy"] = "which"
+            tool["which_name"] = {
+                "rustc-default-outside-repo": "rustc",
+                "cargo-default-outside-repo": "cargo",
+            }.get(name, name)
+
+
 def main() -> int:
     lock = {
         "lock_version": "1.0",
@@ -239,19 +361,32 @@ def main() -> int:
             "codegraph_commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
             "codeboarding_commit": "a38a8d157150e78cee4e4c0f3f0646a4ae9ed938",
         },
-        "tools": [tool_entry(name, *spec) for name, spec in TOOLS.items()] + rust_entries() + [libclang_entry()],
+        "tools": [tool_entry(name, *spec) for name, spec in TOOLS.items()]
+        + rust_entries()
+        + [libclang_entry(), sccache_entry()],
         "container": {
             "image": "rust:1.94.1-bookworm",
             "digest": docker_image_digest(),
-            "use": "Linux x64 baseline because RocksDB crashes under Windows GNU",
+            "use": "Linux x64 baseline for Ubuntu host parity; Windows GNU/UCRT64 RocksDB lib passes 59/59",
         },
     }
 
+    annotate_portable(lock)
     used = [entry["name"] for entry in lock["tools"] if entry["status"] == "present"]
-    missing = [entry["name"] for entry in lock["tools"] if entry["status"] != "present"]
+    missing = [
+        entry["name"]
+        for entry in lock["tools"]
+        if entry["status"] != "present" and not entry.get("optional")
+    ]
+    missing_optional = [
+        entry["name"]
+        for entry in lock["tools"]
+        if entry["status"] == "missing_optional"
+    ]
     lock["summary"] = {
         "present": used,
         "missing": missing,
+        "missing_optional": missing_optional,
         "verified": all(
             entry["verified"] for entry in lock["tools"] if entry["status"] == "present"
         ),
@@ -271,11 +406,12 @@ def main() -> int:
                 "evidence": {
                     "build": "passed (codegraph-server built with --locked)",
                     "in_memory_tests": "passed (codegraph --lib --no-default-features: 40 tests)",
-                    "default_backend_tests": "failed: storage::rocksdb_backend::tests::test_delete crashes with STATUS_ACCESS_VIOLATION (0xC0000005)",
+                    "default_backend_tests": "passed: codegraph --lib (default rocksdb-backend) 59/59, including storage::rocksdb_backend::tests::test_delete (UCRT64 GCC 16.1.0, 2026-11-27)",
                     "state_root_isolation": "passed: codegraph-server --info --archmeld-state-root writes no ~/.codegraph (tests/archmeld_state_root.rs)",
-                    "cause": "RocksDB win32 port is MSVC-targeted; the MinGW runtime is not supported by upstream",
+                    "server_lib_tests": "passed: 426 passed / 0 failed / 1 ignored after the Windows fixture fix (UCRT64 16.1.0, 2026-11-27); the 5 ms ai_query timing test can still flake in debug builds",
+                    "cause": "the historical 0xC0000005 was a Strawberry/winlibs GCC 13.2.0 runtime mismatch; current UCRT64 GCC 16.1.0 passes",
                 },
-                "usage": "core/SQLite/parsers and memory-backend probes; not the persistent graph backend",
+                "usage": "core/SQLite/parsers and persistent graph backend lib tests; the full codegraph integration/doctest suite was not re-run on Windows",
             },
             {
                 "id": "linux-x64-bookworm-container",
@@ -296,7 +432,7 @@ def main() -> int:
                 "toolchain": "1.94.1-x86_64-pc-windows-msvc",
                 "status": "unavailable",
                 "evidence": {"cause": "Visual Studio Build Tools and Windows SDK are not installed on this machine"},
-                "note": "Required before Windows-native RocksDB or product delivery; installing it is a separate authorization step.",
+                "note": "Optional: not required for the current Windows GNU/RocksDB path (UCRT64 16.1.0 passes); only needed for a future MSVC-native delivery, which is untested.",
             },
         ],
     }

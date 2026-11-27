@@ -11,13 +11,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import platform
 import shutil
 import sqlite3
 import subprocess
 import sys
-import tempfile
 import time
 from pathlib import Path
 
@@ -26,13 +24,17 @@ LOGS = ROOT / "baseline" / "logs"
 COMMANDS = ROOT / "baseline" / "commands.ndjson"
 EVIDENCE = ROOT / "docs" / "release-evidence" / "B016-native-traces.json"
 FIXTURES = ROOT / "adapters" / "traces" / "fixtures"
-TOOLS = Path("<workspace>/_archmeld_tools")
+
+import build_helper
+import portable_env as portable
+
+TOOLS = portable.tools_root()
+if TOOLS is None:
+    raise SystemExit("ARCHMELD_TOOLS_ROOT is required for B016 trace evidence")
 PERFETTO = TOOLS / "perfetto"
 TRACY = TOOLS / "tracy"
 
-ENV = dict(os.environ)
-ENV["RUSTUP_TOOLCHAIN"] = "1.94.1-x86_64-pc-windows-gnu"
-ENV["PATH"] = "D:/Strawberry/c/bin;" + ENV.get("PATH", "")
+ENV = build_helper.cargo_env()
 RECORDED: list[dict] = []
 
 
@@ -139,9 +141,7 @@ def main() -> None:
     if not helper.is_file():
         raise SystemExit("build `cargo build -p codegraph-server --example archmeld_export` first")
 
-    work = Path("<temp>/b016_trace_evidence")
-    if work.exists():
-        shutil.rmtree(work)
+    work = portable.temp_dir("b016-trace-evidence-")
     bin_dir = work / "bin"
     bin_dir.mkdir(parents=True)
 

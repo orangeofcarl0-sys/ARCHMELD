@@ -99,7 +99,7 @@
         "state": "passed",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stdout_digest": "sha256:554dcd2b69468f765c93002a45cb53e44cc8f0dfb15f716e9360c101b373c00d",
-        "tool": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+        "tool": "<path> Files/Google/Chrome/Application/chrome.exe"
       },
       "snapshot_id": "sha256:f1bc94fd6a404ed57130b7e9eb78da1fce7dbbfc2c2feb02435323148142279c",
       "status": "passed",
@@ -147,7 +147,7 @@
         "database_problems": [],
         "hash_mismatches": [],
         "missing": [],
-        "store_root": "<user>\\AppData\\Local\\Temp\\.tmper6wWi\\state"
+        "store_root": "<path><identity><temp>"
       },
       "plan_status": "approved",
       "project_id": "project.25a2d036bd1995379ce8dc4888917ef1",

@@ -17,22 +17,32 @@
 | `docs/archmeld/execution/work-items.json` | B000–B032 任务图 |
 | `docs/archmeld/templates/PROGRESS.md` | 进度交接格式 |
 
-## 本机（Windows）构建说明
+## 构建环境解析
 
-本机没有 MSVC 链接器与 Windows SDK，使用上游固定的 Rust 1.94.1 的 GNU host：
+本机没有 MSVC 链接器与 Windows SDK，使用上游固定的 Rust 1.94.1 的 GNU host。工具链位置不写死在代码里，由 `tooling/portable_env.py` 解析：
 
 ```sh
-export LIBCLANG_PATH='<workspace>\_archmeld_tools\pylibclang\clang\native'
+export ARCHMELD_TOOLS_ROOT=<tools-root>
+export ARCHMELD_TEMP=<temp-root>
+# 可选：MinGW 运行时目录；也可由 gcc -print-file-name=include 自动发现
+export ARCHMELD_STRAWBERRY_BIN=<mingw-bin>
 cargo +1.94.1-x86_64-pc-windows-gnu <command> --locked
 ```
 
+- 解析顺序：显式参数 → `ARCHMELD_*` → 标准环境变量 → 仓库同级 `_archmeld_*`（仅当存在）→ 系统默认。`python tooling/portable_env.py --json` 可查看实际解析结果。
 - 这是同一上游版本（1.94.1）的不同 host 目标，不改变 `rust-toolchain.toml` 的版本锁定；如需 MSVC 基线须另装 Build Tools 后重测。
-- `LIBCLANG_PATH`（libclang 18.1.1，来自 PyPI `libclang`，本地解压目录）仅用于 RocksDB 的 bindgen；不得把该路径写死进产品代码。
+- `LIBCLANG_PATH`（libclang 18.1.1，来自 PyPI `libclang`，本地解压目录）仅用于 RocksDB 的 bindgen；不得把该路径写死进产品代码。未设置时由 `ARCHMELD_LIBCLANG_PATH`/`ARCHMELD_TOOLS_ROOT/pylibclang/clang/native` 解析。
 - 所有命令通过 `python baseline/run_cmd.py` 执行并追加记录到 `baseline/commands.ndjson`（cwd、argv、退出码、耗时、工具版本、日志哈希）。
-- 编译器临时目录必须留在 F 盘：记录器默认把 `TMP`/`TEMP`/`TMPDIR` 指向 `<temp>`（可用同名环境变量覆盖）。C 盘空间紧张时不要在其上解压工具链或构建产物。
+- 编译器临时目录由 `ARCHMELD_TEMP` 决定；未设置时回退 `TMP`/`TEMP`/`TMPDIR`，再回退系统临时目录。C 盘空间紧张时显式设置 `ARCHMELD_TEMP`，不要在其上解压工具链或构建产物。
+
+## 公开快照纪律
+
+- 公开仓库只接收 `tooling/public_snapshot.py export` 生成、并通过 `verify-export` 的单提交快照；不得直接 push 私有历史。
+- 本地路径、用户名、远程主机和私有数据集标识由扫描/替换流程处理；私有替换表放在未跟踪的 `.archmeld-private/`。
 
 ## 上游改动纪律
 
+- CodeGraph 只接收 release：git tag（如 `vX.Y.Z`）或带 release notes 的版本发布提交；禁止把 `upstream/main` 等分支头作为更新来源或直接合并。无 tag 的 release 提交（0.21.2）必须在 `upstreams.lock.json` 显式记录例外。
 - 保留上游 `LICENSE`、`NOTICE`、测试与配置；不删除失败测试。
 - 每处上游改动写入 `UPSTREAM_PATCHES.md`（必要性、路径、是否回馈 upstream、回归 AT）。
 - 不运行 `git reset --hard` / `git clean -fd`；不覆盖用户的未提交改动。

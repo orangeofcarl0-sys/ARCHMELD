@@ -22,7 +22,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-const SCHEMA_VERSION: i64 = 18;
+const SCHEMA_VERSION: i64 = 19;
 
 pub(crate) fn now_unix() -> i64 {
     SystemTime::now()
@@ -307,6 +307,16 @@ impl Store {
             tx.pragma_update(None, "user_version", 18)?;
             tx.commit()?;
         }
+        if version < 19 {
+            let tx = self.conn.transaction()?;
+            tx.execute_batch(include_str!("migrations/0019_evidence_model.sql"))?;
+            tx.execute(
+                "INSERT INTO schema_migrations (version, applied_at) VALUES (19, ?1)",
+                (now_unix(),),
+            )?;
+            tx.pragma_update(None, "user_version", 19)?;
+            tx.commit()?;
+        }
         Ok(())
     }
 
@@ -448,8 +458,8 @@ impl Store {
         for file in &insert.files {
             tx.execute(
                 "INSERT INTO files
-                 (project_id, snapshot_id, path, blob_digest, size_bytes, role, origin, executable)
-                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8)",
+                 (project_id, snapshot_id, path, blob_digest, size_bytes, role, origin, executable, git_blob)
+                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)",
                 (
                     &insert.project_id,
                     &insert.snapshot_id,
@@ -459,6 +469,7 @@ impl Store {
                     file.role.as_str(),
                     file.origin.as_str(),
                     if file.executable { 1 } else { 0 },
+                    file.git_blob.as_deref(),
                 ),
             )?;
         }
@@ -950,6 +961,81 @@ impl Store {
         Ok(value.max(0) as u64)
     }
 
+    /// Persist the provenance of one index run. This is separate from the
+    /// snapshot because capture happens before parsing.
+    pub fn insert_index_run(&mut self, record: &serde_json::Value) -> Result<()> {
+        let field = |key: &str| record.get(key);
+        let empty = serde_json::json!({});
+        let encode = |value: Option<&serde_json::Value>| {
+            serde_json::to_string(value.unwrap_or(&empty)).unwrap_or_else(|_| "{}".to_string())
+        };
+        self.conn.execute(
+            "INSERT OR REPLACE INTO index_runs
+             (project_id, snapshot_id, run_id, cli_commit, cli_dirty, helper_commit,
+              helper_dirty, export_schema, index_config_json, parse_json, transport_json,
+              coverage_json, created_at)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)",
+            (
+                field("project_id").and_then(|v| v.as_str()).unwrap_or(""),
+                field("snapshot_id").and_then(|v| v.as_str()).unwrap_or(""),
+                field("run_id").and_then(|v| v.as_str()).unwrap_or(""),
+                field("cli_commit").and_then(|v| v.as_str()),
+                if field("cli_dirty").and_then(|v| v.as_bool()).unwrap_or(false) {
+                    1
+                } else {
+                    0
+                },
+                field("helper_commit").and_then(|v| v.as_str()),
+                field("helper_dirty")
+                    .and_then(|v| v.as_bool())
+                    .map(|value| if value { 1 } else { 0 }),
+                field("export_schema").and_then(|v| v.as_str()),
+                encode(field("index_config")),
+                encode(field("parse")),
+                encode(field("transport")),
+                encode(field("coverage")),
+                now_unix(),
+            ),
+        )?;
+        Ok(())
+    }
+
+    pub fn latest_index_run(
+        &self,
+        project_id: &str,
+        snapshot_id: &str,
+    ) -> Result<Option<serde_json::Value>> {
+        let mut statement = self.conn.prepare(
+            "SELECT cli_commit, cli_dirty, helper_commit, helper_dirty, export_schema,
+                    index_config_json, parse_json, transport_json, coverage_json, created_at
+             FROM index_runs WHERE project_id=?1 AND snapshot_id=?2
+             ORDER BY created_at DESC, rowid DESC LIMIT 1",
+        )?;
+        let mut rows = statement.query((project_id, snapshot_id))?;
+        let Some(row) = rows.next()? else {
+            return Ok(None);
+        };
+        let parse_json: String = row.get(6)?;
+        let transport_json: String = row.get(7)?;
+        let coverage_json: String = row.get(8)?;
+        Ok(Some(serde_json::json!({
+            "cli_commit": row.get::<_, Option<String>>(0)?,
+            "cli_dirty": row.get::<_, i64>(1)? != 0,
+            "helper_commit": row.get::<_, Option<String>>(2)?,
+            "helper_dirty": row.get::<_, Option<i64>>(3)?.map(|value| value != 0),
+            "export_schema": row.get::<_, Option<String>>(4)?,
+            "index_config": serde_json::from_str::<serde_json::Value>(&row.get::<_, String>(5)?)
+                .unwrap_or_else(|_| serde_json::json!({})),
+            "parse": serde_json::from_str::<serde_json::Value>(&parse_json)
+                .unwrap_or_else(|_| serde_json::json!({})),
+            "transport": serde_json::from_str::<serde_json::Value>(&transport_json)
+                .unwrap_or_else(|_| serde_json::json!({})),
+            "coverage": serde_json::from_str::<serde_json::Value>(&coverage_json)
+                .unwrap_or_else(|_| serde_json::json!({})),
+            "created_at": row.get::<_, i64>(9)?,
+        })))
+    }
+
     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {
         Ok(self.conn.query_row(
             "SELECT COALESCE(MAX(sequence)+1, 0) FROM events WHERE project_id=?1",
@@ -970,4 +1056,92 @@ fn snapshot_identity(value: &serde_json::Value) -> Result<String> {
     }
     hash::canonical_json(&identity)
         .map_err(|err| CoreError::invalid(format!("snapshot identity: {err}")))
+}
+
+#[cfg(test)]
+mod schema_tests {
+    use super::*;
+
+    const MIGRATIONS: &[(i64, &str)] = &[
+        (1, include_str!("migrations/0001_init.sql")),
+        (2, include_str!("migrations/0002_jobs_events.sql")),
+        (3, include_str!("migrations/0003_event_retention.sql")),
+        (4, include_str!("migrations/0004_project_lifecycle.sql")),
+        (5, include_str!("migrations/0005_workspace_handles.sql")),
+        (6, include_str!("migrations/0006_runtime.sql")),
+        (7, include_str!("migrations/0007_scenarios.sql")),
+        (8, include_str!("migrations/0008_runtime_causal.sql")),
+        (9, include_str!("migrations/0009_interpretation.sql")),
+        (10, include_str!("migrations/0010_plans.sql")),
+        (11, include_str!("migrations/0011_changesets.sql")),
+        (12, include_str!("migrations/0012_apply_journal.sql")),
+        (13, include_str!("migrations/0013_verification.sql")),
+        (14, include_str!("migrations/0014_instigator.sql")),
+        (15, include_str!("migrations/0015_drift_backup.sql")),
+        (16, include_str!("migrations/0016_retention.sql")),
+        (17, include_str!("migrations/0017_runtime_metrics.sql")),
+        (18, include_str!("migrations/0018_scenario_trace_link.sql")),
+    ];
+
+    #[test]
+    fn a_version_18_ledger_upgrades_to_19() {
+        let dir = std::env::temp_dir().join(format!(
+            "archmeld-schema-{}-{}",
+            std::process::id(),
+            now_unix()
+        ));
+        fs::create_dir_all(&dir).unwrap();
+        let db = dir.join("state.sqlite3");
+        {
+            let conn = Connection::open(&db).unwrap();
+            for (version, sql) in MIGRATIONS {
+                conn.execute_batch(sql).unwrap();
+                conn.execute(
+                    "INSERT INTO schema_migrations (version, applied_at) VALUES (?1, 0)",
+                    (version,),
+                )
+                .unwrap();
+                conn.pragma_update(None, "user_version", *version)
+                    .unwrap();
+            }
+        }
+        let store = Store::open(&dir).unwrap();
+        let version: i64 = store
+            .conn
+            .query_row("PRAGMA user_version", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(version, 19);
+        let entity_columns: Vec<String> = store
+            .conn
+            .prepare("PRAGMA table_info(entities)")
+            .unwrap()
+            .query_map([], |row| row.get::<_, String>(1))
+            .unwrap()
+            .filter_map(|row| row.ok())
+            .collect();
+        assert!(entity_columns.iter().any(|column| column == "role"));
+        let relation_columns: Vec<String> = store
+            .conn
+            .prepare("PRAGMA table_info(relations)")
+            .unwrap()
+            .query_map([], |row| row.get::<_, String>(1))
+            .unwrap()
+            .filter_map(|row| row.ok())
+            .collect();
+        for column in ["call_site_line", "producer_resolution", "occurrence_count"] {
+            assert!(relation_columns.iter().any(|item| item == column));
+        }
+        let file_columns: Vec<String> = store
+            .conn
+            .prepare("PRAGMA table_info(files)")
+            .unwrap()
+            .query_map([], |row| row.get::<_, String>(1))
+            .unwrap()
+            .filter_map(|row| row.ok())
+            .collect();
+        assert!(file_columns.iter().any(|column| column == "git_blob"));
+        assert!(store.table_exists("index_runs").unwrap_or(false));
+        drop(store);
+        let _ = fs::remove_dir_all(&dir);
+    }
 }

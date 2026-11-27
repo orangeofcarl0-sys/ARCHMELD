@@ -773,9 +773,11 @@ mod tests {
     fn test_project_data_dir_format() {
         // Uses a path that exists so canonicalize works
         let dir = project_data_dir(Path::new("/tmp")).unwrap();
-        let dir_str = dir.to_string_lossy();
 
-        assert!(dir_str.contains(".codegraph/projects/"));
+        // Compare path components instead of a forward-slash substring: on
+        // Windows the same layout is rendered with `\` separators.
+        let projects = codegraph_home_dir().unwrap().join("projects");
+        assert_eq!(dir.parent(), Some(projects.as_path()));
         // Should end with slug containing "tmp" (or "private" on macOS due to canonicalize)
         // and a 4-char hex suffix
         let slug = dir.file_name().unwrap().to_string_lossy();

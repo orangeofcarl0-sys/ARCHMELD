@@ -14,6 +14,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+mod support;
+
 const PROJECT: &str = "project.rustpack";
 
 fn definition_until(
@@ -48,10 +50,7 @@ fn definition_until(
 }
 
 fn rust_analyzer() -> Option<PathBuf> {
-    let home = std::env::var_os("USERPROFILE")?;
-    let path = PathBuf::from(home)
-        .join(".rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/rust-analyzer.exe");
-    path.is_file().then_some(path)
+    support::rust_tool("rust-analyzer")
 }
 
 fn copy_dir(source: &Path, destination: &Path) {
@@ -87,8 +86,7 @@ fn has_edits(edit: &Value) -> bool {
 }
 
 fn cargo_check(root: &Path, features: &[&str]) -> i32 {
-    let cargo = PathBuf::from(std::env::var_os("USERPROFILE").unwrap())
-        .join(".rustup/toolchains/1.94.1-x86_64-pc-windows-gnu/bin/cargo.exe");
+    let cargo = support::rust_tool("cargo").expect("cargo from rustup or PATH");
     let mut command = std::process::Command::new(cargo);
     command.arg("check").arg("--offline").current_dir(root);
     if !features.is_empty() {
@@ -157,7 +155,7 @@ fn rust_analyzer_trait_cfg_macro_and_function_pointer() {
             initialization_options: None,
         },
         &SpawnPermission::grant("grant.b014", "Rust language pack test"),
-        &PathBuf::from("<temp>/rust-audit.ndjson"),
+        &support::audit_path(&root, "rust-audit"),
     )
     .expect("rust-analyzer start");
     session.initialize(&root).expect("initialize");

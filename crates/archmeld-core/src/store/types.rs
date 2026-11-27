@@ -98,6 +98,7 @@ pub enum FileRole {
     Generated,
     Protocol,
     Test,
+    Vendored,
     Other,
 }
 
@@ -109,6 +110,7 @@ impl FileRole {
             Self::Generated => "generated",
             Self::Protocol => "protocol",
             Self::Test => "test",
+            Self::Vendored => "vendored",
             Self::Other => "other",
         }
     }
@@ -143,6 +145,10 @@ pub struct FileEntry {
     pub role: FileRole,
     pub executable: bool,
     pub origin: FileOrigin,
+    /// Git index blob for a tracked file whose working bytes equal HEAD after
+    /// the checkout's filters. Untracked/dirty files carry `None`.
+    #[serde(default)]
+    pub git_blob: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -163,6 +169,70 @@ pub enum EntityKind {
     External,
 }
 
+impl EntityKind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::File => "file",
+            Self::Module => "module",
+            Self::Symbol => "symbol",
+            Self::Type => "type",
+            Self::Callsite => "callsite",
+            Self::Component => "component",
+            Self::Process => "process",
+            Self::Thread => "thread",
+            Self::Task => "task",
+            Self::Queue => "queue",
+            Self::Resource => "resource",
+            Self::Boundary => "boundary",
+            Self::External => "external",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum EntityRole {
+    Source,
+    Config,
+    Generated,
+    Protocol,
+    Test,
+    Vendored,
+    External,
+    Other,
+}
+
+impl EntityRole {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Source => "source",
+            Self::Config => "config",
+            Self::Generated => "generated",
+            Self::Protocol => "protocol",
+            Self::Test => "test",
+            Self::Vendored => "vendored",
+            Self::External => "external",
+            Self::Other => "other",
+        }
+    }
+
+    pub fn from_file_role(role: FileRole) -> Self {
+        match role {
+            FileRole::Source => Self::Source,
+            FileRole::Config => Self::Config,
+            FileRole::Generated => Self::Generated,
+            FileRole::Protocol => Self::Protocol,
+            FileRole::Test => Self::Test,
+            FileRole::Vendored => Self::Vendored,
+            FileRole::Other => Self::Other,
+        }
+    }
+}
+
+fn default_entity_role() -> EntityRole {
+    EntityRole::Other
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Entity {
@@ -176,6 +246,8 @@ pub struct Entity {
     pub anchors: Vec<Anchor>,
     pub external: bool,
     pub backend_refs: Vec<BackendRef>,
+    #[serde(default = "default_entity_role")]
+    pub role: EntityRole,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -320,6 +392,59 @@ pub enum Resolution {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProducerResolution {
+    /// Upstream matched only the simple name.
+    NameMatch,
+    /// Upstream resolved the reference across files.
+    CrossFileResolution,
+    /// Upstream marked the call direct.
+    Direct,
+    /// Declared structural relation; no call resolution applies.
+    Declared,
+}
+
+impl ProducerResolution {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::NameMatch => "name_match",
+            Self::CrossFileResolution => "cross_file_resolution",
+            Self::Direct => "direct",
+            Self::Declared => "declared",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum EvidenceScope {
+    /// The evidence artifact covers the whole export; no site is recorded.
+    Artifact,
+    /// The relation carries a call-site line/path in the snapshot.
+    Site,
+}
+
+impl EvidenceScope {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Artifact => "artifact",
+            Self::Site => "site",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CallSite {
+    #[serde(default)]
+    pub path: Option<String>,
+    #[serde(default)]
+    pub line: Option<u64>,
+    #[serde(default)]
+    pub column: Option<u64>,
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Relation {
@@ -334,6 +459,18 @@ pub struct Relation {
     pub evidence_ids: Vec<String>,
     pub conditions: Vec<String>,
     pub resolution: Resolution,
+    #[serde(default)]
+    pub call_site: Option<CallSite>,
+    #[serde(default = "default_occurrences")]
+    pub occurrences: u64,
+    #[serde(default)]
+    pub producer_resolution: Option<ProducerResolution>,
+    #[serde(default)]
+    pub evidence_scope: Option<EvidenceScope>,
+}
+
+fn default_occurrences() -> u64 {
+    1
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]

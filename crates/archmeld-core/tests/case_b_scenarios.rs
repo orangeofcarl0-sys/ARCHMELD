@@ -12,11 +12,20 @@ use std::fs;
 use std::path::Path;
 use std::time::Duration;
 
+mod support;
+
+fn python() -> String {
+    support::require_tool("ARCHMELD_PYTHON", "python.exe")
+        .expect("python")
+        .to_string_lossy()
+        .to_string()
+}
+
 fn run(mode: &str) -> Value {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples/case-b");
     let capture = run_command_capture(
         &[
-            "python".to_string(),
+            python(),
             "scenarios.py".to_string(),
             mode.to_string(),
         ],
@@ -34,7 +43,7 @@ fn run(mode: &str) -> Value {
     );
     let value: Value = serde_json::from_slice(&capture.stdout).unwrap();
     json!({
-        "argv": ["python", "scenarios.py", mode],
+        "argv": [python(), "scenarios.py", mode],
         "cwd": root.to_string_lossy(),
         "exit_code": capture.exit_code,
         "timed_out": capture.timed_out,
@@ -48,6 +57,9 @@ fn run(mode: &str) -> Value {
 
 #[test]
 fn case_b_scenarios_expose_backpressure_cancellation_and_disconnect() {
+    if support::require_tool("ARCHMELD_PYTHON", "python.exe").is_none() {
+        return;
+    }
     let mut scenarios = Map::new();
 
     let normal = run("normal");

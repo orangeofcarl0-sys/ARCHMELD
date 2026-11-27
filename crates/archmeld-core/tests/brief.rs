@@ -367,3 +367,27 @@ fn a_map_brief_keeps_brief_state_separate_from_map_health() {
     assert_eq!(brief["map"]["state"], "invalid", "{brief}");
     assert_eq!(brief["semantic_claims"], "unverified", "{brief}");
 }
+
+#[test]
+fn auto_brief_reviews_the_workspace_once_and_reports_timings() {
+    let fixture = setup();
+    let brief = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Auto,
+        },
+    )
+    .unwrap();
+    assert_eq!(brief["timings"]["review_calls"], 1, "{brief}");
+    assert!(
+        brief["timings"]["review_ms"].as_u64().is_some(),
+        "review_ms must be recorded: {brief}"
+    );
+    // The auto recipe must not report a stale change after its single review.
+    if brief["state"] == "ok" {
+        assert_eq!(brief["counts"]["stale"], 0, "{brief}");
+    }
+}

@@ -5,7 +5,7 @@ setup:
 invoke:
   tool: codegraph_get_ai_context
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 8
     intent: debug
 expect:
@@ -43,7 +43,7 @@ expect:
           start:
             character: 0
             line: 9
-        uri: file://${fixture}
+        uri: file://<path>
       name: compute_total
       type: function
     relatedSymbols:
@@ -60,7 +60,7 @@ expect:
           start:
             character: 0
             line: 18
-        uri: file://${fixture}
+        uri: file://<path>
       name: apply_discount
       relationship: call_chain_depth_0
       relevanceScore: 1.0
@@ -76,7 +76,7 @@ expect:
           start:
             character: 0
             line: 24
-        uri: file://${fixture}
+        uri: file://<path>
       name: final_price
       relationship: call_chain_depth_1
       relevanceScore: 0.9
@@ -93,7 +93,7 @@ expect:
           start:
             character: 0
             line: 4
-        uri: file://${fixture}
+        uri: file://<path>
       name: Order
       relationship: data_flow
       relevanceScore: 0.8
@@ -121,4 +121,4 @@ expect:
           start:
             character: 0
             line: 18
-        uri: file://${fixture}
+        uri: file://<path>

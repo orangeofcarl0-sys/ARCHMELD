@@ -40,10 +40,10 @@ VS Code 扩展 **37 passed / 0 failed**。
 ## 回归命令
 
 ```text
-TEMP/TMP = <user>/AppData/Local/Temp
-PATH     = <user>/AppData/Local/Programs/Python/Python311;...
+TEMP/TMP = <path><identity><temp>
+PATH     = <path><identity>/AppData/Local/Programs/Python/Python311;...
 toolchain = 1.94.1-x86_64-pc-windows-gnu
-cwd      = <repo>
+cwd      = <path>
 argv     = cargo test --offline --no-fail-fast -p archmeld-core -p archmeld-api
 exit     = 0
 result   = 201 passed / 0 failed / 0 ignored / 73 sections
@@ -54,7 +54,7 @@ log      = sha256:9894aa1a52cccd63a505aa2280b36198159667cd12d205277680c7c3f1cdde
 （日志 sha256:52765088e7536981936bf8328fcfe3ef324de33fbfaf7efa4deedfbf0c13409f）。
 
 环境说明：使用 Python 3.14 会让旧的 asyncio 夹具循环导入；系统
-`C:\Windows\TEMP` 不可写会让 JFR 和 gopls 失败。上述最终回归使用 Python
+`<path> 不可写会让 JFR 和 gopls 失败。上述最终回归使用 Python
 3.11.9 和可写 TEMP/TMP，失败项均单独复跑通过；这不是代码修复。
 
 

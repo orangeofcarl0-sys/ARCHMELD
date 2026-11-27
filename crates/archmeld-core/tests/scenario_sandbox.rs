@@ -12,6 +12,12 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+mod support;
+
+fn python() -> Option<String> {
+    support::require_program("ARCHMELD_PYTHON", "python.exe")
+}
+
 const P: &str = "project.scenario.sandbox";
 
 struct Fixture {
@@ -102,6 +108,7 @@ fn container(image: String, cwd: Option<&str>) -> ScenarioSandbox {
 
 #[test]
 fn snapshot_copy_ignores_live_workspace_changes() {
+    let Some(python) = python() else { return; };
     let fixture = setup();
     fs::write(fixture.root.join("src/app.py"), "MARK = 'live'\n").unwrap();
     fs::write(fixture.root.join("src/live_only.txt"), "live\n").unwrap();
@@ -119,7 +126,7 @@ fn snapshot_copy_ignores_live_workspace_changes() {
         &spec(
             &fixture,
             "run.copy",
-            vec!["python".into(), "-c".into(), script.into()],
+            vec![python.clone(), "-c".into(), script.into()],
             Duration::from_secs(30),
             Some(ScenarioSandbox {
                 mode: "workspace_copy".into(),
@@ -152,6 +159,7 @@ fn snapshot_copy_ignores_live_workspace_changes() {
 
 #[test]
 fn sandbox_declarations_that_cannot_be_enforced_are_rejected() {
+    let Some(python) = python() else { return; };
     let fixture = setup();
     let mut store = Store::open(&fixture.state).unwrap();
     let pinned = format!("debian@sha256:{}", "a".repeat(64));
@@ -240,7 +248,7 @@ fn sandbox_declarations_that_cannot_be_enforced_are_rejected() {
             &spec(
                 &fixture,
                 "run.invalid",
-                vec!["python".into(), "-c".into(), "print(1)".into()],
+                vec![python.clone(), "-c".into(), "print(1)".into()],
                 Duration::from_secs(5),
                 Some(sandbox),
             ),

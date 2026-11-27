@@ -1,0 +1,89 @@
+{
+ "schema_version": "1.0",
+ "derived_from": "status2.json",
+ "project_id": "archmeld.self",
+ "snapshot_id": "sha256:66aaec6db1355ce1f7b4259a37ea417bdc84cafe1e38716c9f955a336d62a896",
+ "snapshot": {
+  "config_digest": "sha256:40be931b9cfbf5a23e27ef59bf7cfa0cfddcb85b5e4d58aeff48beda6b1acd78",
+  "coverage": {
+   "expected_count": 8458,
+   "limitations": [
+    "binary: 24 file(s)",
+    "excluded_dir: 7 file(s)",
+    "gitignored: 6552 file(s)",
+    "too_large: 47 file(s)"
+   ],
+   "observed_count": 1828,
+   "omitted_count": 6630,
+   "scope": "workspace manifest under the declared root; content only",
+   "state": "partial",
+   "unresolved_count": 0
+  },
+  "created_at": "2026-11-26T06:51:18Z",
+  "file_count": 1828,
+  "git_commit": "7b1dc2805214b287525109bf124bdf13fa12d92a",
+  "stable": true
+ },
+ "counts": {
+  "backend_mappings": 13979,
+  "diagnostics": 0,
+  "entities": 11043,
+  "evidence": 1,
+  "relation_evidence": 46244,
+  "relations": 46244
+ },
+ "languages": [
+  {
+   "entities": 6,
+   "language": "cpp"
+  },
+  {
+   "entities": 11,
+   "language": "csharp"
+  },
+  {
+   "entities": 305,
+   "language": "javascript"
+  },
+  {
+   "entities": 382,
+   "language": "python"
+  },
+  {
+   "entities": 8164,
+   "language": "rust"
+  },
+  {
+   "entities": 413,
+   "language": "typescript"
+  },
+  {
+   "entities": 1762,
+   "language": "unknown"
+  }
+ ],
+ "freshness": {
+  "state": "changed",
+  "needs_review": false,
+  "base_snapshot_id": "sha256:66aaec6db1355ce1f7b4259a37ea417bdc84cafe1e38716c9f955a336d62a896",
+  "affected_entities": [],
+  "affected_relations": [],
+  "affected_claims": []
+ },
+ "freshness_counts": {
+  "changed": 0,
+  "added": 6623,
+  "deleted": 0
+ },
+ "added_top_dirs": {
+  "target-linux": 5698,
+  "baseline": 544,
+  "docs": 220,
+  "dist": 74,
+  "upstream-probes": 71,
+  "adapters": 11,
+  "crates": 3,
+  "jetbrains": 1,
+  "vscode": 1
+ }
+}

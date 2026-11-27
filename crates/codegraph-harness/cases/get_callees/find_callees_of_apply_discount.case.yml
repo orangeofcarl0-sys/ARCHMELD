@@ -7,7 +7,7 @@ setup:
 invoke:
   tool: codegraph_get_callees
   args:
-    uri: "file://${fixture}"
+    uri: "file://<path>"
     line: 17
     depth: 1
 

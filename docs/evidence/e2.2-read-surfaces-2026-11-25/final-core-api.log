@@ -45,8 +45,8 @@ warning: method `next_event_sequence` is never used
     |                   ^^^^^^^^^^^^^^^^^^^
 
 warning: `archmeld-core` (lib) generated 5 warnings (run `cargo fix --lib -p archmeld-core` to apply 3 suggestions)
-   Compiling archmeld-core v0.1.0 (<repo>\crates\archmeld-core)
-   Compiling archmeld-api v0.1.0 (<repo>\crates\archmeld-api)
+   Compiling archmeld-core v0.1.0 (<path>
+   Compiling archmeld-api v0.1.0 (<path>
 warning: field `dir` is never read
   --> crates\archmeld-api\tests\http_contract.rs:23:5
    |
@@ -295,7 +295,7 @@ test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
      Running tests\apply_recovery.rs (target\debug\deps\apply_recovery-ba13c3948575ed2a.exe)
 
 running 5 tests
-Îª <user>\AppData\Local\Temp\.tmpM6Lmdo\repo\src <<===>> <user>\AppData\Local\Temp\.tmpM6Lmdo\outside ´´½¨µÄÁª½Ó
+Îª <path><identity><temp> <<===>> <path><identity><temp> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 test path_and_link_races_are_rechecked_before_any_write ... ok
 test recovery_preserves_a_later_user_edit_of_an_updated_file ... ok
 test case_only_move_new_file_and_delete_are_recoverable ... ok

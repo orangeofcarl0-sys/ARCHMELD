@@ -13,7 +13,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -49,6 +51,153 @@ def upstream_commit() -> str:
 
 UPSTREAM = upstream_commit()
 TOOLCHAIN = "rust 1.94.1; node 24.14.1"
+
+
+def product_commit() -> str:
+    result = subprocess.run(
+        ["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip() if result.returncode == 0 else "unknown"
+
+
+def packaging_dirty() -> bool:
+    result = subprocess.run(
+        ["git", "-C", str(ROOT), "status", "--porcelain"],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
+def parse_version_line(text: str) -> tuple[str | None, str | None, bool | None]:
+    """Parse `archmeld 0.1.0+dd124ca1` or a helper version line."""
+    match = re.search(
+        r"(?P<version>\d+\.\d+\.\d+)\+(?P<commit>[0-9a-f]{7,40})(?P<dirty>-dirty)?",
+        text,
+    )
+    if not match:
+        match = re.search(
+            r"commit\s+(?P<commit>[0-9a-f]{7,40})(?P<dirty>-dirty)?", text
+        )
+        if not match:
+            return None, None, None
+        return None, match.group("commit"), bool(match.group("dirty"))
+    return (
+        match.group("version"),
+        match.group("commit"),
+        bool(match.group("dirty")),
+    )
+
+
+def product_build_metadata(binary: Path, platform: str) -> dict:
+    if platform == "windows-x64":
+        result = subprocess.run(
+            [str(binary), "--version"], capture_output=True, text=True, timeout=60
+        )
+        text = (result.stdout or result.stderr or "").strip()
+        version, commit, dirty = parse_version_line(text)
+        return {
+            "version": version,
+            "build_git_commit": commit or "unknown",
+            "build_git_dirty": dirty,
+            "build_commit_source": "binary --version" if commit else "unverified",
+            "version_line": text,
+        }
+    commit = os.environ.get("ARCHMELD_LINUX_PRODUCT_COMMIT", "unknown")
+    dirty = os.environ.get("ARCHMELD_LINUX_PRODUCT_DIRTY", "0") == "1"
+    return {
+        "version": None,
+        "build_git_commit": commit,
+        "build_git_dirty": dirty if commit != "unknown" else None,
+        "build_commit_source": (
+            "env:ARCHMELD_LINUX_PRODUCT_COMMIT"
+            if commit != "unknown"
+            else "unverified"
+        ),
+        "version_line": "",
+    }
+
+
+def gcc_version() -> str:
+    candidates = []
+    mingw = os.environ.get("ARCHMELD_MINGW_BIN") or os.environ.get(
+        "ARCHMELD_STRAWBERRY_BIN"
+    )
+    if mingw:
+        candidates.append(Path(mingw) / ("gcc.exe" if os.name == "nt" else "gcc"))
+    found = shutil.which("gcc")
+    if found:
+        candidates.append(Path(found))
+    for candidate in candidates:
+        if not candidate.is_file():
+            continue
+        result = subprocess.run(
+            [str(candidate), "--version"], capture_output=True, text=True
+        )
+        if result.returncode == 0 and result.stdout:
+            return result.stdout.splitlines()[0]
+    return "unknown"
+
+
+PRODUCT_COMMIT = product_commit()
+PACKAGING_DIRTY = packaging_dirty()
+TOOLCHAIN = f"rust 1.94.1; node 24.14.1; gcc {gcc_version()}"
+
+
+def helper_metadata(binary: Path, platform: str) -> dict:
+    """Prove the packaged helper is the schema-1.2 producer, not just a hash."""
+    info = {"path": binary.name, "sha256": sha256(binary)}
+    if platform == "windows-x64":
+        schema = subprocess.run(
+            [str(binary), "--schema"], capture_output=True, text=True, timeout=60
+        )
+        version = subprocess.run(
+            [str(binary), "--version"], capture_output=True, text=True, timeout=60
+        )
+        info["schema"] = (schema.stdout or "").strip()
+        info["version"] = (version.stdout or version.stderr or "").strip()
+        if schema.returncode != 0 or info["schema"] != "1.2":
+            raise SystemExit(
+                f"{platform} helper did not report schema 1.2: "
+                f"exit={schema.returncode} stdout={info['schema']!r}"
+            )
+        _, commit, dirty = parse_version_line(info["version"])
+        info["build_git_commit"] = commit or "unknown"
+        info["build_git_dirty"] = dirty
+        info["build_commit_source"] = "helper --version" if commit else "unverified"
+    else:
+        sidecar = binary.parent / "helper-schema.txt"
+        if not sidecar.is_file():
+            raise SystemExit(
+                f"{platform} helper schema is unverified: {sidecar} is missing; "
+                "run tooling/build_helper.py for this platform first"
+            )
+        info["schema"] = sidecar.read_text(encoding="utf-8").strip()
+        if info["schema"] != "1.2":
+            raise SystemExit(
+                f"{platform} helper schema is {info['schema']!r}, expected 1.2"
+            )
+        provenance_path = binary.parent / "helper-provenance.json"
+        if provenance_path.is_file():
+            provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+            info["version"] = provenance.get("version", "")
+            info["build_git_commit"] = provenance.get("build_git_commit", "unknown")
+            info["build_git_dirty"] = provenance.get("build_git_dirty")
+            info["build_commit_source"] = "helper-provenance.json"
+        else:
+            commit = os.environ.get("ARCHMELD_LINUX_HELPER_COMMIT", "unknown")
+            dirty = os.environ.get("ARCHMELD_LINUX_HELPER_DIRTY", "0") == "1"
+            info["version"] = "not-executed-on-this-host"
+            info["build_git_commit"] = commit
+            info["build_git_dirty"] = dirty if commit != "unknown" else None
+            info["build_commit_source"] = (
+                "env:ARCHMELD_LINUX_HELPER_COMMIT"
+                if commit != "unknown"
+                else "unverified"
+            )
+    return info
 PLATFORMS = {
     "windows-x64": {
         "binaries": {
@@ -127,6 +276,8 @@ def sbom(extra_components: list[dict] | None = None, artifact_files: list[Path] 
             "properties": [
                 {"name": "archmeld.upstream_commit", "value": UPSTREAM},
                 {"name": "archmeld.toolchain", "value": TOOLCHAIN},
+                {"name": "archmeld.packaging_git_commit", "value": PRODUCT_COMMIT},
+                {"name": "archmeld.release_status", "value": "provisional"},
             ],
         },
         "components": components,
@@ -290,28 +441,63 @@ def build_cli(platform: str) -> tuple[Path, dict]:
     ]:
         if source.is_file():
             shutil.copy2(source, staging / target)
-    (staging / "VERSION").write_text(
-        f"version={VERSION}\nupstream={UPSTREAM}\ntoolchain={TOOLCHAIN}\nplatform={platform}\n",
-        encoding="utf-8",
-    )
     (staging / "README.md").write_text(README, encoding="utf-8")
     if platform == "windows-x64":
         (staging / "install.ps1").write_text(INSTALL_PS1, encoding="utf-8")
     else:
         (staging / "install.sh").write_bytes(INSTALL_SH.replace("VERSION", VERSION).encode("utf-8"))
         os.chmod(staging / "install.sh", 0o755)
+    helper = helper_metadata(info["binaries"]["archmeld-index"], platform)
+    product = product_build_metadata(info["binaries"]["archmeld"], platform)
+    if product.get("version") and product["version"] != VERSION:
+        raise SystemExit(
+            f"{platform} binary reports version {product['version']!r}, "
+            f"but the bundle version is {VERSION!r}"
+        )
+    (staging / "VERSION").write_text(
+        f"version={VERSION}\n"
+        f"upstream={UPSTREAM}\n"
+        f"toolchain={TOOLCHAIN}\n"
+        f"platform={platform}\n"
+        f"product_build_commit={product['build_git_commit']}\n"
+        f"product_build_dirty={product['build_git_dirty']}\n"
+        f"packaging_git_commit={PRODUCT_COMMIT}\n"
+        f"release_status=provisional\n",
+        encoding="utf-8",
+    )
     files = sorted(
         str(path.relative_to(staging)).replace("\\", "/")
         for path in staging.rglob("*")
         if path.is_file() and path.name not in {"checksums.sha256", "bundle.json", "sbom.cdx.json"}
     )
+    commit_consistent = (
+        product["build_git_commit"] == helper["build_git_commit"]
+        and product["build_git_commit"] == PRODUCT_COMMIT
+    )
+    if commit_consistent:
+        consistency_reason = "all build commits equal the packaging commit"
+    else:
+        consistency_reason = (
+            f"product={product['build_git_commit']} helper={helper['build_git_commit']} "
+            f"packaging={PRODUCT_COMMIT}"
+        )
     bundle = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "name": "archmeld-cli",
         "version": VERSION,
         "platform": platform,
         "upstream_commit": UPSTREAM,
+        "product_git_commit": product["build_git_commit"],
+        "product_build_commit": product["build_git_commit"],
+        "product_build_dirty": product["build_git_dirty"],
+        "product_build_commit_source": product["build_commit_source"],
+        "packaging_git_commit": PRODUCT_COMMIT,
+        "packaging_git_dirty": PACKAGING_DIRTY,
+        "commit_consistency": commit_consistent,
+        "commit_consistency_reason": consistency_reason,
+        "release_status": "provisional",
         "toolchain": TOOLCHAIN,
+        "helper": helper,
         "model_required": False,
         "offline_assets": True,
         "installer": info["installer"],
@@ -406,8 +592,8 @@ def build_vsix() -> Path:
 
 def main() -> int:
     DIST.mkdir(parents=True, exist_ok=True)
-    windows, _ = build_cli("windows-x64")
-    linux, _ = build_cli("linux-x64")
+    windows, windows_bundle = build_cli("windows-x64")
+    linux, linux_bundle = build_cli("linux-x64")
     vsix = build_vsix()
     artifacts = [windows, linux, vsix]
     hashes = {path.name: sha256(path) for path in artifacts}
@@ -418,11 +604,38 @@ def main() -> int:
     write_json(
         DIST / "release-manifest.json",
         {
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "product": "ARCHMELD",
             "version": VERSION,
             "upstream_commit": UPSTREAM,
+            "product_git_commit": PRODUCT_COMMIT,
+            "product_git_commit_meaning": "packaging commit; use builds[*].product_build_commit for binary identity",
+            "packaging_git_commit": PRODUCT_COMMIT,
+            "packaging_git_dirty": PACKAGING_DIRTY,
+            "release_status": "provisional",
             "toolchain": TOOLCHAIN,
+            "builds": {
+                "windows-x64": {
+                    "product_build_commit": windows_bundle["product_build_commit"],
+                    "product_build_dirty": windows_bundle["product_build_dirty"],
+                    "helper_build_commit": windows_bundle["helper"]["build_git_commit"],
+                    "helper_build_dirty": windows_bundle["helper"]["build_git_dirty"],
+                    "commit_consistency": windows_bundle["commit_consistency"],
+                    "commit_consistency_reason": windows_bundle["commit_consistency_reason"],
+                },
+                "linux-x64": {
+                    "product_build_commit": linux_bundle["product_build_commit"],
+                    "product_build_dirty": linux_bundle["product_build_dirty"],
+                    "helper_build_commit": linux_bundle["helper"]["build_git_commit"],
+                    "helper_build_dirty": linux_bundle["helper"]["build_git_dirty"],
+                    "commit_consistency": linux_bundle["commit_consistency"],
+                    "commit_consistency_reason": linux_bundle["commit_consistency_reason"],
+                },
+            },
+            "helpers": {
+                "windows-x64": windows_bundle["helper"],
+                "linux-x64": linux_bundle["helper"],
+            },
             "artifacts": [
                 {
                     "name": path.name,

@@ -501,7 +501,7 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
             "entity_id": entity_id,
             "anchor_index": 0,
             "max_bytes": 1024,
-            "path": "C:/Windows/win.ini",
+            "path": "<path>",
         }),
     );
     assert_eq!(path_argument["result"]["isError"], true);

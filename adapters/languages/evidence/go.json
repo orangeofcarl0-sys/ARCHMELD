@@ -2,22 +2,22 @@
   "build_verification": {
     "argv": {
       "baseline_build": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<path>",
         "build",
         "-o",
         "baseline.exe",
         "."
       ],
       "binary_run": [
-        "<user>\\AppData\\Local\\Temp\\.tmpSb1Sln\\build\\renamed.exe"
+        "<path><identity><temp>"
       ],
       "go_test": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<path>",
         "test",
         "./..."
       ],
       "renamed_build": [
-        "<workspace>/_archmeld_tools/go/go/bin/go.exe",
+        "<path>",
         "build",
         "-o",
         "renamed.exe",
@@ -119,7 +119,7 @@
       "timed_out": false,
       "wall_ms": 1299
     },
-    "cwd": "<user>\\AppData\\Local\\Temp\\.tmpSb1Sln\\build",
+    "cwd": "<path><identity><temp>",
     "go_test": {
       "artifact": null,
       "env_names": [

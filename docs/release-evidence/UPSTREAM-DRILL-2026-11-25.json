@@ -20,7 +20,7 @@
         "status",
         "--porcelain"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:27:40.329632+00:00",
@@ -37,10 +37,10 @@
         "worktree",
         "add",
         "--detach",
-        "<temp>\\upstream-drill-fsau1kiz\\worktree",
+        "<path>",
         "HEAD"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:27:40.392477+00:00",
@@ -58,7 +58,7 @@
         "--verify",
         "upstream/main^{commit}"
       ],
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:27:44.548295+00:00",
@@ -77,7 +77,7 @@
         "--no-ff",
         "upstream/main"
       ],
-      "cwd": "<temp>\\upstream-drill-fsau1kiz\\worktree",
+      "cwd": "<path>",
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-25T13:27:44.589732+00:00",

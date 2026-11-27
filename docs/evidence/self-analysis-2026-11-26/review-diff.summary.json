@@ -1,0 +1,42 @@
+{
+ "schema_version": "1.0",
+ "command": "review-diff",
+ "project_id": "archmeld.self",
+ "base_snapshot_id": "sha256:66aaec6db1355ce1f7b4259a37ea417bdc84cafe1e38716c9f955a336d62a896",
+ "state": "changed",
+ "summary": {
+  "affected_entities": 0,
+  "files": {
+   "added": 6623,
+   "changed": 0,
+   "deleted": 0
+  },
+  "needs_review": true,
+  "unmapped_files": 6623,
+  "unsupported_files": 0
+ },
+ "verification": {
+  "reason": "this review executed no build, test, scenario or runtime command",
+  "state": "not_run"
+ },
+ "source_mutation": "none",
+ "history_mutation": "none",
+ "coverage": {
+  "state": "partial",
+  "scope": "workspace bytes vs base snapshot bytes, with base-snapshot entity anchors",
+  "limitations": [
+   "line overlap is static text evidence, not semantic equivalence",
+   "entity impact is adjacency in the base snapshot; new calls are not inferred",
+   "added files have no base entity mapping",
+   "no repository command was executed"
+  ],
+  "unmapped_files_count": 6623,
+  "unmapped_files_sample": [
+   "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.dll",
+   "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.exe",
+   "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.pdb",
+   "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.assets.cache",
+   "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.dll"
+  ]
+ }
+}

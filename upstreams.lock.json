@@ -11,7 +11,14 @@
       "source": {
         "url": "https://github.com/codegraph-ai/CodeGraph.git",
         "remote": "upstream",
-        "ref": "refs/heads/main"
+        "ref": null
+      },
+      "release": {
+        "version": "0.21.2",
+        "tag": null,
+        "commit": "ae4b2e54fc8ce1c074523943fc750b20f68bf8aa",
+        "url": "https://github.com/codegraph-ai/CodeGraph/releases/tag/v0.21.2",
+        "note": "0.21.2 is an untagged release commit; the latest git tag is v0.21.0. Release identity is the version bump plus release notes; branch head is not tracked."
       },
       "pin": {
         "kind": "commit",
@@ -35,7 +42,12 @@
         "fail_closed_on_major": true
       },
       "update_policy": {
-        "mode": "manual_merge_with_drill",
+        "mode": "manual_release_merge_with_drill",
+        "release_only": true,
+        "accepted_refs": ["refs/tags/v*"],
+        "forbidden_refs": ["refs/heads/main", "refs/heads/master", "main", "master", "upstream/main"],
+        "allow_untagged_release_commit": true,
+        "untagged_release_reason": "0.21.2 is an untagged release commit; pin its version-bump commit and release notes instead of a branch head",
         "auto_follow": false,
         "auto_merge": false,
         "auto_pin_update": false
@@ -129,6 +141,8 @@
         "id": "analysis.json",
         "version": "unversioned",
         "version_field": "analysis_schema_version",
+        "version_optional": true,
+        "observed_version_field": "metadata.tree_spec.version",
         "producer": "external CodeBoarding process",
         "consumer": "crates/archmeld-core/src/interpret.rs",
         "fail_closed_on_major": false
@@ -146,7 +160,7 @@
         "result": "passed",
         "acceptance": ["AT076"]
       },
-      "tests": ["codeboarding_import_contract"],
+      "tests": ["interpretation", "b017_model_analysis"],
       "pin_records": [
         {
           "path": "toolchains.lock.json",
@@ -190,6 +204,8 @@
       "contract": {
         "id": "scip-protobuf",
         "version": "v0.3",
+        "version_field": "metadata.version",
+        "allowed_protocol_versions": [0],
         "producer": "external scip-clang / scip-python",
         "consumer": "crates/archmeld-core/src/scip.rs",
         "fail_closed_on_major": true
@@ -207,8 +223,37 @@
         "result": "passed",
         "acceptance": ["B030"]
       },
-      "tests": ["scip_decoder", "cpp_scip_real", "python_scip_real"],
+      "tests": ["scip_import", "cpp_scip_real"],
       "pin_records": [],
+      "probes": [
+        {
+          "id": "scip-clang",
+          "kind": "git_tags",
+          "url": "https://github.com/sourcegraph/scip-clang.git",
+          "pin": "v0.4.1",
+          "tag_prefix": "v",
+          "version_regex": "^\\d+\\.\\d+\\.\\d+$",
+          "include_prerelease": false
+        },
+        {
+          "id": "scip-python",
+          "kind": "git_tags",
+          "url": "https://github.com/sourcegraph/scip-python.git",
+          "pin": "v0.6.8",
+          "tag_prefix": "v",
+          "version_regex": "^\\d+\\.\\d+\\.\\d+$",
+          "include_prerelease": false
+        },
+        {
+          "id": "scip-format",
+          "kind": "git_tags",
+          "url": "https://github.com/sourcegraph/scip.git",
+          "pin": "v0.3",
+          "tag_prefix": "v",
+          "version_regex": "^0\\.3(\\.\\d+)?$",
+          "include_prerelease": false
+        }
+      ],
       "owner": "ARCHMELD core"
     },
     {
@@ -245,8 +290,79 @@
       },
       "last_checked": "2026-11-25",
       "last_drill": null,
-      "tests": ["lsp_session_audit", "language_profiles"],
+      "tests": ["lsp_roundtrip", "language_broker"],
       "pin_records": [],
+      "probes": [
+        {
+          "id": "pyright",
+          "kind": "npm",
+          "package": "pyright",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/packages/node_modules~1pyright/version"
+          }
+        },
+        {
+          "id": "typescript-language-server",
+          "kind": "npm",
+          "package": "typescript-language-server",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/packages/node_modules~1typescript-language-server/version"
+          }
+        },
+        {
+          "id": "gopls",
+          "kind": "go_proxy",
+          "module": "golang.org/x/tools/gopls",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/gopls/version"
+          }
+        },
+        {
+          "id": "jdtls",
+          "kind": "git_tags",
+          "url": "https://github.com/eclipse-jdtls/eclipse.jdt.ls.git",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/jdtls/version"
+          },
+          "pin_regex": "^(\\d+\\.\\d+\\.\\d+)",
+          "tag_prefix": "v",
+          "version_regex": "^\\d+\\.\\d+\\.\\d+$",
+          "include_prerelease": false
+        },
+        {
+          "id": "csharp-ls",
+          "kind": "git_tags",
+          "url": "https://github.com/razzmatazz/csharp-language-server.git",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/csharp-ls/version"
+          },
+          "version_regex": "^\\d+\\.\\d+\\.\\d+$",
+          "include_prerelease": false
+        },
+        {
+          "id": "clangd",
+          "kind": "none",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/clangd/version"
+          },
+          "note": "LLVM tags are large and not a single comparable release stream; the locked binary and doctor.py are authoritative"
+        },
+        {
+          "id": "rust-analyzer",
+          "kind": "none",
+          "pin_from": {
+            "path": "adapters/languages/tools.lock.json",
+            "pointer": "/rust-analyzer/version"
+          },
+          "note": "rust-analyzer is pinned through the rustup toolchain; a remote latest tag is not comparable"
+        }
+      ],
       "owner": "ARCHMELD language adapters"
     },
     {
@@ -271,6 +387,8 @@
       "contract": {
         "id": "trace-artifact",
         "version": "format-specific",
+        "version_field": "adapters/traces/fixtures.lock.json#tools[].version",
+        "in_band_version": false,
         "producer": "external trace tools",
         "consumer": "crates/archmeld-core/src/trace_adapters.rs",
         "fail_closed_on_major": false
@@ -283,8 +401,40 @@
       },
       "last_checked": "2026-11-25",
       "last_drill": null,
-      "tests": ["trace_fixtures", "loss_notes"],
+      "tests": ["perfetto_native", "trace_ui_fixture", "perfetto_trace_processor"],
       "pin_records": [],
+      "probes": [
+        {
+          "id": "perfetto",
+          "kind": "git_tags",
+          "url": "https://github.com/google/perfetto.git",
+          "pin_from": {
+            "path": "adapters/traces/fixtures.lock.json",
+            "pointer": "/tools/0/version"
+          },
+          "pin_regex": "v\\d+\\.\\d+",
+          "tag_prefix": "v",
+          "version_regex": "^\\d+\\.\\d+$",
+          "include_prerelease": false
+        },
+        {
+          "id": "tracy",
+          "kind": "git_tags",
+          "url": "https://github.com/wolfpld/tracy.git",
+          "pin_from": {
+            "path": "adapters/traces/fixtures.lock.json",
+            "pointer": "/tools/1/version"
+          },
+          "tag_prefix": "v",
+          "version_regex": "^\\d+\\.\\d+\\.\\d+$",
+          "include_prerelease": false
+        },
+        {
+          "id": "viztracer",
+          "kind": "none",
+          "note": "VizTracer is named in the display label but has no pinned fixture in adapters/traces/fixtures.lock.json; no remote version is tracked"
+        }
+      ],
       "owner": "ARCHMELD runtime adapters"
     },
     {
@@ -308,6 +458,9 @@
       "contract": {
         "id": "aoci-text",
         "version": "0.2.0-rc4",
+        "version_field": "#Format-Version",
+        "version_optional": false,
+        "unknown_major": "warn",
         "producer": "external AOCI producer",
         "consumer": "crates/archmeld-core/src/cognition.rs",
         "fail_closed_on_major": false
@@ -320,8 +473,16 @@
       },
       "last_checked": "2026-11-25",
       "last_drill": null,
-      "tests": ["aoci_fixture"],
+      "tests": ["cognition"],
       "pin_records": [],
+      "probes": [
+        {
+          "id": "aoci",
+          "kind": "none",
+          "pin": "0.2.0-rc4",
+          "note": "source identifier aoci-spec/aoci-code is not a Git URL; the text format is handled by tolerant fixtures"
+        }
+      ],
       "owner": "ARCHMELD cognition adapters"
     },
     {
@@ -360,6 +521,14 @@
       "last_drill": null,
       "tests": ["webview_render"],
       "pin_records": [],
+      "probes": [
+        {
+          "id": "cytoscape",
+          "kind": "npm",
+          "package": "cytoscape",
+          "pin": "3.30.2"
+        }
+      ],
       "owner": "ARCHMELD workbench"
     },
     {
@@ -398,6 +567,13 @@
       "last_drill": null,
       "tests": ["doctor"],
       "pin_records": [],
+      "probes": [
+        {
+          "id": "toolchain",
+          "kind": "local_lock",
+          "note": "the toolchain is an environment pin; toolchains.lock.json and tooling/doctor.py are authoritative, no remote latest"
+        }
+      ],
       "owner": "ARCHMELD build"
     }
   ]

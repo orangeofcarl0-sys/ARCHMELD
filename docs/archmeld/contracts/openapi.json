@@ -1784,6 +1784,114 @@
           }
         }
       }
+    },
+    "/v1/status": {
+      "get": {
+        "operationId": "status",
+        "summary": "status",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workspace_handle",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project status and optional freshness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reviews/workspace-diff": {
+      "post": {
+        "operationId": "reviewWorkspaceDiff",
+        "summary": "reviewWorkspaceDiff",
+        "tags": [
+          "local-core"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "project_id",
+                  "workspace_handle"
+                ],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "workspace_handle": {
+                    "type": "string"
+                  },
+                  "base_snapshot_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Static workspace review against the base snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schemas/archmeld.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -691,8 +691,8 @@ fn publish_generation(tx: &rusqlite::Transaction<'_>, batch: &ValidatedBatch) ->
         tx.execute(
             "INSERT INTO entities
              (project_id, snapshot_id, entity_id, config_digest, kind, language, qualified_name,
-              external, adapter_id, run_id, payload_json)
-             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)",
+              external, adapter_id, run_id, role, payload_json)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)",
             (
                 &header.project_id,
                 &header.snapshot_id,
@@ -704,6 +704,7 @@ fn publish_generation(tx: &rusqlite::Transaction<'_>, batch: &ValidatedBatch) ->
                 if entity.external { 1 } else { 0 },
                 &header.adapter_id,
                 &header.run_id,
+                entity.role.as_str(),
                 payload_json,
             ),
         )?;
@@ -810,8 +811,9 @@ fn publish_generation(tx: &rusqlite::Transaction<'_>, batch: &ValidatedBatch) ->
         }
         tx.execute(
             "INSERT INTO relations
-             (project_id, snapshot_id, relation_id, config_digest, source_id, target_id, kind, basis, resolution, payload_json)
-             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)",
+             (project_id, snapshot_id, relation_id, config_digest, source_id, target_id, kind, basis, resolution,
+              call_site_line, producer_resolution, occurrence_count, payload_json)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)",
             (
                 &header.project_id,
                 &header.snapshot_id,
@@ -822,6 +824,11 @@ fn publish_generation(tx: &rusqlite::Transaction<'_>, batch: &ValidatedBatch) ->
                 relation.kind.as_str(),
                 basis,
                 resolution_str(relation.resolution),
+                relation.call_site.as_ref().and_then(|site| site.line),
+                relation
+                    .producer_resolution
+                    .map(|resolution| resolution.as_str()),
+                relation.occurrences as i64,
                 payload_json,
             ),
         )?;

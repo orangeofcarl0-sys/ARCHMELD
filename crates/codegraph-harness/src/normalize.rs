@@ -157,7 +157,7 @@ fn substitute_paths(value: &Value, workspace_path: &str, fixture_path: &str) -> 
 }
 
 /// Replace `\` with `/` in every string. Cheap insurance for cross-OS
-/// runs — a Windows tempdir like `C:\Users\...` becomes consistent
+/// runs — a Windows tempdir like `<path> becomes consistent
 /// with the Unix `${workspace}/...` form.
 fn fold_backslashes(value: &Value) -> Value {
     match value {
@@ -326,9 +326,9 @@ mod tests {
 
     #[test]
     fn fold_backslashes_converts_windows_paths() {
-        let input = json!({"file": "C:\\Users\\test\\basic.rs"});
+        let input = json!({"file": "<path>"});
         let out = fold_backslashes(&input);
-        assert_eq!(out, json!({"file": "C:/Users/test/basic.rs"}));
+        assert_eq!(out, json!({"file": "<path>"}));
     }
 
     #[test]

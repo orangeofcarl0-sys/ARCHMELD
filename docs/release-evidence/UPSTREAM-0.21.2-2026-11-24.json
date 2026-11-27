@@ -65,7 +65,7 @@
   "commands": [
     {
       "id": "upstream-check",
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "argv": [
         "cargo",
         "check",
@@ -86,7 +86,7 @@
     },
     {
       "id": "core-api-regression",
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "argv": [
         "cargo",
         "test",
@@ -110,7 +110,7 @@
     },
     {
       "id": "php-regression",
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "argv": [
         "cargo",
         "test",
@@ -134,7 +134,7 @@
     },
     {
       "id": "server-contract-tests",
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "argv": [
         "cargo",
         "test",
@@ -162,7 +162,7 @@
     },
     {
       "id": "export-helper-build",
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "argv": [
         "cargo",
         "build",
@@ -179,7 +179,7 @@
     },
     {
       "id": "end-to-end-export",
-      "cwd": "<repo>",
+      "cwd": "<path>",
       "argv": [
         "target/debug/examples/archmeld_export.exe",
         "<fixture>",

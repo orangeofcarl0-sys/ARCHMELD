@@ -165,3 +165,93 @@ fn markdown_card_mentions_the_cognition_map() {
     assert!(markdown.contains("Cognition map (AOCI, optional)"), "{markdown}");
     assert!(markdown.contains("`src/a.py` [CG5T]"), "{markdown}");
 }
+
+#[test]
+fn format_version_v1_is_recorded_without_a_version_warning() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    write_root(root, "aoci.code.txt");
+    fs::write(
+        root.join("aoci.code.txt"),
+        "#AOCI-CODE-VOLUME: 1\n\
+         ===/<repository>/src/===\n\
+         a.py[CG5T]: F:Entry A | R:- | A:- | S:-\n",
+    )
+    .unwrap();
+
+    let summary = summarize(Some(root));
+    assert_eq!(summary["format_version"], "cognition-volumes/v1", "{summary}");
+    assert_eq!(summary["root_manifest"], "1", "{summary}");
+    let warnings = summary["warnings"].as_array().unwrap();
+    assert!(!warnings.iter().any(|warning| warning
+        .as_str()
+        .unwrap_or_default()
+        .contains("unknown major")), "{summary}");
+    assert!(!warnings.iter().any(|warning| warning
+        .as_str()
+        .unwrap_or_default()
+        .contains("no #Format-Version")), "{summary}");
+}
+
+#[test]
+fn newer_format_major_is_a_warning_and_entries_still_parse() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    fs::write(
+        root.join("aoci.txt"),
+        "#AOCI-ROOT-MANIFEST: 1\n#Format-Version: cognition-volumes/v2\n\
+         #Volume: id=code kind=code path=aoci.code.txt format=object-fras-v2 depends=- state=enabled\n",
+    )
+    .unwrap();
+    fs::write(
+        root.join("aoci.code.txt"),
+        "#AOCI-CODE-VOLUME: 2\n\
+         ===/<repository>/src/===\n\
+         a.py[CG5T]: F:Entry A | R:- | A:- | S:-\n",
+    )
+    .unwrap();
+
+    let summary = summarize(Some(root));
+    assert_eq!(summary["present"], true, "{summary}");
+    assert_eq!(summary["format_version"], "cognition-volumes/v2", "{summary}");
+    assert_eq!(summary["entries_total"], 1, "{summary}");
+    assert!(summary["warnings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|warning| warning
+            .as_str()
+            .unwrap_or_default()
+            .contains("unknown major")), "{summary}");
+}
+
+#[test]
+fn missing_format_headers_are_warnings_not_failures() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    fs::write(
+        root.join("aoci.txt"),
+        "#Volume: id=code kind=code path=aoci.code.txt format=object-fras-v2 depends=- state=enabled\n",
+    )
+    .unwrap();
+    fs::write(
+        root.join("aoci.code.txt"),
+        "#AOCI-CODE-VOLUME: 1\n\
+         ===/<repository>/src/===\n\
+         a.py[CG5T]: F:Entry A | R:- | A:- | S:-\n",
+    )
+    .unwrap();
+
+    let summary = summarize(Some(root));
+    assert_eq!(summary["present"], true, "{summary}");
+    assert_eq!(summary["entries_total"], 1, "{summary}");
+    let warnings = summary["warnings"].as_array().unwrap();
+    assert!(warnings.iter().any(|warning| warning
+        .as_str()
+        .unwrap_or_default()
+        .contains("no #Format-Version")), "{summary}");
+    assert!(warnings.iter().any(|warning| warning
+        .as_str()
+        .unwrap_or_default()
+        .contains("no #AOCI-ROOT-MANIFEST")), "{summary}");
+}

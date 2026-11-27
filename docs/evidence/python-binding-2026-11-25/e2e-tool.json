@@ -1,7 +1,7 @@
 {
-  "mcp": "<repo>\\target\\debug\\archmeld-mcp.exe",
-  "state": "<workspace>/_archmeld_python_binding_e2e/state",
+  "mcp": "<path>",
+  "state": "<path>",
   "project": "project.python-binding",
-  "audit": "<repo>\\docs\\evidence\\python-binding-2026-11-25\\e2e-audit.jsonl",
-  "calls": "<repo>\\docs\\evidence\\python-binding-2026-11-25\\e2e-calls.jsonl"
+  "audit": "<path>",
+  "calls": "<path>"
 }

@@ -86,6 +86,7 @@
       "sha256": "sha256:2db061e83ea81df992e16c912c4f9ba02cfc0c09689e0de6e799824054b3b3a4",
       "size": 1212,
       "producer": "Perfetto C++ SDK, in-process backend, written by tooling/perfetto_probe.cc",
+      "tests": ["perfetto_native", "perfetto_trace_processor"],
       "contains": [
         "2 nested slices: stage.queue (about 105 ms) and stage.compute (about 30 ms)",
         "1 counter series queue_depth with 4 samples [0, 3, 1, 0]",
@@ -107,6 +108,7 @@
       "summary": "adapters/traces/fixtures/tracy-zones-plots.csv",
       "summary_sha256": "sha256:15959de4e4e8069be16e7632b9062f5d7f99beaa32438b9103201be52b05add1",
       "producer": "Tracy 0.13.1: tooling/tracy_probe.cc connected to tracy-capture 0.13.1",
+      "tests": ["tracy_native", "trace_ui_fixture"],
       "summary_command": "tracy-csvexport -u -p capture.tracy",
       "contains": [
         "2 zones with ns_since_start and exec_time_ns",

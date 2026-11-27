@@ -1,0 +1,23 @@
+{
+  "status": {
+    "exit": 0,
+    "seconds": 7.979,
+    "timings": null,
+    "state": "<path>"
+  },
+  "review": {
+    "exit": 0,
+    "seconds": 11.786,
+    "timings": null,
+    "state": "clean"
+  },
+  "brief": {
+    "exit": 0,
+    "seconds": 14.426,
+    "timings": {
+      "review_calls": 1,
+      "review_ms": 11828
+    },
+    "state": "ok"
+  }
+}

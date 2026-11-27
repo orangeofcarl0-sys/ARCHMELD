@@ -46,4 +46,5 @@ pub use codegraph_parser_api::{
 };
 
 // Export the Rust parser implementation
+pub use mapper::{resolve_pending_implements, ImplementsResolution};
 pub use parser_impl::RustParser;

@@ -1,0 +1,214 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-25",
+  "generated_by": "tooling/upstream.py probes",
+  "upstreams": [
+    {
+      "id": "scip",
+      "probes": [
+        {
+          "id": "scip-clang",
+          "kind": "git_tags",
+          "pin": "v0.4.1",
+          "latest": "0.4.3",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/sourcegraph/scip-clang.git"
+        },
+        {
+          "id": "scip-python",
+          "kind": "git_tags",
+          "pin": "v0.6.8",
+          "latest": "0.6.8",
+          "update_available": false,
+          "behind": null,
+          "status": "ok",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/sourcegraph/scip-python.git"
+        },
+        {
+          "id": "scip-format",
+          "kind": "git_tags",
+          "pin": "v0.3",
+          "latest": "0.3.3",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/sourcegraph/scip.git"
+        }
+      ]
+    },
+    {
+      "id": "lsp",
+      "probes": [
+        {
+          "id": "pyright",
+          "kind": "npm",
+          "pin": "1.1.408",
+          "latest": "1.1.414",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "npm:pyright"
+        },
+        {
+          "id": "typescript-language-server",
+          "kind": "npm",
+          "pin": "4.3.4",
+          "latest": "6.1.0",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "npm:typescript-language-server"
+        },
+        {
+          "id": "gopls",
+          "kind": "go_proxy",
+          "pin": "0.20.0",
+          "latest": "v0.24.0",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "go_proxy:golang.org/x/tools/gopls"
+        },
+        {
+          "id": "jdtls",
+          "kind": "git_tags",
+          "pin": "1.64.0",
+          "latest": "1.63.0",
+          "update_available": false,
+          "behind": null,
+          "status": "ok",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/eclipse-jdtls/eclipse.jdt.ls.git"
+        },
+        {
+          "id": "csharp-ls",
+          "kind": "git_tags",
+          "pin": "0.14.0",
+          "latest": "0.29.0",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/razzmatazz/csharp-language-server.git"
+        },
+        {
+          "id": "clangd",
+          "kind": "none",
+          "pin": "18.1.8",
+          "latest": null,
+          "update_available": null,
+          "behind": null,
+          "status": "skipped",
+          "detail": "LLVM tags are large and not a single comparable release stream; the locked binary and doctor.py are authoritative",
+          "source": null
+        },
+        {
+          "id": "rust-analyzer",
+          "kind": "none",
+          "pin": "1.94.1",
+          "latest": null,
+          "update_available": null,
+          "behind": null,
+          "status": "skipped",
+          "detail": "rust-analyzer is pinned through the rustup toolchain; a remote latest tag is not comparable",
+          "source": null
+        }
+      ]
+    },
+    {
+      "id": "traces",
+      "probes": [
+        {
+          "id": "perfetto",
+          "kind": "git_tags",
+          "pin": "v59.1",
+          "latest": "59.1",
+          "update_available": false,
+          "behind": null,
+          "status": "ok",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/google/perfetto.git"
+        },
+        {
+          "id": "tracy",
+          "kind": "git_tags",
+          "pin": "0.13.1",
+          "latest": "0.15.0",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "https://github.com/wolfpld/tracy.git"
+        },
+        {
+          "id": "viztracer",
+          "kind": "none",
+          "pin": null,
+          "latest": null,
+          "update_available": null,
+          "behind": null,
+          "status": "skipped",
+          "detail": "VizTracer is named in the display label but has no pinned fixture in adapters/traces/fixtures.lock.json; no remote version is tracked",
+          "source": null
+        }
+      ]
+    },
+    {
+      "id": "aoci",
+      "probes": [
+        {
+          "id": "aoci",
+          "kind": "none",
+          "pin": "0.2.0-rc4",
+          "latest": null,
+          "update_available": null,
+          "behind": null,
+          "status": "skipped",
+          "detail": "source identifier aoci-spec/aoci-code is not a Git URL; the text format is handled by tolerant fixtures",
+          "source": null
+        }
+      ]
+    },
+    {
+      "id": "cytoscape",
+      "probes": [
+        {
+          "id": "cytoscape",
+          "kind": "npm",
+          "pin": "3.30.2",
+          "latest": "3.35.0",
+          "update_available": true,
+          "behind": null,
+          "status": "update",
+          "detail": "version pin; behind count is not computed",
+          "source": "npm:cytoscape"
+        }
+      ]
+    },
+    {
+      "id": "toolchain",
+      "probes": [
+        {
+          "id": "toolchain",
+          "kind": "local_lock",
+          "pin": null,
+          "latest": null,
+          "update_available": null,
+          "behind": null,
+          "status": "skipped",
+          "detail": "the toolchain is an environment pin; toolchains.lock.json and tooling/doctor.py are authoritative, no remote latest",
+          "source": null
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

@@ -13,7 +13,7 @@ invoke:
   tool: codegraph_find_similar
   binary: /Users/anvanster/projects/codegraph-pro/target/release/codegraph-pro
   args:
-    uri: file://${fixture}
+    uri: file://<path>
     line: 35
     mode: cleanup_pattern
   retry_on_warmup: true

@@ -1,0 +1,919 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-11-27",
+  "cwd": "<path>",
+  "host": {
+    "system": "Windows",
+    "release": "10.0.26200",
+    "machine": "AMD64",
+    "cpu_count": 24,
+    "memory_gib": 15.2
+  },
+  "product": {
+    "archmeld_version": "0.1.0+dd124ca1",
+    "archmeld_sha256": "sha256:21ad4dc88aecaa7a9b545d51d802ad63f40c2071e048a025cb1ca7c54c6a8a24",
+    "archmeld_mcp_sha256": "sha256:4a3a9c85ee3d70e284239484ce0aab5a46b704924a42f97fd1eea8bd5b9d649a",
+    "debug_helper_sha256": "sha256:6d48c987f56996fda89c8d6cd55041de655f6fcd5ffb9a73ace6d77c190a2c98",
+    "windows_release_helper": "sha256:1c0decdb6e37a8fbd225b5c7b974c6dd3a1fdfc4eddbd685911ccabacfe6570c",
+    "linux_release_helper": "sha256:268cb0c6c84ddaa6c6350ffab2d72f0ec010f86a47f2422f33c585ad098063ef"
+  },
+  "head_at_snapshot": "f36c9870",
+  "snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5",
+  "run_id": "run.archmeld-self.index.1795732916",
+  "export": {
+    "digest": "sha256:f64a3cbc1d039f512e7b5822fe305d722580e859a292e5b61d0c89d693b3f961",
+    "bytes": 18510414,
+    "manifest_schema": "1.2",
+    "file_removed_after_import": true
+  },
+  "acceptance": {
+    "passed": 24,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "export_schema_1_2",
+        "ok": true,
+        "detail": "1.2"
+      },
+      {
+        "name": "parser_errors_have_paths",
+        "ok": true,
+        "detail": [
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/CodeGraphServerResolver.kt"
+          },
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/EngineLifecycle.kt"
+          },
+          {
+            "language": "kotlin",
+            "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+            "path": "jetbrains/src/test/kotlin/ai/codegraph/jetbrains/mcp/McpRegistrationTest.kt"
+          }
+        ]
+      },
+      {
+        "name": "implements_at_least_40",
+        "ok": true,
+        "detail": 47
+      },
+      {
+        "name": "examples_entities_positive",
+        "ok": true,
+        "detail": 65
+      },
+      {
+        "name": "helper_schema_1_2",
+        "ok": true,
+        "detail": {
+          "exit": 0,
+          "stdout": "1.2"
+        }
+      },
+      {
+        "name": "helper_version_launches",
+        "ok": true,
+        "detail": {
+          "exit": 0,
+          "stdout": "archmeld-export-v1 helper 0.21.2 schema 1.2 commit 0113b6c7"
+        }
+      },
+      {
+        "name": "status_summary_under_256kb",
+        "ok": true,
+        "detail": 11773
+      },
+      {
+        "name": "status_clean",
+        "ok": true,
+        "detail": {
+          "added": [],
+          "added_total": 0,
+          "added_truncated": false,
+          "affected_architectures": [],
+          "affected_claims": [],
+          "affected_entities": [],
+          "affected_relations": [],
+          "base_snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5",
+          "changed": [],
+          "changed_total": 0,
+          "coverage": {
+            "expected_count": 1901,
+            "limitations": [
+              "binary: 29 file(s)",
+              "excluded_dir: 1 file(s)",
+              "too_large: 3 file(s)"
+            ],
+            "observed_count": 1868,
+            "omitted_count": 33,
+            "policy_source": "snapshot",
+            "scope": "eligible workspace files under the snapshot workspace_policy",
+            "state": "partial",
+            "unresolved_count": 0
+          },
+          "deleted": [],
+          "deleted_total": 0,
+          "history_mutation": "none",
+          "needs_review": false,
+          "omitted": [
+            {
+              "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.exe",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.pdb",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.assets.cache",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.pdb",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/apphost.exe",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/ref/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/refint/LangPack.dll",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/traces/fixtures/perfetto-counter-state.pftrace",
+              "reason": "binary"
+            },
+            {
+              "path": "adapters/traces/fixtures/tracy-zones-plots.tracy",
+              "reason": "binary"
+            },
+            {
+              "path": "crates/codegraph-cobol/tree-sitter-cobol-src/parser.c",
+              "reason": "too_large"
+            },
+            {
+              "path": "crates/codegraph-dart/tree-sitter-dart-src/parser.c",
+              "reason": "too_large"
+            },
+            {
+              "path": "crates/codegraph-perl/tree-sitter-perl-src/parser.c",
+              "reason": "too_large"
+            },
+            {
+              "path": "crates/codegraph-python/tests/fixtures/test_project/__pycache__/ignored.py",
+              "reason": "excluded_dir"
+            },
+            {
+              "path": "docs/evidence/b007-workbench.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b016-trace-source-jump.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-clean-2.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-clean-3.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-clean.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-paint-1.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-paint-2.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/b026-workbench-paint-3.png",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/mcp-probe-core.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/mcp-probe-path-source.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/mcp-status.jsonl.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/review-diff.raw.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "docs/evidence/self-analysis-2026-11-26/status.raw.json.gz",
+              "reason": "binary"
+            },
+            {
+              "path": "jetbrains/gradle/wrapper/gradle-wrapper.jar",
+              "reason": "binary"
+            },
+            {
+              "path": "upstream-probes/scip/cpp.scip",
+              "reason": "binary"
+            },
+            {
+              "path": "upstream-probes/scip/python.scip",
+              "reason": "binary"
+            },
+            {
+              "path": "upstream-probes/scip/rustdemo.scip",
+              "reason": "binary"
+            },
+            {
+              "path": "vscode/images/icon.png",
+              "reason": "binary"
+            }
+          ],
+          "policy": {
+            "excluded_dirs": [
+              ".git",
+              ".hg",
+              ".svn",
+              ".archmeld",
+              "node_modules",
+              "target",
+              "target-linux",
+              "dist",
+              "build",
+              "out",
+              "coverage",
+              ".venv",
+              "__pycache__",
+              ".mypy_cache",
+              ".pytest_cache",
+              ".tox",
+              ".gradle",
+              ".dart_tool"
+            ],
+            "gitignored": 126362,
+            "include_untracked": false,
+            "max_depth": 64,
+            "max_file_bytes": 8388608,
+            "source": "snapshot",
+            "untracked_not_included": 0
+          },
+          "source_mutation": "none",
+          "stale_changesets": [],
+          "stale_plans": [],
+          "state": "clean"
+        }
+      },
+      {
+        "name": "language_kotlin",
+        "ok": true,
+        "detail": {
+          "bash": 14,
+          "cpp": 8,
+          "csharp": 11,
+          "javascript": 180,
+          "kotlin": 318,
+          "python": 440,
+          "rust": 8313,
+          "toml": 274,
+          "typescript": 434,
+          "unknown": 1179
+        }
+      },
+      {
+        "name": "language_toml",
+        "ok": true,
+        "detail": {
+          "bash": 14,
+          "cpp": 8,
+          "csharp": 11,
+          "javascript": 180,
+          "kotlin": 318,
+          "python": 440,
+          "rust": 8313,
+          "toml": 274,
+          "typescript": 434,
+          "unknown": 1179
+        }
+      },
+      {
+        "name": "language_bash",
+        "ok": true,
+        "detail": {
+          "bash": 14,
+          "cpp": 8,
+          "csharp": 11,
+          "javascript": 180,
+          "kotlin": 318,
+          "python": 440,
+          "rust": 8313,
+          "toml": 274,
+          "typescript": 434,
+          "unknown": 1179
+        }
+      },
+      {
+        "name": "status_files_origin_visible",
+        "ok": true,
+        "detail": {
+          "files_origin": {
+            "tracked": 1868
+          },
+          "file_count": 1868
+        }
+      },
+      {
+        "name": "review_summary_under_1mb",
+        "ok": true,
+        "detail": 1880
+      },
+      {
+        "name": "review_agrees_with_status",
+        "ok": true,
+        "detail": {
+          "state": "clean",
+          "needs_review": false
+        }
+      },
+      {
+        "name": "store_symbol_found",
+        "ok": true,
+        "detail": [
+          {
+            "anchors": [
+              {
+                "blob_digest": "sha256:add12f3b2413fe1a0a03f268afd08021e2aa89e9ea51e2f16b184781d6b94fe7",
+                "byte_end": null,
+                "byte_start": null,
+                "encoding": "utf-8",
+                "line_end": 59,
+                "line_start": 55,
+                "path": "crates/archmeld-core/src/store/mod.rs",
+                "precision": "line_only"
+              }
+            ],
+            "backend_refs": [
+              {
+                "adapter_id": "codegraph",
+                "backend_id": "2112",
+                "run_id": "run.archmeld-self.index.1795732916"
+              }
+            ],
+            "config_digest": "sha256:4b223e3711fc2d16602eb261bd678c1b73beffd5222b22eab37ee5886dc8a497",
+            "external": false,
+            "id": "syn.85335bb0a8ccc0631cb887d68421b8790b4ce74f9cc801eb43470c6aebd4040a",
+            "kind": "type",
+            "language": "rust",
+            "project_id": "archmeld-self",
+            "qualified_name": "crates/archmeld-core/src/store/mod.rs::Store",
+            "role": "source",
+            "snapshot_id": "sha256:46fd4d94506e977d0879e6c70f13c07b776f502c00e5fc4bc062f8e103bc9ac5"
+          }
+        ]
+      },
+      {
+        "name": "context_4000_non_empty",
+        "ok": true,
+        "detail": {
+          "selected_entities": 11,
+          "source_snippets": 7,
+          "budget": {
+            "bytes": 16000,
+            "estimated_tokens": 3856,
+            "tokenizer": "deterministic bytes/4 estimate; not a model tokenizer",
+            "tokens": 4000,
+            "truncated": true
+          }
+        }
+      },
+      {
+        "name": "p04_producer_and_site_filter",
+        "ok": true,
+        "detail": {
+          "seed": {
+            "entity_id": "syn.e31a0465836dcd97a8d9bf35ed4085dea0e76aa9ed02f5bce44884eec06fe8b2",
+            "producer_resolution": "direct",
+            "call_site_line": 235
+          },
+          "returned": 4,
+          "resolutions": [
+            "direct"
+          ]
+        }
+      },
+      {
+        "name": "p04_rejects_relation_filter_on_symbols",
+        "ok": true,
+        "detail": {
+          "id": 7,
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "text": "{\"code\":\"invalid_request\",\"message\":\"invalid input: relation_kinds, min_producer_resolution and require_call_site are only valid for neighbors, path and impact queries\",\"next_action\":\"call archmeld_capabilities for the implemented surface\",\"status\":\"implemented\"}",
+                "type": "text"
+              }
+            ],
+            "isError": true
+          }
+        }
+      },
+      {
+        "name": "p11_exclude_test_from_impact",
+        "ok": true,
+        "detail": {
+          "default_relations": 401,
+          "excluded_relations": 475,
+          "default_has_test": true,
+          "excluded_has_test": false
+        }
+      },
+      {
+        "name": "p16_vendored_excluded_by_default",
+        "ok": true,
+        "detail": {
+          "default": 0
+        }
+      },
+      {
+        "name": "p16_exclude_config",
+        "ok": true,
+        "detail": {
+          "default": 20,
+          "excluded": 0
+        }
+      },
+      {
+        "name": "p12_kind_separation_and_order",
+        "ok": true,
+        "detail": {
+          "kinds": [
+            "type",
+            "symbol",
+            "symbol",
+            "symbol",
+            "symbol",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "module",
+            "external",
+            "external",
+            "external"
+          ],
+          "module_count": 9
+        }
+      },
+      {
+        "name": "p23_single_review",
+        "ok": true,
+        "detail": {
+          "review_calls": 1,
+          "review_ms": 12679
+        }
+      },
+      {
+        "name": "review_cursor_covers_full",
+        "ok": true,
+        "detail": "clean tree: no changed files"
+      }
+    ]
+  },
+  "paging": {
+    "files_total": 600,
+    "paged_unique": 600,
+    "full_unique": 600,
+    "paged_equals_full": true,
+    "max_page_bytes": 534980,
+    "all_pages_under_1mb": true
+  },
+  "timings": {
+    "status": {
+      "exit": 0,
+      "seconds": 7.979,
+      "timings": null,
+      "state": "<path>"
+    },
+    "review": {
+      "exit": 0,
+      "seconds": 11.786,
+      "timings": null,
+      "state": "clean"
+    },
+    "brief": {
+      "exit": 0,
+      "seconds": 14.426,
+      "timings": {
+        "review_calls": 1,
+        "review_ms": 11828
+      },
+      "state": "ok"
+    }
+  },
+  "map": {
+    "snapshot": "sha256:3f7fef3227b46b1e0494d9dd387949356ed3c3e7c9dffe1396f81356a867d7b2",
+    "entries": 18,
+    "confirmed_refs": 23,
+    "orphan": 0,
+    "ambiguous": 0,
+    "state": "ok"
+  },
+  "commands": [
+    {
+      "id": "self-fix-helper-build-2026-11-27",
+      "argv": [
+        "cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--example",
+        "archmeld_export",
+        "-j",
+        "2",
+        "-v"
+      ],
+      "exit_code": 101,
+      "duration_s": 41.292,
+      "git_before": "5622b2a7755bd058ad5b2801c252357e75a1f2dd",
+      "git_after": "5622b2a7755bd058ad5b2801c252357e75a1f2dd",
+      "log_stdout": "baseline\\logs\\self-fix-helper-build-2026-11-27.stdout.log",
+      "log_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_stderr": "baseline\\logs\\self-fix-helper-build-2026-11-27.stderr.log",
+      "log_stderr_sha256": "ce878f1b751dbd0888b7b533518381a201479a9750e82c83dd11f539b9d6ba66"
+    },
+    {
+      "id": "self-fix-helper-build-3-2026-11-27",
+      "argv": [
+        "cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--example",
+        "archmeld_export",
+        "-j",
+        "2",
+        "-v"
+      ],
+      "exit_code": 0,
+      "duration_s": 1080.002,
+      "git_before": "5622b2a7755bd058ad5b2801c252357e75a1f2dd",
+      "git_after": "399835ab3df0471db728090496afaa6fa5976627",
+      "log_stdout": "baseline/logs/self-fix-helper-build-3-2026-11-27.stdout.log",
+      "log_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_stderr": "baseline/logs/self-fix-helper-build-3-2026-11-27.stderr.log",
+      "log_stderr_sha256": "b672d5a84076e7ee514aed41f3a8d7db1c35f7a7f668738b8bda0cd1dda201ba"
+    },
+    {
+      "id": "self-fix-helper-build-final-2026-11-27",
+      "argv": [
+        "cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--example",
+        "archmeld_export",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "duration_s": 121.45,
+      "git_before": "059c49e335ed926950c565ef571ead19ab422732",
+      "git_after": "059c49e335ed926950c565ef571ead19ab422732",
+      "log_stdout": "baseline/logs/self-fix-helper-build-final-2026-11-27.stdout.log",
+      "log_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_stderr": "baseline/logs/self-fix-helper-build-final-2026-11-27.stderr.log",
+      "log_stderr_sha256": "c2b8f375f23045514c060ad12077b89737b6fb98192d638821787c5b00f88b2d"
+    },
+    {
+      "id": "self-fix-index-2026-11-27",
+      "argv": [
+        "./target/debug/archmeld.exe",
+        "index",
+        "--workspace",
+        "<path>",
+        "--state",
+        "<path>",
+        "--project",
+        "archmeld-self",
+        "--max-files",
+        "5000",
+        "--tracked-only",
+        "--include-dir",
+        "examples",
+        "--index-helper",
+        "target/debug/examples/archmeld_export.exe"
+      ],
+      "exit_code": 0,
+      "duration_s": 181.849,
+      "git_before": "94729afaa875c868deb4f21885f4dc813d39b689",
+      "git_after": "94729afaa875c868deb4f21885f4dc813d39b689",
+      "log_stdout": "baseline/logs/self-fix-index-2026-11-27.stdout.log",
+      "log_stdout_sha256": "df7fd5647a2266176aa97e88a5d48557c7fc75e9bbd5488ef5b1c2729809340f",
+      "log_stderr": "baseline/logs/self-fix-index-2026-11-27.stderr.log",
+      "log_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "self-fix-status-review-brief-2026-11-27",
+      "argv": [
+        "py",
+        "-3.11",
+        "<path>"
+      ],
+      "exit_code": 0,
+      "duration_s": 35.7,
+      "git_before": "e16211e20a5c7d1ac32f1d0085b3ae1a0a7489bd",
+      "git_after": "e16211e20a5c7d1ac32f1d0085b3ae1a0a7489bd",
+      "log_stdout": "baseline/logs/self-fix-status-review-brief-2026-11-27.stdout.log",
+      "log_stdout_sha256": "8cdf35bc887640bc5601bbadb7debe7a6b106b70c0a0bfc56a87b84a7c78057a",
+      "log_stderr": "baseline/logs/self-fix-status-review-brief-2026-11-27.stderr.log",
+      "log_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "self-fix-core-tests-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "archmeld-core",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "duration_s": 382.917,
+      "git_before": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "git_after": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "log_stdout": "baseline/logs/self-fix-core-tests-2026-11-27.stdout.log",
+      "log_stdout_sha256": "c350e9e69558d6c3bf24a6d8858f006b3e5d86aa9fbc697f2e1c3e934c8813a4",
+      "log_stderr": "baseline/logs/self-fix-core-tests-2026-11-27.stderr.log",
+      "log_stderr_sha256": "890bd07999fcb097fbce0e4ac338db8d91110b9defe8dc25bdd3a5fe71b7b24a"
+    },
+    {
+      "id": "self-fix-export-tests-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "codegraph",
+        "--no-default-features",
+        "--lib",
+        "export"
+      ],
+      "exit_code": 0,
+      "duration_s": 7.803,
+      "git_before": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "git_after": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "log_stdout": "baseline/logs/self-fix-export-tests-2026-11-27.stdout.log",
+      "log_stdout_sha256": "cb46801e22dc102990ee4223ea610a3584d9f37ec2594a59ae809c5dee6b4a1a",
+      "log_stderr": "baseline/logs/self-fix-export-tests-2026-11-27.stderr.log",
+      "log_stderr_sha256": "c7bfb121a99680811eb236bb0a12afbefeaa3eb0e056f208a734157ffc3436b7"
+    },
+    {
+      "id": "self-fix-api-tests-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "archmeld-api",
+        "-j",
+        "1"
+      ],
+      "exit_code": 0,
+      "duration_s": 87.289,
+      "git_before": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "git_after": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "log_stdout": "baseline/logs/self-fix-api-tests-2026-11-27.stdout.log",
+      "log_stdout_sha256": "88f1c7e1996f70f8c0fe43f5ed4c8489669d17dbe4837e6b49147343214e8e5d",
+      "log_stderr": "baseline/logs/self-fix-api-tests-2026-11-27.stderr.log",
+      "log_stderr_sha256": "cf1282f6d6a70aa947c94b416e7f83b2d889f525907dfb05853d4e90a0c62725"
+    },
+    {
+      "id": "self-fix-server-indexer-tests-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--lib",
+        "indexer::tests",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "duration_s": 139.864,
+      "git_before": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "git_after": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "log_stdout": "baseline/logs/self-fix-server-indexer-tests-2026-11-27.stdout.log",
+      "log_stdout_sha256": "c875b699a33193f087fbf6f6a6d7f92eadfef1e37c42ef448e0202bfa0d057c7",
+      "log_stderr": "baseline/logs/self-fix-server-indexer-tests-2026-11-27.stderr.log",
+      "log_stderr_sha256": "59a58b30485f844d0fb3107531e2fae604bf3c168e34c41875af00a2e9398185"
+    },
+    {
+      "id": "self-fix-server-integration-tests-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "codegraph-server",
+        "--test",
+        "index_coverage",
+        "--test",
+        "cross_file_trait",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "duration_s": 98.302,
+      "git_before": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "git_after": "723df0d11eaceb0d55e08e5823da5b158dfd5c2e",
+      "log_stdout": "baseline/logs/self-fix-server-integration-tests-2026-11-27.stdout.log",
+      "log_stdout_sha256": "11d387c0c616cf77daa878289a7ec963a3ff428c368c9af04c05f244c855df40",
+      "log_stderr": "baseline/logs/self-fix-server-integration-tests-2026-11-27.stderr.log",
+      "log_stderr_sha256": "abfb9ab2068af1fdbf80762746ff64c4d1819c8bc524a63aed30c5323b818591"
+    },
+    {
+      "id": "self-fix-acceptance-2026-11-27",
+      "argv": [
+        "py",
+        "-3.11",
+        "<path>",
+        "--state",
+        "<path>",
+        "--project",
+        "archmeld-self",
+        "--mcp",
+        "target/debug/archmeld-mcp.exe",
+        "--out",
+        "<path>"
+      ],
+      "exit_code": 0,
+      "duration_s": 21.243,
+      "git_before": "509059d9932fa83f27e9a62fef1a2ff4b8f1be29",
+      "git_after": "509059d9932fa83f27e9a62fef1a2ff4b8f1be29",
+      "log_stdout": "baseline/logs/self-fix-acceptance-2026-11-27.stdout.log",
+      "log_stdout_sha256": "e2e25d7cddf1e879239b74beba4638825906bf05066e61549e9a4281aebb921b",
+      "log_stderr": "baseline/logs/self-fix-acceptance-2026-11-27.stderr.log",
+      "log_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "self-fix-api-tests-cursor-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "archmeld-api",
+        "-j",
+        "1"
+      ],
+      "exit_code": 0,
+      "duration_s": 76.352,
+      "git_before": "c0280a8f9bbb40ba73a8684e00fc1797c1c4758d",
+      "git_after": "c0280a8f9bbb40ba73a8684e00fc1797c1c4758d",
+      "log_stdout": "baseline/logs/self-fix-api-tests-cursor-2026-11-27.stdout.log",
+      "log_stdout_sha256": "f45b006d50d98670901adce474d12cfb4895494ef44ed397caa00eb910c92356",
+      "log_stderr": "baseline/logs/self-fix-api-tests-cursor-2026-11-27.stderr.log",
+      "log_stderr_sha256": "6f2b1f83649d8525ee8756eab479f81368c49099d77a1631e3e05c058fb6915b"
+    },
+    {
+      "id": "self-fix-acceptance-cursor-2026-11-27",
+      "argv": [
+        "py",
+        "-3.11",
+        "<path>",
+        "--state",
+        "<path>",
+        "--project",
+        "archmeld-self",
+        "--mcp",
+        "target/debug/archmeld-mcp.exe",
+        "--out",
+        "<path>"
+      ],
+      "exit_code": 0,
+      "duration_s": 22.207,
+      "git_before": "0967b4a9cfbbdc00084d242406aa74afc5628943",
+      "git_after": "0967b4a9cfbbdc00084d242406aa74afc5628943",
+      "log_stdout": "baseline/logs/self-fix-acceptance-cursor-2026-11-27.stdout.log",
+      "log_stdout_sha256": "e2e25d7cddf1e879239b74beba4638825906bf05066e61549e9a4281aebb921b",
+      "log_stderr": "baseline/logs/self-fix-acceptance-cursor-2026-11-27.stderr.log",
+      "log_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "self-fix-core-tests-2-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "archmeld-core",
+        "-j",
+        "2"
+      ],
+      "exit_code": 101,
+      "duration_s": 375.096,
+      "git_before": "89566c76607f373c728a81cbb0850ec1ae0cfef8",
+      "git_after": "89566c76607f373c728a81cbb0850ec1ae0cfef8",
+      "log_stdout": "baseline/logs/self-fix-core-tests-2-2026-11-27.stdout.log",
+      "log_stdout_sha256": "d6c03a433029127908e758289c00753c37e4074a71c0d79f0dce30614d26a25b",
+      "log_stderr": "baseline/logs/self-fix-core-tests-2-2026-11-27.stderr.log",
+      "log_stderr_sha256": "d98930a251607a844cf62225c4ef01f2238de2b02eaa9a003cfcd3b4a9e94e9e"
+    },
+    {
+      "id": "self-fix-core-tests-3-2026-11-27",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "archmeld-core",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "duration_s": 339.309,
+      "git_before": "89566c76607f373c728a81cbb0850ec1ae0cfef8",
+      "git_after": "89566c76607f373c728a81cbb0850ec1ae0cfef8",
+      "log_stdout": "baseline/logs/self-fix-core-tests-3-2026-11-27.stdout.log",
+      "log_stdout_sha256": "5eb407c74fe1a5d8e1cfe3f3258e9f20a40d08dab44c72bafcf6abd7f08b9a95",
+      "log_stderr": "baseline/logs/self-fix-core-tests-3-2026-11-27.stderr.log",
+      "log_stderr_sha256": "92fd91eedba795ed8fd42142234c1249f38b83f2675f8cb7ba175c52e06ff7a6"
+    },
+    {
+      "id": "self-fix-release-tests-2026-11-27",
+      "argv": [
+        "py",
+        "-3.11",
+        "tooling/test_release.py"
+      ],
+      "exit_code": 0,
+      "duration_s": 27.545,
+      "git_before": "1825b4c2c241120990eaf7c5668eb2ec459dc1fc",
+      "git_after": "1825b4c2c241120990eaf7c5668eb2ec459dc1fc",
+      "log_stdout": "baseline/logs/self-fix-release-tests-2026-11-27.stdout.log",
+      "log_stdout_sha256": "3919871f188cd6db324f9a9cfddcafddb10179d8706b8244a23b2a65509729d5",
+      "log_stderr": "baseline/logs/self-fix-release-tests-2026-11-27.stderr.log",
+      "log_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "limitations": [
+    "Snapshot precedes evidence-only commits; clean status was observed at snapshot time.",
+    "CLI built at dd124ca1, helper at dd124ca1 (Windows) / 49683c1d (Linux); later commits are tests, docs, map and release tooling.",
+    "The 600-file cursor run is a synthetic temporary workspace.",
+    "The map header binds snapshot 3f7fef and is checked against it; the final snapshot includes the map file.",
+    "Full codegraph-server Windows suite still has pre-existing backend/ROCRDB failures; only indexer/integration targets and release CLI/helper were run."
+  ],
+  "release": {
+    "bundle": "dist/release-manifest.json",
+    "product_commit": "af8fa2f9",
+    "windows_helper": "1c0decdb",
+    "linux_helper": "268cb0c6",
+    "test_release": "passed (windows/linux/vsix/AT068/AT069/AT077)"
+  }
+}

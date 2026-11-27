@@ -62,7 +62,7 @@
     "result": "docs/evidence/e4a-2026-11-25/RESULT.md",
     "protocol": "docs/evidence/e4a-2026-11-25/PROTOCOL.md",
     "run_root": "docs/evidence/e4a-2026-11-25/runs/",
-    "outside_run_root": "<workspace>/<e4a-run>"
+    "outside_run_root": "<path>"
   },
   "limitations": [
     "one model family; the map was authored by the same family",

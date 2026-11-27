@@ -286,6 +286,27 @@ mod tests {
     use std::sync::Arc;
     use tokio::sync::RwLock;
 
+    /// A platform-absolute fixture path. The file does not need to exist.
+    fn fixture_path(name: &str) -> std::path::PathBuf {
+        let root = if cfg!(windows) {
+            r"<path>"
+        } else {
+            "/codegraph-fixtures"
+        };
+        let mut path = std::path::PathBuf::from(root);
+        for part in name.split('/') {
+            path.push(part);
+        }
+        path
+    }
+
+    fn fixture_string(name: &str) -> String {
+        fixture_path(name)
+            .to_str()
+            .expect("fixture path must be UTF-8")
+            .to_string()
+    }
+
     /// Helper to add a node to the symbol index
     fn add_node_to_index(
         backend: &CodeGraphBackend,
@@ -323,7 +344,7 @@ mod tests {
             );
             props1.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/file.rs".to_string()),
+                PropertyValue::String(fixture_string("file.rs")),
             );
             props1.insert("start_line".to_string(), PropertyValue::Int(10));
             props1.insert("end_line".to_string(), PropertyValue::Int(20));
@@ -343,7 +364,7 @@ mod tests {
             );
             props2.insert(
                 "path".to_string(),
-                PropertyValue::String("/test/file.rs".to_string()),
+                PropertyValue::String(fixture_string("file.rs")),
             );
             props2.insert("start_line".to_string(), PropertyValue::Int(30));
             props2.insert("end_line".to_string(), PropertyValue::Int(50));
@@ -362,9 +383,9 @@ mod tests {
         let backend = CodeGraphBackend::new_for_test(graph, query_engine);
 
         // Add nodes to symbol index
-        let path = std::path::Path::new("/test/file.rs");
-        add_node_to_index(&backend, path, func_id, "test_function", "Function", 10, 20);
-        add_node_to_index(&backend, path, class_id, "TestClass", "Class", 30, 50);
+        let path = fixture_path("file.rs");
+        add_node_to_index(&backend, &path, func_id, "test_function", "Function", 10, 20);
+        add_node_to_index(&backend, &path, class_id, "TestClass", "Class", 30, 50);
 
         (backend, func_id, class_id)
     }
@@ -559,7 +580,7 @@ mod tests {
             CodeGraph::in_memory().expect("Failed to create graph"),
         ));
 
-        let target_path = "/test/lens.rs";
+        let target_path = fixture_string("lens.rs");
         let (target_id, _prod_caller, _test_caller, _skipped_test) = {
             let mut g = graph.write().await;
 
@@ -576,8 +597,8 @@ mod tests {
 
             // Symbol under inspection, plus a test function in the same file
             // (must be skipped in the output).
-            let target = mk(&mut g, "do_work", target_path, 5, false);
-            let skipped_test = mk(&mut g, "test_does_work", target_path, 40, true);
+            let target = mk(&mut g, "do_work", &target_path, 5, false);
+            let skipped_test = mk(&mut g, "test_does_work", &target_path, 40, true);
             // A production caller and a test caller, both in other files.
             let prod_caller = mk(&mut g, "run", "/test/main.rs", 3, false);
             let test_caller = mk(&mut g, "test_do_work", "/test/lens_test.rs", 3, true);
@@ -607,7 +628,7 @@ mod tests {
 
         let query_engine = Arc::new(QueryEngine::new(Arc::clone(&graph)));
         let backend = CodeGraphBackend::new_for_test(graph, query_engine);
-        let path = std::path::Path::new(target_path);
+        let path = std::path::Path::new(&target_path);
         add_node_to_index(&backend, path, target_id, "do_work", "Function", 5, 10);
         // The skipped in-file test must be indexed too, to prove it's filtered.
         add_node_to_index(
@@ -620,7 +641,7 @@ mod tests {
             45,
         );
 
-        let uri = Url::from_file_path(target_path).unwrap().to_string();
+        let uri = Url::from_file_path(&target_path).unwrap().to_string();
         let response = backend
             .handle_get_document_code_lens(DocumentCodeLensParams { uri })
             .await
