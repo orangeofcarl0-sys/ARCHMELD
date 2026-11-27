@@ -37,6 +37,7 @@ cargo +1.94.1-x86_64-pc-windows-gnu <command> --locked
 
 ## 公开快照纪律
 
+- 公开 origin 只允许 `main` 和 `public-snapshot-*` 分支；本地启用 `.githooks/pre-push`（`tooling/publication_guard.py --install`），CI 同名 workflow 复核。私有分支不得推送。
 - 公开仓库只接收 `tooling/public_snapshot.py export` 生成、并通过 `verify-export` 的单提交快照；不得直接 push 私有历史。
 - 本地路径、用户名、远程主机和私有数据集标识由扫描/替换流程处理；私有替换表放在未跟踪的 `.archmeld-private/`。
 
