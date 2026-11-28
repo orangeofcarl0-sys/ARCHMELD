@@ -1,0 +1,103 @@
+{
+  "reviewer": "reviewer-2",
+  "model": "omni-responses/deepseek-v4.1-flash",
+  "fixture": "context",
+  "arm": "a",
+  "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+  "started_at": "2026-11-28T07:14:51Z",
+  "duration_ms": 25794,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "changed_owner": "target",
+    "changed_path": "src/target.py",
+    "unchanged_context_entity": "caller",
+    "incoming_resolution": "resolved",
+    "citations": [
+      {
+        "path": "src/target.py",
+        "line": 1
+      },
+      {
+        "path": "src/target.py",
+        "line": 2
+      },
+      {
+        "path": "src/caller.py",
+        "line": 3
+      },
+      {
+        "path": "src/caller.py",
+        "line": 4
+      },
+      {
+        "path": "src/caller.py",
+        "line": 1
+      }
+    ],
+    "confidence": "high",
+    "notes": "git show HEAD reports exactly one modified file, src/target.py, with a single-line body change (return 1 -> return 2) at src/target.py:2 inside def target at src/target.py:1; no other path is touched. src/caller.py is unchanged between snapshots: HEAD^:src/caller.py and HEAD:src/caller.py both hash to blob 48a510257e3abd4741ba08145448f708aa6c3fff, so caller (defined at src/caller.py:3) is pre-existing context, not a second change. The incoming relation is a direct, statically explicit dependency: caller does 'from target import target' (src/caller.py:1) and invokes it as 'return target()' (src/caller.py:4), binding to the module-local function name in src/target.py:1, so it is classified as resolved rather than a candidate hypothesis. No test execution was performed and no runtime behavior (e.g. the actual value returned by caller()) is asserted from source shape; only the committed text of the diff is cited."
+  },
+  "calls": [],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show --stat HEAD"
+    },
+    {
+      "seq": 2,
+      "command": "cd \"<path>" && ls -la && echo \"---\" && git status --short | head -20"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && git show HEAD"
+    },
+    {
+      "seq": 4,
+      "command": "cd \"<path>" && find src -type f | sort"
+    },
+    {
+      "seq": 7,
+      "command": "cd \"<path>" && git diff HEAD^ HEAD --name-status && echo \"--- base snapshot files ---\" && git ls-tree -r --name-only HEAD"
+    },
+    {
+      "seq": 8,
+      "command": "cd \"<path>" && cat -n src/target.py && echo \"---\" && cat -n src/caller.py && echo \"--- stable? ---\" && git log --oneline --all | head"
+    },
+    {
+      "seq": 9,
+      "command": "cd \"<path>" && git rev-parse HEAD^ && echo \"--- blob hashes ---\" && git ls-tree -r HEAD"
+    },
+    {
+      "seq": 10,
+      "command": "cd \"<path>" && git rev-parse HEAD:src/caller.py HEAD^:src/caller.py && echo \"--- target base ---\" && git show HEAD^:src/target.py | cat -n"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 19132,
+    "output": 2128,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 21260
+  },
+  "session_id": "7af48159-bb0c-4665-a42a-a4bc799197dc",
+  "session_dir": "<path>",
+  "prompt_sha256": "d80c655ae275152d1e6e900d13b8ed4873bf7149c0965f4d2429a8bd4f5e3b78",
+  "score": {
+    "matched": false,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": false,
+    "citations_ok": true,
+    "unsupported": true,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-2-context-a\\pi-sessions\\2026-11-28T07-14-51-728Z_7af48159-bb0c-4665-a42a-a4bc799197dc.jsonl",
+      "sha256": "sha256:bd45a5a8171e0cf83a359fe99272c7087ec33f6b637b68394b00e3d26a547fe4",
+      "bytes": 27587
+    }
+  ]
+}

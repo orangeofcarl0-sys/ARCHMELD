@@ -14,7 +14,10 @@ pub fn import_trace(
 ) -> Result<Value> {
     validate::require_id("project_id", request.project_id)?;
     validate::require_id("run_id", request.run_id)?;
-    require_decimal("clock.origin_ns", trace["clock"]["origin_ns"].as_str().unwrap_or(""))?;
+    let origin_ns = trace["clock"]["origin_ns"]
+        .as_str()
+        .ok_or_else(|| CoreError::invalid("clock.origin_ns must be a decimal integer string"))?;
+    require_decimal("clock.origin_ns", origin_ns)?;
     let snapshot_config = load_snapshot_config(store, request.snapshot_id)?;
     let bound = match (request.snapshot_id, &snapshot_config) {
         (Some(snapshot), Some(config)) => {
@@ -85,7 +88,7 @@ pub fn import_trace(
     if clock_unit != "ns" {
         return Err(CoreError::unsupported("only nanosecond clocks are supported"));
     }
-    let origin_ns = trace["clock"]["origin_ns"].as_str().unwrap().to_string();
+    let origin_ns = origin_ns.to_string();
     let build_identity = trace["build_identity"]
         .as_object()
         .ok_or_else(|| CoreError::invalid("build_identity must be an object"))?
@@ -633,7 +636,9 @@ fn insert_observed_relations(
             .map_err(|err| CoreError::invalid(format!("relation identity: {err}")))?;
         let relation_id = format!(
             "rel.{}",
-            digest.strip_prefix("sha256:").expect("sha256 prefix")
+            digest.strip_prefix("sha256:").ok_or_else(|| {
+                CoreError::Storage("relation digest is not a sha256 digest".to_string())
+            })?
         );
         let mut conditions = vec![
             format!("runtime-run:{}", request.run_id),

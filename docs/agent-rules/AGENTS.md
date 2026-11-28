@@ -9,9 +9,10 @@ change's affected callers.
 
 1. Call `archmeld_status` once. If a snapshot exists, call `archmeld_brief`
    with `recipe=auto`.
-2. Put the brief's `counts` (confirmed/candidate/unknown/stale), `findings`,
-   `unknowns` and `next_actions` into your plan. Cite the snapshot id and
-   coverage when they change the answer.
+2. Put the brief's `counts`, `findings` (changed entities only), `context`
+   (unchanged callers/anchors), `gaps`, `budget.omitted_*`, `unknowns` and
+   `next_actions` into your plan. Do not treat context or gaps as changed
+   entities. Cite the snapshot id and coverage when they change the answer.
 3. Before editing a symbol, call `archmeld_query` with `kind=impact` for that
    symbol.
 

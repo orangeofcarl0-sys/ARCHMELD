@@ -1,10 +1,11 @@
 # ARCHMELD operator guide
 
 This guide is for the local operator of the current ARCHMELD work tree. AT067
-passed for the seven-language gate; R1 is still not named complete because
-Ubuntu GUI/VS Code host and macOS release runs remain open. AT068 clean-machine
-delivery and the real 0.21.2 upstream upgrade (AT077) passed. See
-`docs/REMAINING_BLOCKERS.md`.
+passed for the seven-language gate. R1 is defined by S15/AT068 as the Windows
+11 x64 and Ubuntu 24.04 x64 CLI/container path; macOS and the Ubuntu GUI/VS Code
+host are explicitly unsupported/not tested and are not R1 gates. AT068
+CLI/container delivery is partial only because VSIX install is blocked on a
+host without VS Code; AT077 passed. See `docs/REMAINING_BLOCKERS.md`.
 
 ## 1. Build and test (reference machine setup)
 
@@ -177,6 +178,14 @@ step.
 `status --workspace` and `review-diff` are read-only. The review reports
 per-file line overlap, base/current digests, static relation impact, confidence
 and `verification.state=not_run`; it never executes a repository command.
+`review-diff` also returns `provenance` (base/candidate Git and content-tree
+identity), `timings`, and a `structural` block for snapshot-to-snapshot mode:
+`review-diff --candidate-snapshot <id>` compares two indexed snapshots, detects
+moves, stable relation changes and bounded convergent-path hypotheses. Use
+`--persist` to store the result in `review_reports` and pin cited snapshots;
+`--freeze --persist` additionally copies changed/added candidate bytes into the
+CAS and pins their objects. `review-diff --report <id>` reads a persisted
+report. See ADR-063, ADR-065, ADR-066 and ADR-067.
 `refresh` creates a new snapshot and reports the exact file/entity/relation
 delta against the previous snapshot; the old snapshot remains addressable.
 See ADR-054.
@@ -505,12 +514,12 @@ The MCP surface advertises only handlers this build can execute:
 by `archmeld_capabilities`. Content returned from a repository is `untrusted`
 data and is never executed.
 
-`archmeld_brief` returns the JSON result plus a one-screen markdown card. If
-the workspace has an AOCI-CODE map (`aoci.txt`/`aoci.code.txt`), the brief also
-includes a read-only `cognition` block with entry counts and the entries
-matched by the change. ARCHMELD never writes that map and never treats its
-entries as parsed relations; a missing or malformed map is a warning, not an
-error.
+`archmeld_brief` returns the JSON result plus a one-screen markdown card. A
+change brief separates changed `findings` from unchanged `context` and per-file
+`gaps`; `max_findings`, `max_context`, `max_gaps` and `max_relation_items`
+bound the output and `budget.omitted_*` reports truncation. AOCI entries are
+read-only context and are never parsed relations; a missing or malformed map is
+a warning, not an error.
 
 `archmeld brief --write` writes the same card to
 `<workspace>/.archmeld/SESSION.md` (or `--out <path>`), with a header carrying

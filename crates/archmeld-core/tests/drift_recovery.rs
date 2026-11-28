@@ -215,6 +215,26 @@ fn drift_is_reported_and_old_snapshot_and_decisions_survive_restart() {
     )
     .unwrap();
     assert_eq!(recorded["summary"]["state"], "changed");
+    let repeated = record_drift(
+        &mut fixture.store,
+        &json!({
+            "project_id": fixture.project,
+            "base_snapshot_id": fixture.snapshot_id,
+            "workspace_handle": fixture.handle,
+            "new_snapshot_id": new_snapshot.snapshot_id,
+            "idempotency_key": "drift-record-1",
+        }),
+    )
+    .unwrap();
+    assert_eq!(repeated["report_id"], recorded["report_id"]);
+    let reports = list_drift_reports(&fixture.store, &fixture.project).unwrap();
+    assert_eq!(
+        reports
+            .iter()
+            .filter(|report| report["report_id"] == recorded["report_id"])
+            .count(),
+        1
+    );
 
     // Restart: close the store and reopen the same ledger.
     let project = fixture.project.clone();
@@ -552,4 +572,44 @@ fn write_retention_evidence(fixture: &common::Fixture, case: Value) {
     });
     fs::create_dir_all(path.parent().unwrap()).unwrap();
     fs::write(path, serde_json::to_string_pretty(&root).unwrap() + "\n").unwrap();
+}
+
+#[test]
+fn gc_keeps_artifacts_referenced_only_by_artifact_refs() {
+    let dir = tempfile::tempdir().unwrap();
+    let mut store = Store::open(dir.path().join("state")).unwrap();
+    store.ensure_project("project.gc.refs", "expedition").unwrap();
+    let digest = store
+        .put_blob(b"artifact-ref-only", "application/octet-stream")
+        .unwrap();
+    {
+        let conn = rusqlite::Connection::open(store.state_root().join("state.sqlite3")).unwrap();
+        conn.execute(
+            "INSERT INTO artifact_refs (owner_type,owner_id,digest) VALUES ('test','owner',?1)",
+            (&digest,),
+        )
+        .unwrap();
+    }
+
+    let dry = gc(&mut store, true).unwrap();
+    assert!(
+        !dry["candidates"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["digest"] == digest),
+        "{dry}"
+    );
+    let swept = gc(&mut store, false).unwrap();
+    assert_eq!(swept["deleted_count"], 0, "{swept}");
+    assert!(store.blob_exists(&digest).unwrap());
+
+    {
+        let conn = rusqlite::Connection::open(store.state_root().join("state.sqlite3")).unwrap();
+        conn.execute("DELETE FROM artifact_refs WHERE digest=?1", (&digest,))
+            .unwrap();
+    }
+    let swept = gc(&mut store, false).unwrap();
+    assert_eq!(swept["deleted_count"], 1, "{swept}");
+    assert!(!store.blob_exists(&digest).unwrap());
 }

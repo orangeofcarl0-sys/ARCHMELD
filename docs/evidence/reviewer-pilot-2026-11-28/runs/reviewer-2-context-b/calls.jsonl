@@ -1,0 +1,5 @@
+{"seq": 2, "tool": "archmeld_brief", "args": {"recipe": "change"}}
+{"seq": 4, "tool": "archmeld_query", "args": {"snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624", "entity_ids": ["syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"], "kind": "impact", "max_depth": 2}}
+{"seq": 5, "tool": "archmeld_query", "args": {"kind": "neighbors", "relation_kinds": ["resolved_call", "static_call_candidate", "observed_call", "references"], "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624", "entity_ids": ["syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"], "query": "target"}}
+{"seq": 6, "tool": "archmeld_source", "args": {"entity_id": "syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"}}
+{"seq": 7, "tool": "archmeld_review", "args": {"base_snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624", "detail": "full", "max_files": 500}}

@@ -99,7 +99,7 @@
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stdout": "12.57 6\r\n",
-        "stdout_digest": "sha256:b3cda623424e6d233cd3ec7d0840474832f1111b12cc3a4e1bebc7d026b224cd",
+        "stdout_digest": "sha256:b3cda62<redacted>4e6d233cd3ec7d0840474832f1111b12cc3a4e1bebc7d026b224cd",
         "timed_out": false,
         "wall_ms": 166
       },

@@ -1,0 +1,99 @@
+{
+  "reviewer": "reviewer-1",
+  "model": "deepseek/deepseek-v4-pro",
+  "fixture": "context",
+  "arm": "a",
+  "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+  "started_at": "2026-11-28T07:13:10Z",
+  "duration_ms": 68622,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "changed_owner": "target",
+    "changed_path": "src/target.py",
+    "unchanged_context_entity": "caller",
+    "incoming_resolution": "resolved",
+    "citations": [
+      {
+        "path": "src/target.py",
+        "line": 1
+      },
+      {
+        "path": "src/target.py",
+        "line": 2
+      },
+      {
+        "path": "src/caller.py",
+        "line": 1
+      },
+      {
+        "path": "src/caller.py",
+        "line": 3
+      },
+      {
+        "path": "src/caller.py",
+        "line": 4
+      }
+    ],
+    "confidence": "high",
+    "notes": "The commit 9217097 changes only src/target.py line 2 (return 1 -> return 2), inside the function 'target' (src/target.py:1), so the changed owner is 'target'. The only caller is 'caller' in src/caller.py:3, which is unchanged and directly calls target via 'from target import target' (src/caller.py:1) and 'return target()' (src/caller.py:4). That direct import plus direct call is a statically resolvable call edge, so the incoming relation is a resolved call rather than a candidate hypothesis."
+  },
+  "calls": [],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show HEAD --stat"
+    },
+    {
+      "seq": 2,
+      "command": "cd \"<path>" && git show HEAD && echo \"=====DIFF=====\" && git diff HEAD^ HEAD"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && find . -type f -not -path './.git/*' | sort && echo \"=====\" && git ls-files"
+    },
+    {
+      "seq": 7,
+      "command": "cd \"<path>" && git show HEAD^:src/caller.py && echo \"---target base---\" && git show HEAD^:src/target.py && echo \"---branches---\" && git branch -a && echo \"---all refs---\" && git log --all --oneline --graph"
+    },
+    {
+      "seq": 8,
+      "command": "cd \"<path>" && ls -la && echo \"===repo===\" && ls -la repo && echo \"===parent===\" && ls -la .."
+    },
+    {
+      "seq": 9,
+      "command": "cd \"<path>" && cat prompt.txt && echo \"===state===\" && ls -la state && echo \"===pi-sessions===\" && ls -la pi-sessions"
+    },
+    {
+      "seq": 10,
+      "command": "cd \"<path>" && git show HEAD --format=fuller -- src/target.py && echo \"---\" && git diff HEAD^ HEAD --unified=5"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 2851,
+    "output": 5891,
+    "cacheRead": 28032,
+    "cacheWrite": 0,
+    "totalTokens": 36774
+  },
+  "session_id": "dcac2b4a-ac83-4769-a5e0-98661db31a58",
+  "session_dir": "<path>",
+  "prompt_sha256": "d80c655ae275152d1e6e900d13b8ed4873bf7149c0965f4d2429a8bd4f5e3b78",
+  "score": {
+    "matched": false,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": false,
+    "citations_ok": true,
+    "unsupported": true,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-1-context-a\\pi-sessions\\2026-11-28T07-13-10-652Z_dcac2b4a-ac83-4769-a5e0-98661db31a58.jsonl",
+      "sha256": "sha256:e2f5cbaa077c4f83589e76f9f7a10cff43ce0ec3d663f1ae20ead825d59b0d9d",
+      "bytes": 43311
+    }
+  ]
+}

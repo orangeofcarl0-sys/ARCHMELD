@@ -1,0 +1,192 @@
+{
+  "reviewer": "reviewer-2",
+  "model": "omni-responses/deepseek-v4.1-flash",
+  "fixture": "gap",
+  "arm": "b",
+  "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+  "started_at": "2026-11-28T07:21:57Z",
+  "duration_ms": 38128,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "unmapped_paths": [
+      "docs/notes.md"
+    ],
+    "changed_entities": [
+      "src/ops.py::run"
+    ],
+    "writes_evidence": "unavailable",
+    "coverage": "partial",
+    "citations": [
+      {
+        "path": "docs/notes.md",
+        "line": 3
+      },
+      {
+        "path": "src/ops.py",
+        "line": 4
+      },
+      {
+        "path": "src/ops.py",
+        "line": 3
+      },
+      {
+        "path": "src/settle.py",
+        "line": 1
+      },
+      {
+        "path": "src/settle.py",
+        "line": 2
+      },
+      {
+        "path": ".gitignore",
+        "line": 1
+      }
+    ],
+    "confidence": "high",
+    "notes": "Git shows exactly two files changed in HEAD (a140914, base ea9550d): docs/notes.md line 3 (wording edit) and src/ops.py line 4 (`return settle()` -> `return settle() + 1`). archmeld_review (base_snapshot_id sha256:c0cbafc9...) reports the same two changed files, 0 added, 0 deleted, 0 moved, and coverage.state=partial with coverage.unmapped_files=[\"docs/notes.md\"] and confidence=file_changed_no_entity_mapping ('no base-snapshot entity anchor matched this file'), with entities=[]; archmeld_brief(recipe=change) lists the same single gap: kind=unmapped, path=docs/notes.md, reason='no base entity mapping', side=both. So docs/notes.md is the only changed file without an entity mapping. src/ops.py is mapped: file entity src/ops.py and symbol entity src/ops.py::run (anchor src/ops.py:3-4), and review reports exactly one affected entity, src/ops.py::run, with confidence=static_line_overlap on line 4. The only other changed line in the diff is inside the run anchor, so src/ops.py::run is the sole changed entity; the file-level entity src/ops.py appears only as unchanged context via a declared `contains` relation. Writes: no write evidence exists. archmeld_query(kind=neighbors) over run/settle/ops.py/settle.py with relation_kinds=[writes, reads, publishes, consumes, resolved_call, observed_call] at max_depth=3 returns 4 entities and 0 relations; the full relation set for this snapshot is 5 relations: 2 `imports` (declared, src/ops.py -> settle module and -> src/settle.py::settle), 1 `contains` (declared, src/ops.py -> src/ops.py::run), and 1 `static_call_candidate` (resolution=candidate, run -> external module `settle`, call_site=null, evidence_scope=artifact, conditions include 'syntax-only; not a resolved call'). The candidate call target is the external module entity `settle`, not src/settle.py::settle, and candidate relations are hypotheses, not resolved calls; the index also flags '5 relation(s) have no call-site line; evidence_scope=artifact'. No runtime/scenario/verification artifact exists (index counts: evidence=1, all syntax; verification.state=not_run; review states no build, test, scenario or runtime command was executed). The changed code is only `settle() + 1` and src/settle.py body is `return 1` (line 2) — this is source shape only and is deliberately not used to infer writes, so writes_evidence is 'unavailable', not 'absent'. Coverage partial is asserted by the tool: coverage.state=partial, unmapped_files non-empty, plus limitations that line overlap is static text evidence rather than semantic equivalence and that new calls are not inferred. Distinguish: base snapshot coverage was already partial for the same reason (snapshot.coverage: expected_count=5, observed_count=4, omitted_count=1, 'excluded_dir: 1 file(s)') because .pi/mcp.json is gitignored (.gitignore line 1: .pi/), but .pi/mcp.json is not part of the commit and is therefore not a changed-file gap. Only docs/notes.md is unmapped among changed files."
+  },
+  "calls": [
+    {
+      "seq": 2,
+      "tool": "archmeld_status",
+      "args": {}
+    },
+    {
+      "seq": 4,
+      "tool": "archmeld_brief",
+      "args": {
+        "recipe": "change",
+        "project_id": "project.reviewer.gap",
+        "format": "agent"
+      }
+    },
+    {
+      "seq": 7,
+      "tool": "archmeld_review",
+      "args": {
+        "base_snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "detail": "full"
+      }
+    },
+    {
+      "seq": 8,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "kind": "symbols",
+        "query": ""
+      }
+    },
+    {
+      "seq": 9,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "kind": "neighbors",
+        "entity_ids": [
+          "syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85"
+        ],
+        "relation_kinds": [
+          "writes",
+          "reads",
+          "resolved_call",
+          "observed_call",
+          "static_call_candidate"
+        ],
+        "max_depth": 2
+      }
+    },
+    {
+      "seq": 10,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "kind": "neighbors",
+        "max_depth": 6,
+        "relation_kinds": [
+          "writes",
+          "publishes",
+          "owns"
+        ]
+      }
+    },
+    {
+      "seq": 12,
+      "tool": "archmeld_query",
+      "args": {
+        "entity_ids": [
+          "syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85",
+          "syn.1acb632cab0e611d2d8dc0f8cc5311e4f395de1867892b88a2dd452e519670fe",
+          "syn.6242e60a0a340122ebadbca106b4f348e91efd076a2395255ba0e8e46ff911a3",
+          "syn.3b6cb355d93b88d5cbc6ec5d89ab2fb625b8ccc770e2303fe51fafd85ad209bf"
+        ],
+        "kind": "neighbors",
+        "max_depth": 3,
+        "project_id": "project.reviewer.gap",
+        "relation_kinds": [
+          "writes",
+          "reads",
+          "publishes",
+          "consumes",
+          "resolved_call",
+          "observed_call"
+        ],
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670"
+      }
+    },
+    {
+      "seq": 13,
+      "tool": "archmeld_source",
+      "args": {
+        "entity_id": "syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85",
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670"
+      }
+    }
+  ],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -3 && echo \"---\" && git diff --stat HEAD^ HEAD"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && git diff HEAD^ HEAD && echo \"=== TRACKED FILES ===\" && git ls-files && echo \"=== ALL FILES (excl .git) ===\" && find . -path ./.git -prune -o -type f -print"
+    },
+    {
+      "seq": 11,
+      "command": "cd \"<path>" && echo \"=== docs/notes.md ===\" && cat -n docs/notes.md && echo \"=== src/ops.py ===\" && cat -n src/ops.py && echo \"=== gitignore ===\" && cat -n .gitignore"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 86738,
+    "output": 4154,
+    "cacheRead": 1536,
+    "cacheWrite": 0,
+    "totalTokens": 92428
+  },
+  "session_id": "457b4eac-221c-460b-8ece-d23ac23263cf",
+  "session_dir": "<path>",
+  "prompt_sha256": "6e1e4f258ca314d9058cbdfc556cebfcd18298d9feafd8d8c215d06889a4303a",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-2-gap-b\\pi-sessions\\2026-11-28T07-21-57-473Z_457b4eac-221c-460b-8ece-d23ac23263cf.jsonl",
+      "sha256": "sha256:49488144cdf9796fad3ff889379caefd2324b0499b3a50d5e68bdfc4c807dc99",
+      "bytes": 85982
+    }
+  ]
+}

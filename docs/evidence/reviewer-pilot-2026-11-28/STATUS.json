@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "status": "run_agent_pilot",
+  "review_kind": "agent reviewers in durable pi sessions; not a human study",
+  "reviewers": {
+    "reviewer-1": "deepseek/deepseek-v4-pro",
+    "reviewer-2": "omni-responses/deepseek-v4.1-flash"
+  },
+  "design": "3 fixtures x 2 arms x 2 reviewers = 12 sessions",
+  "matched": "9/12",
+  "arm_a_matched": "3/6",
+  "arm_b_matched": "6/6",
+  "unsupported_claims": 2,
+  "observation": "arm B matched more often and did not label the candidate relation as resolved; arm A produced two resolved claims for a candidate relation",
+  "claim_limit": "descriptive only; no statistical significance and no human-review claim",
+  "result": "RESULT.md",
+  "key": "key.json"
+}

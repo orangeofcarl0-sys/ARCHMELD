@@ -71,6 +71,27 @@ pub fn digest_bytes(bytes: &[u8]) -> String {
     format!("sha256:{}", hex_lower(&hasher.finalize()))
 }
 
+/// First `chars` hex digits of a `sha256:` digest.
+///
+/// The digest functions in this module always return `sha256:` followed by 64
+/// lowercase hex digits; this helper keeps every short id on that one shape and
+/// avoids byte slicing a string that could be shorter than expected.
+pub fn short_hex(digest: &str, chars: usize) -> String {
+    digest
+        .trim_start_matches("sha256:")
+        .chars()
+        .take(chars)
+        .collect()
+}
+
+pub fn short_bytes(bytes: &[u8], chars: usize) -> String {
+    short_hex(&digest_bytes(bytes), chars)
+}
+
+pub fn short_value(value: &serde_json::Value, chars: usize) -> Result<String, CanonicalError> {
+    digest_value(value).map(|digest| short_hex(&digest, chars))
+}
+
 fn hex_lower(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut out = String::with_capacity(bytes.len() * 2);
@@ -306,6 +327,19 @@ mod tests {
         assert_eq!(
             digest_value(&value).unwrap(),
             "sha256:8fbd973f9e57bb947d29ee5cf71a58798b1432a2cc175f609ac4776b58425e42"
+        );
+    }
+
+    #[test]
+    fn short_ids_share_one_truncation_rule() {
+        let digest = digest_bytes(b"archmeld");
+        assert_eq!(short_hex(&digest, 32), short_bytes(b"archmeld", 32));
+        assert_eq!(short_hex(&digest, 32).len(), 32);
+        assert_eq!(short_hex(&digest, 16).len(), 16);
+        let value = json!({"a": 1});
+        assert_eq!(
+            short_value(&value, 32).unwrap(),
+            short_hex(&digest_value(&value).unwrap(), 32)
         );
     }
 }

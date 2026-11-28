@@ -12,8 +12,8 @@ use crate::apply::resolve_workspace_root;
 use crate::error::{CoreError, Result};
 use crate::hash;
 use crate::snapshot::{
-    git_sets, git_untracked, is_binary, is_git_repository, read_file, walk, MetaFile, OmittedFile,
-    ReadOutcome, SnapshotOptions, WorkspacePolicy,
+    git_dirty_paths, git_sets, git_untracked, git_workspace_tree, is_binary, is_git_repository,
+    read_file, walk, MetaFile, OmittedFile, ReadOutcome, SnapshotOptions, WorkspacePolicy,
 };
 use crate::store::{validate, Store};
 use rusqlite::Connection;
@@ -61,11 +61,12 @@ pub fn analyze_drift(
             ));
         }
     }
-    let base_files = snapshot_files(store, project_id, base_snapshot_id)?;
+    let base_files = store.snapshot_file_digests(project_id, base_snapshot_id)?;
     let scan = scan_workspace(store, project_id, base_snapshot_id, root)?;
     let disk_files = &scan.files;
     let mut changed = Vec::new();
     let mut deleted = Vec::new();
+    let mut omitted_base = Vec::new();
     for (path, digest) in &base_files {
         match disk_files.get(path) {
             Some(actual) if actual == digest => {}
@@ -75,7 +76,25 @@ pub fn analyze_drift(
                 "base_digest": digest,
                 "current_digest": actual,
             })),
-            None => deleted.push(json!({"path": path, "state": "deleted", "base_digest": digest})),
+            None => {
+                let omitted = scan
+                    .omitted
+                    .iter()
+                    .find(|item| item.path.trim_end_matches('/') == path);
+                let exists = fs::symlink_metadata(root.join(path)).is_ok();
+                if omitted.is_some() || exists {
+                    omitted_base.push(json!({
+                        "path": path,
+                        "state": "omitted",
+                        "base_digest": digest,
+                        "reason": omitted
+                            .map(|item| item.reason.as_str())
+                            .unwrap_or("present_but_not_eligible"),
+                    }));
+                } else {
+                    deleted.push(json!({"path": path, "state": "deleted", "base_digest": digest}));
+                }
+            }
         }
     }
     let mut added = Vec::new();
@@ -87,10 +106,68 @@ pub fn analyze_drift(
     changed.sort_by(|left, right| left["path"].as_str().cmp(&right["path"].as_str()));
     deleted.sort_by(|left, right| left["path"].as_str().cmp(&right["path"].as_str()));
     added.sort_by(|left, right| left["path"].as_str().cmp(&right["path"].as_str()));
+    let mut moved = Vec::new();
+    let mut remaining_deleted = Vec::new();
+    // Only pair a deleted/added file when both sides have exactly one file with
+    // that content digest. Pairing arbitrarily among duplicates would invent a
+    // move relationship that the bytes do not establish.
+    let deleted_digests: BTreeMap<String, usize> = deleted
+        .iter()
+        .filter_map(|file| file["base_digest"].as_str().map(str::to_string))
+        .fold(BTreeMap::new(), |mut counts, digest| {
+            *counts.entry(digest).or_insert(0) += 1;
+            counts
+        });
+    let added_digests: BTreeMap<String, usize> = added
+        .iter()
+        .filter_map(|file| file["current_digest"].as_str().map(str::to_string))
+        .fold(BTreeMap::new(), |mut counts, digest| {
+            *counts.entry(digest).or_insert(0) += 1;
+            counts
+        });
+    for deleted_file in deleted.drain(..) {
+        let digest = deleted_file["base_digest"].clone();
+        let digest_text = digest.as_str().unwrap_or("");
+        let unique = deleted_digests.get(digest_text) == Some(&1)
+            && added_digests.get(digest_text) == Some(&1);
+        if unique {
+            if let Some(position) = added
+                .iter()
+                .position(|added_file| added_file["current_digest"] == digest)
+            {
+                let added_file = added.remove(position);
+                moved.push(json!({
+                    "from": deleted_file["path"],
+                    "to": added_file["path"],
+                    "base_digest": digest,
+                    "current_digest": added_file["current_digest"],
+                    "state": "moved",
+                }));
+                continue;
+            }
+        }
+        let mut file = deleted_file;
+        if added_digests.contains_key(digest_text) {
+            file["ambiguous_move"] = json!(true);
+            file["ambiguous_digest"] = digest;
+        }
+        remaining_deleted.push(file);
+    }
+    for added_file in added.iter_mut() {
+        let digest = added_file["current_digest"].as_str().unwrap_or("");
+        if deleted_digests.get(digest).is_some_and(|count| *count > 1)
+            || added_digests.get(digest).is_some_and(|count| *count > 1)
+        {
+            added_file["ambiguous_move"] = json!(true);
+            added_file["ambiguous_digest"] = added_file["current_digest"].clone();
+        }
+    }
+    deleted = remaining_deleted;
     let changed_paths: BTreeSet<String> = changed
         .iter()
         .chain(deleted.iter())
-        .filter_map(|item| item["path"].as_str().map(str::to_string))
+        .chain(moved.iter().map(|item| &item["from"]))
+        .filter_map(|item| item["path"].as_str().or_else(|| item["from"].as_str()).map(str::to_string))
         .collect();
 
     let mut affected_entities = Vec::new();
@@ -132,7 +209,7 @@ pub fn analyze_drift(
     }
 
     let mut affected_claims = Vec::new();
-    for claim in latest_rows(store, "claims", "claim_id", project_id)? {
+    for claim in store.latest_revision_rows(project_id, crate::store::RevisionTable::Claims)? {
         if claim["snapshot_id"].as_str() != Some(base_snapshot_id) {
             continue;
         }
@@ -148,7 +225,9 @@ pub fn analyze_drift(
         }
     }
     let mut affected_architectures = Vec::new();
-    for architecture in latest_rows(store, "architectures", "architecture_id", project_id)? {
+    for architecture in
+        store.latest_revision_rows(project_id, crate::store::RevisionTable::Architectures)?
+    {
         if architecture["snapshot_id"].as_str() != Some(base_snapshot_id) {
             continue;
         }
@@ -174,7 +253,8 @@ pub fn analyze_drift(
     }
     let stale_plans = plans_on_snapshot(store, project_id, base_snapshot_id)?;
     let stale_changesets = changesets_on_snapshot(store, project_id, base_snapshot_id)?;
-    let dirty = !(changed.is_empty() && deleted.is_empty() && added.is_empty());
+    let dirty = !(changed.is_empty() && deleted.is_empty() && added.is_empty() && moved.is_empty())
+        || !omitted_base.is_empty();
     let omitted_count = scan.omitted.len() as u64;
     let observed_count = disk_files.len() as u64;
     let expected_count = observed_count + omitted_count;
@@ -192,11 +272,35 @@ pub fn analyze_drift(
             scan.policy_source
         ));
     }
-    let coverage_state = if omitted_count == 0 {
+    if !omitted_base.is_empty() {
+        limitations.push(format!(
+            "omitted_base: {} base file(s) exist but were not compared",
+            omitted_base.len()
+        ));
+    }
+    let coverage_state = if omitted_count == 0 && omitted_base.is_empty() {
         "complete"
     } else {
         "partial"
     };
+    let omitted_base_count = omitted_base.len();
+    let content_tree_entries: Vec<(String, String)> = scan
+        .files
+        .iter()
+        .map(|(path, digest)| (path.clone(), digest.clone()))
+        .collect();
+    let content_tree = crate::snapshot::content_tree_digest(&content_tree_entries).ok();
+    let git = scan.git.as_ref().map(|git| {
+        json!({
+            "is_repository": true,
+            "commit": git.commit,
+            "head_tree_oid": git.head_tree_oid,
+            "head_tree_scope": git.head_tree_scope,
+            "workspace_subdir": git.workspace_subdir,
+            "dirty": !git.dirty_paths.is_empty(),
+            "dirty_paths_count": git.dirty_paths.len(),
+        })
+    });
     Ok(json!({
         "schema_version": "1.0",
         "project_id": project_id,
@@ -206,7 +310,9 @@ pub fn analyze_drift(
         "changed": changed,
         "deleted": deleted,
         "added": added,
+        "moved": moved,
         "omitted": scan.omitted,
+        "omitted_base": omitted_base,
         "policy": {
             "source": scan.policy_source,
             "include_untracked": scan.policy.include_untracked,
@@ -225,13 +331,16 @@ pub fn analyze_drift(
         "needs_review": dirty,
         "source_mutation": "none",
         "history_mutation": "none",
+        "git": git,
         "coverage": {
             "state": coverage_state,
             "scope": "eligible workspace files under the snapshot workspace_policy",
             "expected_count": expected_count,
             "observed_count": observed_count,
             "omitted_count": omitted_count,
+            "omitted_base_count": omitted_base_count,
             "unresolved_count": 0,
+            "content_tree_digest": content_tree,
             "limitations": limitations,
             "policy_source": scan.policy_source,
         },
@@ -269,13 +378,17 @@ pub fn record_drift(store: &mut Store, raw: &Value) -> Result<Value> {
         .map_err(|err| CoreError::invalid(format!("drift report: {err}")))?;
     let report_id = format!(
         "drift.{}",
-        short_hash(&format!(
-            "{}:{}:{}:{}",
-            request.project_id,
-            request.base_snapshot_id,
-            request.new_snapshot_id.as_deref().unwrap_or(""),
-            report["state"]
-        ))
+        hash::short_bytes(
+            format!(
+                "{}:{}:{}:{}",
+                request.project_id,
+                request.base_snapshot_id,
+                request.new_snapshot_id.as_deref().unwrap_or(""),
+                report["state"]
+            )
+            .as_bytes(),
+            32,
+        )
     );
     let stored = json!({
         "report_id": report_id,
@@ -301,17 +414,13 @@ pub fn record_drift(store: &mut Store, raw: &Value) -> Result<Value> {
     )?;
     let result_json = serde_json::to_string(&stored)
         .map_err(|err| CoreError::Storage(format!("drift encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'recordDrift',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &digest,
-            result_json,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "recordDrift",
+        &request.idempotency_key,
+        &digest,
+        200,
+        &result_json,
     )?;
     Ok(stored)
 }
@@ -378,7 +487,10 @@ pub fn create_backup(store: &mut Store, project_id: &str, destination: &Path) ->
     let manifest_digest = hash::digest_bytes(manifest_bytes.as_bytes());
     let backup_id = format!(
         "backup.{}",
-        short_hash(&format!("{}:{}:{}", project_id, db_digest, manifest_digest))
+        hash::short_bytes(
+            format!("{}:{}:{}", project_id, db_digest, manifest_digest).as_bytes(),
+            32,
+        )
     );
     store.conn.execute(
         "INSERT INTO backup_runs
@@ -479,17 +591,30 @@ pub fn gc(store: &mut Store, dry_run: bool) -> Result<Value> {
         }
     }
     candidates.sort_by(|left, right| left["digest"].as_str().cmp(&right["digest"].as_str()));
+    let mut deleted_count = 0usize;
     if !dry_run {
         for candidate in &candidates {
             let digest = candidate["digest"].as_str().unwrap_or("");
             let hex = digest.strip_prefix("sha256:").unwrap_or(digest);
+            // Delete the row first. If a foreign key still references the
+            // artifact, leave the bytes untouched and report the row as live.
+            match store
+                .conn
+                .execute("DELETE FROM artifacts WHERE digest=?1", (digest,))
+            {
+                Ok(_) => {}
+                Err(error) if error.to_string().contains("FOREIGN KEY") => continue,
+                Err(error) => return Err(error.into()),
+            }
             if hex.len() >= 3 {
                 let path = objects.join(&hex[..2]).join(&hex[2..]);
-                let _ = fs::remove_file(path);
+                if let Err(error) = fs::remove_file(&path) {
+                    if error.kind() != std::io::ErrorKind::NotFound {
+                        return Err(error.into());
+                    }
+                }
             }
-            store
-                .conn
-                .execute("DELETE FROM artifacts WHERE digest=?1", (digest,))?;
+            deleted_count += 1;
         }
     }
     Ok(json!({
@@ -498,7 +623,7 @@ pub fn gc(store: &mut Store, dry_run: bool) -> Result<Value> {
         "pinned_objects": pinned.len(),
         "candidate_count": candidates.len(),
         "candidates": candidates,
-        "deleted_count": if dry_run { 0 } else { candidates.len() },
+        "deleted_count": deleted_count,
         "owned_root": store.root().to_string_lossy(),
         "whole_tree_reset": false,
     }))
@@ -538,11 +663,62 @@ fn referenced_digests(store: &Store) -> Result<BTreeSet<String>> {
         "SELECT stderr_digest FROM check_results WHERE stderr_digest IS NOT NULL",
         &mut set,
     )?;
+    collect_column(store, "SELECT digest FROM artifact_refs", &mut set)?;
+    collect_column(
+        store,
+        "SELECT artifact_digest FROM architectures WHERE artifact_digest IS NOT NULL",
+        &mut set,
+    )?;
     collect_json_digests(store, "SELECT artifacts_json FROM check_results", &mut set)?;
     collect_json_digests(store, "SELECT payload_json FROM changesets", &mut set)?;
     collect_json_digests(store, "SELECT artifact_digests_json FROM jobs", &mut set)?;
     collect_json_digests(store, "SELECT result_json FROM idempotency", &mut set)?;
+    // A persisted review report may cite frozen candidate bytes. Even if its
+    // freeze pins are lost, the report itself is a GC root: removing the bytes
+    // would make a readable report refer to missing evidence.
+    collect_review_report_blobs(store, &mut set)?;
     Ok(set)
+}
+
+fn collect_review_report_blobs(store: &Store, set: &mut BTreeSet<String>) -> Result<()> {
+    let mut statement = store
+        .conn
+        .prepare("SELECT output_json FROM review_reports")?;
+    let rows = statement.query_map([], |row| row.get::<_, String>(0))?;
+    for row in rows {
+        let text = row?;
+        let Ok(value) = serde_json::from_str::<Value>(&text) else {
+            // A corrupt report is not silently trusted; retention still keeps
+            // every object it could have cited only through its pins.
+            continue;
+        };
+        collect_blob_digest_values(&value, set);
+    }
+    Ok(())
+}
+
+fn collect_blob_digest_values(value: &Value, set: &mut BTreeSet<String>) {
+    match value {
+        Value::Object(map) => {
+            for (key, item) in map {
+                if key == "blob_digest" {
+                    if let Some(digest) = item.as_str() {
+                        if digest.starts_with("sha256:") {
+                            set.insert(digest.to_string());
+                        }
+                    }
+                } else {
+                    collect_blob_digest_values(item, set);
+                }
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                collect_blob_digest_values(item, set);
+            }
+        }
+        _ => {}
+    }
 }
 
 fn collect_column(store: &Store, sql: &str, set: &mut BTreeSet<String>) -> Result<()> {
@@ -656,18 +832,12 @@ fn verify_backup(destination: &Path) -> Result<()> {
     Ok(())
 }
 
-fn snapshot_files(
-    store: &Store,
-    project_id: &str,
-    snapshot_id: &str,
-) -> Result<BTreeMap<String, String>> {
-    let mut statement = store.conn.prepare(
-        "SELECT path,blob_digest FROM files WHERE project_id=?1 AND snapshot_id=?2 ORDER BY path",
-    )?;
-    let rows = statement.query_map((project_id, snapshot_id), |row| {
-        Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
-    })?;
-    Ok(rows.collect::<rusqlite::Result<BTreeMap<_, _>>>()?)
+struct GitWorkspace {
+    commit: Option<String>,
+    head_tree_oid: Option<String>,
+    head_tree_scope: &'static str,
+    workspace_subdir: String,
+    dirty_paths: BTreeSet<String>,
 }
 
 struct WorkspaceScan {
@@ -677,6 +847,7 @@ struct WorkspaceScan {
     policy_source: &'static str,
     gitignored: usize,
     untracked_not_included: usize,
+    git: Option<GitWorkspace>,
 }
 
 fn scan_workspace(
@@ -714,7 +885,13 @@ fn scan_workspace(
 }
 
 fn path_under_excluded_dir(path: &str, excluded: &[String]) -> bool {
-    path.split('/')
+    // Capture excludes directories, not files whose basename happens to match
+    // an excluded directory name. A file such as `scripts/build` is eligible.
+    let Some((parent, _file_name)) = path.rsplit_once('/') else {
+        return false;
+    };
+    parent
+        .split('/')
         .any(|segment| excluded.iter().any(|name| name == segment))
 }
 
@@ -727,8 +904,17 @@ fn scan_git(
     policy: &WorkspacePolicy,
     policy_source: &'static str,
 ) -> Result<WorkspaceScan> {
-    let (tracked, ignored, _commit) = git_sets(root);
+    let (tracked, ignored, commit) = git_sets(root);
     let untracked = git_untracked(root);
+    let mut dirty_paths = git_dirty_paths(root);
+    if policy.include_untracked {
+        dirty_paths.extend(untracked.iter().cloned());
+    }
+    let head_tree = commit
+        .as_deref()
+        .and_then(|commit| git_workspace_tree(root, commit));
+    let head_tree_oid = head_tree.as_ref().map(|(oid, _)| oid.clone());
+    let workspace_subdir = head_tree.map(|(_, prefix)| prefix).unwrap_or_default();
     let mut candidates = tracked.clone();
     if policy.include_untracked {
         candidates.extend(untracked.iter().cloned());
@@ -809,6 +995,17 @@ fn scan_git(
         } else {
             untracked.len()
         },
+        git: Some(GitWorkspace {
+            commit,
+            head_tree_oid,
+            head_tree_scope: if workspace_subdir.is_empty() {
+                "repository"
+            } else {
+                "workspace_subtree"
+            },
+            workspace_subdir,
+            dirty_paths,
+        }),
     })
 }
 
@@ -836,6 +1033,7 @@ fn scan_walk(
             policy_source,
             gitignored: 0,
             untracked_not_included: 0,
+            git: None,
         });
     }
     let mut files = BTreeMap::new();
@@ -871,31 +1069,8 @@ fn scan_walk(
         policy_source,
         gitignored: 0,
         untracked_not_included: 0,
+        git: None,
     })
-}
-
-fn latest_rows(
-    store: &Store,
-    table: &str,
-    id_column: &str,
-    project_id: &str,
-) -> Result<Vec<Value>> {
-    let sql = format!(
-        "SELECT payload_json FROM {table} t
-         WHERE project_id=?1 AND revision=(SELECT MAX(revision) FROM {table} u
-             WHERE u.project_id=t.project_id AND u.{id_column}=t.{id_column})
-         ORDER BY {id_column}"
-    );
-    let mut statement = store.conn.prepare(&sql)?;
-    let rows = statement.query_map((project_id,), |row| row.get::<_, String>(0))?;
-    let mut values = Vec::new();
-    for row in rows {
-        values.push(
-            serde_json::from_str(&row?)
-                .map_err(|err| CoreError::Storage(format!("{table} payload corrupt: {err}")))?,
-        );
-    }
-    Ok(values)
 }
 
 fn plans_on_snapshot(store: &Store, project_id: &str, snapshot_id: &str) -> Result<Vec<Value>> {
@@ -969,8 +1144,3 @@ fn changesets_on_snapshot(
     Ok(result)
 }
 
-fn short_hash(identity: &str) -> String {
-    let digest = hash::digest_bytes(identity.as_bytes());
-    let hex = digest.strip_prefix("sha256:").unwrap_or(&digest);
-    hex[..32].to_string()
-}

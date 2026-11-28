@@ -25,6 +25,6 @@
       "content_artifact": "sha256:ca375a3ffe93734b38c7b0a22febf3fd8e06f7f0289b0a0cecc5132c137acab8"
     }
   ],
-  "toolchain_digest": "sha256:69e81dddf3fd3ba499ed032cbb24d9836e3d8118bbf6f07f4826ce0803428c3d",
+  "toolchain_digest": "sha256:69e81dddf3fd3ba499ed032cbb24d9836e3d8118bbf6f07f4826ce080<redacted>8c3d",
   "staging_verification_ids": []
 }

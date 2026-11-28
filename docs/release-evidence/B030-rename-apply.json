@@ -4,7 +4,7 @@
     "c_cpp": {
       "after_output": "12.57 6",
       "applied": {
-        "approval_id": "approval.a3fbb3c9baf241b898bd82dc6a5175e6",
+        "approval_id": "approval.f6f303762bec5fd5dff4d68ef1ce8824",
         "changed_files": [
           "src/circle.cpp",
           "src/main.cpp",
@@ -12,7 +12,7 @@
         ],
         "changeset_id": "changeset.cpp",
         "plan_id": "plan.cpp",
-        "prepared_digest": "sha256:12a138f0771eb547db50596dc4d7390d498a1b4eaaec3974f4fc878b5ae8bdf4",
+        "prepared_digest": "sha256:54eebd9b23532d1b295a26950f1f0a4720a9ef39b446011a5ada5d62ccd06ad5",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "clangd 18.1.8"
@@ -22,14 +22,14 @@
     "csharp": {
       "after_output": "12",
       "applied": {
-        "approval_id": "approval.b4760c6f626fcc33170a0c15bda3fe14",
+        "approval_id": "approval.a9beadabfd46c498f04dcf74d63210ae",
         "changed_files": [
           "Program.cs",
           "Util.cs"
         ],
         "changeset_id": "changeset.csharp",
         "plan_id": "plan.csharp",
-        "prepared_digest": "sha256:d1003610c97fec1c57822325bdb6d3bc5063a899f520e646ac1affdbd19ed96a",
+        "prepared_digest": "sha256:cbc53ccb0c7e3239c34ef4d0f2f5093abb2553b0e54affadc1c4d36708f9bbad",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "csharp-ls 0.14.0"
@@ -39,14 +39,14 @@
     "go": {
       "after_output": "2 4 6",
       "applied": {
-        "approval_id": "approval.0109f68ee4765657228a94b1f3dbab46",
+        "approval_id": "approval.899ec9ee4e33c0e7bb2072a49da09286",
         "changed_files": [
           "main.go",
           "util/util.go"
         ],
         "changeset_id": "changeset.go",
         "plan_id": "plan.go",
-        "prepared_digest": "sha256:97f70312eb17568f1f48945492c8a73e7e86c2ada7f89d2bd7fc3354fc6b89cc",
+        "prepared_digest": "sha256:bd7effa01597380a8601dd53e9919cae8781cc2acd6ceb739e187e349c41a82b",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "gopls 0.20.0"
@@ -56,14 +56,14 @@
     "java": {
       "after_output": "compiled",
       "applied": {
-        "approval_id": "approval.f2c42d6c2f28f322daa8df6f86ca481c",
+        "approval_id": "approval.9bc183cb11e95c5637de6adae847322c",
         "changed_files": [
           "src/main/java/pkg/App.java",
           "src/main/java/pkg/Util.java"
         ],
         "changeset_id": "changeset.java",
         "plan_id": "plan.java",
-        "prepared_digest": "sha256:589116e449bfd60d5c3c14131666dfe0cbd39cbbbf109e02a03e3fb22e2fec3e",
+        "prepared_digest": "sha256:f281dbf2f6f5547f161652a44f23ca1cca1fa1a76161b838631b0763c5b752ef",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "jdtls 1.64.0"
@@ -73,14 +73,14 @@
     "javascript_typescript": {
       "after_output": "4",
       "applied": {
-        "approval_id": "approval.aaace4ed527643bd69e43eacdef11bc7",
+        "approval_id": "approval.7c7479523b360c0f37596ae2610269c6",
         "changed_files": [
           "src/app.ts",
           "src/util.ts"
         ],
         "changeset_id": "changeset.typescript",
         "plan_id": "plan.typescript",
-        "prepared_digest": "sha256:4ada741e2217a3268db9c6805f193a637c4d3ad94d444db05b40478949fb8534",
+        "prepared_digest": "sha256:38195d1ee9c17c6a175c822ab42e8537b4398e84d8afb9a1df052b080154407b",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "typescript-language-server 4.3.4"
@@ -89,14 +89,14 @@
       "javascript": {
         "after_output": "4",
         "applied": {
-          "approval_id": "approval.f2da91e2821e4b1fca6661e1134b4c6f",
+          "approval_id": "approval.871d2addc733f0927bfb176a71b35b0e",
           "changed_files": [
             "src/app.js",
             "src/util.js"
           ],
           "changeset_id": "changeset.javascript",
           "plan_id": "plan.javascript",
-          "prepared_digest": "sha256:13bb44cfa8b884a949203058501cb1864e78242ffd665ad8d52b4d733d257e81",
+          "prepared_digest": "sha256:2017effb31fb675c6f030a0b8a78ed4768fa53316e067ee658d61894f0595f46",
           "staged_only_until_apply": true,
           "state": "applied",
           "tool": "typescript-language-server 4.3.4"
@@ -107,14 +107,14 @@
     "python": {
       "after_output": "6",
       "applied": {
-        "approval_id": "approval.9a395c4896c30dd20996ce6f1e63147e",
+        "approval_id": "approval.1a5bfdd4327040b90ba8b9d2e7609ced",
         "changed_files": [
           "app.py",
           "pkg/util.py"
         ],
         "changeset_id": "changeset.python",
         "plan_id": "plan.python",
-        "prepared_digest": "sha256:c21a99702e8f9a2576c3fff43c48ddfd924d97a493d5a1e37db765ea62284781",
+        "prepared_digest": "sha256:c86d1e761598ee01f84c4f96e49ad52f4b0e8152c3d22eb9c8b4df91a14bd3ca",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "pyright 1.1.408"
@@ -124,14 +124,14 @@
     "rust": {
       "after_output": "2",
       "applied": {
-        "approval_id": "approval.11b1f90ecb6e62cd078b24a7634bc1ae",
+        "approval_id": "approval.43c7741398095f83772a3db8b6e5ca6c",
         "changed_files": [
           "src/lib.rs",
           "src/util.rs"
         ],
         "changeset_id": "changeset.rust",
         "plan_id": "plan.rust",
-        "prepared_digest": "sha256:dd60e8bc505b8f3961be04c2624a382681b6533a793cc22307994d81dcdbff67",
+        "prepared_digest": "sha256:2ec5d5847440791bfbad9883618169ceeeaaf8821bd541cadf172eefed6848bf",
         "staged_only_until_apply": true,
         "state": "applied",
         "tool": "rust-analyzer 1.94.1"
@@ -144,7 +144,7 @@
     "arch": "x86_64",
     "os": "windows"
   },
-  "product_head": "7474343d",
-  "recorded_at_unix": 1795778361,
+  "product_head": "392d0ce4",
+  "recorded_at_unix": 1795869668,
   "schema_version": "1.0"
 }

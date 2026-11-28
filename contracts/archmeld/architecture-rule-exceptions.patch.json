@@ -1,0 +1,49 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-064-architecture-rule-exceptions-and-source.md",
+  "contract": "ArchitectureRule",
+  "change": "add_optional_source_and_exceptions",
+  "fields": {
+    "source": {
+      "type": "object",
+      "required": false,
+      "properties": {
+        "path": "workspace-relative POSIX path",
+        "line": "integer >= 1",
+        "digest": "optional sha256 digest"
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "required": false,
+      "max_items": 100,
+      "item": {
+        "id": "Id",
+        "violation_key": "stable key emitted by the checker",
+        "reason": "non-empty string",
+        "introduced_revision": "integer >= 1",
+        "expires_revision": "optional integer >= introduced_revision",
+        "scope_ids": "optional component ids",
+        "source": "optional RuleSource"
+      }
+    }
+  },
+  "semantics": {
+    "excepted": "violation matched by an active exception; verdict=excepted, passed=false, blocks_acceptance=false",
+    "active_violation": "no matching exception; verdict=violated, blocks_acceptance=true",
+    "unused_exception": "active exception whose violation_key matched no current violation; removable and reported, never silently dropped",
+    "inactive_exception": "exception not yet in force (introduced_revision > current) or expired (expires_revision < current); reported separately so it cannot be mistaken for an exception",
+    "expiry_boundary": "expires_revision is the last architecture revision at which the exception is active (inclusive)",
+    "scope_ids": "audit metadata only; matching is by exact violation_key. scope_ids do not widen or narrow an exception",
+    "violation_key_stability": "keys use qualified names and declared component ids, never content-derived entity ids; custom_contract keys include the assertion and parameters.limit",
+    "exception_changes": "added/removed/changed against the previous architecture revision; changed compares id, introduced_revision, reason, scope_ids, expires_revision and source"
+  },
+  "implemented_by": "crates/archmeld-core/src/analysis/blueprint.rs and analysis/interpret/mod.rs",
+  "verified_by": [
+    "crates/archmeld-core/tests/blueprint_rules.rs::architecture_rule_exceptions_are_visible_and_revision_scoped",
+    "crates/archmeld-core/tests/blueprint_rules.rs::rule_exception_future_scope_changes_and_unused_entries_are_visible",
+    "crates/archmeld-core/tests/blueprint_rules.rs::duplicate_rule_ids_and_exception_keys_are_rejected",
+    "crates/archmeld-core/tests/blueprint_rules.rs::custom_contract_key_names_the_assertion_and_limit"
+  ]
+}

@@ -24,7 +24,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEFAULT_SOURCE_SHA256 = "2b7cda9a4ab9f7d8672c888c5c803b872a98125dbaec8194d24ce14db8de0201"
+DEFAULT_SOURCE_SHA256 = "<redacted>"
 
 
 def sha256(path):
@@ -122,8 +122,8 @@ def main():
         raise SystemExit(f"source digest {source_sha256} does not match the authorized {expected}")
     payload = json.loads(source_bytes)
     rows = payload["rows"]
-    if len(rows) != 342:
-        raise SystemExit(f"expected 342 recorded rows, got {len(rows)}")
+    if len(rows) != <redacted>:
+        raise SystemExit(f"expected <redacted> recorded rows, got {len(rows)}")
 
     def column(path):
         values = []
@@ -314,10 +314,10 @@ def main():
             "bytes": len(source_bytes),
             "rows": len(rows),
             "<selected-columns>": [
-                "model.conditional_SD_mm",
-                "MC.all_output_SD_mm",
-                "model.bias_mm",
-                "MC.all_output_bias_mm",
+                "<redacted-column>",
+                "<redacted-column>",
+                "<redacted-column>",
+                "<redacted-column>",
             ],
         },
         "extraction": {

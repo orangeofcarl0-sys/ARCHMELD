@@ -1,0 +1,5 @@
+{"seq": 1, "command": "git show HEAD --stat && echo \"---DIFF---\" && git diff HEAD^ HEAD"}
+{"seq": 2, "command": "git log --oneline -5"}
+{"seq": 3, "command": "grep -rn \"alpha\" --include=\"*.py\" . ; echo \"---\" ; find . -type f -name \"*.py\" | sort"}
+{"seq": 4, "command": "cat src/core/alpha_moved.py; echo \"---BASE---\"; git show HEAD^:src/core/alpha.py"}
+{"seq": 6, "command": "git diff HEAD^ HEAD -- src/caller.py; echo \"exit=$?\"; git show HEAD^:src/caller.py"}

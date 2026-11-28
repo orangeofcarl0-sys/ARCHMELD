@@ -1,8 +1,8 @@
 # ARCHMELD remaining blockers
 
-Audit date: 2026-11-27. Current phase: **project testing**. Full release-level
+Audit date: 2026-11-28. Current phase: **project testing**. Full release-level
 acceptance is not required in this phase; release-time items are recorded but do
-not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the 2026-11-27 P01–P25 repairs; upstream pin is `ae4b2e54fc8ce1c074523943fc750b20f68bf8aa`, 0.21.2).
+not block current test work. Audit base: the current HEAD (use `git rev-parse HEAD`; this file was last refreshed after the 2026-11-28 Palimpsest closure; upstream pin is `ae4b2e54fc8ce1c074523943fc750b20f68bf8aa`, 0.21.2).
 This file separates **closed** work from **still-blocking** work. A blocker is
 only closed when the evidence path below exists and a real command produced it.
 It is not a roadmap wish list: every open item names a reproduction and a
@@ -12,9 +12,9 @@ closure condition.
 
 | Item | Result | Evidence |
 |---|---|---|
-| B030 AT067 runtime linkage | Seven groups captured with VizTracer, V8, clangd probe, JFR, EventPipe, Go pprof and a Rust probe; each trace imported into a bound snapshot and mapped to declared entities | `docs/release-evidence/B030-runtime-linkage.json`, command `#b030-language_runtime_linkage-perf-20261127-111213` |
-| B030 AT067 medium real projects | Lua 5.4.7, CPython asyncio, npm lib, OpenJDK `java.util.concurrent`, Newtonsoft.Json 13.0.3, Go `net/http`, CodeGraph crate; archive/source digests and builds verified | `docs/release-evidence/B030-medium-projects.json`, `adapters/languages/fixtures.lock.json`, command `#b030-language_medium_projects-perf-20261127-111213` |
-| B030 AT067 controlled rename | Seven real LSP renames applied to staging only, approved by exact prepared digest, journaled apply, rebuilt/rerun with identical output; same-named symbols untouched | `docs/release-evidence/B030-rename-apply.json`, command `#b030-language_rename_apply-perf-20261127-111213` |
+| B030 AT067 runtime linkage | Seven groups captured with VizTracer, V8, clangd probe, JFR, EventPipe, Go pprof and a Rust probe; each trace imported into a bound snapshot and mapped to declared entities | `docs/release-evidence/B030-runtime-linkage.json`, command `#b030-language_runtime_linkage-perf-20261128-012425` |
+| B030 AT067 medium real projects | Lua 5.4.7, CPython asyncio, npm lib, OpenJDK `java.util.concurrent`, Newtonsoft.Json 13.0.3, Go `net/http`, CodeGraph crate; archive/source digests and builds verified | `docs/release-evidence/B030-medium-projects.json`, `adapters/languages/fixtures.lock.json`, command `#b030-language_medium_projects-perf-20261128-012425` |
+| B030 AT067 controlled rename | Seven real LSP renames applied to staging only, approved by exact prepared digest, journaled apply, rebuilt/rerun with identical output; same-named symbols untouched | `docs/release-evidence/B030-rename-apply.json`, command `#b030-language_rename_apply-perf-20261128-012425` |
 | B030 AT066 scenarios | normal, slow consumer, bounded-queue backpressure, cancellation, simulated disconnect | `docs/release-evidence/B030-case-b-scenarios.json`, command `#b030-case-b-scenarios` |
 | B014 Rust runtime trace | Explicit Rust probe, 4001 spans, 4001 mapped, 2 observed relations | `docs/release-evidence/B030-runtime-linkage.json` |
 | B031 AT068 clean-machine indexing | Installed `archmeld` + `archmeld-index` index a workspace on Windows 11 and Ubuntu 24.04 with no Cargo/model/network | `docs/release-evidence/B031-install-tests.json` |
@@ -24,9 +24,67 @@ closure condition.
 
 `AT067` is now `passed` in the language matrix with `r1_naming_allowed: true`
 for the seven-language gate. AT068 clean-machine indexing/report is closed, and
-the real 0.21.2 upstream upgrade (AT077) passed on 2026-11-24. R1 is still not
-declared complete because Ubuntu GUI/VS Code host and macOS release runs remain
-external; the C++ WSL reference index is verified.
+the real 0.21.2 upstream upgrade (AT077) passed on 2026-11-24. R1 is defined by
+S15/AT068 as the Windows 11 x64 and Ubuntu 24.04 x64 CLI/container path;
+macOS and the Ubuntu GUI/VS Code host are explicitly unsupported/not tested and
+are not R1 acceptance gates. The C++ WSL reference index is verified.
+
+## 1.1 2026-11-28 full-closure slice
+
+Closed at HEAD `fd5c8758` with command records in `baseline/commands.ndjson`:
+
+| Item | Result | Evidence |
+|---|---|---|
+| MCP status paging | changed/added/deleted page independently; stale workspace/snapshot cursors rejected | `mcp.rs` unit tests; `#closure-targeted-tests-2026-11-28` |
+| Brief/map counts and budgets | one count vocabulary, finding `confidence`, map findings/gaps, top-level coverage/verification | `tests/brief.rs`; ADR-068 |
+| Review-report lifecycle | list/delete, 8 MiB cap, transactional pins, identity/digest verification, GC roots | store unit tests, `tests/diff_review.rs`; ADR-068 |
+| Provenance unknowns | non-git/subdirectory/snapshot-only states explicit; ambiguous duplicate moves | `tests/diff_review.rs`; ADR-068 |
+| Rule exception keys | assertion/limit in custom keys, duplicate rule ids rejected, result cap reported | `tests/blueprint_rules.rs`; ADR-064 |
+| Human reads/writes | `evidence import-human`, human/declared only, CAS attestation, structural ownership | `tests/human_evidence.rs`; ADR-069 |
+| I1 incremental parsing | stable work dir, persistent graph, deletion sweep, full export | `#i1-incremental-2026-11-28-b`; ADR-070 |
+| AT067 at HEAD | seven-language groups + verifier passed | `b030-*-perf-20261128-012425` |
+| B031 rebuild | Windows/Linux at `fd5c8758`, commit_consistency=true; CLI/container install, index, report, Chrome and VSIX install/uninstall | `#test-release-2026-11-28-e`, `B031-install-tests.json` |
+| Doctor | locked Python 3.11; failed=0 | `#doctor-2026-11-28-e` |
+
+Still open after this slice:
+
+- **Reviewer pilot** — an agent-only pilot ran (12 durable `pi` sessions;
+  `docs/evidence/reviewer-pilot-2026-11-28/`): arm B 6/6 matched, arm A 3/6,
+  2 unsupported "resolved" claims in arm A. This is not a human study and
+  claims no significance; a human study still requires two people.
+- **Full test lane** — attempted with `--jobs 1`; see `baseline/commands.ndjson`
+  for the recorded outcome. It is not claimed as passed unless that record is 0.
+- **B000 Ubuntu upstream suite** — not rerun in this slice; the upstream pin is
+  unchanged, so the 2026-11-27 evidence remains the record.
+- **I2 delta ledger and runtime reads/writes** — still out of scope. I1 parses
+  incrementally but publishes a complete snapshot/export.
+
+## 1.2 2026-11-28 structural-debt slice
+
+Closed under ADR-071 (behaviour-preserving; no contract/schema change):
+
+| Item | Result |
+|---|---|
+| SCIP length overflow | crafted varint now returns `invalid input`; unit + import tests |
+| Shared error/hash primitives | `CoreError` at `src/error.rs`; one `short_hash` wrapper; one content-tree digest |
+| Store containment | idempotency inserts outside `Store` 18→0; typed snapshot and latest-revision queries; one-line Store SQL 87→71, `tx.*` 70→61 |
+| Entry points | `cli.rs` 3,054→64; `api/lib.rs` 1,862→350; command tree pinned by a clap test |
+| Large functions | `check_rule` 626→32; `diff_snapshots` 427→106; `create_context_pack` 650→148; `change_brief` 531→228 |
+| Ratchet | `tooling/check_architecture_debt.py` runs in the fast lane; baseline only decreases |
+
+Deferred structural debt (not blockers for current R1 evidence):
+
+- `change_brief` remains 228 lines (160 is a warning line, not a hard gate). The residue is output
+  assembly plus the budget/unknown tail; splitting it needs a wide transport
+  struct and does not remove coupling.
+- Typed DTOs for review/status/brief beyond the existing typed keys.
+- One shared file-diff model behind drift, workspace review and snapshot diff.
+- Six remaining large functions: `import_codegraph_export`,
+  `publish_generation`, `import_trace`, `import_scip`, `check_map`,
+  `apply_changeset_with_hook`.
+- `Store.conn` privatisation once the remaining direct queries are typed.
+- An import-based self-architecture rule; candidate call edges are not
+  architecture evidence.
 
 ## 2. Release-time items (deferred in the test phase)
 
@@ -145,6 +203,17 @@ field does not change their digests. This is a materialized allowlist,
 not OS-level confinement: a child process can still open absolute paths
 outside the copy. Evidence: `docs/release-evidence/B022-sandbox.json`,
 ADR-043.
+
+Palimpsest follow-ups (2026-11-28): brief findings/context/gaps, review
+provenance, structural snapshot diff, rule exceptions, review cost and
+report retention, and candidate-byte freeze are implemented and covered by
+ADR-062…067. Three items remain explicitly bounded: incremental indexing is
+not implemented (all index/refresh paths are full parse); real `reads`/`writes`
+evidence is accepted only from an external/future export producer, because
+CodeGraph 0.21.2 does not emit it; the reviewer study is a protocol only and
+has not been run. The review benchmark `perf-review-2026-11-28-b` measures
+capture/review/diff on a 200-file fixture and deliberately does not measure
+graph indexing.
 
 B026 webview paint closure (2026-10-31): the graph webview reports its own
 paint timeline and render completion, and the extension-host harness measures
@@ -295,7 +364,7 @@ upstream 0.21.2 upgrade drill (AT077) was executed and passed on 2026-11-24
 end-to-end export 3 files/9 nodes/9 edges); commit supervision (M3) and scoped
 multi-agent authority (M4) remain future work; the M2.5-A/B/C/D adherence
 slices are implemented (session rules, markdown card, AOCI block, session card,
-3-pair experiment), and E1/E2 are implemented; E4a ran and was no-go, so E3/E4b are not promoted. The P01–P25 self-analysis repairs are recorded in `SELF-ANALYSIS-FIX-2026-11-27.json`; B000 Ubuntu and B030 evidence predates 0.21.2 and the P01–P25 repairs. B031 was regenerated on 2026-11-27 but validates binaries built at `dd124ca1` (Windows), `af8fa2f9` (Linux CLI) and `49683c1d` dirty (Linux helper), so its package remains provisional until a rebuild from HEAD. Ubuntu GUI/macOS host runs remain deferred release items.” Do not claim R1 complete or a full release acceptance. The deferred host items are not current test blockers.
+3-pair experiment), and E1/E2 are implemented; E4a ran and was no-go, so E3/E4b are not promoted. The P01–P25 self-analysis repairs are recorded in `SELF-ANALYSIS-FIX-2026-11-27.json`; B030 evidence was regenerated at HEAD `fd5c8758` on 2026-11-28. B031 was rebuilt from `fd5c8758` on 2026-11-28: both platform bundles report `commit_consistency=true`, Windows/Ubuntu CLI install, clean index, report and headless Chrome checks passed, and the package remains `release_status=provisional` because VSIX install was blocked by a missing VS Code host (`AT068=partial`, `blocked_external`), not because the binaries are stale. Ubuntu GUI/VS Code host and macOS are outside R1 (S15/AT068): unsupported/not tested, not deferred gates.” Do not claim R1 complete or a full release acceptance until the VSIX check has run on a host with VS Code.
 
 ## 5. Reproduce the open state
 

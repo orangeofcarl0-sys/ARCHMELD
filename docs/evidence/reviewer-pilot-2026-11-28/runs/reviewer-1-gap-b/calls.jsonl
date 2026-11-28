@@ -1,0 +1,7 @@
+{"seq": 2, "tool": "archmeld_status", "args": {"detail": "summary"}}
+{"seq": 4, "tool": "archmeld_review", "args": {"detail": "full"}}
+{"seq": 5, "tool": "archmeld_query", "args": {"project_id": "project.reviewer.gap", "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670", "kind": "neighbors", "query": "run", "relation_kinds": ["writes", "reads", "static_call_candidate", "resolved_call", "observed_call"]}}
+{"seq": 6, "tool": "archmeld_source", "args": {"project_id": "project.reviewer.gap", "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670", "entity_id": "syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85"}}
+{"seq": 7, "tool": "archmeld_query", "args": {"kind": "neighbors", "entity_ids": ["syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85"], "max_depth": 1, "project_id": "project.reviewer.gap", "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670", "relation_kinds": ["writes", "reads", "static_call_candidate", "resolved_call", "observed_call"]}}
+{"seq": 9, "tool": "archmeld_query", "args": {"kind": "symbols", "project_id": "project.reviewer.gap", "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670", "query": "", "relation_kinds": ["writes", "reads"]}}
+{"seq": 11, "tool": "archmeld_query", "args": {"kind": "symbols", "project_id": "project.reviewer.gap", "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670", "query": "", "max_nodes": 50}}

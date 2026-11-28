@@ -40,11 +40,6 @@ fn default_true() -> bool {
     true
 }
 
-fn short_hash(identity: &str) -> String {
-    let digest = hash::digest_bytes(identity.as_bytes());
-    let hex = digest.strip_prefix("sha256:").unwrap_or(&digest);
-    hex[..32].to_string()
-}
 
 /// Persist a project's count-based snapshot retention policy. The policy never
 /// deletes by itself; capture-time pruning only runs when `auto_prune` is on.
@@ -315,14 +310,18 @@ fn prune_with(
         }
         let run_id = format!(
             "retention.{}",
-            short_hash(&format!(
-                "{}:{}:{}:{}:{}",
-                project_id,
-                keep,
-                mode,
-                dry_run,
-                crate::store::now_unix()
-            ))
+            hash::short_bytes(
+                format!(
+                    "{}:{}:{}:{}:{}",
+                    project_id,
+                    keep,
+                    mode,
+                    dry_run,
+                    crate::store::now_unix()
+                )
+                .as_bytes(),
+                32,
+            )
         );
         let details = json!({
             "kept": kept,
@@ -415,6 +414,10 @@ fn retention_references(
         (
             "SELECT 1 FROM drift_reports WHERE project_id=?1 AND (base_snapshot_id=?2 OR new_snapshot_id=?2)",
             "drift_report",
+        ),
+        (
+            "SELECT 1 FROM review_reports WHERE project_id=?1 AND (base_snapshot_id=?2 OR candidate_snapshot_id=?2)",
+            "review_report",
         ),
         (
             "SELECT 1 FROM evidence WHERE project_id=?1 AND snapshot_id=?2",

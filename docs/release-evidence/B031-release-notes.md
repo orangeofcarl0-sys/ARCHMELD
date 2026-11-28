@@ -1,13 +1,13 @@
 # ARCHMELD 0.1.0 release notes
 
-Status: **packaging evidence only; release_status=provisional; R1 is not declared complete.** Binaries were not rebuilt from HEAD: Windows `dd124ca1` (dirty=False), Linux `af8fa2f9` (dirty=False); see `bundle.json` builds. AT067 is `passed` for the seven-language gate; AT077 passed for the real newer-upstream upgrade.
+Status: **packaging evidence only; release_status=provisional; R1 is not declared complete.** Binaries rebuilt from HEAD: Windows `fd5c8758` (dirty=False), Linux `fd5c8758` (dirty=False); commit_consistency Windows=True Linux=True; see `bundle.json` builds. AT067 is `passed` for the seven-language gate; AT077 passed for the real newer-upstream upgrade.
 
 ## Artifacts
 
 | Artifact | SHA-256 |
 |---|---|
-| `archmeld-cli-0.1.0-windows-x64.zip` | `295d8b3db06f6becaf4565e7d94576d56009842abf56be0a0aaa0fcfe1ffd863` |
-| `archmeld-cli-0.1.0-linux-x64.zip` | `f8c4ac0f8373388cd11efab828ddc97f67d2adc39e583219af35ffcccbd60b51` |
+| `archmeld-cli-0.1.0-windows-x64.zip` | `91cc413d85e5e5640511d7d27564e8b1646ce38c71699a423008cfb3bd5cedc0` |
+| `archmeld-cli-0.1.0-linux-x64.zip` | `a5327b2b716548dbd56e601ca6c21ef7d07b8be09b442cc25c2b94ed8fe683ef` |
 | `archmeld-workbench-0.1.0.vsix` | `776491ced16fac531f65b4743e3d8e28120c2f9d9757afa2589552ebdbe25928` |
 
 ## Platforms
@@ -22,7 +22,9 @@ Status: **packaging evidence only; release_status=provisional; R1 is not declare
 - Linux GUI/VS Code host integration is untested.
 - The Ubuntu offline report was inspected as static HTML; the rendered browser check ran on Windows Chrome headless.
 - The upgrade drill uses a locally built 0.0.9 bundle, not a published historical release.
-- Binaries were built before the current packaging HEAD; this package is repackaged from existing artifacts and is provisional, not a release built from HEAD.
+- Packaged binaries match the packaging commit; this remains packaging evidence, not a published release.
+- `packaging_git_dirty=true` at package time; the unit was packaged with the MinGW runtime-DLL bundling fix uncommitted. The binary build and packaging commit are `fd5c8758a1c8fe5386ab55c2f590fe0affba3f27`; the tooling fix was committed immediately after and does not change the binaries.
+- VSIX install/uninstall passed against the local VS Code.
 - AT077 real newer-upstream upgrade: passed (docs\release-evidence\UPSTREAM-0.21.2-2026-11-24.json).
 
 ## Verification

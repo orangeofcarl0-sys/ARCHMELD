@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "command_id": "self-analysis-2026-11-28-clean",
+  "command": "py -3.11 baseline/run_cmd.py --id self-analysis-2026-11-28-clean -- py -3.11 tooling/self_analysis_run.py ...",
+  "head": "e3f9ad2bff735e650908894efa38e50774595a3e",
+  "snapshot_id": "sha256:df7eb174e9700e0865843b6f05da7c0d466c20ee69beee8496e0ef0449143f15",
+  "index_mode": "full_parse",
+  "index_duration_s": 64.283,
+  "acceptance_duration_s": 19.874,
+  "acceptance_passed": 24,
+  "acceptance_failed": 0,
+  "files": 2017,
+  "entities": 11286,
+  "relations": 47531,
+  "archmeld_sha256": "sha256:6076bf2a3150e581797bebe54b5eef7640c9fa00b2bf553887fb44e096629660",
+  "mcp_sha256": "sha256:93011715c742b8c75c764788505b8d5f969a0cd10d25b3fc467a2778bc06043b",
+  "helper_sha256": "sha256:8325ae4ddce18a9ecc597c03b23290cf7d5efefbaa2fb5aa4b41665c25f45a24",
+  "artifacts": {
+    "RUN.json": {
+      "sha256": "sha256:2f9d5bdcda9eaa04f24d942cc7c750b8d8f8efed5cbb10e5df04e70b6a227bca",
+      "bytes": 19097
+    },
+    "acceptance.json": {
+      "sha256": "sha256:7cc51c5bcd2d0d930812f4e8ef2414dbcb8001ff7399636ec92f99d84b6118b7",
+      "bytes": 16937
+    },
+    "status.json": {
+      "sha256": "sha256:fc8cd8fa1956206025dc3d53a240cc3f5050a1d24d1f532e76ceb13d076468ef",
+      "bytes": 9699
+    },
+    "index.stdout.json": {
+      "sha256": "sha256:87c66a8d98cd8e08a800dfbc4f91971a6dbc846d1164e97d08fc0e7bf07f53df",
+      "bytes": 6947
+    }
+  },
+  "record_note": "run_cmd appends its own record after this process, so status_after is dirty by that record; index/status/acceptance ran on the clean tree"
+}

@@ -277,6 +277,14 @@ fn target_graph_diff_never_touches_source_and_rules_find_direct_and_indirect_pat
                 "declared_only",
             ),
             rule(
+                "rule.declared-only-with-checker",
+                "forbid_dependency",
+                &["component.ui", "component.estimator"],
+                false,
+                Some("ledger.dependency_path.v1"),
+                "declared_only",
+            ),
+            rule(
                 "rule.human-intent",
                 "forbid_dependency",
                 &["component.ui", "component.estimator"],
@@ -323,6 +331,9 @@ fn target_graph_diff_never_touches_source_and_rules_find_direct_and_indirect_pat
     let declared = find("rule.declared-only");
     assert_eq!(declared["verdict"], "declared_only");
     assert_eq!(declared["blocks_acceptance"], true);
+    let declared_with_checker = find("rule.declared-only-with-checker");
+    assert_eq!(declared_with_checker["verdict"], "declared_only");
+    assert_eq!(declared_with_checker["passed"], false);
     let human = find("rule.human-intent");
     assert_eq!(human["verdict"], "declared_only");
     assert!(human["reason"]
@@ -836,6 +847,13 @@ fn declarative_architecture_checkers_are_executable_and_explain_coverage() {
     )
     .unwrap();
     assert_eq!(custom_violated["results"][0]["verdict"], "violated");
+    let custom_key = custom_violated["results"][0]["violations"][0]["key"]
+        .as_str()
+        .expect("custom violation key");
+    assert!(
+        custom_key.starts_with("no_self_dependencies:"),
+        "custom contract keys must name the assertion: {custom_key}"
+    );
 
     let custom_unsupported = propose(
         &mut fixture.store,
@@ -883,4 +901,496 @@ fn declarative_architecture_checkers_are_executable_and_explain_coverage() {
             "source_unchanged": true,
         }}
     }));
+}
+
+#[test]
+fn architecture_rule_exceptions_are_visible_and_revision_scoped() {
+    let mut fixture = setup();
+    let model = json!({
+        "schema_version": "1.0",
+        "id": "arch.exceptions",
+        "project_id": P,
+        "snapshot_id": fixture.snapshot_id,
+        "revision": 1,
+        "layer": "as_is",
+        "status": "candidate",
+        "components": [
+            component(
+                "component.ui",
+                "UI",
+                &[fixture.ids["ui"].clone(), fixture.ids["adapter"].clone()],
+            ),
+            component("component.estimator", "Estimator", &[fixture.ids["estimator"].clone()]),
+        ],
+        "dependencies": [{
+            "source_id": "component.ui",
+            "target_id": "component.estimator",
+            "reason": "UI reads estimator internal state through a helper",
+            "evidence_ids": [fixture.evidence_id],
+            "status": "candidate",
+        }],
+        "rules": [rule(
+            "rule.no-ui-estimator",
+            "forbid_dependency",
+            &["component.ui", "component.estimator"],
+            true,
+            Some("ledger.dependency_path.v1"),
+            "executable",
+        )],
+        "claim_ids": [],
+    });
+    let first = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": model.clone(),
+            "expected_revision": 1,
+            "idempotency_key": "exceptions-base",
+        }),
+    )
+    .unwrap();
+    let initial = check_architecture_rules(&fixture.store, P, first["id"].as_str().unwrap(), None)
+        .unwrap();
+    assert_eq!(initial["state"], "failed", "{initial}");
+    let violation_keys: Vec<String> = initial["results"][0]["violations"]
+        .as_array()
+        .expect("violations")
+        .iter()
+        .filter_map(|violation| violation["key"].as_str().map(str::to_string))
+        .collect();
+    assert_eq!(violation_keys.len(), 3, "{initial}");
+
+    let mut with_exception = model.clone();
+    with_exception["revision"] = json!(2);
+    with_exception["rules"][0]["source"] = json!({"path": "src/adapter.py", "line": 3});
+    with_exception["rules"][0]["exceptions"] = json!(violation_keys
+        .iter()
+        .enumerate()
+        .map(|(index, violation_key)| json!({
+            "id": format!("exception.legacy-path.{index}"),
+            "violation_key": violation_key,
+            "reason": "accepted migration path until the adapter is removed",
+            "introduced_revision": 2,
+            "expires_revision": 2,
+            "scope_ids": ["component.ui", "component.estimator"],
+        }))
+        .collect::<Vec<_>>());
+    let second = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": with_exception,
+            "expected_revision": 1,
+            "idempotency_key": "exceptions-added",
+        }),
+    )
+    .unwrap();
+    let excepted = check_architecture_rules(&fixture.store, P, second["id"].as_str().unwrap(), None)
+        .unwrap();
+    assert_eq!(excepted["state"], "excepted", "{excepted}");
+    assert_eq!(excepted["results"][0]["verdict"], "excepted");
+    assert_eq!(excepted["results"][0]["passed"], false);
+    assert_eq!(excepted["results"][0]["blocks_acceptance"], false);
+    assert_eq!(
+        excepted["results"][0]["rule_source"]["path"],
+        "src/adapter.py",
+        "{excepted}"
+    );
+    assert_eq!(
+        excepted["results"][0]["exception_changes"]["added"]
+            .as_array()
+            .unwrap()
+            .len(),
+        violation_keys.len(),
+        "{excepted}"
+    );
+
+    let mut expired = with_exception.clone();
+    expired["revision"] = json!(3);
+    let third = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": expired,
+            "expected_revision": 1,
+            "idempotency_key": "exceptions-expired",
+        }),
+    )
+    .unwrap();
+    let expired_result =
+        check_architecture_rules(&fixture.store, P, third["id"].as_str().unwrap(), None).unwrap();
+    assert_eq!(expired_result["state"], "failed", "{expired_result}");
+    assert_eq!(
+        expired_result["results"][0]["inactive_exceptions"]
+            .as_array()
+            .unwrap()
+            .len(),
+        violation_keys.len(),
+        "{expired_result}"
+    );
+
+    let mut removed = model.clone();
+    removed["revision"] = json!(4);
+    let fourth = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": removed,
+            "expected_revision": 1,
+            "idempotency_key": "exceptions-removed",
+        }),
+    )
+    .unwrap();
+    let reverted =
+        check_architecture_rules(&fixture.store, P, fourth["id"].as_str().unwrap(), None).unwrap();
+    assert_eq!(reverted["state"], "failed", "{reverted}");
+    assert_eq!(
+        reverted["results"][0]["exception_changes"]["removed"]
+            .as_array()
+            .unwrap()
+            .len(),
+        violation_keys.len(),
+        "{reverted}"
+    );
+}
+
+fn exception_model(fixture: &Fixture, revision: i64, exceptions: Value) -> Value {
+    json!({
+        "schema_version": "1.0",
+        "id": "arch.exceptions.edges",
+        "project_id": P,
+        "snapshot_id": fixture.snapshot_id,
+        "revision": revision,
+        "layer": "as_is",
+        "status": "candidate",
+        "components": [
+            component(
+                "component.ui",
+                "UI",
+                &[fixture.ids["ui"].clone(), fixture.ids["adapter"].clone()],
+            ),
+            component("component.estimator", "Estimator", &[fixture.ids["estimator"].clone()]),
+        ],
+        "dependencies": [{
+            "source_id": "component.ui",
+            "target_id": "component.estimator",
+            "reason": "UI reads estimator internal state through a helper",
+            "evidence_ids": [fixture.evidence_id],
+            "status": "candidate",
+        }],
+        "rules": [{
+            "id": "rule.no-ui-estimator",
+            "kind": "forbid_dependency",
+            "description": "UI must not reach the estimator",
+            "scope_ids": ["component.ui", "component.estimator"],
+            "required": true,
+            "checker_id": "ledger.dependency_path.v1",
+            "checkability": "executable",
+            "exceptions": exceptions,
+        }],
+        "claim_ids": [],
+    })
+}
+
+#[test]
+fn rule_exception_future_scope_changes_and_unused_entries_are_visible() {
+    let mut fixture = setup();
+    let initial_model = exception_model(&fixture, 1, json!([]));
+    let base = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": initial_model,
+            "expected_revision": 1,
+            "idempotency_key": "edges-base",
+        }),
+    )
+    .unwrap();
+    let checked = check_architecture_rules(&fixture.store, P, base["id"].as_str().unwrap(), None)
+        .unwrap();
+    let keys: Vec<String> = checked["results"][0]["violations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(|violation| violation["key"].as_str().map(str::to_string))
+        .collect();
+    assert_eq!(keys.len(), 3, "{checked}");
+
+    let exceptions = json!([
+        {
+            "id": "exception.active",
+            "violation_key": keys[0],
+            "reason": "temporary migration",
+            "introduced_revision": 2,
+            "scope_ids": ["component.ui", "component.estimator"],
+        },
+        {
+            "id": "exception.expires-now",
+            "violation_key": keys[1],
+            "reason": "last valid revision is inclusive",
+            "introduced_revision": 2,
+            "expires_revision": 2,
+            "scope_ids": ["component.ui", "component.estimator"],
+        },
+        {
+            "id": "exception.future",
+            "violation_key": keys[2],
+            "reason": "not yet in force",
+            "introduced_revision": 99,
+            "scope_ids": ["component.ui", "component.estimator"],
+        },
+        {
+            "id": "exception.unused",
+            "violation_key": "path-that-does-not-occur",
+            "reason": "stale exception",
+            "introduced_revision": 2,
+            "scope_ids": ["component.ui", "component.estimator"],
+        }
+    ]);
+    let second_model = exception_model(&fixture, 2, exceptions.clone());
+    let second = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": second_model,
+            "expected_revision": 1,
+            "idempotency_key": "edges-revision-2",
+        }),
+    )
+    .unwrap();
+    let checked = check_architecture_rules(
+        &fixture.store,
+        P,
+        second["id"].as_str().unwrap(),
+        None,
+    )
+    .unwrap();
+    let result = &checked["results"][0];
+    assert_eq!(result["excepted"].as_array().unwrap().len(), 2, "{checked}");
+    assert_eq!(
+        result["excepted"][1]["exception"]["id"], "exception.expires-now",
+        "expires_revision is inclusive: {checked}"
+    );
+    assert_eq!(
+        result["inactive_exceptions"].as_array().unwrap().len(),
+        1,
+        "{checked}"
+    );
+    assert_eq!(
+        result["inactive_exceptions"][0]["id"], "exception.future",
+        "{checked}"
+    );
+    assert_eq!(result["unused_exceptions"].as_array().unwrap().len(), 1, "{checked}");
+    assert_eq!(result["unused_exceptions"][0]["id"], "exception.unused");
+    // One violation is still active, so the rule is violated rather than
+    // excepted; the future and unused entries never override it.
+    assert_eq!(result["verdict"], "violated", "{checked}");
+    assert_eq!(result["violations"].as_array().unwrap().len(), 1, "{checked}");
+
+    let mut scoped = exceptions.clone();
+    scoped[0]["scope_ids"] = json!(["component.estimator"]);
+    let third_model = exception_model(&fixture, 3, scoped);
+    let third = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": third_model,
+            "expected_revision": 1,
+            "idempotency_key": "edges-revision-3",
+        }),
+    )
+    .unwrap();
+    let checked = check_architecture_rules(
+        &fixture.store,
+        P,
+        third["id"].as_str().unwrap(),
+        None,
+    )
+    .unwrap();
+    let changed = checked["results"][0]["exception_changes"]["changed"]
+        .as_array()
+        .unwrap();
+    let active_change = changed
+        .iter()
+        .find(|item| item["violation_key"] == keys[0])
+        .expect("scope-only change must appear in exception_changes");
+    assert!(
+        active_change["fields"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|field| field == "scope_ids"),
+        "{checked}"
+    );
+}
+
+#[test]
+fn duplicate_rule_ids_and_exception_keys_are_rejected() {
+    let mut fixture = setup();
+    let duplicate_rule = rule(
+        "rule.duplicate",
+        "forbid_dependency",
+        &["component.ui", "component.estimator"],
+        true,
+        Some("ledger.dependency_path.v1"),
+        "executable",
+    );
+    let mut model = exception_model(&fixture, 1, json!([]));
+    model["rules"] = json!([duplicate_rule.clone(), duplicate_rule]);
+    let error = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": model,
+            "expected_revision": 1,
+            "idempotency_key": "duplicate-rule-id",
+        }),
+    )
+    .unwrap_err();
+    assert!(error.to_string().contains("duplicate rule id"), "{error}");
+
+    let mut model = exception_model(
+        &fixture,
+        1,
+        json!([
+            {
+                "id": "exception.one",
+                "violation_key": "same-key",
+                "reason": "first",
+                "introduced_revision": 1,
+            },
+            {
+                "id": "exception.two",
+                "violation_key": "same-key",
+                "reason": "second",
+                "introduced_revision": 1,
+            }
+        ]),
+    );
+    model["rules"][0]["exceptions"][0]["scope_ids"] = json!([]);
+    let error = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": model,
+            "expected_revision": 1,
+            "idempotency_key": "duplicate-exception-key",
+        }),
+    )
+    .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("duplicate rule exception violation_key"),
+        "{error}"
+    );
+}
+
+#[test]
+fn custom_contract_key_names_the_assertion_and_limit() {
+    let mut fixture = setup();
+    let model = json!({
+        "schema_version": "1.0",
+        "id": "arch.custom.limit",
+        "project_id": P,
+        "snapshot_id": fixture.snapshot_id,
+        "revision": 1,
+        "layer": "as_is",
+        "status": "candidate",
+        "components": [
+            component("component.ui", "UI", &[fixture.ids["ui"].clone()]),
+            component("component.estimator", "Estimator", &[fixture.ids["estimator"].clone()]),
+        ],
+        "dependencies": [{
+            "source_id": "component.ui",
+            "target_id": "component.estimator",
+            "reason": "one dependency",
+            "evidence_ids": [fixture.evidence_id],
+            "status": "candidate",
+        }],
+        "rules": [rule_with_parameters(
+            "rule.custom.limit",
+            "custom_contract",
+            &["component.ui"],
+            true,
+            "architecture.custom_contract.v1",
+            json!({"assertion": "max_dependencies_per_component", "limit": 0}),
+        )],
+        "claim_ids": [],
+    });
+    let proposal = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": model,
+            "expected_revision": 1,
+            "idempotency_key": "custom-limit-key",
+        }),
+    )
+    .unwrap();
+    let checked = check_architecture_rules(
+        &fixture.store,
+        P,
+        proposal["id"].as_str().unwrap(),
+        None,
+    )
+    .unwrap();
+    assert_eq!(
+        checked["results"][0]["violations"][0]["key"],
+        "max_dependencies_per_component:component.ui:limit=0",
+        "{checked}"
+    );
+}
+
+#[test]
+fn forbid_dependency_with_one_scope_id_is_declared_only() {
+    let mut fixture = setup();
+    let model = json!({
+        "schema_version": "1.0",
+        "id": "arch.scope.guard",
+        "project_id": P,
+        "snapshot_id": fixture.snapshot_id,
+        "revision": 1,
+        "layer": "as_is",
+        "status": "candidate",
+        "components": [
+            component("component.ui", "UI", &[fixture.ids["ui"].clone()]),
+            component("component.estimator", "Estimator", &[fixture.ids["estimator"].clone()]),
+        ],
+        "dependencies": [],
+        "rules": [rule(
+            "rule.one-scope",
+            "forbid_dependency",
+            &["component.ui"],
+            true,
+            Some("ledger.dependency_path.v1"),
+            "executable",
+        )],
+        "claim_ids": [],
+    });
+    let proposal = propose_architecture(
+        &mut fixture.store,
+        &json!({
+            "project_id": P,
+            "model": model,
+            "expected_revision": 1,
+            "idempotency_key": "one-scope-key",
+        }),
+    )
+    .unwrap();
+    let checked = check_architecture_rules(
+        &fixture.store,
+        P,
+        proposal["id"].as_str().unwrap(),
+        None,
+    )
+    .unwrap();
+    assert_eq!(checked["results"][0]["verdict"], "declared_only", "{checked}");
+    assert!(
+        checked["results"][0]["reason"]
+            .as_str()
+            .unwrap()
+            .contains("source and a forbidden target"),
+        "{checked}"
+    );
 }

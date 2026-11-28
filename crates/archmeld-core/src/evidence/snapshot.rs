@@ -17,6 +17,7 @@ use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const SNAPSHOT_VERSION: &str = "1.0";
@@ -343,6 +344,20 @@ pub fn capture_snapshot_with_hook(
     Err(CoreError::conflict(format!(
         "unstable_workspace: {last_reason}; no snapshot was published"
     )))
+}
+
+/// Content identity of a workspace manifest: sorted `(path, blob_digest)`
+/// pairs in the shared AM-C14N-1 tree shape. Drift and review must use this
+/// one function so their tree identities stay comparable.
+pub fn content_tree_digest(
+    entries: &[(String, String)],
+) -> std::result::Result<String, hash::CanonicalError> {
+    let mut entries = entries.to_vec();
+    entries.sort();
+    hash::digest_value(&json!({
+        "version": "1.0",
+        "entries": entries,
+    }))
 }
 
 fn manifest_digest(kind: &str, manifest: &Value) -> Result<String> {
@@ -791,7 +806,70 @@ pub(crate) fn git_index_blobs(root: &Path) -> BTreeMap<String, String> {
 
 /// Paths whose working/index bytes differ from HEAD (after git filters).
 pub(crate) fn git_dirty_paths(root: &Path) -> BTreeSet<String> {
-    git_z(root, &["diff", "-z", "HEAD", "--name-only"])
+    // `--relative` keeps paths workspace-relative when the workspace is a
+    // subdirectory of the repository. `git ls-files` is already cwd-relative.
+    git_z(root, &["diff", "-z", "HEAD", "--name-only", "--relative"])
+}
+
+/// Resolve the Git tree object that corresponds to the workspace root. When
+/// the workspace is a repository subdirectory, the repository-wide
+/// `HEAD^{tree}` is not the workspace tree; use `<revision>:<prefix>` instead
+/// and report the prefix so callers can tell the two scopes apart.
+pub(crate) fn git_workspace_tree(root: &Path, revision: &str) -> Option<(String, String)> {
+    let prefix_output = Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["rev-parse", "--show-prefix"])
+        .output()
+        .ok()?;
+    if !prefix_output.status.success() {
+        return None;
+    }
+    let prefix = String::from_utf8_lossy(&prefix_output.stdout)
+        .trim()
+        .replace('\\', "/");
+    let spec = if prefix.is_empty() {
+        format!("{revision}^{{tree}}")
+    } else {
+        format!("{revision}:{}", prefix.trim_end_matches('/'))
+    };
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["rev-parse", "--verify", &spec])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let oid = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if oid.len() == 40 || oid.len() == 64 {
+        Some((oid, prefix))
+    } else {
+        None
+    }
+}
+
+/// Resolve a commit-ish to its Git tree object id. This is deliberately
+/// separate from `git_tree_digest`: the tree id covers the commit's tracked
+/// content, not untracked or dirty workspace bytes.
+pub(crate) fn git_tree_oid(root: &Path, revision: &str) -> Option<String> {
+    let spec = format!("{revision}^{{tree}}");
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["rev-parse", "--verify", &spec])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let oid = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if oid.len() == 40 || oid.len() == 64 {
+        Some(oid)
+    } else {
+        None
+    }
 }
 
 pub(crate) fn is_git_repository(root: &Path) -> bool {
@@ -872,6 +950,19 @@ mod tests {
     fn rfc3339_formats_epoch_and_known_instant() {
         assert_eq!(rfc3339_from_unix(0), "1970-01-01T00:00:00Z");
         assert_eq!(rfc3339_from_unix(1_700_000_000), "2023-11-14T22:13:20Z");
+    }
+
+    #[test]
+    fn content_tree_digest_is_order_independent() {
+        let first = vec![
+            ("a".to_string(), "sha256:1".to_string()),
+            ("b".to_string(), "sha256:2".to_string()),
+        ];
+        let second = vec![first[1].clone(), first[0].clone()];
+        assert_eq!(
+            content_tree_digest(&first).unwrap(),
+            content_tree_digest(&second).unwrap()
+        );
     }
 
     #[test]

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "command": "py -3.11 tooling/test_lane.py --lane full --jobs 1",
+  "head": "fd5c8758 (docs-only commits after it do not change the tested code)",
+  "exit_code": 1,
+  "duration_s": 1109.5,
+  "test_binaries_passed": 82,
+  "test_binaries_failed": 0,
+  "groups_completed": [
+    "archmeld-core + archmeld-api (all suites)"
+  ],
+  "blocked_group": "codegraph-server --lib",
+  "reason": "page file too small (os error 1455) while compiling librocksdb-sys C++ at -j 1 on the 16 GB host",
+  "status": "blocked_external",
+  "log": "docs/evidence/full-lane-2026-11-28/LOG.txt",
+  "log_sha256": "533f1bf31782371a7eed0bdb5f6fc9785e8285da01222fe9ed16b2c8f9ed47be",
+  "note": "No test failed. The lane could not build the canonical source-RocksDB server group; the prebuilt-RocksDB server lane is recorded separately."
+}

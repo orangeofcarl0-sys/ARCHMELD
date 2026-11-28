@@ -11,9 +11,9 @@
       "loss_notes": [],
       "lossy": false,
       "mapped_spans": 8001,
-      "normalized_trace_digest": "sha256:92398e48dd8e0ee71f65be2c77cd8c63c608ae329bc0064ed081c2a3989a94f1",
+      "normalized_trace_digest": "sha256:7cf8714f5c75bd99a600fe269ae4150e00443251d320dd952f2d1989cbeef30a",
       "observed_relations": 4,
-      "raw_artifact_digest": "sha256:7aae9c041ab84b5baae4c20beb33c592cabdbbb8cf82b9372e66d3f31a051eda",
+      "raw_artifact_digest": "sha256:d42714bc7cdee447cad8a2da4eae68f2a9c6113bb35dc4add5c715ab3a3652a5",
       "run_id": "run.c-cpp.probe",
       "scenario_id": "scenario.c-cpp.loop",
       "spans": 8001,
@@ -33,16 +33,16 @@
         "speedscope frames carry exact managed symbol names but no file/line; mapping uses the declared symbol probe"
       ],
       "lossy": true,
-      "mapped_spans": 51,
-      "normalized_trace_digest": "sha256:029ceaf60980bc4b4844c6b79abd078a263a46093a167e024ae5c6fd0d7ee52a",
+      "mapped_spans": 56,
+      "normalized_trace_digest": "sha256:f08822c4c8b032f9e0dba2a2be23fb74d9ef279160f4e053241c8b08ab87abe6",
       "observed_relations": 0,
-      "raw_artifact_digest": "sha256:5ba136bc57093e8e02665debfff8e17d91acf4192d3b6a0c1faf7899189b680d",
+      "raw_artifact_digest": "sha256:857afd8dcc5a0bac164d9db96ebe94b92c4b088e2a691ccc5ddd932fb08516e0",
       "run_id": "run.csharp.eventpipe",
       "scenario_id": "scenario.csharp.loop",
-      "spans": 693,
+      "spans": 736,
       "status": "verified",
       "unknown_entity": 0,
-      "unmapped_spans": 642
+      "unmapped_spans": 680
     },
     "go": {
       "adapter": "go-pprof-raw",
@@ -57,15 +57,15 @@
       ],
       "lossy": true,
       "mapped_spans": 2,
-      "normalized_trace_digest": "sha256:ede8e5d4211f4751b818af2164e9a03f6022b512b2226f446d22c16a817e6a93",
+      "normalized_trace_digest": "sha256:aede5dd685df15ace44ceb198828341a7da0b3934b7f4dda19fcdcdcddd4da71",
       "observed_relations": 1,
-      "raw_artifact_digest": "sha256:6e169428e187883c02be9dadd84449fb44f55b19bf802766756d356505d7a8e9",
+      "raw_artifact_digest": "sha256:88d21b1905363dda36194515ec66cffaecb1d191119e62761c7c85fc8c4ba159",
       "run_id": "run.go.pprof",
       "scenario_id": "scenario.go.loop",
-      "spans": 11,
+      "spans": 33,
       "status": "verified",
       "unknown_entity": 0,
-      "unmapped_spans": 9
+      "unmapped_spans": 31
     },
     "java": {
       "adapter": "jfr-json",
@@ -79,16 +79,16 @@
         "JIT compilation may omit inlined frames"
       ],
       "lossy": true,
-      "mapped_spans": 5,
-      "normalized_trace_digest": "sha256:3ceae9b0a87522f5c89399b7a68cac36341bc92fb82e44dd5d6785045f6cbd13",
+      "mapped_spans": 6,
+      "normalized_trace_digest": "sha256:ea519781a55b166c1ac3bd4fa51b1e5ff2a0f58768e83d92169149cb5f04431c",
       "observed_relations": 0,
-      "raw_artifact_digest": "sha256:740062b72ca6563fe267a7464da00004cf4c307c4af673a4ed24bfc0c4dda81f",
+      "raw_artifact_digest": "sha256:518ec4c10ab601efd235ad197636c24e03152432fe12b67036df56fca529f134",
       "run_id": "run.java.jfr",
       "scenario_id": "scenario.java.loop",
-      "spans": 124,
+      "spans": 120,
       "status": "verified",
       "unknown_entity": 0,
-      "unmapped_spans": 119
+      "unmapped_spans": 114
     },
     "javascript": {
       "adapter": "v8-cpuprofile",
@@ -102,16 +102,16 @@
         "optimized and inlined frames may be missing from the sample stack"
       ],
       "lossy": true,
-      "mapped_spans": 16,
-      "normalized_trace_digest": "sha256:e1fc8dd4c09d28673dace13f0143a483f723174d06120770b4b37665724bf560",
+      "mapped_spans": 15,
+      "normalized_trace_digest": "sha256:74ebcd2f14df39b18fbd5e94650bbc726137fb57a1cbe22e147fcf4e28f36586",
       "observed_relations": 1,
-      "raw_artifact_digest": "sha256:9347c72d78878e3b04b68fba7a0c2acff723bb562eb59b87c81c5e5a98ca72ea",
+      "raw_artifact_digest": "sha256:a5b612ef622fc2a7b00b10c855c1bb68b018a4d237c9a1bac78b8b856c6b53ba",
       "run_id": "run.javascript.v8",
       "scenario_id": "scenario.javascript.loop",
-      "spans": 829,
+      "spans": 724,
       "status": "verified",
       "unknown_entity": 0,
-      "unmapped_spans": 813
+      "unmapped_spans": 709
     },
     "python": {
       "adapter": "viztracer-chrome-json",
@@ -123,9 +123,9 @@
       "loss_notes": [],
       "lossy": false,
       "mapped_spans": 4002,
-      "normalized_trace_digest": "sha256:316a459791f4672e0304c5868d5776991c1361839f01914b92215a5e2f4082b8",
+      "normalized_trace_digest": "sha256:663792015f5e02554dc6c9c59c49699f2e87ceb6fb7c45483a4c5164e758cb42",
       "observed_relations": 0,
-      "raw_artifact_digest": "sha256:fd85635850adc1e0a56d201ccad4c9d7186681aa8e1392398c6b93f6c710c0a6",
+      "raw_artifact_digest": "sha256:398cb92be6eefd0727bca7f54d86d61a5871c6bc041aaaa059f1363105a4734d",
       "run_id": "run.python.viztracer",
       "scenario_id": "scenario.python.loop",
       "spans": 4945,
@@ -143,9 +143,9 @@
       "loss_notes": [],
       "lossy": false,
       "mapped_spans": 4001,
-      "normalized_trace_digest": "sha256:45502ffc55edf86fb8938d4f595d0104e81382d69d649aa47c8c1142661a1423",
+      "normalized_trace_digest": "sha256:50445d083441e9ff146dcf52c4f9da5e75257ade0af041002c2e63d9ade9646b",
       "observed_relations": 2,
-      "raw_artifact_digest": "sha256:1640f85d60f1d61f5cbfba34a4b4b395aa6a27706cab74ac88bdcc5f826143af",
+      "raw_artifact_digest": "sha256:6def880a6f8139ed32556c1bab7cedfc440fae4a1b390876fab782450c0c843d",
       "run_id": "run.rust.probe",
       "scenario_id": "scenario.rust.loop",
       "spans": 4001,
@@ -165,16 +165,16 @@
         "Node type stripping executes the TypeScript source directly; no emitted JavaScript was profiled"
       ],
       "lossy": true,
-      "mapped_spans": 14,
-      "normalized_trace_digest": "sha256:f2421bc4bacacb2a084bbc3449dd1e09d9c62ed5eb72e726a0fcbbd97720be2c",
+      "mapped_spans": 13,
+      "normalized_trace_digest": "sha256:3762be6985c8c391128d48d2b9e7ac50672b413806b53c6f0ce05f4797b188fa",
       "observed_relations": 1,
-      "raw_artifact_digest": "sha256:dcaf02a496ba91a9b2874cdf8bf94ef0b7a48a3090f0bd30e38ed628f59458a6",
+      "raw_artifact_digest": "sha256:ff15b6b0b2abdb99b563048b260e73050e599b6af5d969cb3acec711b27e9988",
       "run_id": "run.typescript.v8",
       "scenario_id": "scenario.typescript.loop",
-      "spans": 1859,
+      "spans": 1925,
       "status": "verified",
       "unknown_entity": 0,
-      "unmapped_spans": 1845
+      "unmapped_spans": 1912
     }
   },
   "note": "Each group was executed for real; the listed tool captured the trace. Sampling tools are lossy and say so. Source mapping uses declared entity ids or declared source ranges, never automatic name matching.",
@@ -182,7 +182,7 @@
     "arch": "x86_64",
     "os": "windows"
   },
-  "product_head": "7474343d",
-  "recorded_at_unix": 1795778105,
+  "product_head": "392d0ce4",
+  "recorded_at_unix": 1795869420,
   "schema_version": "1.0"
 }

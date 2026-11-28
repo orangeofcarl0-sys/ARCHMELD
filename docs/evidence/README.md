@@ -50,8 +50,13 @@ gate's meaning.
 | `upstream-probes-2026-11-26/` | Upstream probe runs |
 | `upstream-rollback-2026-11-26/` | Upstream rollback drill |
 | `privacy-decoupling-2026-11-26/` | Privacy decoupling and public snapshot review |
+| `i1-incremental-2026-11-28/` | Two-run incremental parse, deletion sweep, rename and fallback |
+| `full-lane-2026-11-28/` | Full lane log: 82 test binaries passed; server group blocked on host page file (os error 1455) |
+| `reviewer-pilot-2026-11-28/` | Agent-reviewer pilot (12 pi sessions); not a human study |
 | `self-analysis-2026-11-26/` | Self-analysis (P01–P25 discovery) |
 | `self-analysis-fix-2026-11-27/` | Self-analysis repair acceptance |
+| `self-analysis-2026-11-28/` | Clean-worktree self-analysis at HEAD e3f9ad2b (24/24) |
+| `self-analysis-2026-11-28-f/` | Clean-worktree self-analysis after the P0–P2 structure-debt slice at HEAD 95a83c73 (24/24; b–d retain the runner-order failures, e is the dirty-tree intermediate) |
 
 ## Current gates and machine readers
 
@@ -97,14 +102,19 @@ directory were not moved.
 `ui-state/`, `ui-trace-state/`, `ui-trace-repo/` and `ui-export.ndjson` are
 local-only or ignored. `ui-import.json` has no tool or document reference.
 
-## Archive
+## Gate summaries
 
 `B0xx-*.json` files are task-level summaries. They complement the dated
 directories; for example `B030-language-matrix.json` is the gate summary and
 `self-analysis-fix-2026-11-27/` contains the repair run.
 
 `perf-2026-11-27.json` records the Windows build/test performance baseline and
-the effect of each optimization layer.
+the effect of each optimization layer. `perf-review-2026-11-28.json` records a
+200-file, three-candidate review benchmark (capture/review/diff only; graph
+indexing is explicitly not measured) and cites command
+`perf-review-2026-11-28-b`. The benchmark's raw stdout log lives under the
+ignored `baseline/logs/`; the evidence file and the command ledger keep its
+hash, not the raw log.
 
 ## Archive
 

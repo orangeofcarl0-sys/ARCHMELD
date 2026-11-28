@@ -1,5 +1,5 @@
 {
-  ".pi/mcp.json": "sha256:272e6f3f0d342225337c4c5d1cc5144a915d26cae2557d6e6e565e78b3c1c254",
+  ".pi/mcp.json": "sha256:272e6f3f0d<redacted>225337c4c5d1cc5144a915d26cae2557d6e6e565e78b3c1c254",
   "archmeld.map.txt": "sha256:ac7443f2bd588a0a4b53daf74af8526961d54bfec5f1b6c35099f3f2043932a6",
   "README.md": "sha256:1fe43fdc052edc54948134554834bee8a357f6c2a871c76552480373f492487e",
   "src/analytics.py": "sha256:977c7b6fb22c862f2b4e7396fad5ba2e9ed7e57d184f4d9b1711fb2baede0bbf",

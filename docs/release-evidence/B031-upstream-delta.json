@@ -64,5 +64,7 @@
     "at": "2026-10-31",
     "status": "blocked_external",
     "reason": "upstream HEAD equals the pinned commit; a real newer-upstream upgrade drill cannot be executed yet"
-  }
+  },
+  "historical_note": "synthetic interface-rename drill for the previous pin; it is not the AT077 evidence for CodeGraph 0.21.2",
+  "superseded_by": "docs/release-evidence/UPSTREAM-0.21.2-2026-11-24.json"
 }

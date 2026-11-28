@@ -1,0 +1,87 @@
+{
+  "reviewer": "reviewer-2",
+  "model": "omni-responses/deepseek-v4.1-flash",
+  "fixture": "move",
+  "arm": "a",
+  "snapshot_id": "sha256:55120f31b48808a93e5013012b2c0cad07bd442be056e5253a72517685e7d048",
+  "started_at": "2026-11-28T07:11:47Z",
+  "duration_ms": 11858,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "moved_entity": "core.alpha (function alpha, module src/core/alpha.py)",
+    "moved_from": "src/core/alpha.py",
+    "moved_to": "src/core/alpha_moved.py",
+    "caller_changed": "false",
+    "citations": [
+      {
+        "path": "src/core/alpha_moved.py",
+        "line": 1
+      },
+      {
+        "path": "src/caller.py",
+        "line": 1
+      },
+      {
+        "path": "src/caller.py",
+        "line": 4
+      }
+    ],
+    "confidence": "high",
+    "notes": "git show --stat/--name-status for f0700c1 reports exactly one change: 'R100 src/core/alpha.py src/core/alpha_moved.py' (rename, 0 insertions, 0 deletions), so the entity moved is the module/function core.alpha now at src/core/alpha_moved.py:1 ('def alpha():'). git log --follow on src/caller.py lists only the base commit a3c1fc5, and 'git diff HEAD^ HEAD --name-status' returns only the rename, so no caller source changed in this commit. src/caller.py:1 still reads 'from core.alpha import alpha' and src/caller.py:4 calls alpha(), i.e. the caller is now stale relative to the new path. I did not execute code, so runtime import behavior (e.g. whether an alias/shim exists elsewhere) is unavailable; the repository contains only .gitignore, src/caller.py and src/core/alpha_moved.py, so no shim for core.alpha is present in the tracked tree."
+  },
+  "calls": [],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show --stat HEAD"
+    },
+    {
+      "seq": 2,
+      "command": "cd \"<path>" && ls && echo \"---\" && git status --short | head -20"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && git show HEAD --name-status --find-renames -M && echo \"=== all files ===\" && find . -path ./.git -prune -o -type f -print | sort"
+    },
+    {
+      "seq": 4,
+      "command": "cd \"<path>" && grep -rn \"alpha\" --include=* . --exclude-dir=.git | head -50"
+    },
+    {
+      "seq": 5,
+      "command": "cd \"<path>" && git log --oneline --follow -- src/caller.py && echo \"=== diff base..head full ===\" && git diff HEAD^ HEAD --name-status && echo \"=== caller content ===\" && git show HEAD:src/caller.py && echo \"=== base caller ===\" && git show HEAD^:src/caller.py"
+    },
+    {
+      "seq": 6,
+      "command": "cd \"<path>" && cat -n src/caller.py && echo \"=== alpha_moved ===\" && cat -n src/core/alpha_moved.py"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 6152,
+    "output": 1131,
+    "cacheRead": 1664,
+    "cacheWrite": 0,
+    "totalTokens": 8947
+  },
+  "session_id": "99bbda97-21ac-4f13-aa4d-d623a6c5ad52",
+  "session_dir": "<path>",
+  "prompt_sha256": "3847a1407dd0ed2912e4a8c2aff5cfdb6e719e9d3a7eae7c8082dae7f2aae827",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-2-move-a\\pi-sessions\\2026-11-28T07-11-47-935Z_99bbda97-21ac-4f13-aa4d-d623a6c5ad52.jsonl",
+      "sha256": "sha256:c134dfc487360aef2b2bd492590dd191d22df63d1724a972dc6fb182306b5d25",
+      "bytes": 15928
+    }
+  ]
+}

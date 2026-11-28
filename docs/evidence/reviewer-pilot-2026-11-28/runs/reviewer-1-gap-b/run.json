@@ -1,0 +1,169 @@
+{
+  "reviewer": "reviewer-1",
+  "model": "deepseek/deepseek-v4-pro",
+  "fixture": "gap",
+  "arm": "b",
+  "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+  "started_at": "2026-11-28T07:16:46Z",
+  "duration_ms": 46105,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "unmapped_paths": [
+      "docs/notes.md"
+    ],
+    "changed_entities": [
+      "src/ops.py::run"
+    ],
+    "writes_evidence": "unavailable",
+    "coverage": "partial",
+    "citations": [
+      {
+        "path": "docs/notes.md",
+        "line": 3
+      },
+      {
+        "path": "src/ops.py",
+        "line": 3
+      },
+      {
+        "path": "src/ops.py",
+        "line": 4
+      }
+    ],
+    "confidence": "high",
+    "notes": "Commit a140914 changed two files. src/ops.py has full entity mapping (file src/ops.py + symbol src/ops.py::run); the only changed entity is src/ops.py::run, whose line 4 changed from `return settle()` to `return settle() + 1`. docs/notes.md has no base-snapshot entity anchor and is reported by archmeld_review as unmapped_files with confidence 'file_changed_no_entity_mapping' (line 3 changed). No `writes` (or `reads`) relation exists anywhere in the index; the only run->settle relation is a static_call_candidate with resolution 'candidate' and conditions 'syntax-only; not a resolved call'. Because no resolved call or writes relation is present and runtime/build verification is not_run, there is no evidence that run writes to settle; the candidate edge is a call hypothesis, not a write, so writes_evidence is 'unavailable'."
+  },
+  "calls": [
+    {
+      "seq": 2,
+      "tool": "archmeld_status",
+      "args": {
+        "detail": "summary"
+      }
+    },
+    {
+      "seq": 4,
+      "tool": "archmeld_review",
+      "args": {
+        "detail": "full"
+      }
+    },
+    {
+      "seq": 5,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "kind": "neighbors",
+        "query": "run",
+        "relation_kinds": [
+          "writes",
+          "reads",
+          "static_call_candidate",
+          "resolved_call",
+          "observed_call"
+        ]
+      }
+    },
+    {
+      "seq": 6,
+      "tool": "archmeld_source",
+      "args": {
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "entity_id": "syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85"
+      }
+    },
+    {
+      "seq": 7,
+      "tool": "archmeld_query",
+      "args": {
+        "kind": "neighbors",
+        "entity_ids": [
+          "syn.36c8316c9a0d33fb0e2c8bcfea040767869d3b380083ab274061e0e8d7938d85"
+        ],
+        "max_depth": 1,
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "relation_kinds": [
+          "writes",
+          "reads",
+          "static_call_candidate",
+          "resolved_call",
+          "observed_call"
+        ]
+      }
+    },
+    {
+      "seq": 9,
+      "tool": "archmeld_query",
+      "args": {
+        "kind": "symbols",
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "query": "",
+        "relation_kinds": [
+          "writes",
+          "reads"
+        ]
+      }
+    },
+    {
+      "seq": 11,
+      "tool": "archmeld_query",
+      "args": {
+        "kind": "symbols",
+        "project_id": "project.reviewer.gap",
+        "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+        "query": "",
+        "max_nodes": 50
+      }
+    }
+  ],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -5 && echo \"=====DIFF=====\" && git show HEAD --stat"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && git show HEAD -- docs/notes.md src/ops.py"
+    },
+    {
+      "seq": 8,
+      "command": "cd \"<path>" && find . -type f -not -path './.git/*' -not -path './.archmeld/*' | sort && echo \"=====ops.py=====\" && cat -A src/ops.py"
+    },
+    {
+      "seq": 10,
+      "command": "cd \"<path>" && cat -A src/settle.py && echo \"=====notes.md=====\" && cat -A docs/notes.md"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 10780,
+    "output": 3925,
+    "cacheRead": 70784,
+    "cacheWrite": 0,
+    "totalTokens": 85489
+  },
+  "session_id": "26958160-8397-469c-987a-58946b07eb45",
+  "session_dir": "<path>",
+  "prompt_sha256": "6e1e4f258ca314d9058cbdfc556cebfcd18298d9feafd8d8c215d06889a4303a",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-1-gap-b\\pi-sessions\\2026-11-28T07-16-46-909Z_26958160-8397-469c-987a-58946b07eb45.jsonl",
+      "sha256": "sha256:19b6957b80c6da70432f7b2ff010135ec527e448ecf3f625f26637993ca0838b",
+      "bytes": 66429
+    }
+  ]
+}

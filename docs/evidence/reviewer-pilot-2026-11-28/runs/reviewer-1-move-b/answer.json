@@ -1,0 +1,22 @@
+{
+  "moved_entity": "alpha",
+  "moved_from": "src/core/alpha.py",
+  "moved_to": "src/core/alpha_moved.py",
+  "caller_changed": "false",
+  "citations": [
+    {
+      "path": "src/caller.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    },
+    {
+      "path": "src/core/alpha_moved.py",
+      "line": 1
+    }
+  ],
+  "confidence": "high",
+  "notes": "The last commit (f0700c1) is a pure rename: src/core/alpha.py -> src/core/alpha_moved.py (100% similarity, 0 insertions/deletions). The moved entity is the function 'alpha' (snapshot qualified_name 'src/core/alpha.py::alpha'). The only caller, src/caller.py, is byte-identical across the commit (git blob 840a8b0f in both HEAD^ and HEAD; archmeld_review reports no changed files besides the single 'moved' entry). Its line 1 'from core.alpha import alpha' still references the old module path, so the import is now stale/broken even though the caller source did not change."
+}

@@ -40,7 +40,7 @@ cargo +1.94.1-x86_64-pc-windows-gnu <command> --locked
 先读 [`docs/INDEX.md`](docs/INDEX.md)。仓库有四层文档，不要混用：
 
 - `docs/archmeld/` 是**冻结设计包**（`PACK_MANIFEST.json` 封印），描述规格与计划，不代表当前实现状态；任何改动必须同批 `reseal_pack.py --write`。
-- `docs/adr/` 是现行决策（ADR-017…061）；ADR-001…016 在冻结包的 `03_ARCHITECTURE_DECISIONS.md`。
+- `docs/adr/` 是现行决策（ADR-017…067）；ADR-001…016 在冻结包的 `03_ARCHITECTURE_DECISIONS.md`。
 - `HANDOFF_CHECKLIST.md` 是当前操作真相；`archmeld-progress.md` 是时间线；`REMAINING_BLOCKERS.md` 是阻塞项。状态陈述应链接，不要复制数字。
 - `docs/evidence/` 与 `docs/release-evidence/` 是只追加的执行证据；历史命令路径不得移动。
 

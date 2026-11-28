@@ -113,15 +113,43 @@ async fn main() -> Result<(), String> {
         .unwrap_or(5_000);
 
     std::env::set_var("ARCHMELD_STATE_ROOT", &state_root);
-    let graph = Arc::new(RwLock::new(
-        CodeGraph::in_memory().map_err(|error| error.to_string())?,
-    ));
+    let mut index_state = IndexState::for_workspace(&slug(&workspace), &workspace);
+    let state_loaded = index_state.load();
+    let graph_path = std::env::var_os("ARCHMELD_INDEX_GRAPH").map(PathBuf::from);
+    let (graph, storage, storage_note) = match graph_path {
+        Some(path) => {
+            if let Some(parent) = path.parent() {
+                std::fs::create_dir_all(parent).map_err(|error| error.to_string())?;
+            }
+            match CodeGraph::open(&path) {
+                Ok(graph) => (graph, "persistent", None),
+                Err(error) => {
+                    // A locked or corrupt graph must not leave half a graph:
+                    // fall back to a full in-memory parse and say why.
+                    index_state.clear();
+                    (
+                        CodeGraph::in_memory().map_err(|error| error.to_string())?,
+                        "in_memory_fallback",
+                        Some(error.to_string()),
+                    )
+                }
+            }
+        }
+        None => {
+            // No persistent graph requested: unchanged hashes would skip files
+            // that are not in this empty graph, so force a full parse.
+            index_state.clear();
+            (CodeGraph::in_memory().map_err(|error| error.to_string())?, "in_memory", None)
+        }
+    };
+    let graph = Arc::new(RwLock::new(graph));
+    let (nodes_loaded, edges_loaded) = {
+        let guard = graph.read().await;
+        (guard.node_count(), guard.edge_count())
+    };
     let parsers = Arc::new(ParserRegistry::new());
-    let index_state = Arc::new(Mutex::new(IndexState::for_workspace(
-        &slug(&workspace),
-        &workspace,
-    )));
-    let indexer = Indexer::new(parsers, index_state);
+    let index_state = Arc::new(Mutex::new(index_state));
+    let indexer = Indexer::new(parsers, index_state.clone());
     let mut config = IndexConfig {
         max_files,
         include_dirs: include_dirs.clone(),
@@ -141,6 +169,57 @@ async fn main() -> Result<(), String> {
         .index_workspace(&graph, &[workspace.clone()], &config)
         .await;
     let elapsed = started.elapsed().as_millis();
+
+    // Files removed from the workspace are invisible to the directory walk, so
+    // their nodes would survive in a persistent graph. Sweep them before the
+    // export; the export must describe the current workspace, not a union.
+    let mut files_deleted = 0u64;
+    if storage == "persistent" {
+        let mut graph_guard = graph.write().await;
+        let stale: Vec<PathBuf> = {
+            let guard = index_state.lock().await;
+            guard
+                .all_hashes()
+                .keys()
+                .filter(|path| !path.exists())
+                .cloned()
+                .collect()
+        };
+        for path in stale {
+            let path_text = path.to_string_lossy().to_string();
+            let ids: Vec<u64> = {
+                graph_guard
+                    .query()
+                    .property("path", path_text.as_str())
+                    .execute()
+                    .unwrap_or_default()
+            };
+            for id in ids {
+                let _ = graph_guard.delete_node(id);
+            }
+            let mut guard = index_state.lock().await;
+            guard.remove(&path);
+            guard.save();
+            files_deleted += 1;
+        }
+    }
+    let index_mode = if storage == "persistent" && state_loaded > 0 {
+        "incremental_parse"
+    } else {
+        "full_parse"
+    };
+
+    // Node and edge ids must not be reused across runs. add_node/add_edge write
+    // rows immediately but the monotonic counters live in `meta:counters`,
+    // which is only written by flush(). Without this, a later run starts at id
+    // 0 and silently overwrites existing nodes/edges in storage.
+    {
+        let mut graph_guard = graph.write().await;
+        graph_guard
+            .flush()
+            .map_err(|error| format!("flush graph: {error}"))?;
+    }
+
     let parser_errors: Vec<serde_json::Value> = indexed
         .parser_errors
         .iter()
@@ -160,6 +239,13 @@ async fn main() -> Result<(), String> {
         "files_total": indexed.total_files,
         "files_parsed": indexed.files_parsed,
         "files_skipped": indexed.files_skipped,
+        "files_reused": indexed.files_skipped,
+        "files_deleted": files_deleted,
+        "index_mode": index_mode,
+        "storage": storage,
+        "state_loaded": state_loaded,
+        "nodes_loaded": nodes_loaded,
+        "edges_loaded": edges_loaded,
         "by_language": &indexed.by_language,
         "skipped_by_reason": &indexed.skipped_by_reason,
         "parser_errors": &parser_errors,
@@ -200,6 +286,11 @@ async fn main() -> Result<(), String> {
             "files_total": indexed.total_files,
             "files_parsed": indexed.files_parsed,
             "files_skipped": indexed.files_skipped,
+            "files_reused": indexed.files_skipped,
+            "files_deleted": files_deleted,
+            "index_mode": index_mode,
+            "state_loaded": state_loaded,
+            "nodes_loaded": nodes_loaded,
             "by_language": indexed.by_language,
             "parser_errors": indexed.parser_errors_by_language,
             "parser_error_details": parser_errors,
@@ -207,7 +298,8 @@ async fn main() -> Result<(), String> {
             "max_files_reached": indexed.max_files_reached,
             "max_depth_reached": indexed.max_depth_reached,
             "elapsed_ms": elapsed,
-            "storage": "in_memory",
+            "storage": storage,
+            "storage_note": storage_note,
         })
     );
     Ok(())

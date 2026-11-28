@@ -95,6 +95,29 @@ pub fn get_architecture(store: &Store, project_id: &str, architecture_id: &str) 
         .map_err(|err| CoreError::Storage(format!("architecture payload corrupt: {err}")))
 }
 
+/// Load a specific stored architecture revision for rule/exception history.
+pub(crate) fn architecture_at_revision(
+    store: &Store,
+    project_id: &str,
+    architecture_id: &str,
+    revision: i64,
+) -> Result<Option<Value>> {
+    validate::require_id("project_id", project_id)?;
+    validate::require_id("architecture_id", architecture_id)?;
+    let mut statement = store.conn.prepare(
+        "SELECT payload_json FROM architectures
+         WHERE project_id=?1 AND architecture_id=?2 AND revision=?3",
+    )?;
+    let mut rows = statement.query((project_id, architecture_id, revision))?;
+    let Some(row) = rows.next()? else {
+        return Ok(None);
+    };
+    let payload: String = row.get(0)?;
+    serde_json::from_str(&payload)
+        .map(Some)
+        .map_err(|err| CoreError::Storage(format!("architecture payload corrupt: {err}")))
+}
+
 /// Producer metadata for the latest architecture revision. The payload stays
 /// separate from the producer record; this exposes the recorded model
 /// provenance without inventing UI fields.
@@ -307,17 +330,14 @@ pub fn review_architecture(store: &mut Store, raw: &Value) -> Result<Value> {
             "candidate_only": false,
         }),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'reviewArchitecture',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &request_digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        &request.project_id,
+        "reviewArchitecture",
+        &request.idempotency_key,
+        &request_digest,
+        200,
+        &result,
     )?;
     tx.commit()?;
     Ok(payload)
@@ -414,18 +434,14 @@ pub(super) fn insert_architecture(
             "candidate_only": true,
         }),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,?2,?3,?4,200,?5,?6)",
-        (
-            &architecture.project_id,
-            operation,
-            idempotency_key,
-            request_digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        &architecture.project_id,
+        operation,
+        idempotency_key,
+        request_digest,
+        200,
+        &result,
     )?;
     tx.commit()?;
     Ok(())

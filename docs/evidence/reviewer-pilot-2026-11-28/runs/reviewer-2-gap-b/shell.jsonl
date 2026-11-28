@@ -1,0 +1,3 @@
+{"seq": 1, "command": "cd \"<path>" && git log --oneline -3 && echo \"---\" && git diff --stat HEAD^ HEAD"}
+{"seq": 3, "command": "cd \"<path>" && git diff HEAD^ HEAD && echo \"=== TRACKED FILES ===\" && git ls-files && echo \"=== ALL FILES (excl .git) ===\" && find . -path ./.git -prune -o -type f -print"}
+{"seq": 11, "command": "cd \"<path>" && echo \"=== docs/notes.md ===\" && cat -n docs/notes.md && echo \"=== src/ops.py ===\" && cat -n src/ops.py && echo \"=== gitignore ===\" && cat -n .gitignore"}

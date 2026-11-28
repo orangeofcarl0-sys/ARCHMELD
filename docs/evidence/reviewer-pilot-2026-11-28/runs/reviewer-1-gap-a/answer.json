@@ -1,0 +1,38 @@
+{
+  "unmapped_paths": [
+    "docs/notes.md"
+  ],
+  "changed_entities": [
+    "run"
+  ],
+  "writes_evidence": "unavailable",
+  "coverage": "partial",
+  "citations": [
+    {
+      "path": "src/ops.py",
+      "line": 3
+    },
+    {
+      "path": "src/ops.py",
+      "line": 4
+    },
+    {
+      "path": "src/settle.py",
+      "line": 1
+    },
+    {
+      "path": "src/settle.py",
+      "line": 2
+    },
+    {
+      "path": "docs/notes.md",
+      "line": 1
+    },
+    {
+      "path": "docs/notes.md",
+      "line": 3
+    }
+  ],
+  "confidence": "medium",
+  "notes": "Last commit (a140914) changes only docs/notes.md and src/ops.py. The repo contains no entity-mapping manifest (tracked files: .gitignore, docs/notes.md, src/ops.py, src/settle.py; no .archmeld/.pi content present). The only named code entities are the functions run (src/ops.py:3) and settle (src/settle.py:1). src/ops.py maps to entity run because the diff changes run's body (return settle() + 1, src/ops.py:4). docs/notes.md is documentation (title '# Notes') with no code entity, so it is the named gap. For writes: run calls settle() (src/ops.py:4) and settle() returns the constant 1 with no assignment, I/O, or side effect (src/settle.py:2); the doc text (docs/notes.md:3) only states settlement behavior is documented. There is no evidence that run writes to settle, so writes_evidence is unavailable (not inferred from source shape). Coverage is partial because one of the two changed files lacks an entity mapping."
+}

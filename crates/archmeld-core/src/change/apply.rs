@@ -292,7 +292,10 @@ pub fn apply_changeset_with_hook(
         .max(1);
     let owner = format!(
         "apply:{}",
-        short_hash(&format!("{}:{}", request.actor, request.idempotency_key))
+        hash::short_bytes(
+            format!("{}:{}", request.actor, request.idempotency_key).as_bytes(),
+            16,
+        )
     );
     let lease = acquire_writer_lease(store, &request.project_id, &owner, ttl)?;
     let token = lease["fencing_token"].as_i64().unwrap_or(0);
@@ -544,17 +547,13 @@ pub fn apply_changeset_with_hook(
     let result = get_changeset(store, &request.project_id, &request.changeset_id)?;
     let result_json = serde_json::to_string(&result)
         .map_err(|err| CoreError::Storage(format!("apply result encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'applyChangeSet',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &request_digest,
-            &result_json,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "applyChangeSet",
+        &request.idempotency_key,
+        &request_digest,
+        200,
+        &result_json,
     )?;
     let _ = applied;
     Ok(result)
@@ -618,7 +617,10 @@ pub fn recover_changeset_with_hook(
         .max(1);
     let owner = format!(
         "recover:{}",
-        short_hash(&format!("{}:{}", request.actor, request.idempotency_key))
+        hash::short_bytes(
+            format!("{}:{}", request.actor, request.idempotency_key).as_bytes(),
+            16,
+        )
     );
     let lease = acquire_writer_lease(store, &request.project_id, &owner, ttl)?;
     let token = lease["fencing_token"].as_i64().unwrap_or(0);
@@ -814,17 +816,13 @@ pub fn recover_changeset_with_hook(
     let result = get_changeset(store, &request.project_id, &request.changeset_id)?;
     let result_json = serde_json::to_string(&result)
         .map_err(|err| CoreError::Storage(format!("recovery result encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'recoverChangeSet',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &request_digest,
-            &result_json,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "recoverChangeSet",
+        &request.idempotency_key,
+        &request_digest,
+        200,
+        &result_json,
     )?;
     Ok(result)
 }
@@ -833,16 +831,10 @@ pub fn recover_changeset_with_hook(
 /// alone never proves that files are consistent.
 pub fn interrupted_changesets(store: &Store, project_id: &str) -> Result<Vec<Value>> {
     validate::require_id("project_id", project_id)?;
-    let mut statement = store.conn.prepare(
-        "SELECT changeset_id, MAX(revision) FROM changesets
-         WHERE project_id=?1 GROUP BY changeset_id",
-    )?;
-    let rows = statement.query_map((project_id,), |row| {
-        Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
-    })?;
+    let rows = store.latest_revision_ids(project_id, crate::store::RevisionTable::Changesets)?;
     let mut interrupted = Vec::new();
     for row in rows {
-        let (changeset_id, revision) = row?;
+        let (changeset_id, revision) = row;
         let (_, payload) = match latest_changeset(store, project_id, &changeset_id)? {
             Some(latest) => latest,
             None => continue,
@@ -1478,7 +1470,10 @@ fn deterministic_temp_path(
         .parent()
         .ok_or_else(|| "target has no parent directory".to_string())?;
     let key = format!("{changeset_id}:{sequence}");
-    Ok(parent.join(format!("{TEMP_PREFIX}{}.tmp", short_hash(&key))))
+    Ok(parent.join(format!(
+        "{TEMP_PREFIX}{}.tmp",
+        hash::short_bytes(key.as_bytes(), 16)
+    )))
 }
 
 fn cleanup_temp(path: &Path) {
@@ -1741,8 +1736,3 @@ fn require_preimage(store: &Store, row: &JournalRow) -> Result<Vec<u8>> {
     postimage_bytes(store, digest)
 }
 
-fn short_hash(identity: &str) -> String {
-    let digest = hash::digest_bytes(identity.as_bytes());
-    let hex = digest.strip_prefix("sha256:").unwrap_or(&digest);
-    hex[..16].to_string()
-}

@@ -1,0 +1,4 @@
+{"seq": 1, "command": "cd \"<path>" && git log --oneline -5 && echo \"=====DIFF=====\" && git show HEAD --stat"}
+{"seq": 3, "command": "cd \"<path>" && git show HEAD -- docs/notes.md src/ops.py"}
+{"seq": 8, "command": "cd \"<path>" && find . -type f -not -path './.git/*' -not -path './.archmeld/*' | sort && echo \"=====ops.py=====\" && cat -A src/ops.py"}
+{"seq": 10, "command": "cd \"<path>" && cat -A src/settle.py && echo \"=====notes.md=====\" && cat -A docs/notes.md"}

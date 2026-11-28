@@ -17,12 +17,92 @@ pub use types::*;
 use crate::error::{CoreError, Result};
 use crate::hash;
 use rusqlite::Connection;
+use serde_json::Value;
+use std::collections::BTreeMap;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-const SCHEMA_VERSION: i64 = 19;
+const SCHEMA_VERSION: i64 = 20;
+
+/// A persisted review report is a bounded evidence object. Larger outputs must
+/// be reviewed with `detail=full` instead of being silently stored in SQLite.
+const MAX_REVIEW_REPORT_BYTES: usize = 8 * 1024 * 1024;
+
+/// Pin id used by `freeze_review_candidate` for one CAS object.
+pub(crate) fn freeze_pin_id(digest: &str) -> String {
+    format!(
+        "freeze.{}",
+        digest
+            .strip_prefix("sha256:")
+            .unwrap_or(digest)
+            .chars()
+            .take(32)
+            .collect::<String>()
+    )
+}
+
+/// Recursively collect `blob_digest` values from a persisted review report.
+/// The traversal is deliberately narrow: only that key is treated as a CAS
+/// reference, so ordinary content digests are not pinned by accident.
+fn collect_blob_digests(value: &Value, set: &mut std::collections::BTreeSet<String>) {
+    match value {
+        Value::Object(map) => {
+            for (key, item) in map {
+                if key == "blob_digest" {
+                    if let Some(digest) = item.as_str() {
+                        if digest.starts_with("sha256:") {
+                            set.insert(digest.to_string());
+                        }
+                    }
+                } else {
+                    collect_blob_digests(item, set);
+                }
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                collect_blob_digests(item, set);
+            }
+        }
+        _ => {}
+    }
+}
+/// Stable identity for a persisted review report. Timings and the absolute
+/// workspace path are excluded so retries of the same state reuse one report
+/// and one pin set; base/candidate/mode are part of the identity so the same
+/// output cannot be replayed under different provenance columns.
+fn review_report_identity(
+    base_snapshot_id: &str,
+    candidate_snapshot_id: Option<&str>,
+    mode: &str,
+    output: &Value,
+) -> Result<(String, String)> {
+    let mut stable_output = output.clone();
+    if let Some(object) = stable_output.as_object_mut() {
+        object.remove("timings");
+        object.remove("workspace");
+    }
+    let identity = serde_json::json!({
+        "base_snapshot_id": base_snapshot_id,
+        "candidate_snapshot_id": candidate_snapshot_id,
+        "mode": mode,
+        "output": stable_output,
+    });
+    let identity_digest = hash::digest_value(&identity)
+        .map_err(|err| CoreError::Storage(format!("review report identity: {err}")))?;
+    let report_id = format!(
+        "review.{}",
+        identity_digest
+            .strip_prefix("sha256:")
+            .unwrap_or(&identity_digest)
+            .chars()
+            .take(32)
+            .collect::<String>()
+    );
+    Ok((identity_digest, report_id))
+}
 
 pub(crate) fn now_unix() -> i64 {
     SystemTime::now()
@@ -50,6 +130,39 @@ pub struct SnapshotInsert {
     pub coverage: Coverage,
     pub payload: serde_json::Value,
     pub files: Vec<FileEntry>,
+}
+
+/// Project-scoped tables whose rows carry `(id, revision, payload_json)`.
+/// Using an enum keeps table and id-column names out of call sites.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RevisionTable {
+    Claims,
+    Architectures,
+    Plans,
+    Changesets,
+    BehaviorContracts,
+}
+
+impl RevisionTable {
+    pub fn table(self) -> &'static str {
+        match self {
+            Self::Claims => "claims",
+            Self::Architectures => "architectures",
+            Self::Plans => "plans",
+            Self::Changesets => "changesets",
+            Self::BehaviorContracts => "behavior_contracts",
+        }
+    }
+
+    pub fn id_column(self) -> &'static str {
+        match self {
+            Self::Claims => "claim_id",
+            Self::Architectures => "architecture_id",
+            Self::Plans => "plan_id",
+            Self::Changesets => "changeset_id",
+            Self::BehaviorContracts => "contract_id",
+        }
+    }
 }
 
 pub struct Store {
@@ -315,6 +428,16 @@ impl Store {
                 (now_unix(),),
             )?;
             tx.pragma_update(None, "user_version", 19)?;
+            tx.commit()?;
+        }
+        if version < 20 {
+            let tx = self.conn.transaction()?;
+            tx.execute_batch(include_str!("migrations/0020_review_reports.sql"))?;
+            tx.execute(
+                "INSERT INTO schema_migrations (version, applied_at) VALUES (20, ?1)",
+                (now_unix(),),
+            )?;
+            tx.pragma_update(None, "user_version", 20)?;
             tx.commit()?;
         }
         Ok(())
@@ -617,7 +740,70 @@ impl Store {
         status_code: u16,
         result: &serde_json::Value,
     ) -> Result<()> {
-        self.conn.execute(
+        self.idempotency_put_raw(
+            scope,
+            operation,
+            key,
+            request_digest,
+            status_code,
+            &result.to_string(),
+        )
+    }
+
+    /// Same as [`Store::idempotency_put`] for a caller that already holds the
+    /// serialized result.
+    pub fn idempotency_put_raw(
+        &mut self,
+        scope: &str,
+        operation: &str,
+        key: &str,
+        request_digest: &str,
+        status_code: u16,
+        result_json: &str,
+    ) -> Result<()> {
+        Self::insert_idempotency(
+            &self.conn,
+            scope,
+            operation,
+            key,
+            request_digest,
+            status_code,
+            result_json,
+        )
+    }
+
+    /// Transaction-scoped variant: the idempotency row joins the caller's
+    /// transaction instead of opening a second write path.
+    pub fn idempotency_put_tx(
+        tx: &rusqlite::Transaction<'_>,
+        scope: &str,
+        operation: &str,
+        key: &str,
+        request_digest: &str,
+        status_code: u16,
+        result_json: &str,
+    ) -> Result<()> {
+        Self::insert_idempotency(
+            tx,
+            scope,
+            operation,
+            key,
+            request_digest,
+            status_code,
+            result_json,
+        )
+    }
+
+    fn insert_idempotency(
+        connection: &rusqlite::Connection,
+        scope: &str,
+        operation: &str,
+        key: &str,
+        request_digest: &str,
+        status_code: u16,
+        result_json: &str,
+    ) -> Result<()> {
+        connection.execute(
             "INSERT INTO idempotency
              (project_id, operation, idempotency_key, request_digest, status_code, result_json, created_at)
              VALUES (?1,?2,?3,?4,?5,?6,?7)
@@ -628,7 +814,7 @@ impl Store {
                 key,
                 request_digest,
                 status_code as i64,
-                result.to_string(),
+                result_json,
                 now_unix(),
             ),
         )?;
@@ -905,6 +1091,117 @@ impl Store {
             .transpose()
     }
 
+    /// Latest revision id and revision number for every row of one
+    /// project-scoped revision table.
+    pub fn latest_revision_ids(
+        &self,
+        project_id: &str,
+        table: RevisionTable,
+    ) -> Result<Vec<(String, i64)>> {
+        let sql = format!(
+            "SELECT {id}, MAX(revision) FROM {table}
+             WHERE project_id=?1 GROUP BY {id} ORDER BY {id}",
+            id = table.id_column(),
+            table = table.table()
+        );
+        let mut statement = self.conn.prepare(&sql)?;
+        let rows = statement.query_map((project_id,), |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
+    }
+
+    /// Payloads of the latest revision for every row of one project-scoped
+    /// revision table.
+    pub fn latest_revision_rows(
+        &self,
+        project_id: &str,
+        table: RevisionTable,
+    ) -> Result<Vec<Value>> {
+        let sql = format!(
+            "SELECT payload_json FROM {table} t
+             WHERE project_id=?1 AND revision=(SELECT MAX(revision) FROM {table} u
+                 WHERE u.project_id=t.project_id AND u.{id}=t.{id})
+             ORDER BY {id}",
+            id = table.id_column(),
+            table = table.table()
+        );
+        let mut statement = self.conn.prepare(&sql)?;
+        let rows = statement.query_map((project_id,), |row| row.get::<_, String>(0))?;
+        let mut values = Vec::new();
+        for row in rows {
+            values.push(serde_json::from_str(&row?).map_err(|err| {
+                CoreError::Storage(format!("{} payload corrupt: {err}", table.table()))
+            })?);
+        }
+        Ok(values)
+    }
+
+    /// Payload of one exact revision.
+    pub fn latest_revision_payload(
+        &self,
+        project_id: &str,
+        table: RevisionTable,
+        id: &str,
+        revision: i64,
+    ) -> Result<Option<Value>> {
+        let sql = format!(
+            "SELECT payload_json FROM {table} WHERE project_id=?1 AND {id}=?2 AND revision=?3",
+            id = table.id_column(),
+            table = table.table()
+        );
+        let payload: Option<String> = self
+            .conn
+            .query_row(&sql, (project_id, id, revision), |row| row.get(0))
+            .ok();
+        payload
+            .map(|text| {
+                serde_json::from_str(&text).map_err(|err| {
+                    CoreError::Storage(format!("{} payload corrupt: {err}", table.table()))
+                })
+            })
+            .transpose()
+    }
+
+    /// Path -> blob digest for one snapshot, ordered by path.
+    pub fn snapshot_file_digests(
+        &self,
+        project_id: &str,
+        snapshot_id: &str,
+    ) -> Result<BTreeMap<String, String>> {
+        let mut statement = self.conn.prepare(
+            "SELECT path,blob_digest FROM files
+             WHERE project_id=?1 AND snapshot_id=?2 ORDER BY path",
+        )?;
+        let rows = statement.query_map((project_id, snapshot_id), |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<BTreeMap<_, _>>>()?)
+    }
+
+    /// Path -> stored metadata for one snapshot, ordered by path.
+    pub fn snapshot_file_metadata(
+        &self,
+        project_id: &str,
+        snapshot_id: &str,
+    ) -> Result<BTreeMap<String, SnapshotFileMeta>> {
+        let mut statement = self.conn.prepare(
+            "SELECT path,blob_digest,size_bytes,executable FROM files
+             WHERE project_id=?1 AND snapshot_id=?2 ORDER BY path",
+        )?;
+        let rows = statement.query_map((project_id, snapshot_id), |row| {
+            Ok((
+                row.get::<_, String>(0)?,
+                SnapshotFileMeta {
+                    blob_digest: row.get(1)?,
+                    size_bytes: row.get::<_, i64>(2)?.max(0) as u64,
+                    executable: row.get::<_, i64>(3)? == 1,
+                },
+            ))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<BTreeMap<_, _>>>()?)
+    }
+
     pub fn entity_snapshot_id(
         &self,
         project_id: &str,
@@ -1036,6 +1333,231 @@ impl Store {
         })))
     }
 
+    /// Persist a review/structural-diff result and its retention pins in one
+    /// transaction, so a failed pin can never leave a readable report without
+    /// the snapshots it cites.
+    pub fn insert_review_report(
+        &mut self,
+        project_id: &str,
+        base_snapshot_id: &str,
+        candidate_snapshot_id: Option<&str>,
+        mode: &str,
+        output: &Value,
+        pins: &[(String, String)],
+    ) -> Result<Value> {
+        validate::require_id("project_id", project_id)?;
+        validate::require_digest("base_snapshot_id", base_snapshot_id)?;
+        if let Some(candidate) = candidate_snapshot_id {
+            validate::require_digest("candidate_snapshot_id", candidate)?;
+        }
+        let output_json = serde_json::to_string(output)
+            .map_err(|err| CoreError::Storage(format!("review report encode: {err}")))?;
+        if output_json.len() > MAX_REVIEW_REPORT_BYTES {
+            return Err(CoreError::invalid(format!(
+                "review report is {} bytes; the limit is {MAX_REVIEW_REPORT_BYTES} bytes",
+                output_json.len()
+            )));
+        }
+        let output_digest = hash::digest_value(output)
+            .map_err(|err| CoreError::Storage(format!("review report digest: {err}")))?;
+        let (identity_digest, report_id) = review_report_identity(
+            base_snapshot_id,
+            candidate_snapshot_id,
+            mode,
+            output,
+        )?;
+        let created_at = now_unix();
+        let tx = self.conn.unchecked_transaction()?;
+        tx.execute(
+            "INSERT OR REPLACE INTO review_reports
+             (project_id,report_id,base_snapshot_id,candidate_snapshot_id,mode,output_digest,output_json,created_at)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8)",
+            (
+                project_id,
+                &report_id,
+                base_snapshot_id,
+                candidate_snapshot_id,
+                mode,
+                &output_digest,
+                &output_json,
+                created_at,
+            ),
+        )?;
+        for (suffix, target) in pins {
+            let pin_id = format!("{report_id}.{suffix}");
+            validate::require_id("pin_id", &pin_id)?;
+            validate::require_non_empty("pin target", target)?;
+            tx.execute(
+                "INSERT INTO retention_pins (project_id,pin_id,kind,target,created_at)
+                 VALUES (?1,?2,?3,?4,?5)
+                 ON CONFLICT(project_id,pin_id) DO UPDATE SET kind=excluded.kind,target=excluded.target",
+                (project_id, &pin_id, "snapshot", target, now_unix()),
+            )?;
+        }
+        tx.commit()?;
+        Ok(serde_json::json!({
+            "report_id": report_id,
+            "identity_digest": identity_digest,
+            "output_digest": output_digest,
+            "created_at": created_at,
+            "size_bytes": output_json.len(),
+        }))
+    }
+
+    pub fn get_review_report(
+        &self,
+        project_id: &str,
+        report_id: &str,
+    ) -> Result<Option<Value>> {
+        validate::require_id("project_id", project_id)?;
+        validate::require_id("report_id", report_id)?;
+        let mut statement = self.conn.prepare(
+            "SELECT base_snapshot_id,candidate_snapshot_id,mode,output_digest,output_json,created_at
+             FROM review_reports WHERE project_id=?1 AND report_id=?2",
+        )?;
+        let mut rows = statement.query((project_id, report_id))?;
+        let Some(row) = rows.next()? else {
+            return Ok(None);
+        };
+        let base_snapshot_id: String = row.get(0)?;
+        let candidate_snapshot_id: Option<String> = row.get(1)?;
+        let mode: String = row.get(2)?;
+        let stored_digest: String = row.get(3)?;
+        let output_json: String = row.get(4)?;
+        let created_at: i64 = row.get(5)?;
+        let output: Value = serde_json::from_str(&output_json)
+            .map_err(|err| CoreError::Storage(format!("review report corrupt: {err}")))?;
+        let computed = hash::digest_value(&output)
+            .map_err(|err| CoreError::Storage(format!("review report digest: {err}")))?;
+        if computed != stored_digest {
+            return Err(CoreError::Storage(format!(
+                "review report {report_id} output digest does not match its record"
+            )));
+        }
+        let (identity_digest, expected_id) = review_report_identity(
+            &base_snapshot_id,
+            candidate_snapshot_id.as_deref(),
+            &mode,
+            &output,
+        )?;
+        if expected_id != report_id {
+            return Err(CoreError::Storage(format!(
+                "review report {report_id} identity does not match its stored columns and output"
+            )));
+        }
+        Ok(Some(serde_json::json!({
+            "report_id": report_id,
+            "identity_digest": identity_digest,
+            "base_snapshot_id": base_snapshot_id,
+            "candidate_snapshot_id": candidate_snapshot_id,
+            "mode": mode,
+            "output_digest": stored_digest,
+            "created_at": created_at,
+            "size_bytes": output_json.len(),
+            "output": output,
+        })))
+    }
+
+    pub fn list_review_reports(&self, project_id: &str) -> Result<Vec<Value>> {
+        validate::require_id("project_id", project_id)?;
+        let mut pins_statement = self.conn.prepare(
+            "SELECT pin_id FROM retention_pins WHERE project_id=?1 ORDER BY pin_id",
+        )?;
+        let pins: Vec<String> = pins_statement
+            .query_map((project_id,), |row| row.get::<_, String>(0))?
+            .collect::<rusqlite::Result<Vec<_>>>()?;
+        let mut statement = self.conn.prepare(
+            "SELECT report_id,base_snapshot_id,candidate_snapshot_id,mode,output_digest,created_at,length(output_json)
+             FROM review_reports WHERE project_id=?1 ORDER BY created_at DESC, report_id DESC",
+        )?;
+        let rows = statement.query_map((project_id,), |row| {
+            let report_id: String = row.get(0)?;
+            let prefix = format!("{report_id}.");
+            let report_pins: Vec<&String> = pins
+                .iter()
+                .filter(|pin| pin.starts_with(&prefix))
+                .collect();
+            Ok(serde_json::json!({
+                "report_id": report_id,
+                "base_snapshot_id": row.get::<_, String>(1)?,
+                "candidate_snapshot_id": row.get::<_, Option<String>>(2)?,
+                "mode": row.get::<_, String>(3)?,
+                "output_digest": row.get::<_, String>(4)?,
+                "created_at": row.get::<_, i64>(5)?,
+                "size_bytes": row.get::<_, i64>(6)?,
+                "retention": {
+                    "state": if report_pins.is_empty() { "unpinned" } else { "pinned" },
+                    "pin_ids": report_pins,
+                    "reason": if report_pins.is_empty() {
+                        "no retention pins; snapshot/object reclaim is not blocked by this report"
+                    } else {
+                        "review report pins keep its snapshot citations readable"
+                    },
+                },
+            }))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
+    }
+
+    /// Remove a persisted review report together with the pins it created.
+    /// Removing only the row would leave orphan pins that silently block GC.
+    /// Freeze pins are shared by content digest, so they are removed only when
+    /// no remaining report still cites the frozen bytes.
+    pub fn delete_review_report(&mut self, project_id: &str, report_id: &str) -> Result<Value> {
+        validate::require_id("project_id", project_id)?;
+        validate::require_id("report_id", report_id)?;
+        let output_json: Option<String> = self
+            .conn
+            .query_row(
+                "SELECT output_json FROM review_reports WHERE project_id=?1 AND report_id=?2",
+                (project_id, report_id),
+                |row| row.get(0),
+            )
+            .ok();
+        let freeze_pins: Vec<(String, String)> = output_json
+            .as_deref()
+            .and_then(|text| serde_json::from_str::<Value>(text).ok())
+            .map(|output| {
+                let mut digests = std::collections::BTreeSet::new();
+                collect_blob_digests(&output, &mut digests);
+                digests
+                    .into_iter()
+                    .map(|digest| (freeze_pin_id(&digest), digest))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let tx = self.conn.unchecked_transaction()?;
+        let pins_removed = tx.execute(
+            "DELETE FROM retention_pins WHERE project_id=?1 AND pin_id LIKE ?2",
+            (project_id, format!("{report_id}.%")),
+        )?;
+        let removed = tx.execute(
+            "DELETE FROM review_reports WHERE project_id=?1 AND report_id=?2",
+            (project_id, report_id),
+        )?;
+        let mut freeze_pins_removed = 0usize;
+        for (pin_id, digest) in freeze_pins {
+            let still_cited: i64 = tx.query_row(
+                "SELECT COUNT(*) FROM review_reports WHERE project_id=?1 AND instr(output_json,?2)>0",
+                (project_id, &digest),
+                |row| row.get(0),
+            )?;
+            if still_cited == 0 {
+                freeze_pins_removed += tx.execute(
+                    "DELETE FROM retention_pins WHERE project_id=?1 AND pin_id=?2",
+                    (project_id, &pin_id),
+                )?;
+            }
+        }
+        tx.commit()?;
+        Ok(serde_json::json!({
+            "report_id": report_id,
+            "removed": removed == 1,
+            "pins_removed": pins_removed + freeze_pins_removed,
+            "freeze_pins_removed": freeze_pins_removed,
+        }))
+    }
+
     pub(crate) fn next_event_sequence(&self, project_id: &str) -> Result<i64> {
         Ok(self.conn.query_row(
             "SELECT COALESCE(MAX(sequence)+1, 0) FROM events WHERE project_id=?1",
@@ -1084,7 +1606,7 @@ mod schema_tests {
     ];
 
     #[test]
-    fn a_version_18_ledger_upgrades_to_19() {
+    fn a_version_18_ledger_upgrades_to_current() {
         let dir = std::env::temp_dir().join(format!(
             "archmeld-schema-{}-{}",
             std::process::id(),
@@ -1110,7 +1632,8 @@ mod schema_tests {
             .conn
             .query_row("PRAGMA user_version", [], |row| row.get(0))
             .unwrap();
-        assert_eq!(version, 19);
+        assert_eq!(version, 20);
+        assert!(store.table_exists("review_reports").unwrap());
         let entity_columns: Vec<String> = store
             .conn
             .prepare("PRAGMA table_info(entities)")
@@ -1143,5 +1666,110 @@ mod schema_tests {
         assert!(store.table_exists("index_runs").unwrap_or(false));
         drop(store);
         let _ = fs::remove_dir_all(&dir);
+    }
+
+    fn report_fixture() -> (tempfile::TempDir, Store, String) {
+        let dir = tempfile::tempdir().unwrap();
+        let mut store = Store::open(dir.path()).unwrap();
+        store.ensure_project("project.report", "expedition").unwrap();
+        let base = format!("sha256:{}", "a".repeat(64));
+        (dir, store, base)
+    }
+
+    #[test]
+    fn review_report_rejects_oversized_output_before_writing() {
+        let (_dir, mut store, base) = report_fixture();
+        let output = serde_json::json!({"state": "clean", "payload": "x".repeat(MAX_REVIEW_REPORT_BYTES)});
+        let error = store
+            .insert_review_report("project.report", &base, None, "workspace", &output, &[])
+            .unwrap_err();
+        assert!(
+            error.to_string().contains("limit"),
+            "unexpected error: {error}"
+        );
+        let count: i64 = store
+            .conn
+            .query_row("SELECT COUNT(*) FROM review_reports", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 0, "an oversized report must not be half-written");
+    }
+
+    #[test]
+    fn review_report_pin_failure_rolls_back_the_report() {
+        let (_dir, mut store, base) = report_fixture();
+        let output = serde_json::json!({"state": "clean"});
+        let error = store
+            .insert_review_report(
+                "project.report",
+                &base,
+                None,
+                "workspace",
+                &output,
+                &[("base".to_string(), String::new())],
+            )
+            .unwrap_err();
+        assert!(!error.to_string().is_empty());
+        let reports: i64 = store
+            .conn
+            .query_row("SELECT COUNT(*) FROM review_reports", [], |row| row.get(0))
+            .unwrap();
+        let pins: i64 = store
+            .conn
+            .query_row("SELECT COUNT(*) FROM retention_pins", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(reports, 0, "a failed pin must roll the report back");
+        assert_eq!(pins, 0);
+    }
+
+    #[test]
+    fn review_report_read_detects_column_and_output_tampering() {
+        let (_dir, mut store, base) = report_fixture();
+        let output = serde_json::json!({"state": "clean", "base_snapshot_id": base});
+        let stored = store
+            .insert_review_report(
+                "project.report",
+                &base,
+                None,
+                "workspace",
+                &output,
+                &[("base".to_string(), base.clone())],
+            )
+            .unwrap();
+        let report_id = stored["report_id"].as_str().unwrap().to_string();
+
+        // Identity covers base/candidate/mode and the output: renaming the row
+        // without changing the content must be detected.
+        let forged_id = "review.00000000000000000000000000000000";
+        store
+            .conn
+            .execute(
+                "UPDATE review_reports SET report_id=?1 WHERE report_id=?2",
+                (forged_id, &report_id),
+            )
+            .unwrap();
+        assert!(
+            store.get_review_report("project.report", forged_id).is_err(),
+            "identity mismatch must not be returned as a valid report"
+        );
+
+        // Restore the id, then tamper with the stored output.
+        store
+            .conn
+            .execute(
+                "UPDATE review_reports SET report_id=?1 WHERE report_id=?2",
+                (&report_id, forged_id),
+            )
+            .unwrap();
+        store
+            .conn
+            .execute(
+                "UPDATE review_reports SET output_json=?1 WHERE report_id=?2",
+                (r#"{"state":"changed"}"#, &report_id),
+            )
+            .unwrap();
+        assert!(
+            store.get_review_report("project.report", &report_id).is_err(),
+            "output digest mismatch must be reported as corruption"
+        );
     }
 }

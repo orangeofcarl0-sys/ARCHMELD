@@ -294,6 +294,21 @@ fn mcp_has_no_approval_tool_and_refuses_writes_and_paths() {
         .unwrap();
     assert!(!advertised_kinds.iter().any(|kind| kind == "runtime_run"));
     assert!(!advertised_kinds.iter().any(|kind| kind == "report"));
+    let brief_tool = tools
+        .iter()
+        .find(|tool| tool["name"] == "archmeld_brief")
+        .unwrap();
+    for field in [
+        "max_findings",
+        "max_context",
+        "max_gaps",
+        "max_relation_items",
+    ] {
+        assert!(
+            brief_tool["inputSchema"]["properties"][field].is_object(),
+            "brief must advertise {field}: {brief_tool}"
+        );
+    }
 
     let capabilities = server.call(10, "archmeld_capabilities", json!({}));
     assert_eq!(capabilities["result"]["isError"], false);

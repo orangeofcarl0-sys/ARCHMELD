@@ -586,7 +586,7 @@
     {
       "path": "specs/S09_CHANGE_TRANSACTION.md",
       "size_bytes": 4228,
-      "digest": "sha256:70a8c27241c767b722977f6196c584734219a3c263fa96105b8fb4e4d6a2cbb0"
+      "digest": "sha256:70a8c27241c767b722977f6196c5847<redacted>19a3c263fa96105b8fb4e4d6a2cbb0"
     },
     {
       "path": "specs/S10_VERIFICATION_AND_CONTRACTS.md",
@@ -641,7 +641,7 @@
     {
       "path": "START_HERE.md",
       "size_bytes": 2605,
-      "digest": "sha256:8a97e9f269faef004ef814f1cca2d45e3baffd3ce789fa249bd342319f27a65e"
+      "digest": "sha256:8a97e9f269faef004ef814f1cca2d45e3baffd3ce789fa249bd<redacted>319f27a65e"
     },
     {
       "path": "templates/ADR.md",
@@ -676,7 +676,7 @@
     {
       "path": "tooling/requirements-validation.txt",
       "size_bytes": 113,
-      "digest": "sha256:bb3426997da893eb23d6d674aafb3dd0a97ea9db58cc9983faab0ff2e5a96b44"
+      "digest": "sha256:bb<redacted>6997da893eb23d6d674aafb3dd0a97ea9db58cc9983faab0ff2e5a96b44"
     },
     {
       "path": "validation/README.md",

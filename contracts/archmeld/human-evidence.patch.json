@@ -1,0 +1,56 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-069-human-attested-reads-writes.md",
+  "contract": "HumanEvidenceAttestation",
+  "change": "add_human_attested_reads_writes_import",
+  "cli": "archmeld evidence import-human --state <dir> --input <attestation.json>",
+  "input": {
+    "schema_version": "1.0",
+    "project_id": "Id",
+    "snapshot_id": "sha256 digest",
+    "producer": {
+      "name": "non-empty string",
+      "version": "non-empty string",
+      "source_ref": "non-empty string",
+      "run_id": "Id"
+    },
+    "attestor": "non-empty string",
+    "observations": {
+      "max_items": 1000,
+      "item": {
+        "kind": "read|write|own",
+        "source_entity_id": "Id present in the snapshot",
+        "target_entity_id": "Id present in the snapshot",
+        "path": "optional workspace-relative POSIX path matching a source/target anchor",
+        "line": "optional integer >= 1; requires path and must fall inside the anchor",
+        "rationale": "optional non-empty string"
+      }
+    }
+  },
+  "written_relation": {
+    "kind": "reads|writes|owns",
+    "basis": "human",
+    "resolution": "declared",
+    "conditions": [
+      "human-attested",
+      "attestor:<id>",
+      "not-runtime-observation"
+    ],
+    "evidence_kind": "human",
+    "coverage": "partial"
+  },
+  "forbidden": [
+    "basis=observed",
+    "resolution=observed",
+    "resolved_call or observed_call from this importer",
+    "a human declaration satisfying a runtime-evidence requirement"
+  ],
+  "idempotency": "relation ids are deterministic over project, snapshot, attestor, kind, endpoints, path and line; the same attestation re-imports without adding a second edge",
+  "implemented_by": "crates/archmeld-core/src/evidence/human.rs and crates/archmeld-api/src/cli.rs",
+  "verified_by": [
+    "crates/archmeld-core/tests/human_evidence.rs::human_writes_are_imported_as_declared_human_evidence",
+    "crates/archmeld-core/tests/human_evidence.rs::human_evidence_rejects_missing_entities_and_wrong_snapshot_scope",
+    "crates/archmeld-core/tests/human_evidence.rs::human_writes_appear_in_structural_ownership_as_declared"
+  ]
+}

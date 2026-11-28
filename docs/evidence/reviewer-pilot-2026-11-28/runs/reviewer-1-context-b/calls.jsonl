@@ -1,0 +1,5 @@
+{"seq": 2, "tool": "archmeld_status", "args": {}}
+{"seq": 4, "tool": "archmeld_brief", "args": {"recipe": "change", "project_id": "project.reviewer.context"}}
+{"seq": 7, "tool": "archmeld_query", "args": {"project_id": "project.reviewer.context", "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624", "entity_ids": ["syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"], "kind": "impact", "max_depth": 2}}
+{"seq": 8, "tool": "archmeld_query", "args": {"project_id": "project.reviewer.context", "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624", "kind": "neighbors", "entity_ids": ["syn.6c013732b297f8040f2c3d0c24c10b9b6d04bf1be192799a6aca975cca785c7a"], "max_depth": 2}}
+{"seq": 9, "tool": "archmeld_query", "args": {"project_id": "project.reviewer.context", "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624", "kind": "symbols", "query": ""}}

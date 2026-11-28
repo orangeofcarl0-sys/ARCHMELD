@@ -1,0 +1,5 @@
+{"seq": 2, "tool": "archmeld_status", "args": {}}
+{"seq": 4, "tool": "archmeld_brief", "args": {"recipe": "change", "project_id": "project.reviewer.move"}}
+{"seq": 8, "tool": "archmeld_query", "args": {"project_id": "project.reviewer.move", "kind": "symbols"}}
+{"seq": 9, "tool": "archmeld_query", "args": {"kind": "neighbors", "project_id": "project.reviewer.move", "entity_ids": ["syn.b39ba27bf4d97fac306d12c7fbd9a5ab3b6b74155f6565c9427aee15aa2ad330", "syn.e5038446d96ada844cff8bf797046f29a622dfaf285da4c0a4f953eae85f6ddb"], "relation_kinds": ["imports", "references", "contains", "declares"]}}
+{"seq": 10, "tool": "archmeld_review", "args": {"base_snapshot_id": "sha256:55120f31b48808a93e5013012b2c0cad07bd442be056e5253a72517685e7d048", "detail": "full"}}

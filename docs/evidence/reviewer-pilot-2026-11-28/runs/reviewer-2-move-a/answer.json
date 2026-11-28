@@ -1,0 +1,22 @@
+{
+  "moved_entity": "core.alpha (function alpha, module src/core/alpha.py)",
+  "moved_from": "src/core/alpha.py",
+  "moved_to": "src/core/alpha_moved.py",
+  "caller_changed": "false",
+  "citations": [
+    {
+      "path": "src/core/alpha_moved.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    }
+  ],
+  "confidence": "high",
+  "notes": "git show --stat/--name-status for f0700c1 reports exactly one change: 'R100 src/core/alpha.py src/core/alpha_moved.py' (rename, 0 insertions, 0 deletions), so the entity moved is the module/function core.alpha now at src/core/alpha_moved.py:1 ('def alpha():'). git log --follow on src/caller.py lists only the base commit a3c1fc5, and 'git diff HEAD^ HEAD --name-status' returns only the rename, so no caller source changed in this commit. src/caller.py:1 still reads 'from core.alpha import alpha' and src/caller.py:4 calls alpha(), i.e. the caller is now stale relative to the new path. I did not execute code, so runtime import behavior (e.g. whether an alias/shim exists elsewhere) is unavailable; the repository contains only .gitignore, src/caller.py and src/core/alpha_moved.py, so no shim for core.alpha is present in the tracked tree."
+}

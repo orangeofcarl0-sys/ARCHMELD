@@ -51,7 +51,7 @@
     "docs/upstream/ROLLBACK.md": "cfd655e8ec77897a1a2eb9d685ae0c2d9fe4dec3e6d6d9fdd3947920488d8d3e",
     "docs/upstream/UPGRADE_PLAYBOOK.md": "29b716400b727bac7a2af7afc66dbb3bfcef160175e1efa7e831103c5c9d4f02",
     "docs/evidence/upstream-rollback-2026-11-26/full-matrix.json": "44549bac381754c5c32e3da5d13d5dd7acf53d02b098a01663307ccba4bb6fd9",
-    "docs/evidence/upstream-rollback-2026-11-26/quick-matrix.json": "9df2c3995ef3420935b726cded904a36d0b531145b652e7e0f26c631c9191e61"
+    "docs/evidence/upstream-rollback-2026-11-26/quick-matrix.json": "9df2c3995ef<redacted>0935b726cded904a36d0b531145b652e7e0f26c631c9191e61"
   },
   "commands": ["u5-rollback-full-matrix", "u5-rollback-quick-matrix"],
   "limitations": [

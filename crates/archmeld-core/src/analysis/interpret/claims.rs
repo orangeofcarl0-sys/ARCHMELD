@@ -80,17 +80,14 @@ pub fn propose_claim(store: &mut Store, raw: &Value) -> Result<Value> {
         "claim.proposed",
         json!({"claim_id": claim.id, "status": claim.status.as_str(), "revision": 1}),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'proposeClaim',?2,?3,200,?4,?5)",
-        (
-            &claim.project_id,
-            &proposal.idempotency_key,
-            &digest,
-            &result.to_string(),
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        &claim.project_id,
+        "proposeClaim",
+        &proposal.idempotency_key,
+        &digest,
+        200,
+        &result.to_string(),
     )?;
     tx.commit()?;
     Ok(result)
@@ -237,17 +234,14 @@ pub fn review_claim(
         "claim.reviewed",
         json!({"claim_id": claim_id, "status": new_status.as_str(), "revision": revision}),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'reviewClaim',?2,?3,200,?4,?5)",
-        (
-            project_id,
-            idempotency_key,
-            &digest,
-            &result.to_string(),
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        project_id,
+        "reviewClaim",
+        idempotency_key,
+        &digest,
+        200,
+        &result.to_string(),
     )?;
     tx.commit()?;
     Ok(result)

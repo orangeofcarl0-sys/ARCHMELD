@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use archmeld_core::bridge::{import_codegraph_export, BridgeConfig};
-use archmeld_core::brief::{build_brief, BriefRecipe, BriefRequest};
+use archmeld_core::brief::{
+    build_brief, build_brief_with_budget, BriefBudget, BriefRecipe, BriefRequest,
+};
 use archmeld_core::manager::{open_project, OpenRequest};
 use archmeld_core::snapshot::{capture_snapshot, SnapshotInputs, SnapshotOptions};
 use archmeld_core::store::Store;
@@ -117,6 +119,17 @@ fn project_brief_reports_counts_and_next_actions() {
     assert_eq!(brief["level"], "module");
     assert_eq!(brief["scope"]["snapshot_id"], fixture.snapshot_id);
     assert_eq!(brief["counts"]["candidate"], 1);
+    assert_eq!(brief["counts"]["confirmed"], 0);
+    assert_eq!(brief["counts"]["declared"], 0);
+    assert_eq!(
+        brief["counts"]["unknown"],
+        brief["unknowns"].as_array().unwrap().len() as u64
+    );
+    assert!(brief["coverage"]["state"].is_string(), "{brief}");
+    assert_eq!(brief["verification"]["state"], "not_run", "{brief}");
+    assert!(brief["budget"].is_object(), "{brief}");
+    assert!(brief["context"].as_array().unwrap().is_empty());
+    assert!(brief["gaps"].as_array().unwrap().is_empty());
     assert!(brief["summary"].as_str().unwrap().contains("entities"));
     assert!(brief["next_actions"].as_array().unwrap().len() >= 2);
 }
@@ -152,6 +165,14 @@ fn change_brief_is_static_and_keeps_candidate_resolution() {
             .unwrap()
             .iter()
             .any(|evidence| evidence["resolution"] == "candidate")));
+    let candidate_finding = brief["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["title"].as_str().unwrap_or("").contains("b changed"))
+        .expect("changed entity finding");
+    assert_eq!(candidate_finding["confidence"], "candidate", "{brief}");
+    assert_eq!(brief["counts"]["confirmed"], 0, "{brief}");
     assert!(!brief["unknowns"]
         .as_array()
         .unwrap()
@@ -366,6 +387,63 @@ fn a_map_brief_keeps_brief_state_separate_from_map_health() {
     assert_eq!(brief["map_state"], "invalid", "{brief}");
     assert_eq!(brief["map"]["state"], "invalid", "{brief}");
     assert_eq!(brief["semantic_claims"], "unverified", "{brief}");
+    // Invalid maps produce findings; an empty findings array with a non-zero
+    // count would make the finding unreachable.
+    assert_eq!(brief["counts"]["findings"], 1, "{brief}");
+    let findings = brief["findings"].as_array().unwrap();
+    assert_eq!(findings.len(), 1, "{brief}");
+    assert_eq!(findings[0]["category"], "map-invalid", "{brief}");
+    assert_eq!(findings[0]["confidence"], "confirmed", "{brief}");
+    assert!(brief["coverage"].is_object(), "{brief}");
+    assert_eq!(brief["verification"]["state"], "not_run", "{brief}");
+}
+
+#[test]
+fn map_brief_applies_finding_and_gap_budgets() {
+    let fixture = setup();
+    fs::write(
+        fixture.root.join("archmeld.map.txt"),
+        format!(
+            "#ARCHMELD-MAP: 1\n#snapshot: {}\n===src/===\n\
+             a.py: F:Entry A | R:entity:function:src/a.py::missing_a | A:- | S:-\n\
+             b.py: F:Entry B | R:entity:function:src/b.py::missing_b | A:- | S:-\n",
+            fixture.snapshot_id
+        ),
+    )
+    .unwrap();
+    let brief = build_brief_with_budget(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Map,
+        },
+        BriefBudget {
+            max_findings: 1,
+            max_context: 2,
+            max_gaps: 1,
+            max_relation_items: 2,
+        },
+    )
+    .unwrap();
+    assert_eq!(brief["map_state"], "invalid", "{brief}");
+    assert_eq!(brief["counts"]["findings"], 2, "{brief}");
+    assert_eq!(brief["findings"].as_array().unwrap().len(), 1, "{brief}");
+    assert_eq!(brief["budget"]["omitted_findings"], 1, "{brief}");
+    assert_eq!(brief["budget"]["truncated"], true, "{brief}");
+    assert_eq!(brief["map"]["errors"].as_array().unwrap().len(), 1, "{brief}");
+    assert_eq!(brief["map"]["errors_total"], 2, "{brief}");
+    assert_eq!(brief["map"]["truncated"], true, "{brief}");
+    // Truncation is an open question, never a silent omission.
+    assert!(
+        brief["unknowns"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|unknown| unknown["question"] == "Are there more map errors?"),
+        "{brief}"
+    );
 }
 
 #[test]
@@ -386,8 +464,254 @@ fn auto_brief_reviews_the_workspace_once_and_reports_timings() {
         brief["timings"]["review_ms"].as_u64().is_some(),
         "review_ms must be recorded: {brief}"
     );
+    // The auto recipe falls back to the project shape; it must still carry the
+    // same coverage/verification/budget fields as every other recipe.
+    assert!(brief["coverage"].is_object(), "{brief}");
+    assert_eq!(brief["verification"]["state"], "not_run", "{brief}");
+    assert!(brief["budget"].is_object(), "{brief}");
+    assert!(brief["context"].as_array().unwrap().is_empty(), "{brief}");
+    assert!(brief["gaps"].as_array().unwrap().is_empty(), "{brief}");
     // The auto recipe must not report a stale change after its single review.
     if brief["state"] == "ok" {
         assert_eq!(brief["counts"]["stale"], 0, "{brief}");
     }
+}
+
+#[test]
+fn change_brief_separates_changed_findings_from_unchanged_callers() {
+    let fixture = setup();
+    fs::write(fixture.root.join("src/b.py"), "def b():\n    return 5\n").unwrap();
+    let brief = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+    )
+    .unwrap();
+    let findings = brief["findings"].as_array().unwrap();
+    assert_eq!(findings.len(), 1, "{brief}");
+    assert!(
+        findings
+            .iter()
+            .all(|finding| !finding["title"].as_str().unwrap_or("").contains("context_only")),
+        "{brief}"
+    );
+    assert_eq!(brief["counts"]["findings"], 1);
+    let context = brief["context"].as_array().unwrap();
+    assert!(
+        context
+            .iter()
+            .any(|entry| entry["entity"]["qualified_name"]
+                .as_str()
+                .unwrap_or("")
+                .ends_with("::a")),
+        "{brief}"
+    );
+    assert!(
+        context
+            .iter()
+            .any(|entry| entry["relation"]["resolution"] == "candidate"),
+        "{brief}"
+    );
+    assert_eq!(
+        brief["findings"][0]["next_action"]["args"]["snapshot_id"],
+        fixture.snapshot_id
+    );
+}
+
+#[test]
+fn change_brief_reports_unmapped_files_as_named_gaps() {
+    let fixture = setup();
+    fs::write(fixture.root.join("handoff.md"), "# handoff\n").unwrap();
+    let brief = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+    )
+    .unwrap();
+    let gaps = brief["gaps"].as_array().unwrap();
+    assert!(
+        gaps.iter().any(|gap| gap["path"] == "handoff.md"
+            && gap["kind"] == "unmapped"),
+        "{brief}"
+    );
+    assert!(brief["coverage"].is_object(), "{brief}");
+    assert_eq!(brief["verification"]["state"], "not_run", "{brief}");
+}
+
+#[test]
+fn change_brief_budget_reports_omitted_items_without_losing_coverage() {
+    let fixture = setup();
+    fs::write(fixture.root.join("src/a.py"), "def a():\n    return b() + 1\n").unwrap();
+    fs::write(fixture.root.join("src/b.py"), "def b():\n    return 5\n").unwrap();
+    let brief = build_brief_with_budget(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+        BriefBudget {
+            max_findings: 1,
+            max_context: 1,
+            max_gaps: 1,
+            max_relation_items: 1,
+        },
+    )
+    .unwrap();
+    assert_eq!(brief["findings"].as_array().unwrap().len(), 1, "{brief}");
+    assert_eq!(brief["counts"]["findings"], 2, "{brief}");
+    assert_eq!(brief["budget"]["omitted_findings"], 1, "{brief}");
+    assert_eq!(brief["budget"]["truncated"], true, "{brief}");
+    assert!(brief["coverage"].is_object(), "{brief}");
+    assert_eq!(brief["verification"]["state"], "not_run", "{brief}");
+    assert_eq!(
+        brief["findings"][0]["next_action"]["args"]["snapshot_id"],
+        fixture.snapshot_id
+    );
+}
+
+#[test]
+fn project_brief_uses_the_requested_snapshot_not_the_latest_one() {
+    let mut fixture = setup();
+    fs::write(fixture.root.join("src/a.py"), "def a():\n    return b() + 1\n").unwrap();
+    let second = capture_snapshot(
+        &mut fixture.store,
+        &fixture.project,
+        &fixture.root,
+        &SnapshotInputs {
+            build_config: json!({"variant": "brief-second"}),
+            environment: json!({"os": "test"}),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    assert_ne!(second.snapshot_id, fixture.snapshot_id);
+    let brief = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Project,
+        },
+    )
+    .unwrap();
+    assert_eq!(brief["scope"]["snapshot_id"], fixture.snapshot_id);
+    assert_ne!(brief["scope"]["snapshot_id"], second.snapshot_id);
+    assert!(
+        brief["summary"].as_str().unwrap_or("").contains("2 entities"),
+        "{brief}"
+    );
+}
+
+#[test]
+fn project_brief_rejects_a_snapshot_from_another_project() {
+    let mut fixture = setup();
+    fixture
+        .store
+        .ensure_project("project.brief.other", "expedition")
+        .unwrap();
+    let other = capture_snapshot(
+        &mut fixture.store,
+        "project.brief.other",
+        &fixture.root,
+        &SnapshotInputs {
+            build_config: json!({"variant": "other"}),
+            environment: json!({"os": "test"}),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    let result = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&other.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Project,
+        },
+    );
+    assert!(result.is_err(), "foreign snapshot must be rejected: {result:?}");
+}
+
+#[test]
+fn relation_budget_does_not_change_severity_or_context() {
+    let fixture = setup();
+    fs::write(fixture.root.join("src/b.py"), "def b():\n    return 5\n").unwrap();
+    let brief = build_brief_with_budget(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+        BriefBudget {
+            max_findings: 10,
+            max_context: 10,
+            max_gaps: 10,
+            max_relation_items: 0,
+        },
+    )
+    .unwrap();
+    assert_eq!(brief["relations"]["candidate"], 1, "{brief}");
+    assert_eq!(brief["findings"][0]["severity"], "info", "{brief}");
+    assert!(
+        brief["context"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|entry| entry["entity"]["qualified_name"]
+                .as_str()
+                .unwrap_or("")
+                .ends_with("::a")),
+        "context must not depend on the relation evidence budget: {brief}"
+    );
+}
+
+#[test]
+fn change_brief_reports_omitted_base_files_as_gaps_not_deletions() {
+    let fixture = setup();
+    fs::write(fixture.root.join("src/a.py"), [0u8, 1, 2, 3]).unwrap();
+    let brief = build_brief(
+        &fixture.store,
+        &BriefRequest {
+            project_id: &fixture.project,
+            snapshot_id: Some(&fixture.snapshot_id),
+            workspace: Some(&fixture.root),
+            recipe: BriefRecipe::Change,
+        },
+    )
+    .unwrap();
+    assert!(
+        brief["gaps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|gap| gap["path"] == "src/a.py" && gap["kind"] == "omitted"),
+        "{brief}"
+    );
+    assert!(
+        brief["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| !finding["title"].as_str().unwrap_or("").contains("deleted")),
+        "{brief}"
+    );
 }

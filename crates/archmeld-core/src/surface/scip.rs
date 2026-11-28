@@ -296,7 +296,9 @@ pub fn import_scip(
                 .map_err(|err| CoreError::invalid(format!("relation identity: {err}")))?;
             let relation_id = format!(
                 "rel.{}",
-                digest.strip_prefix("sha256:").expect("sha256 prefix")
+                digest.strip_prefix("sha256:").ok_or_else(|| {
+                    CoreError::Storage("relation digest is not a sha256 digest".to_string())
+                })?
             );
             relations.push(json!({
                 "id": relation_id,
@@ -593,12 +595,17 @@ impl<'a> Reader<'a> {
     }
 
     fn length_delimited(&mut self) -> Result<&'a [u8]> {
-        let length = self.varint()? as usize;
-        if self.pos + length > self.data.len() {
+        let length = usize::try_from(self.varint()?)
+            .map_err(|_| CoreError::invalid("SCIP field length exceeds addressable memory"))?;
+        let end = self
+            .pos
+            .checked_add(length)
+            .ok_or_else(|| CoreError::invalid("SCIP field length overflows"))?;
+        if end > self.data.len() {
             return Err(CoreError::invalid("truncated SCIP length-delimited field"));
         }
-        let slice = &self.data[self.pos..self.pos + length];
-        self.pos += length;
+        let slice = &self.data[self.pos..end];
+        self.pos = end;
         Ok(slice)
     }
 
@@ -817,4 +824,40 @@ fn str_field(bytes: &[u8]) -> Result<String> {
     std::str::from_utf8(bytes)
         .map(str::to_string)
         .map_err(|_| CoreError::invalid("SCIP string field is not UTF-8"))
+}
+
+#[cfg(test)]
+mod reader_tests {
+    use super::Reader;
+
+    fn varint(mut value: u64) -> Vec<u8> {
+        let mut out = Vec::new();
+        loop {
+            let byte = (value & 0x7f) as u8;
+            value >>= 7;
+            if value == 0 {
+                out.push(byte);
+                return out;
+            }
+            out.push(byte | 0x80);
+        }
+    }
+
+    #[test]
+    fn rejects_a_length_that_overflows_the_cursor() {
+        let mut data = vec![0x01, b'x'];
+        data.extend(varint(u64::MAX));
+        let mut reader = Reader::new(&data);
+        assert_eq!(reader.length_delimited().expect("first field"), b"x");
+        let error = reader.length_delimited().unwrap_err();
+        assert!(error.to_string().contains("overflows"), "{error}");
+    }
+
+    #[test]
+    fn rejects_a_length_larger_than_the_buffer() {
+        let data = varint(9);
+        let mut reader = Reader::new(&data);
+        let error = reader.length_delimited().unwrap_err();
+        assert!(error.to_string().contains("truncated"), "{error}");
+    }
 }

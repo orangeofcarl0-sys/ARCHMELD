@@ -421,6 +421,25 @@ def main() -> int:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0
 
+    # Monotonic structural-debt ratchet. It is deliberately cheap and runs
+    # before the cargo groups so a regression is reported even if a test later
+    # fails for an unrelated reason.
+    if args.lane == "fast":
+        debt = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tooling/check_architecture_debt.py"),
+                "--check",
+            ],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+        )
+        if debt.returncode != 0:
+            print(debt.stdout, end="")
+            print(debt.stderr, end="", file=sys.stderr)
+            return debt.returncode
+
     groups: list[dict[str, object]] = []
     failed = False
     for label, command in commands:

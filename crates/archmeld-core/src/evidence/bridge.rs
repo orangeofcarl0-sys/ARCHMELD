@@ -332,7 +332,11 @@ pub fn import_codegraph_export(
         }
         let mut conditions = vec![
             format!("codegraph-edge:{}", edge.edge_type),
-            "syntax-only; not a resolved call".to_string(),
+            if matches!(kind, "static_call_candidate" | "references") {
+                "syntax-only; not a resolved call".to_string()
+            } else {
+                format!("syntax-only; {kind} is declared structural evidence")
+            },
             format!("codegraph-producer-resolution:{producer_resolution}"),
         ];
         if let Some(is_direct) = edge.is_direct {
@@ -771,6 +775,14 @@ fn map_edge_kind(edge_type: &str) -> Option<&'static str> {
         "Defines" => Some("declares"),
         "Extends" | "Implements" => Some("implements"),
         "References" => Some("references"),
+        "Reads" | "Read" => Some("reads"),
+        "Writes" | "Write" => Some("writes"),
+        "Owns" | "OwnsState" => Some("owns"),
+        "Publishes" => Some("publishes"),
+        "Consumes" => Some("consumes"),
+        "Awaits" => Some("awaits"),
+        "Schedules" => Some("schedules"),
+        "GuardedBy" => Some("guarded_by"),
         // RuntimeCalls is a heuristic static correlation in upstream; claiming
         // observed_call would fabricate runtime evidence.
         _ => None,

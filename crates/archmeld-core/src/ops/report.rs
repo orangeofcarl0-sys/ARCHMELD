@@ -115,45 +115,23 @@ pub fn export_report(store: &mut Store, raw: &Value) -> Result<Value> {
         .cloned()
         .collect();
 
-    let claims = latest_payloads(
-        store,
-        "SELECT payload_json FROM claims WHERE project_id=?1 AND revision=(
-             SELECT MAX(revision) FROM claims c2
-             WHERE c2.project_id=claims.project_id AND c2.claim_id=claims.claim_id)
-         ORDER BY claim_id",
+    let claims = store.latest_revision_rows(
         &request.project_id,
+        crate::store::RevisionTable::Claims,
     )?;
-    let architectures = latest_payloads(
-        store,
-        "SELECT payload_json FROM architectures WHERE project_id=?1 AND revision=(
-             SELECT MAX(revision) FROM architectures a2
-             WHERE a2.project_id=architectures.project_id AND a2.architecture_id=architectures.architecture_id)
-         ORDER BY architecture_id",
+    let architectures = store.latest_revision_rows(
         &request.project_id,
+        crate::store::RevisionTable::Architectures,
     )?;
-    let plans = latest_payloads(
-        store,
-        "SELECT payload_json FROM plans WHERE project_id=?1 AND revision=(
-             SELECT MAX(revision) FROM plans p2
-             WHERE p2.project_id=plans.project_id AND p2.plan_id=plans.plan_id)
-         ORDER BY plan_id",
+    let plans =
+        store.latest_revision_rows(&request.project_id, crate::store::RevisionTable::Plans)?;
+    let changesets = store.latest_revision_rows(
         &request.project_id,
+        crate::store::RevisionTable::Changesets,
     )?;
-    let changesets = latest_payloads(
-        store,
-        "SELECT payload_json FROM changesets WHERE project_id=?1 AND revision=(
-             SELECT MAX(revision) FROM changesets c2
-             WHERE c2.project_id=changesets.project_id AND c2.changeset_id=changesets.changeset_id)
-         ORDER BY changeset_id",
+    let contracts = store.latest_revision_rows(
         &request.project_id,
-    )?;
-    let contracts = latest_payloads(
-        store,
-        "SELECT payload_json FROM behavior_contracts WHERE project_id=?1 AND revision=(
-             SELECT MAX(revision) FROM behavior_contracts b2
-             WHERE b2.project_id=behavior_contracts.project_id AND b2.contract_id=behavior_contracts.contract_id)
-         ORDER BY contract_id",
-        &request.project_id,
+        crate::store::RevisionTable::BehaviorContracts,
     )?;
     let evidence_index = evidence_index(store, &request.project_id, &request.snapshot_id)?;
     let verifications = verification_summaries(store, &request.project_id)?;
@@ -517,18 +495,6 @@ fn trace_extension(media_type: &str) -> &'static str {
         "application/x-perfetto" => ".pftrace",
         _ => ".bin",
     }
-}
-
-fn latest_payloads(store: &Store, sql: &str, project_id: &str) -> Result<Vec<Value>> {
-    let mut statement = store.conn.prepare(sql)?;
-    let rows = statement.query_map((project_id,), |row| row.get::<_, String>(0))?;
-    let mut values = Vec::new();
-    for row in rows {
-        let payload: Value = serde_json::from_str(&row?)
-            .map_err(|err| CoreError::Storage(format!("report payload corrupt: {err}")))?;
-        values.push(payload);
-    }
-    Ok(values)
 }
 
 fn evidence_index(store: &Store, project_id: &str, snapshot_id: &str) -> Result<Vec<Value>> {

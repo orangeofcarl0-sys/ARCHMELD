@@ -1,0 +1,18 @@
+{
+  "moved_entity": "alpha",
+  "moved_from": "src/core/alpha.py",
+  "moved_to": "src/core/alpha_moved.py",
+  "caller_changed": "false",
+  "citations": [
+    {
+      "path": "src/caller.py",
+      "line": 1
+    },
+    {
+      "path": "src/core/alpha_moved.py",
+      "line": 1
+    }
+  ],
+  "confidence": "high",
+  "notes": "The commit renames src/core/alpha.py to src/core/alpha_moved.py (100% similarity, no content change). The caller src/caller.py still contains 'from core.alpha import alpha' and was not modified in the commit (git diff HEAD^ HEAD -- src/caller.py is empty), so it is now stale."
+}

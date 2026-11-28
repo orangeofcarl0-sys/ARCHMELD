@@ -1,0 +1,7 @@
+{"seq": 1, "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show HEAD --stat"}
+{"seq": 2, "command": "cd \"<path>" && git show HEAD && echo \"=====DIFF=====\" && git diff HEAD^ HEAD"}
+{"seq": 3, "command": "cd \"<path>" && find . -type f -not -path './.git/*' | sort && echo \"=====\" && git ls-files"}
+{"seq": 7, "command": "cd \"<path>" && git show HEAD^:src/caller.py && echo \"---target base---\" && git show HEAD^:src/target.py && echo \"---branches---\" && git branch -a && echo \"---all refs---\" && git log --all --oneline --graph"}
+{"seq": 8, "command": "cd \"<path>" && ls -la && echo \"===repo===\" && ls -la repo && echo \"===parent===\" && ls -la .."}
+{"seq": 9, "command": "cd \"<path>" && cat prompt.txt && echo \"===state===\" && ls -la state && echo \"===pi-sessions===\" && ls -la pi-sessions"}
+{"seq": 10, "command": "cd \"<path>" && git show HEAD --format=fuller -- src/target.py && echo \"---\" && git diff HEAD^ HEAD --unified=5"}

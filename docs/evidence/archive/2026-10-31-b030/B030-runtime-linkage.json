@@ -24,7 +24,7 @@
     "csharp": {
       "adapter": "dotnet-trace-speedscope",
       "bound_config_digest": "sha256:bd940618b746cea6b0ac800b4913a0eede317318751634836f82d6ee09871b02",
-      "bound_snapshot_id": "sha256:ec5805539780c142719e585c66e8ad2c7b053b7dee71c175e2d8c34247c95535",
+      "bound_snapshot_id": "sha256:ec5805539780c142719e585c66e8ad2c7b053b7dee71c175e2d8c<redacted>47c95535",
       "capture_tool": "dotnet-trace",
       "capture_version": "10.0.750501",
       "clock_kind": "monotonic",

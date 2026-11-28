@@ -1,0 +1,6 @@
+{"seq": 1, "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show --stat HEAD"}
+{"seq": 2, "command": "cd \"<path>" && ls && echo \"---\" && git status --short | head -20"}
+{"seq": 3, "command": "cd \"<path>" && git show HEAD --name-status --find-renames -M && echo \"=== all files ===\" && find . -path ./.git -prune -o -type f -print | sort"}
+{"seq": 4, "command": "cd \"<path>" && grep -rn \"alpha\" --include=* . --exclude-dir=.git | head -50"}
+{"seq": 5, "command": "cd \"<path>" && git log --oneline --follow -- src/caller.py && echo \"=== diff base..head full ===\" && git diff HEAD^ HEAD --name-status && echo \"=== caller content ===\" && git show HEAD:src/caller.py && echo \"=== base caller ===\" && git show HEAD^:src/caller.py"}
+{"seq": 6, "command": "cd \"<path>" && cat -n src/caller.py && echo \"=== alpha_moved ===\" && cat -n src/core/alpha_moved.py"}

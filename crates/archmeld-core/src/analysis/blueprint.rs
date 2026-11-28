@@ -9,12 +9,15 @@
 //! claiming `passed`.
 
 use crate::error::{CoreError, Result};
-use crate::interpret::{get_architecture, validate_architecture_document};
+use crate::interpret::{
+    architecture_at_revision, get_architecture, validate_architecture_document,
+};
 use crate::store::{validate, Store};
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 const MAX_PATHS: usize = 100;
+const MAX_PATH_EXPANSIONS: usize = 5_000;
 const MAX_DEPTH: usize = 6;
 const CHECKER_DEPENDENCY: &str = "ledger.dependency_path.v1";
 const CHECKER_ACYCLIC: &str = "architecture.acyclic.v1";
@@ -152,7 +155,7 @@ pub fn diff_architecture(
     for dependency in &removed_dependencies {
         let source_members = component_members(&base_components, dependency["source_id"].as_str());
         let target_members = component_members(&base_components, dependency["target_id"].as_str());
-        let (paths, _) = find_paths(
+        let (paths, _, _) = find_paths(
             store,
             project_id,
             base["snapshot_id"].as_str().unwrap_or(""),
@@ -284,6 +287,29 @@ pub fn check_architecture_rules(
         .cloned()
         .unwrap_or_default();
     let rules = architecture["rules"].as_array().cloned().unwrap_or_default();
+    let architecture_revision = architecture["revision"].as_i64().unwrap_or(1);
+    let previous = if architecture_revision > 1 {
+        architecture_at_revision(
+            store,
+            project_id,
+            architecture_id,
+            architecture_revision - 1,
+        )?
+    } else {
+        None
+    };
+    let previous_rules: BTreeMap<String, Value> = previous
+        .as_ref()
+        .and_then(|architecture| architecture["rules"].as_array())
+        .into_iter()
+        .flatten()
+        .filter_map(|rule| {
+            Some((
+                rule["id"].as_str()?.to_string(),
+                rule.clone(),
+            ))
+        })
+        .collect();
     let selected: BTreeSet<&str> = rule_ids
         .unwrap_or(&[])
         .iter()
@@ -296,13 +322,19 @@ pub fn check_architecture_rules(
         if !selected.is_empty() && !selected.contains(rule_id) {
             continue;
         }
-        let result = check_rule(
+        let checked = check_rule(
             store,
             project_id,
             snapshot_id,
             &components,
             &dependencies,
             rule,
+        );
+        let result = apply_rule_exceptions(
+            checked,
+            rule,
+            architecture_revision,
+            previous_rules.get(rule_id),
         );
         if result["blocks_acceptance"] == true {
             blocking.push(rule_id.to_string());
@@ -316,6 +348,8 @@ pub fn check_architecture_rules(
         "failed"
     } else if !blocking.is_empty() {
         "blocked"
+    } else if results.iter().any(|result| result["verdict"] == "excepted") {
+        "excepted"
     } else if !results.is_empty() && results.iter().all(|result| result["verdict"] == "passed") {
         "passed"
     } else if results.iter().any(|result| result["verdict"] == "no_violation_found") {
@@ -333,6 +367,238 @@ pub fn check_architecture_rules(
     }))
 }
 
+fn violation_key(kind: &str, violation: &Value, rule: &Value) -> String {
+    let join = |field: &str| {
+        violation[field]
+            .as_array()
+            .map(|items| {
+                items
+                    .iter()
+                    .filter_map(Value::as_str)
+                    .collect::<Vec<_>>()
+                    .join("->")
+            })
+            .unwrap_or_default()
+    };
+    let join_array = |items: &[Value]| {
+        items
+            .iter()
+            .filter_map(Value::as_str)
+            .collect::<Vec<_>>()
+            .join("->")
+    };
+    match kind {
+        "forbid_dependency" => violation["node_names"]
+            .as_array()
+            .map(|names| join_array(names))
+            .filter(|key| !key.is_empty())
+            .unwrap_or_else(|| join("nodes")),
+        "acyclic" => join("cycle"),
+        "allowed_layers" | "interface_only" => format!(
+            "{}->{}",
+            violation["source_id"].as_str().unwrap_or(""),
+            violation["target_id"].as_str().unwrap_or("")
+        ),
+        "ownership" => violation["item"].as_str().unwrap_or("").to_string(),
+        "custom_contract" => {
+            let source = violation["source_id"].as_str().unwrap_or("");
+            let target = violation["target_id"].as_str().unwrap_or("");
+            let component = violation["component_id"].as_str().unwrap_or("");
+            let assertion = rule["parameters"]["assertion"].as_str().unwrap_or("");
+            let scope = if !source.is_empty() || !target.is_empty() {
+                format!("{source}->{target}")
+            } else {
+                component.to_string()
+            };
+            // Include the assertion and its limit so an exception written for
+            // one contract cannot silently excuse a different (or stricter) one.
+            match rule["parameters"]["limit"].as_u64() {
+                Some(limit) => format!("{assertion}:{scope}:limit={limit}"),
+                None => format!("{assertion}:{scope}"),
+            }
+        }
+        _ => crate::hash::digest_value(violation).unwrap_or_else(|_| "unknown".to_string()),
+    }
+}
+
+fn exception_changes(previous: Option<&Value>, rule: &Value) -> Value {
+    let current: BTreeMap<&str, &Value> = rule["exceptions"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|exception| {
+            Some((exception["violation_key"].as_str()?, exception))
+        })
+        .collect();
+    let old: BTreeMap<&str, &Value> = previous
+        .and_then(|rule| rule["exceptions"].as_array())
+        .into_iter()
+        .flatten()
+        .filter_map(|exception| {
+            Some((exception["violation_key"].as_str()?, exception))
+        })
+        .collect();
+    let added: Vec<Value> = current
+        .iter()
+        .filter(|(key, _)| !old.contains_key(*key))
+        .map(|(_, exception)| (*exception).clone())
+        .collect();
+    let removed: Vec<Value> = old
+        .iter()
+        .filter(|(key, _)| !current.contains_key(*key))
+        .map(|(_, exception)| (*exception).clone())
+        .collect();
+    let changed: Vec<Value> = current
+        .iter()
+        .filter_map(|(key, exception)| {
+            let old_exception = old.get(key)?;
+            let fields = [
+                "id",
+                "introduced_revision",
+                "reason",
+                "scope_ids",
+                "expires_revision",
+                "source",
+            ];
+            let changed_fields: Vec<&str> = fields
+                .iter()
+                .copied()
+                .filter(|field| {
+                    old_exception.get(*field) != exception.get(*field)
+                })
+                .collect();
+            if changed_fields.is_empty() {
+                None
+            } else {
+                Some(json!({
+                    "violation_key": key,
+                    "fields": changed_fields,
+                    "base": old_exception,
+                    "candidate": exception,
+                }))
+            }
+        })
+        .collect();
+    json!({"added": added, "removed": removed, "changed": changed})
+}
+
+fn apply_rule_exceptions(
+    mut result: Value,
+    rule: &Value,
+    architecture_revision: i64,
+    previous_rule: Option<&Value>,
+) -> Value {
+    let kind = rule["kind"].as_str().unwrap_or("unknown");
+    let all_exceptions: Vec<Value> = rule["exceptions"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    let mut exceptions = Vec::new();
+    let mut inactive_exceptions = Vec::new();
+    for exception in all_exceptions {
+        let introduced = exception["introduced_revision"]
+            .as_i64()
+            .unwrap_or(0);
+        let expires = exception["expires_revision"].as_i64();
+        if introduced <= architecture_revision
+            && expires.is_none_or(|expires| expires >= architecture_revision)
+        {
+            exceptions.push(exception);
+        } else {
+            inactive_exceptions.push(exception);
+        }
+    }
+    let mut active = Vec::new();
+    let mut excepted = Vec::new();
+    let mut matched_keys = BTreeSet::new();
+    for violation in result["violations"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+    {
+        let key = violation_key(kind, &violation, rule);
+        let mut violation = violation;
+        violation["key"] = json!(key);
+        let exception = exceptions
+            .iter()
+            .find(|exception| exception["violation_key"].as_str() == Some(key.as_str()));
+        if let Some(exception) = exception {
+            matched_keys.insert(key);
+            excepted.push(json!({
+                "violation": violation,
+                "exception": exception,
+            }));
+        } else {
+            active.push(violation);
+        }
+    }
+    let unused: Vec<Value> = exceptions
+        .iter()
+        .filter(|exception| {
+            exception["violation_key"]
+                .as_str()
+                .is_none_or(|key| !matched_keys.contains(key))
+        })
+        .cloned()
+        .collect();
+    result["violations"] = json!(active);
+    result["excepted"] = json!(excepted);
+    result["unused_exceptions"] = json!(unused);
+    result["inactive_exceptions"] = json!(inactive_exceptions);
+    result["exception_changes"] = exception_changes(previous_rule, rule);
+    result["rule_source"] = rule["source"].clone();
+    if !result["violations"]
+        .as_array()
+        .map(Vec::is_empty)
+        .unwrap_or(true)
+    {
+        result["verdict"] = json!("violated");
+        result["passed"] = json!(false);
+        result["blocks_acceptance"] = json!(true);
+    } else if !result["excepted"]
+        .as_array()
+        .map(Vec::is_empty)
+        .unwrap_or(true)
+    {
+        result["verdict"] = json!("excepted");
+        result["passed"] = json!(false);
+        result["blocks_acceptance"] = json!(false);
+        result["reason"] = json!("all violations are covered by declared exceptions");
+    }
+    result
+}
+
+struct RuleContext<'a> {
+    store: &'a Store,
+    project_id: &'a str,
+    snapshot_id: &'a str,
+    rule_id: &'a str,
+    kind: &'a str,
+    required: bool,
+    checker_id: &'a str,
+    checkability: &'a str,
+    components: &'a BTreeMap<String, Value>,
+    dependencies: &'a [Value],
+}
+
+impl RuleContext<'_> {
+    fn declared_only(&self, reason: &str) -> Value {
+        json!({
+            "rule_id": self.rule_id,
+            "kind": self.kind,
+            "required": self.required,
+            "checker_id": if self.checker_id.is_empty() { Value::Null } else { json!(self.checker_id) },
+            "checkability": "declared_only",
+            "verdict": "declared_only",
+            "passed": false,
+            "blocks_acceptance": self.required,
+            "reason": reason,
+            "coverage": {"state": "none", "reason": "no executable checker is registered"},
+            "violations": [],
+        })
+    }
+}
+
 fn check_rule(
     store: &Store,
     project_id: &str,
@@ -341,28 +607,34 @@ fn check_rule(
     dependencies: &[Value],
     rule: &Value,
 ) -> Value {
-    let rule_id = rule["id"].as_str().unwrap_or("unknown");
-    let kind = rule["kind"].as_str().unwrap_or("unknown");
-    let required = rule["required"].as_bool().unwrap_or(false);
-    let checker_id = rule["checker_id"].as_str().unwrap_or("");
-    let declared_only = |reason: &str| {
-        json!({
-            "rule_id": rule_id,
-            "kind": kind,
-            "required": required,
-            "checker_id": if checker_id.is_empty() { Value::Null } else { json!(checker_id) },
-            "checkability": "declared_only",
-            "verdict": "declared_only",
-            "passed": false,
-            "blocks_acceptance": required,
-            "reason": reason,
-            "coverage": {"state": "none", "reason": "no executable checker is registered"},
-            "violations": [],
-        })
+    let ctx = RuleContext {
+        store,
+        project_id,
+        snapshot_id,
+        rule_id: rule["id"].as_str().unwrap_or("unknown"),
+        kind: rule["kind"].as_str().unwrap_or("unknown"),
+        required: rule["required"].as_bool().unwrap_or(false),
+        checker_id: rule["checker_id"].as_str().unwrap_or(""),
+        checkability: rule["checkability"].as_str().unwrap_or("declared_only"),
+        components,
+        dependencies,
     };
-    if kind == "acyclic" {
-        if checker_id != CHECKER_ACYCLIC {
-            return declared_only(
+    if ctx.checkability == "declared_only" {
+        return ctx.declared_only("rule is declared_only; no executable checker was requested");
+    }
+    match ctx.kind {
+        "acyclic" => check_acyclic(&ctx, rule),
+        "allowed_layers" => check_allowed_layers(&ctx, rule),
+        "interface_only" => check_interface_only(&ctx, rule),
+        "ownership" => check_ownership(&ctx, rule),
+        "custom_contract" => check_custom_contract(&ctx, rule),
+        _ => check_forbid_dependency(&ctx, rule),
+    }
+}
+
+fn check_acyclic(ctx: &RuleContext<'_>, rule: &Value) -> Value {
+        if ctx.checker_id != CHECKER_ACYCLIC {
+            return ctx.declared_only(
                 "acyclic requires the registered architecture.acyclic.v1 checker",
             );
         }
@@ -371,25 +643,25 @@ fn check_rule(
             .map(|ids| ids.iter().filter_map(Value::as_str).collect())
             .unwrap_or_default();
         let allowed: BTreeSet<&str> = if scope.is_empty() {
-            components.keys().map(String::as_str).collect()
+            ctx.components.keys().map(String::as_str).collect()
         } else {
             scope.iter().copied().collect()
         };
         let missing: Vec<&str> = allowed
             .iter()
-            .filter(|id| !components.contains_key(**id))
+            .filter(|id| !ctx.components.contains_key(**id))
             .copied()
             .collect();
         if !missing.is_empty() {
             return json!({
-                "rule_id": rule_id,
-                "kind": kind,
-                "required": required,
+                "rule_id": ctx.rule_id,
+                "kind": ctx.kind,
+                "required": ctx.required,
                 "checker_id": CHECKER_ACYCLIC,
                 "checkability": "executable",
                 "verdict": "inconclusive",
                 "passed": false,
-                "blocks_acceptance": required,
+                "blocks_acceptance": ctx.required,
                 "reason": "scope component is not declared in the architecture",
                 "coverage": {"state": "none", "missing_scope_ids": missing},
                 "violations": [],
@@ -397,7 +669,7 @@ fn check_rule(
         }
         let mut adjacency: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
         let mut edges_considered = 0usize;
-        for dependency in dependencies {
+        for dependency in ctx.dependencies {
             let (Some(source), Some(target)) = (
                 dependency["source_id"].as_str(),
                 dependency["target_id"].as_str(),
@@ -412,9 +684,9 @@ fn check_rule(
         }
         if let Some(cycle) = find_declared_cycle(&adjacency, &allowed) {
             return json!({
-                "rule_id": rule_id,
-                "kind": kind,
-                "required": required,
+                "rule_id": ctx.rule_id,
+                "kind": ctx.kind,
+                "required": ctx.required,
                 "checker_id": CHECKER_ACYCLIC,
                 "checkability": "executable",
                 "verdict": "violated",
@@ -431,9 +703,9 @@ fn check_rule(
             });
         }
         return json!({
-            "rule_id": rule_id,
-            "kind": kind,
-            "required": required,
+            "rule_id": ctx.rule_id,
+            "kind": ctx.kind,
+            "required": ctx.required,
             "checker_id": CHECKER_ACYCLIC,
             "checkability": "executable",
             "verdict": "passed",
@@ -448,18 +720,20 @@ fn check_rule(
             },
             "violations": [],
         });
-    }
-    if kind == "allowed_layers" {
-        if checker_id != CHECKER_ALLOWED_LAYERS {
-            return declared_only("allowed_layers requires the registered architecture.allowed_layers.v1 checker");
+}
+
+
+fn check_allowed_layers(ctx: &RuleContext<'_>, rule: &Value) -> Value {
+        if ctx.checker_id != CHECKER_ALLOWED_LAYERS {
+            return ctx.declared_only("allowed_layers requires the registered architecture.allowed_layers.v1 checker");
         }
         let parameters = rule.get("parameters").cloned().unwrap_or_else(|| json!({}));
         let Some(layers) = parameters["layers"].as_array() else {
             return json!({
-                "rule_id": rule_id, "kind": kind, "required": required,
+                "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
                 "checker_id": CHECKER_ALLOWED_LAYERS, "checkability": "executable",
                 "verdict": "inconclusive", "passed": false,
-                "blocks_acceptance": required,
+                "blocks_acceptance": ctx.required,
                 "reason": "parameters.layers must be an array of component-id arrays",
                 "coverage": {"state": "none", "reason": "missing layer declaration"},
                 "violations": [],
@@ -479,17 +753,17 @@ fn check_rule(
                 }
             }
         }
-        let missing: Vec<&str> = components
+        let missing: Vec<&str> = ctx.components
             .keys()
             .filter(|id| !layer_of.contains_key(id.as_str()))
             .map(String::as_str)
             .collect();
         if duplicate {
             return json!({
-                "rule_id": rule_id, "kind": kind, "required": required,
+                "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
                 "checker_id": CHECKER_ALLOWED_LAYERS, "checkability": "executable",
                 "verdict": "inconclusive", "passed": false,
-                "blocks_acceptance": required,
+                "blocks_acceptance": ctx.required,
                 "reason": "a component is declared in more than one layer or a layer entry is invalid",
                 "coverage": {"state": "none", "missing_components": missing},
                 "violations": [],
@@ -498,7 +772,7 @@ fn check_rule(
         let mut violations = Vec::new();
         let mut edges_considered = 0usize;
         let mut uncovered_edges = 0usize;
-        for dependency in dependencies {
+        for dependency in ctx.dependencies {
             let (Some(source), Some(target)) = (
                 dependency["source_id"].as_str(),
                 dependency["target_id"].as_str(),
@@ -534,10 +808,10 @@ fn check_rule(
             "no_violation_found"
         };
         return json!({
-            "rule_id": rule_id, "kind": kind, "required": required,
+            "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
             "checker_id": CHECKER_ALLOWED_LAYERS, "checkability": "executable",
             "verdict": verdict, "passed": verdict == "passed",
-            "blocks_acceptance": required && verdict != "passed" || verdict == "violated",
+            "blocks_acceptance": ctx.required && verdict != "passed" || verdict == "violated",
             "reason": if verdict == "violated" {
                 "a declared dependency crosses layers in the forbidden direction"
             } else if verdict == "passed" {
@@ -547,7 +821,7 @@ fn check_rule(
             },
             "coverage": {
                 "state": if complete { "complete_declared_graph" } else { "partial" },
-                "components": components.len(),
+                "components": ctx.components.len(),
                 "layers": layers.len(),
                 "edges_considered": edges_considered,
                 "uncovered_edges": uncovered_edges,
@@ -556,18 +830,20 @@ fn check_rule(
             },
             "violations": violations,
         });
-    }
-    if kind == "interface_only" {
-        if checker_id != CHECKER_INTERFACE_ONLY {
-            return declared_only("interface_only requires the registered architecture.interface_only.v1 checker");
+}
+
+
+fn check_interface_only(ctx: &RuleContext<'_>, rule: &Value) -> Value {
+        if ctx.checker_id != CHECKER_INTERFACE_ONLY {
+            return ctx.declared_only("interface_only requires the registered architecture.interface_only.v1 checker");
         }
         let parameters = rule.get("parameters").cloned().unwrap_or_else(|| json!({}));
         let Some(interfaces) = parameters["interfaces"].as_array() else {
             return json!({
-                "rule_id": rule_id, "kind": kind, "required": required,
+                "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
                 "checker_id": CHECKER_INTERFACE_ONLY, "checkability": "executable",
                 "verdict": "inconclusive", "passed": false,
-                "blocks_acceptance": required,
+                "blocks_acceptance": ctx.required,
                 "reason": "parameters.interfaces must be an array of component ids",
                 "coverage": {"state": "none"}, "violations": [],
             });
@@ -575,15 +851,15 @@ fn check_rule(
         let declared: BTreeSet<&str> = interfaces.iter().filter_map(Value::as_str).collect();
         let missing: Vec<&str> = declared
             .iter()
-            .filter(|id| !components.contains_key(**id))
+            .filter(|id| !ctx.components.contains_key(**id))
             .copied()
             .collect();
         if missing.len() == declared.len() {
             return json!({
-                "rule_id": rule_id, "kind": kind, "required": required,
+                "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
                 "checker_id": CHECKER_INTERFACE_ONLY, "checkability": "executable",
                 "verdict": "inconclusive", "passed": false,
-                "blocks_acceptance": required,
+                "blocks_acceptance": ctx.required,
                 "reason": "no declared interface component exists",
                 "coverage": {"state": "none", "missing_interfaces": missing},
                 "violations": [],
@@ -591,7 +867,7 @@ fn check_rule(
         }
         let mut violations = Vec::new();
         let mut edges_considered = 0usize;
-        for dependency in dependencies {
+        for dependency in ctx.dependencies {
             let (Some(source), Some(target)) = (
                 dependency["source_id"].as_str(),
                 dependency["target_id"].as_str(),
@@ -617,10 +893,10 @@ fn check_rule(
             "no_violation_found"
         };
         return json!({
-            "rule_id": rule_id, "kind": kind, "required": required,
+            "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
             "checker_id": CHECKER_INTERFACE_ONLY, "checkability": "executable",
             "verdict": verdict, "passed": verdict == "passed",
-            "blocks_acceptance": required && verdict != "passed" || verdict == "violated",
+            "blocks_acceptance": ctx.required && verdict != "passed" || verdict == "violated",
             "reason": if verdict == "violated" {
                 "a cross-component dependency does not touch a declared interface"
             } else if verdict == "passed" {
@@ -637,15 +913,17 @@ fn check_rule(
             },
             "violations": violations,
         });
-    }
-    if kind == "ownership" {
-        if checker_id != CHECKER_OWNERSHIP {
-            return declared_only("ownership requires the registered architecture.ownership.v1 checker");
+}
+
+
+fn check_ownership(ctx: &RuleContext<'_>, rule: &Value) -> Value {
+        if ctx.checker_id != CHECKER_OWNERSHIP {
+            return ctx.declared_only("ownership requires the registered architecture.ownership.v1 checker");
         }
         let parameters = rule.get("parameters").cloned().unwrap_or_else(|| json!({}));
         let exclusive = parameters["exclusive"].as_bool().unwrap_or(true);
         let mut owners: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
-        for (component_id, component) in components {
+        for (component_id, component) in ctx.components {
             for field in ["owned_state", "owned_resources"] {
                 for item in component[field]
                     .as_array()
@@ -676,10 +954,10 @@ fn check_rule(
             "passed"
         };
         return json!({
-            "rule_id": rule_id, "kind": kind, "required": required,
+            "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
             "checker_id": CHECKER_OWNERSHIP, "checkability": "executable",
             "verdict": verdict, "passed": verdict == "passed",
-            "blocks_acceptance": required && verdict != "passed" || verdict == "violated",
+            "blocks_acceptance": ctx.required && verdict != "passed" || verdict == "violated",
             "reason": if verdict == "violated" {
                 "a declared state or resource has more than one owner"
             } else {
@@ -693,17 +971,19 @@ fn check_rule(
             },
             "violations": violations,
         });
-    }
-    if kind == "custom_contract" {
-        if checker_id != CHECKER_CUSTOM_CONTRACT {
-            return declared_only("custom_contract requires the registered architecture.custom_contract.v1 checker");
+}
+
+
+fn check_custom_contract(ctx: &RuleContext<'_>, rule: &Value) -> Value {
+        if ctx.checker_id != CHECKER_CUSTOM_CONTRACT {
+            return ctx.declared_only("custom_contract requires the registered architecture.custom_contract.v1 checker");
         }
         let parameters = rule.get("parameters").cloned().unwrap_or_else(|| json!({}));
         let assertion = parameters["assertion"].as_str().unwrap_or("");
         let mut violations = Vec::new();
         match assertion {
             "no_self_dependencies" => {
-                for dependency in dependencies {
+                for dependency in ctx.dependencies {
                     if dependency["source_id"] == dependency["target_id"] {
                         violations.push(json!({
                             "source_id": dependency["source_id"],
@@ -715,16 +995,16 @@ fn check_rule(
             "max_dependencies_per_component" => {
                 let Some(limit) = parameters["limit"].as_u64() else {
                     return json!({
-                        "rule_id": rule_id, "kind": kind, "required": required,
+                        "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
                         "checker_id": CHECKER_CUSTOM_CONTRACT, "checkability": "executable",
                         "verdict": "inconclusive", "passed": false,
-                        "blocks_acceptance": required,
+                        "blocks_acceptance": ctx.required,
                         "reason": "max_dependencies_per_component requires parameters.limit",
                         "coverage": {"state": "none"}, "violations": [],
                     });
                 };
                 let mut counts: BTreeMap<&str, u64> = BTreeMap::new();
-                for dependency in dependencies {
+                for dependency in ctx.dependencies {
                     if let Some(source) = dependency["source_id"].as_str() {
                         *counts.entry(source).or_insert(0) += 1;
                     }
@@ -740,7 +1020,7 @@ fn check_rule(
                 }
             }
             "require_dependency_reason" => {
-                for dependency in dependencies {
+                for dependency in ctx.dependencies {
                     if dependency["reason"]
                         .as_str()
                         .unwrap_or("")
@@ -757,10 +1037,10 @@ fn check_rule(
             }
             other => {
                 return json!({
-                    "rule_id": rule_id, "kind": kind, "required": required,
+                    "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
                     "checker_id": CHECKER_CUSTOM_CONTRACT, "checkability": "executable",
                     "verdict": "inconclusive", "passed": false,
-                    "blocks_acceptance": required,
+                    "blocks_acceptance": ctx.required,
                     "reason": format!("unsupported custom assertion {other:?}"),
                     "coverage": {"state": "none"}, "violations": [],
                 });
@@ -772,10 +1052,10 @@ fn check_rule(
             "passed"
         };
         return json!({
-            "rule_id": rule_id, "kind": kind, "required": required,
+            "rule_id": ctx.rule_id, "kind": ctx.kind, "required": ctx.required,
             "checker_id": CHECKER_CUSTOM_CONTRACT, "checkability": "executable",
             "verdict": verdict, "passed": verdict == "passed",
-            "blocks_acceptance": required && verdict != "passed" || verdict == "violated",
+            "blocks_acceptance": ctx.required && verdict != "passed" || verdict == "violated",
             "reason": if verdict == "violated" {
                 "the declared custom assertion is violated"
             } else {
@@ -788,37 +1068,41 @@ fn check_rule(
             },
             "violations": violations,
         });
-    }
-    if kind != "forbid_dependency" || checker_id != CHECKER_DEPENDENCY {
-        let reason = if checker_id.is_empty() {
+}
+
+
+fn check_forbid_dependency(ctx: &RuleContext<'_>, rule: &Value) -> Value {
+    if ctx.kind != "forbid_dependency" || ctx.checker_id != CHECKER_DEPENDENCY {
+        let reason = if ctx.checker_id.is_empty() {
             "rule has no checker; a human description is not an executable check"
         } else {
             "checker_id is not registered; human intent cannot be treated as executable"
         };
-        return declared_only(reason);
+        return ctx.declared_only(reason);
     }
     let scope_ids: Vec<&str> = rule["scope_ids"]
         .as_array()
         .map(|ids| ids.iter().filter_map(Value::as_str).collect())
         .unwrap_or_default();
-    if scope_ids.len() < 2 {
-        return declared_only("forbid_dependency requires a source and a forbidden target component");
-    }
-    let source_component = scope_ids[0];
-    let target_component = *scope_ids.last().unwrap();
+    let Some((&target_component, rest)) = scope_ids.split_last() else {
+        return ctx.declared_only("forbid_dependency requires a source and a forbidden target component");
+    };
+    let Some(&source_component) = rest.first() else {
+        return ctx.declared_only("forbid_dependency requires a source and a forbidden target component");
+    };
     let (Some(source), Some(target)) = (
-        components.get(source_component),
-        components.get(target_component),
+        ctx.components.get(source_component),
+        ctx.components.get(target_component),
     ) else {
         return json!({
-            "rule_id": rule_id,
-            "kind": kind,
-            "required": required,
+            "rule_id": ctx.rule_id,
+            "kind": ctx.kind,
+            "required": ctx.required,
             "checker_id": CHECKER_DEPENDENCY,
             "checkability": "executable",
             "verdict": "no_violation_found",
             "passed": false,
-            "blocks_acceptance": required,
+            "blocks_acceptance": ctx.required,
             "reason": "scope component is not declared in the architecture",
             "coverage": {"state": "none", "reason": "scope component missing"},
             "violations": [],
@@ -827,16 +1111,16 @@ fn check_rule(
     let mut scope_members = BTreeSet::new();
     let mut missing_members = Vec::new();
     for scope_id in &scope_ids {
-        let Some(component) = components.get(*scope_id) else {
+        let Some(component) = ctx.components.get(*scope_id) else {
             continue;
         };
         for member in component_members_map(component) {
-            let exists: Option<String> = store
+            let exists: Option<String> = ctx.store
                 .conn
                 .query_row(
                     "SELECT entity_id FROM entities
                      WHERE project_id=?1 AND snapshot_id=?2 AND entity_id=?3",
-                    (project_id, snapshot_id, &member),
+                    (ctx.project_id, ctx.snapshot_id, &member),
                     |row| row.get(0),
                 )
                 .ok();
@@ -851,23 +1135,22 @@ fn check_rule(
     let targets = component_member_set(target);
     if starts.is_empty() || targets.is_empty() {
         return json!({
-            "rule_id": rule_id,
-            "kind": kind,
-            "required": required,
+            "rule_id": ctx.rule_id,
+            "kind": ctx.kind,
+            "required": ctx.required,
             "checker_id": CHECKER_DEPENDENCY,
             "checkability": "executable",
             "verdict": "no_violation_found",
             "passed": false,
-            "blocks_acceptance": required,
+            "blocks_acceptance": ctx.required,
             "reason": "source or target component has no member entities",
             "coverage": {"state": "none", "reason": "empty component membership"},
             "violations": [],
         });
     }
-    let (paths, edges_considered) = match find_paths(
-        store,
-        project_id,
-        snapshot_id,
+    let (paths, edges_considered, paths_truncated) = match find_paths(        ctx.store,
+        ctx.project_id,
+        ctx.snapshot_id,
         &starts,
         &targets,
         &scope_members,
@@ -876,36 +1159,51 @@ fn check_rule(
         Ok(paths) => paths,
         Err(error) => {
             return json!({
-                "rule_id": rule_id,
-                "kind": kind,
-                "required": required,
+                "rule_id": ctx.rule_id,
+                "kind": ctx.kind,
+                "required": ctx.required,
                 "checker_id": CHECKER_DEPENDENCY,
                 "checkability": "executable",
                 "verdict": "no_violation_found",
                 "passed": false,
-                "blocks_acceptance": required,
+                "blocks_acceptance": ctx.required,
                 "reason": error.to_string(),
                 "coverage": {"state": "none", "reason": "path search failed"},
                 "violations": [],
             })
         }
     };
-    let verdict = if !paths.is_empty() {
+    let had_paths = !paths.is_empty();
+    let verdict = if had_paths {
         "violated"
     } else {
         // A static ledger path search is not a completeness proof.
         "no_violation_found"
     };
+    let mut enriched_paths = Vec::new();
+    for mut path in paths {
+        let mut names = Vec::new();
+        for node in path["nodes"].as_array().into_iter().flatten() {
+            if let Some(node) = node.as_str() {
+                match ctx.store.get_entity(ctx.project_id, ctx.snapshot_id, node) {
+                    Ok(Some(entity)) => names.push(entity["qualified_name"].clone()),
+                    _ => names.push(json!(node)),
+                }
+            }
+        }
+        path["node_names"] = json!(names);
+        enriched_paths.push(path);
+    }
     json!({
-        "rule_id": rule_id,
-        "kind": kind,
-        "required": required,
+        "rule_id": ctx.rule_id,
+        "kind": ctx.kind,
+        "required": ctx.required,
         "checker_id": CHECKER_DEPENDENCY,
         "checkability": "executable",
         "verdict": verdict,
         "passed": false,
-        "blocks_acceptance": verdict == "violated" || required,
-        "reason": if paths.is_empty() {
+        "blocks_acceptance": verdict == "violated" || ctx.required,
+        "reason": if !had_paths {
             "no path was found, but static coverage is partial"
         } else {
             "a dependency path reaches the forbidden component"
@@ -917,14 +1215,31 @@ fn check_rule(
             "missing_members": missing_members,
             "max_depth": MAX_DEPTH,
             "edges_considered": edges_considered,
-            "limitations": [
-                "static ledger relations only; dynamic dispatch and unresolved calls are not traversed",
-                "absence of a path is not proof of absence"
-            ],
+            "paths_truncated": paths_truncated.is_some(),
+            "truncated_reason": paths_truncated,
+            "limitations": if paths_truncated == Some("result_cap") {
+                json!([
+                    "static ledger relations only; dynamic dispatch and unresolved calls are not traversed",
+                    "absence of a path is not proof of absence",
+                    format!("path search stopped at the {MAX_PATHS}-path result cap")
+                ])
+            } else if paths_truncated == Some("expansion_cap") {
+                json!([
+                    "static ledger relations only; dynamic dispatch and unresolved calls are not traversed",
+                    "absence of a path is not proof of absence",
+                    "path search stopped at the expansion cap"
+                ])
+            } else {
+                json!([
+                    "static ledger relations only; dynamic dispatch and unresolved calls are not traversed",
+                    "absence of a path is not proof of absence"
+                ])
+            },
         },
-        "violations": paths,
+        "violations": enriched_paths,
     })
 }
+
 
 fn find_declared_cycle<'a>(
     adjacency: &BTreeMap<&'a str, BTreeSet<&'a str>>,
@@ -987,7 +1302,7 @@ fn find_paths(
     targets: &BTreeSet<String>,
     traversable: &BTreeSet<String>,
     max_depth: usize,
-) -> Result<(Vec<Value>, usize)> {
+) -> Result<(Vec<Value>, usize, Option<&'static str>)> {
     let relations = store.relation_payloads(project_id, snapshot_id)?;
     let mut adjacency: HashMap<String, Vec<(String, String, String)>> = HashMap::new();
     let mut edges_considered = 0usize;
@@ -1013,6 +1328,8 @@ fn find_paths(
         edges.sort();
     }
     let mut paths: Vec<Value> = Vec::new();
+    let mut expansions = 0usize;
+    let mut truncated = None;
     for start in starts {
         let mut visited = BTreeSet::new();
         visited.insert(start.clone());
@@ -1027,12 +1344,18 @@ fn find_paths(
             0,
             max_depth,
             &mut paths,
+            &mut expansions,
         );
         if paths.len() >= MAX_PATHS {
+            truncated = Some("result_cap");
+            break;
+        }
+        if expansions > MAX_PATH_EXPANSIONS {
+            truncated = Some("expansion_cap");
             break;
         }
     }
-    Ok((paths, edges_considered))
+    Ok((paths, edges_considered, truncated))
 }
 
 fn dependency_relation_kind(kind: &str) -> bool {
@@ -1064,14 +1387,19 @@ fn walk(
     depth: usize,
     max_depth: usize,
     paths: &mut Vec<Value>,
+    expansions: &mut usize,
 ) {
-    if paths.len() >= MAX_PATHS || depth >= max_depth {
+    if paths.len() >= MAX_PATHS || *expansions > MAX_PATH_EXPANSIONS || depth >= max_depth {
         return;
     }
     let Some(edges) = adjacency.get(current) else {
         return;
     };
     for (target, kind, relation_id) in edges {
+        *expansions += 1;
+        if *expansions > MAX_PATH_EXPANSIONS {
+            return;
+        }
         if !visited.insert(target.clone()) {
             continue;
         }
@@ -1100,6 +1428,7 @@ fn walk(
                 depth + 1,
                 max_depth,
                 paths,
+                expansions,
             );
         }
         steps.pop();

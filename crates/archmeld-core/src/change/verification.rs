@@ -364,17 +364,13 @@ pub fn verify_changeset(store: &mut Store, raw: &Value) -> Result<Value> {
     let result = verification_payload(store, &request.project_id, &verification_id)?;
     let result_json = serde_json::to_string(&result)
         .map_err(|err| CoreError::Storage(format!("verification encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'verifyChangeSet',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &request_digest,
-            &result_json,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "verifyChangeSet",
+        &request.idempotency_key,
+        &request_digest,
+        200,
+        &result_json,
     )?;
     Ok(result)
 }
@@ -518,17 +514,13 @@ pub fn accept_changeset(store: &mut Store, raw: &Value) -> Result<Value> {
         crate::changeset::get_changeset(store, &request.project_id, &request.changeset_id)?;
     let result_json = serde_json::to_string(&result)
         .map_err(|err| CoreError::Storage(format!("acceptance encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'acceptChangeSet',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &request_digest,
-            &result_json,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "acceptChangeSet",
+        &request.idempotency_key,
+        &request_digest,
+        200,
+        &result_json,
     )?;
     let _ = accepted;
     Ok(result)

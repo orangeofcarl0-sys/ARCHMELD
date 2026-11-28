@@ -1,0 +1,43 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-062-brief-findings-context-and-budget.md",
+  "change": "add_optional_brief_output_budget",
+  "target": "docs/archmeld/contracts/mcp-tools.json#/tools/archmeld_brief/inputSchema",
+  "properties": {
+    "max_findings": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 20,
+      "note": "Maximum changed-entity findings; omitted counts are reported in budget.omitted_findings."
+    },
+    "max_context": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 10,
+      "note": "Maximum unchanged-context entries."
+    },
+    "max_gaps": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 10,
+      "note": "Maximum per-file gap entries."
+    },
+    "max_relation_items": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 10,
+      "note": "Maximum aggregated relation rows and per-finding relation evidence."
+    }
+  },
+  "additionalProperties": false,
+  "implemented_by": "crates/archmeld-api/src/mcp.rs::tools_list (runtime inputSchema override) and Server::brief",
+  "verified_by": [
+    "crates/archmeld-core/tests/brief.rs",
+    "crates/archmeld-api/tests/mcp_stdio.rs"
+  ]
+}

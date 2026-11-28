@@ -1,0 +1,4 @@
+{"seq": 1, "command": "cd \"<path>" && git log --oneline -5 && echo \"---HEAD---\" && git show HEAD --stat"}
+{"seq": 3, "command": "cd \"<path>" && git diff HEAD^ HEAD && echo \"===FILES===\" && find . -type f -not -path './.git/*' -not -path './.archmeld/*' | sort"}
+{"seq": 5, "command": "cd \"<path>" && echo \"=== src/caller.py ===\" && cat -n src/caller.py && echo \"=== src/core/alpha_moved.py ===\" && cat -n src/core/alpha_moved.py"}
+{"seq": 7, "command": "cd \"<path>" && echo \"caller.py in HEAD^:\" && git rev-parse HEAD^:src/caller.py && echo \"caller.py in HEAD:\" && git rev-parse HEAD:src/caller.py && echo \"--- diff caller ---\" && git diff HEAD^ HEAD -- src/caller.py"}

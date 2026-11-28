@@ -41,11 +41,11 @@ authoritative. Missing behaviours remain listed as explicit limitations
 instead of being averaged into a green score.
 
 The 2026-11-27 rerun at HEAD `7474343d` is recorded as
-`b030-language_runtime_linkage-perf-20261127-111213`,
-`b030-language_medium_projects-perf-20261127-111213`,
-`b030-language_rename_apply-perf-20261127-111213`,
-`b030-language_matrix-perf-20261127-111213`, and verified by
-`b030-verify-perf-20261127-111213`.
+`b030-language_runtime_linkage-perf-20261128-012425`,
+`b030-language_medium_projects-perf-20261128-012425`,
+`b030-language_rename_apply-perf-20261128-012425`,
+`b030-language_matrix-perf-20261128-012425`, and verified by
+`b030-verify-perf-20261128-012425`.
 
 | Group | Structure/def-ref | Build | Runtime execution | Runtime linkage | Medium real project | Controlled change |
 |---|---|---|---|---|---|---|

@@ -28,7 +28,7 @@ checks, next executable tasks and a do-not-redo list.
 4. `docs/release-evidence/B031-*.json|md` — package hashes and platform claims.
 5. `docs/OPERATOR_GUIDE.md` — build/run/data/security/troubleshooting.
 6. The relevant ADR and test for the next task only. ADR-001…016 are in the
-   frozen pack; ADR-017…060 are indexed in `docs/adr/README.md`.
+   frozen pack; ADR-017…070 are indexed in `docs/adr/README.md`.
 
 Do not re-audit closed tasks or rebuild a general indexer. The codebase is a
 thin fork of the pinned CodeGraph commit; preserve NOTICE/license and use the
@@ -44,13 +44,25 @@ fixture-only run is not a release gate. Partial completion stays explicit.
 
 ## 4. Current truth
 
+- The 2026-11-28 full-closure slice is implemented and tested at HEAD
+  `fd5c8758`: status paging, unified brief/map counts, review-report
+  lifecycle, provenance unknown states, rule-exception keys, human-attested
+  reads/writes and I1 incremental parsing; ADR-062…070. `test_lane --lane fast`
+  passed; targeted core+API tests passed; the real helper proved incremental
+  parse/delete/rename/fallback (`i1-incremental-2026-11-28-b`). Real runtime
+  reads/writes still depend on an external producer, and the reviewer pilot is
+  not run because two independent reviewers were not provided.
 - B030 is **passed** for the seven-language gate: AT066 and AT067 passed;
-  AT067 was re-run at 0.21.2/HEAD `7474343d` on 2026-11-27 and
+  AT067 was re-run at HEAD `fd5c8758` on 2026-11-28 and
   `docs/release-evidence/B030-language-matrix.json` records
   `r1_naming_allowed=true` with no blockers. Explicit limitations remain: C/C++
-  full SCIP needs a Linux/WSL worker; Ubuntu GUI/VS Code host and macOS are
-  release-level items. The real 0.21.2 upstream upgrade (AT077) passed on
+  full SCIP needs a Linux/WSL worker. Ubuntu GUI/VS Code host and macOS are
+  outside R1 (S15/AT068). The real 0.21.2 upstream upgrade (AT077) passed on
   2026-11-24.
+- B031 was rebuilt from `fd5c8758`; both bundles have
+  `commit_consistency=true`. Windows and Ubuntu CLI/container install, clean
+  index, report and Chrome checks passed. AT068 is `partial` only because VSIX
+  install is `blocked_external` (no VS Code on this host).
 - B031 is **partial**: Windows/Ubuntu **binary** install/upgrade/rollback/uninstall,
   VSIX install, clean-machine indexing, the packaged offline report and the
   real 0.21.2 upstream upgrade (AT077, 2026-11-24) were tested; the Ubuntu
@@ -90,9 +102,9 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   a one-screen project/change brief; the read-only MCP surface is eight tools
   with bridge-side defaults and next actions. Final regression is 211/0/0
   (75 sections); the clean 4-file first run took 749 ms with a real MCP
-  handshake. Residuals: direct `index` re-runs on identical bytes still need
-  the low-level reuse path; M3 commit supervision and M4 scoped multi-agent
-  authority are not implemented. Evidence:
+  handshake. Direct `index` re-runs now resume the project-level persistent
+  graph and parse only changed files (ADR-070); M3 commit supervision and M4
+  scoped multi-agent authority are not implemented. Evidence:
   `docs/release-evidence/M1-AGENT-ONBOARDING-2026-11-11.json`, ADR-056.
 - C++ full-SCIP is exercised for the testing phase with pinned WSL
   `scip-clang v0.4.1` and the real `upstream-probes/scip/cpp.scip` import
@@ -103,8 +115,9 @@ fixture-only run is not a release gate. Partial completion stays explicit.
   passes `codegraph --lib` 59/59 including `test_delete`; the historical
   0xC0000005 was a Strawberry/winlibs GCC 13.2.0 mismatch. MSVC remains
   unexercised but is not required for RocksDB. Windows verification summary:
-  `docs/release-evidence/WINDOWS-VERIFICATION-2026-11-27.json`. Remaining
-  release families: Ubuntu GUI/VS Code host, macOS.
+  `docs/release-evidence/WINDOWS-VERIFICATION-2026-11-27.json`. Ubuntu
+  GUI/VS Code host and macOS are outside R1 (S15/AT068) and are explicitly
+  unsupported/not tested, not deferred gates.
 - M2.5-A/B/C/D are implemented: session-start rules, one-screen markdown
   brief, read-only AOCI map block, optional `.archmeld/SESSION.md` with
   freshness, and the 3-pair adherence experiment (full ritual B 3/3 vs A 0/3;

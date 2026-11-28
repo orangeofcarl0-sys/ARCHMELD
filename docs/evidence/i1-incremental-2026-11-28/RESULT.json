@@ -1,0 +1,62 @@
+{
+  "checks": {
+    "deleted_file_nodes_absent": true,
+    "deletion_counted": true,
+    "edge_set_equal_to_full_parse": true,
+    "fallback_has_no_half_graph": true,
+    "fallback_is_full_parse": true,
+    "first_was_full": true,
+    "node_set_equal_to_full_parse": true,
+    "renamed_new_path_present": true,
+    "renamed_old_path_absent": true,
+    "second_parsed_only_changed": true
+  },
+  "command_id": "i1-incremental-2026-11-28-b",
+  "counts": {
+    "fallback_nodes": 4,
+    "first_edges": 4,
+    "first_nodes": 6,
+    "fourth_nodes": 4,
+    "second_edges": 4,
+    "second_nodes": 6,
+    "third_nodes": 4
+  },
+  "helper": "archmeld_export (debug example, HEAD)",
+  "note": "First record i1-incremental-2026-11-28 (exit 1) exposed an edge-counter flush bug; this record is the post-fix run.",
+  "ok": true,
+  "runs": {
+    "fifth_fallback": {
+      "files_parsed": 2,
+      "files_reused": 0,
+      "index_mode": "full_parse",
+      "storage": "in_memory_fallback",
+      "storage_note": "Storage error: Failed to open RocksDB at \"<path>""
+    },
+    "first_full": {
+      "files_deleted": 0,
+      "files_parsed": 3,
+      "files_reused": 0,
+      "index_mode": "full_parse",
+      "storage": "persistent"
+    },
+    "fourth_after_rename": {
+      "files_deleted": 1,
+      "files_parsed": 1,
+      "files_reused": 1,
+      "index_mode": "incremental_parse"
+    },
+    "second_incremental": {
+      "files_deleted": 0,
+      "files_parsed": 1,
+      "files_reused": 2,
+      "index_mode": "incremental_parse",
+      "storage": "persistent"
+    },
+    "third_after_delete": {
+      "files_deleted": 1,
+      "files_parsed": 0,
+      "files_reused": 2,
+      "index_mode": "incremental_parse"
+    }
+  }
+}

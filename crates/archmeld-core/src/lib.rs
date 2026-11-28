@@ -19,11 +19,15 @@
 //! * `changeset`/`apply` — controlled staging, prepared digests, writer
 //!   leases and journaled recovery.
 
+// ---- shared errors ------------------------------------------------------
+pub mod error;
+
 // ---- evidence -----------------------------------------------------------
 mod evidence {
     pub mod bridge;
     pub mod events;
     pub mod hash;
+    pub mod human;
     pub mod identity;
     pub mod query;
     pub mod retention;
@@ -34,7 +38,7 @@ mod evidence {
     pub(crate) mod anchor;
 }
 pub use evidence::{
-    bridge, events, hash, identity, query, retention, snapshot, source, source_api, store,
+    bridge, events, hash, human, identity, query, retention, snapshot, source, source_api, store,
 };
 pub(crate) use evidence::anchor;
 
@@ -88,16 +92,15 @@ pub use ops::{drift, encrypted_backup, instigator, jobs, manager, migrate, repor
 // ---- surface ------------------------------------------------------------
 mod surface {
     pub mod brief;
-    pub mod error;
     pub mod language;
     pub mod lsp;
     pub mod review;
     pub mod scip;
     pub mod status;
 }
-pub use surface::{brief, error, language, lsp, review, scip, status};
+pub use surface::{brief, language, lsp, review, scip, status};
 
-pub use surface::error::{CoreError, Result};
+pub use error::{CoreError, Result};
 pub use change::predicate::evaluate_numeric_tolerance_artifacts;
 
 /// Contract schema version implemented by this crate.

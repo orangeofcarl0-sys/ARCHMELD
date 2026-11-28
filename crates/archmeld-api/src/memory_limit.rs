@@ -110,8 +110,9 @@ pub fn apply_limit_mb(mb: u64) -> Result<(), String> {
         }
         // The job must outlive this call: keep the handle open for the process
         // lifetime. Closing it would not remove the limits, but leaking one
-        // handle is simpler and auditable.
-        std::mem::forget(job);
+        // handle is simpler and auditable. `Handle` is a raw pointer (`Copy`),
+        // so it is never dropped; this binding only documents the intent.
+        let _ = job;
     }
     Ok(())
 }

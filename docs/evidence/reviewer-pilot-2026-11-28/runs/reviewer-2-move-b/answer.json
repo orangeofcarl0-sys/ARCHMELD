@@ -1,0 +1,22 @@
+{
+  "moved_entity": "alpha (src/core/alpha.py::alpha)",
+  "moved_from": "src/core/alpha.py",
+  "moved_to": "src/core/alpha_moved.py",
+  "caller_changed": "false",
+  "citations": [
+    {
+      "path": "src/core/alpha_moved.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    }
+  ],
+  "confidence": "high",
+  "notes": "The commit is a 100% similarity rename (content-identical move, same blob digest), so the moved entity is the module's sole symbol `alpha`, now defined at src/core/alpha_moved.py:1 (was src/core/alpha.py:1-2; old path no longer exists on disk). ARCHMELD reports the move with diff_basis 'content_identical_move' and flags the base symbol as context_only with trigger 'file_moved_same_blob', plus an incoming static_call_candidate from src/caller.py::caller and incoming imports from src/caller.py. src/caller.py is byte-identical in both commits (git diff shows only the rename), so the caller did not change and remains stale: it still imports `core.alpha` at src/caller.py:1 and calls `alpha()` at src/caller.py:4, referencing the pre-move module path. The import edge in the index resolves to an external module 'core.alpha' rather than to the new file, which is consistent with that staleness. Import/call relations are syntax candidates, not resolved calls, and no build, test, or runtime command was executed; runtime import failure is not established here — only the static path mismatch."
+}

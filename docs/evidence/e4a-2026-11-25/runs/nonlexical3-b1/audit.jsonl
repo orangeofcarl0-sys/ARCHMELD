@@ -1,7 +1,7 @@
 {"arguments_digest":"sha256:de502350f102e1cf3c497f6ebf58e545af652f38ca072ee13c40095512d52c56","at":1795601662,"code":null,"outcome":"ok","tool":"archmeld_brief"}
 {"arguments_digest":"sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a","at":1795601662,"code":null,"outcome":"ok","tool":"archmeld_status"}
 {"arguments_digest":"sha256:c093110438de2b18ec4d5aeceddda31db502e9a46618f18bd8812c7996a7efef","at":1795601673,"code":null,"outcome":"ok","tool":"archmeld_inspect"}
-{"arguments_digest":"sha256:450e972c9ecabec334245bb372379772c5dd022fc017e921f00c64d160a32513","at":1795601673,"code":null,"outcome":"ok","tool":"archmeld_inspect"}
+{"arguments_digest":"sha256:450e972c9ecabec3<redacted>45bb372379772c5dd022fc017e921f00c64d160a32513","at":1795601673,"code":null,"outcome":"ok","tool":"archmeld_inspect"}
 {"arguments_digest":"sha256:53f0658da115cc2b4827a06a7a6a21e22d17d831c7ebfe5a2186f0dea96c773d","at":1795601673,"code":null,"outcome":"ok","tool":"archmeld_inspect"}
 {"arguments_digest":"sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a","at":1795601709,"code":null,"outcome":"ok","tool":"archmeld_review"}
 {"arguments_digest":"sha256:de502350f102e1cf3c497f6ebf58e545af652f38ca072ee13c40095512d52c56","at":1795601709,"code":null,"outcome":"ok","tool":"archmeld_brief"}

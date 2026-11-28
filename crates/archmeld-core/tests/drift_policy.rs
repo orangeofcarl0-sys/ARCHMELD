@@ -120,3 +120,66 @@ fn git_tree_digest_is_line_ending_independent_while_snapshot_id_tracks_bytes() {
         "the byte-level snapshot ID must still distinguish LF from CRLF"
     );
 }
+
+#[test]
+fn omitted_base_files_are_not_reported_as_deleted() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("repo");
+    fs::create_dir_all(root.join("src")).unwrap();
+    fs::create_dir_all(root.join("scripts")).unwrap();
+    fs::write(root.join("src/a.py"), "VALUE = 1\n").unwrap();
+    // A file whose basename matches an excluded directory name is still a
+    // file; capture includes it and drift must not exclude it.
+    fs::write(root.join("scripts/build"), "not a directory\n").unwrap();
+    git(&root, &["init", "-q"]);
+    git(&root, &["config", "user.email", "test@example.invalid"]);
+    git(&root, &["config", "user.name", "test"]);
+    git(&root, &["add", "."]);
+    git(&root, &["commit", "-qm", "base"]);
+
+    let mut store = Store::open(dir.path().join("state")).unwrap();
+    store.ensure_project(PROJECT, "expedition").unwrap();
+    let captured = capture_snapshot(
+        &mut store,
+        PROJECT,
+        &root,
+        &SnapshotInputs {
+            build_config: json!({"variant": "omitted-base"}),
+            environment: json!({"os": "test"}),
+        },
+        &SnapshotOptions {
+            include_untracked: true,
+            ..SnapshotOptions::default()
+        },
+    )
+    .unwrap();
+    fs::write(root.join("src/a.py"), [0u8, 1, 2, 3, 4]).unwrap();
+
+    let report = analyze_drift(&store, PROJECT, &captured.snapshot_id, &root, None).unwrap();
+    assert!(
+        report["deleted"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|item| item["path"] != "src/a.py"),
+        "{report}"
+    );
+    assert!(
+        report["omitted_base"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["path"] == "src/a.py"),
+        "{report}"
+    );
+    assert_eq!(report["coverage"]["state"], "partial", "{report}");
+    assert_eq!(report["needs_review"], true, "{report}");
+    assert!(
+        report["deleted"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|item| item["path"] != "scripts/build"),
+        "a file named build must not be treated as an excluded directory: {report}"
+    );
+}

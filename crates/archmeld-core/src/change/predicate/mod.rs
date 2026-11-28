@@ -459,7 +459,9 @@ fn parse_json_table(bytes: &[u8], label: &str) -> std::result::Result<NumericTab
             }
             let mut rows = Vec::new();
             for (row_index, item) in items.iter().enumerate() {
-                let fields = item.as_array().unwrap();
+                let fields = item.as_array().ok_or_else(|| {
+                    format!("{label} row {row_index} must be an array")
+                })?;
                 if fields.len() != width {
                     return Err(format!(
                         "{label} row {row_index} has {} fields, expected {width}",
@@ -484,8 +486,11 @@ fn parse_json_table(bytes: &[u8], label: &str) -> std::result::Result<NumericTab
         }
         Value::Array(items) if items.iter().all(Value::is_object) => {
             let mut names = BTreeSet::new();
-            for item in items {
-                for key in item.as_object().unwrap().keys() {
+            for (row_index, item) in items.iter().enumerate() {
+                let object = item.as_object().ok_or_else(|| {
+                    format!("{label} row {row_index} must be an object")
+                })?;
+                for key in object.keys() {
                     names.insert(key.clone());
                 }
             }
@@ -496,7 +501,9 @@ fn parse_json_table(bytes: &[u8], label: &str) -> std::result::Result<NumericTab
             let width = columns.len();
             let mut rows = Vec::new();
             for (row_index, item) in items.iter().enumerate() {
-                let object = item.as_object().unwrap();
+                let object = item.as_object().ok_or_else(|| {
+                    format!("{label} row {row_index} must be an object")
+                })?;
                 if object.len() != columns.len() {
                     return Err(format!(
                         "{label} row {row_index} does not have exactly the declared columns"
@@ -577,7 +584,9 @@ fn table_from_object(
             let width = data_array[0].as_array().map(Vec::len).unwrap_or(0);
             let mut rows = Vec::new();
             for (row_index, row) in data_array.iter().enumerate() {
-                let fields = row.as_array().unwrap();
+                let fields = row.as_array().ok_or_else(|| {
+                    format!("{label} data row {row_index} must be an array")
+                })?;
                 if fields.len() != width {
                     return Err(format!(
                         "{label} data row {row_index} has {} fields, expected {width}",
@@ -614,7 +623,9 @@ fn table_from_object(
             })?;
             let mut rows = Vec::new();
             for (row_index, row) in data_array.iter().enumerate() {
-                let object = row.as_object().unwrap();
+                let object = row.as_object().ok_or_else(|| {
+                    format!("{label} data row {row_index} must be an object")
+                })?;
                 let mut parsed = Vec::with_capacity(columns.len());
                 for column in &columns {
                     let value = object.get(column).ok_or_else(|| {
@@ -670,7 +681,9 @@ fn table_from_object(
     let mut series: Vec<Vec<f64>> = Vec::new();
     let mut scalar = false;
     for column in &columns {
-        let value = object.get(column).unwrap();
+        let value = object
+            .get(column)
+            .ok_or_else(|| format!("{label} is missing column {column}"))?;
         if let Some(items) = value.as_array() {
             if scalar {
                 return Err(format!("{label} mixes scalar and array columns"));
