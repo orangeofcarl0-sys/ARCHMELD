@@ -1,0 +1,38 @@
+{
+  "unmapped_paths": [
+    "docs/notes.md"
+  ],
+  "changed_entities": [
+    "src/ops.py::run"
+  ],
+  "writes_evidence": "unavailable",
+  "coverage": "partial",
+  "citations": [
+    {
+      "path": "docs/notes.md",
+      "line": 3
+    },
+    {
+      "path": "src/ops.py",
+      "line": 4
+    },
+    {
+      "path": "src/ops.py",
+      "line": 3
+    },
+    {
+      "path": "src/settle.py",
+      "line": 1
+    },
+    {
+      "path": "src/settle.py",
+      "line": 2
+    },
+    {
+      "path": ".gitignore",
+      "line": 1
+    }
+  ],
+  "confidence": "high",
+  "notes": "Git shows exactly two files changed in HEAD (a140914, base ea9550d): docs/notes.md line 3 (wording edit) and src/ops.py line 4 (`return settle()` -> `return settle() + 1`). archmeld_review (base_snapshot_id sha256:c0cbafc9...) reports the same two changed files, 0 added, 0 deleted, 0 moved, and coverage.state=partial with coverage.unmapped_files=[\"docs/notes.md\"] and confidence=file_changed_no_entity_mapping ('no base-snapshot entity anchor matched this file'), with entities=[]; archmeld_brief(recipe=change) lists the same single gap: kind=unmapped, path=docs/notes.md, reason='no base entity mapping', side=both. So docs/notes.md is the only changed file without an entity mapping. src/ops.py is mapped: file entity src/ops.py and symbol entity src/ops.py::run (anchor src/ops.py:3-4), and review reports exactly one affected entity, src/ops.py::run, with confidence=static_line_overlap on line 4. The only other changed line in the diff is inside the run anchor, so src/ops.py::run is the sole changed entity; the file-level entity src/ops.py appears only as unchanged context via a declared `contains` relation. Writes: no write evidence exists. archmeld_query(kind=neighbors) over run/settle/ops.py/settle.py with relation_kinds=[writes, reads, publishes, consumes, resolved_call, observed_call] at max_depth=3 returns 4 entities and 0 relations; the full relation set for this snapshot is 5 relations: 2 `imports` (declared, src/ops.py -> settle module and -> src/settle.py::settle), 1 `contains` (declared, src/ops.py -> src/ops.py::run), and 1 `static_call_candidate` (resolution=candidate, run -> external module `settle`, call_site=null, evidence_scope=artifact, conditions include 'syntax-only; not a resolved call'). The candidate call target is the external module entity `settle`, not src/settle.py::settle, and candidate relations are hypotheses, not resolved calls; the index also flags '5 relation(s) have no call-site line; evidence_scope=artifact'. No runtime/scenario/verification artifact exists (index counts: evidence=1, all syntax; verification.state=not_run; review states no build, test, scenario or runtime command was executed). The changed code is only `settle() + 1` and src/settle.py body is `return 1` (line 2) — this is source shape only and is deliberately not used to infer writes, so writes_evidence is 'unavailable', not 'absent'. Coverage partial is asserted by the tool: coverage.state=partial, unmapped_files non-empty, plus limitations that line overlap is static text evidence rather than semantic equivalence and that new calls are not inferred. Distinguish: base snapshot coverage was already partial for the same reason (snapshot.coverage: expected_count=5, observed_count=4, omitted_count=1, 'excluded_dir: 1 file(s)') because .pi/mcp.json is gitignored (.gitignore line 1: .pi/), but .pi/mcp.json is not part of the commit and is therefore not a changed-file gap. Only docs/notes.md is unmapped among changed files."
+}

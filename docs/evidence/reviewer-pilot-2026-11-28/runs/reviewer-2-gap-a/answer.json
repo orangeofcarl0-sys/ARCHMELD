@@ -1,0 +1,42 @@
+{
+  "unmapped_paths": [
+    "docs/notes.md"
+  ],
+  "changed_entities": [
+    "run"
+  ],
+  "writes_evidence": "unavailable",
+  "coverage": "partial",
+  "citations": [
+    {
+      "path": "docs/notes.md",
+      "line": 3
+    },
+    {
+      "path": "src/ops.py",
+      "line": 4
+    },
+    {
+      "path": "src/ops.py",
+      "line": 3
+    },
+    {
+      "path": "src/settle.py",
+      "line": 1
+    },
+    {
+      "path": "src/settle.py",
+      "line": 2
+    },
+    {
+      "path": "state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson",
+      "line": 1
+    },
+    {
+      "path": "state/codegraph/projects/project-reviewer-gap/index_state.json",
+      "line": 1
+    }
+  ],
+  "confidence": "high",
+  "notes": "HEAD (a140914) touches exactly two files: docs/notes.md line 3 ('settlement behavior is documented here') and src/ops.py line 4 ('return settle() + 1'). Entity mapping exists only for the source side: the codegraph index state maps src/ops.py and src/settle.py, and the export run yields entities src/ops.py, src/ops.py::run, src/settle.py, src/settle.py::settle plus the external module 'settle'. docs/notes.md has no entity mapping: it is absent from the index state (only src/ops.py and src/settle.py appear) and is a non-parsed file in the index manifest (files_total=2, skipped_by_reason {'hidden':1,'unsupported_extension':1}, by_language python:2). src/ops.py is mapped, so docs/notes.md is the sole named gap. The only changed code entity is 'run' (body_prefix in the base index is 'return settle()', and the candidate changed line 4 of src/ops.py). Writes evidence: relations recorded are only 'contains', 'imports' and 'static_call_candidate' (syntax basis, candidate resolution, call_site_line 4); there is no write/mutation relation kind, and runtime/scenario/behavior-contract/claim/verification tables are empty, so no run evidence establishes that run writes to settle. The runtime table scan is query-only over the read-only state database and yields zero rows. Coverage is 'partial': the snapshot manifest reports coverage state 'partial' with observed_count 4 of expected_count 5 (one excluded-dir file omitted), and one of the two changed files (docs/notes.md) lacks any entity mapping, so mapping coverage over the change is partial. Note that the codegraph export's own coverage claim of complete/5-of-5 covers only its two python files and does not extend to the documentation file."
+}

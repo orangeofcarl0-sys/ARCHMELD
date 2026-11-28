@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "written_before_runs": true,
+  "reviewers": {
+    "reviewer-1": "deepseek/deepseek-v4-pro",
+    "reviewer-2": "omni-responses/deepseek-v4.1-flash"
+  },
+  "review_kind": "agent (pi durable sessions); not a human study",
+  "fixtures": {
+    "move": {
+      "snapshot_id": "sha256:55120f31b48808a93e5013012b2c0cad07bd442be056e5253a72517685e7d048",
+      "key": {
+        "entities": [
+          "alpha"
+        ],
+        "paths": [
+          "src/core/alpha.py",
+          "src/core/alpha_moved.py"
+        ],
+        "caller_changed": false,
+        "writes": "not_applicable",
+        "relation": "not_applicable",
+        "coverage": "any"
+      },
+      "task": "A review is in progress for the last commit. Determine which entity moved, its old and new paths, and whether any caller source changed. The caller file may now be stale.",
+      "answer_shape": {
+        "moved_entity": "qualified or short name",
+        "moved_from": "workspace-relative POSIX path",
+        "moved_to": "workspace-relative POSIX path",
+        "caller_changed": "true|false"
+      }
+    },
+    "context": {
+      "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+      "key": {
+        "entities": [
+          "target"
+        ],
+        "context_entities": [
+          "caller"
+        ],
+        "paths": [
+          "src/target.py",
+          "src/caller.py"
+        ],
+        "writes": "not_applicable",
+        "relation": "candidate",
+        "coverage": "any"
+      },
+      "task": "A review is in progress for the last commit. Identify the changed owner, any unchanged caller that must remain context (not a second change), and whether the incoming relation is a resolved call or a candidate hypothesis.",
+      "answer_shape": {
+        "changed_owner": "entity name",
+        "changed_path": "workspace-relative POSIX path",
+        "unchanged_context_entity": "entity name",
+        "incoming_resolution": "resolved|candidate|unknown"
+      }
+    },
+    "gap": {
+      "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+      "key": {
+        "entities": [
+          "run"
+        ],
+        "paths": [
+          "docs/notes.md",
+          "src/ops.py"
+        ],
+        "unmapped_paths": [
+          "docs/notes.md"
+        ],
+        "writes": "unavailable",
+        "relation": "not_applicable",
+        "coverage": "partial"
+      },
+      "task": "A review is in progress for the last commit. Identify every changed file without an entity mapping (a named gap), and state whether there is evidence that run writes to settle. Do not infer writes from source shape alone.",
+      "answer_shape": {
+        "unmapped_paths": [
+          "workspace-relative POSIX path"
+        ],
+        "changed_entities": [
+          "entity name"
+        ],
+        "writes_evidence": "present|unavailable",
+        "coverage": "complete|partial|unknown"
+      }
+    }
+  }
+}

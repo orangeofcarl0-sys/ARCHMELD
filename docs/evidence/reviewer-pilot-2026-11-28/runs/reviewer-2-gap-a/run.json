@@ -1,0 +1,267 @@
+{
+  "reviewer": "reviewer-2",
+  "model": "omni-responses/deepseek-v4.1-flash",
+  "fixture": "gap",
+  "arm": "a",
+  "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+  "started_at": "2026-11-28T07:17:32Z",
+  "duration_ms": 263740,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "unmapped_paths": [
+      "docs/notes.md"
+    ],
+    "changed_entities": [
+      "run"
+    ],
+    "writes_evidence": "unavailable",
+    "coverage": "partial",
+    "citations": [
+      {
+        "path": "docs/notes.md",
+        "line": 3
+      },
+      {
+        "path": "src/ops.py",
+        "line": 4
+      },
+      {
+        "path": "src/ops.py",
+        "line": 3
+      },
+      {
+        "path": "src/settle.py",
+        "line": 1
+      },
+      {
+        "path": "src/settle.py",
+        "line": 2
+      },
+      {
+        "path": "state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson",
+        "line": 1
+      },
+      {
+        "path": "state/codegraph/projects/project-reviewer-gap/index_state.json",
+        "line": 1
+      }
+    ],
+    "confidence": "high",
+    "notes": "HEAD (a140914) touches exactly two files: docs/notes.md line 3 ('settlement behavior is documented here') and src/ops.py line 4 ('return settle() + 1'). Entity mapping exists only for the source side: the codegraph index state maps src/ops.py and src/settle.py, and the export run yields entities src/ops.py, src/ops.py::run, src/settle.py, src/settle.py::settle plus the external module 'settle'. docs/notes.md has no entity mapping: it is absent from the index state (only src/ops.py and src/settle.py appear) and is a non-parsed file in the index manifest (files_total=2, skipped_by_reason {'hidden':1,'unsupported_extension':1}, by_language python:2). src/ops.py is mapped, so docs/notes.md is the sole named gap. The only changed code entity is 'run' (body_prefix in the base index is 'return settle()', and the candidate changed line 4 of src/ops.py). Writes evidence: relations recorded are only 'contains', 'imports' and 'static_call_candidate' (syntax basis, candidate resolution, call_site_line 4); there is no write/mutation relation kind, and runtime/scenario/behavior-contract/claim/verification tables are empty, so no run evidence establishes that run writes to settle. The runtime table scan is query-only over the read-only state database and yields zero rows. Coverage is 'partial': the snapshot manifest reports coverage state 'partial' with observed_count 4 of expected_count 5 (one excluded-dir file omitted), and one of the two changed files (docs/notes.md) lacks any entity mapping, so mapping coverage over the change is partial. Note that the codegraph export's own coverage claim of complete/5-of-5 covers only its two python files and does not extend to the documentation file."
+  },
+  "calls": [],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show --stat HEAD"
+    },
+    {
+      "seq": 2,
+      "command": "cd \"<path>" && ls -la"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && git show HEAD"
+    },
+    {
+      "seq": 4,
+      "command": "cd \"<path>" && find . -path ./.git -prune -o -type f -print | sort"
+    },
+    {
+      "seq": 5,
+      "command": "cd \"<path>" && for f in .gitignore docs/notes.md src/ops.py src/settle.py; do echo \"=== $f ===\"; cat -n \"$f\"; done"
+    },
+    {
+      "seq": 6,
+      "command": "cd \"<path>" && ls -la && echo \"--- parent ---\" && ls -la .. 2>/dev/null"
+    },
+    {
+      "seq": 7,
+      "command": "cd \"<path>" && find state pi-sessions -type f | head -50"
+    },
+    {
+      "seq": 8,
+      "command": "cd \"<path>" && git diff HEAD^ HEAD --name-status && echo \"--- grep entity/map ---\" && grep -rni \"entit\\|mapping\\|write\" --include=\"*\" . 2>/dev/null | grep -v \"^./.git/\" | head -20"
+    },
+    {
+      "seq": 9,
+      "command": "cd \"<path>" && cat state/codegraph/projects/project-reviewer-gap/index_state.json && echo \"=== last-phase ===\" && cat state/codegraph/last-phase.32232.json"
+    },
+    {
+      "seq": 10,
+      "command": "cd \"<path>" && head -c 3000 state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson"
+    },
+    {
+      "seq": 11,
+      "command": "cd \"<path>" && tail -n +5 state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson"
+    },
+    {
+      "seq": 12,
+      "command": "cd \"<path>" && git show HEAD^:src/ops.py | cat -n && echo \"=== base notes ===\" && git show HEAD^:docs/notes.md | cat -n && echo \"=== git status ===\" && git status --porcelain"
+    },
+    {
+      "seq": 13,
+      "command": "cd \"<path>" && grep -c \"notes.md\" state/index-runs/*.ndjson state/codegraph/projects/project-reviewer-gap/index_state.json; echo \"---\"; strings state/state.sqlite3 2>/dev/null | grep -i \"notes.md\\|ops.py\" | head -20"
+    },
+    {
+      "seq": 14,
+      "command": "cd \"<path>" && grep -o '\"name\":\"[a-zA-Z_]*\"' state/index-runs/*.ndjson | sort -u; echo \"--- objects hashes ---\"; git -C repo rev-parse HEAD:docs/notes.md HEAD:src/ops.py HEAD:src/settle.py"
+    },
+    {
+      "seq": 15,
+      "command": "cd \"<path>" && grep -ril \"mutation\\|mutation_kind\\|effect\\|side_effect\\|writes\" state/ 2>/dev/null | head; echo \"--- edge types ---\"; grep -o '\"edge_type\":\"[A-Za-z]*\"' state/index-runs/*.ndjson | sort | uniq -c; echo \"--- node types ---\"; grep -o '\"node_type\":\"[A-Za-z]*\"' state/index-runs/*.ndjson | sort | uniq -c"
+    },
+    {
+      "seq": 16,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nfor (n,) in c.execute(\\\"select name from sqlite_master where type='table'\\\"):\n    print('TABLE',n)\n\" 2>&1 | head -20"
+    },
+    {
+      "seq": 17,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nfor t in ['entities','backend_mappings','files','evidence','relations']:\n    cols=[r[1] for r in c.execute(f'PRAGMA table_info({t})')]\n    n=c.execute(f'select count(*) from {t}').fetchone()[0]\n    print('==',t,'rows=',n,'cols=',cols)\n\""
+    },
+    {
+      "seq": 18,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3,json\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nfor r in c.execute('select entity_id,kind,qualified_name,role,snapshot_id from entities order by qualified_name'):\n    print(r['kind'],'|',r['qualified_name'],'|',r['role'],'|',r['snapshot_id'][:20])\nprint('--- files ---')\nfor r in c.execute('select path,role,blob_digest,snapshot_id from files order by path'):\n    print(r['path'],'|',r['role'],'|',r['blob_digest'][:24])\n\""
+    },
+    {
+      "seq": 19,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3,json\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nprint('--- relations ---')\nfor r in c.execute('select kind,source_id,target_id,basis,resolution,call_site_line,payload_json from relations'):\n    print(r['kind'],'|',r['source_id'][:22],'->',r['target_id'][:22],'|',r['basis'],'|',r['resolution'],'|line',r['call_site_line'],'|',r['payload_json'][:80])\nprint('--- evidence ---')\nfor r in c.execute('select kind,producer_name,coverage_json,payload_json from evidence'):\n    print(r['kind'],'|',r['producer_name'],'|',r['coverage_json'][:300])\n\""
+    },
+    {
+      "seq": 20,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nprint([r[1] for r in c.execute('PRAGMA table_info(staging_entities)')])\nprint('staging_entities',c.execute('select count(*) from staging_entities').fetchone()[0])\nprint('staging_evidence',c.execute('select count(*) from staging_evidence').fetchone()[0])\nprint('events',c.execute('select count(*) from events').fetchone()[0])\nfor r in c.execute('select * from events limit 15'):\n    print(dict(r))\n\" 2>&1 | head -30"
+    },
+    {
+      "seq": 21,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nfor r in c.execute('select * from snapshots'):\n    d=dict(r); print({k:(str(v)[:60]) for k,v in d.items()})\nprint('--- artifacts ---')\nfor r in c.execute('select id,kind,created_at from artifacts'):\n    print(dict(r))\nprint('--- generations ---')\nfor r in c.execute('select * from generations'):\n    print({k:str(v)[:80] for k,v in dict(r).items()})\n\""
+    },
+    {
+      "seq": 22,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nprint('--- entity payloads ---')\nfor r in c.execute('select entity_id,kind,qualified_name,payload_json from entities'):\n    print(r['kind'],'|',r['qualified_name'],'|',r['payload_json'][:200])\nprint('--- backend_mappings ---')\nfor r in c.execute('select * from backend_mappings'):\n    print(dict(r))\n\""
+    },
+    {
+      "seq": 23,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3,json\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nc.row_factory=sqlite3.Row\nr=c.execute('select payload_json from snapshots').fetchone()\nd=json.loads(r['payload_json'])\nprint(json.dumps({k:v for k,v in d.items() if k!='files'},indent=1)[:2000])\nfor f in d['files']: print(f)\n\""
+    },
+    {
+      "seq": 24,
+      "command": "cd \"<path>" && grep -ri \"gap\" state/state.sqlite3 -a -o | sort | uniq -c | head; echo \"---\"; python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nprint([r[0] for r in c.execute(\\\"select name from sqlite_master where type in ('table','view')\\\")])\nprint([r[0] for r in c.execute(\\\"select name from sqlite_master where type='index'\\\")][:20])\n\""
+    },
+    {
+      "seq": 25,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nfor t in ['diagnostics','review_reports','claims','claim_reviews','events','relations','relation_evidence','evidence','index_runs']:\n    try:\n        n=c.execute(f'select count(*) from {t}').fetchone()[0]\n        print(t,n)\n    except Exception as e: print(t,'ERR',e)\n\""
+    },
+    {
+      "seq": 26,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nfor r in c.execute('select * from index_runs'):\n    print(r)\n\" 2>&1 | head -5; echo \"=== prompt ===\"; cat ../reviewer-2-context-a/prompt.txt 2>/dev/null | head -40"
+    },
+    {
+      "seq": 27,
+      "command": "cd \"<path>" && for f in state/objects/sha256/*/*; do echo \"== $f\"; strings \"$f\" | head -c 300; echo; done"
+    },
+    {
+      "seq": 28,
+      "command": "cd \"<path>" && grep -rla \"notes.md\" state/ pi-sessions/ 2>/dev/null; echo \"--- raw sql hits for notes ---\"; grep -ac \"notes.md\" state/state.sqlite3 state/state.sqlite3-wal 2>/dev/null"
+    },
+    {
+      "seq": 29,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nprint('--- relation kinds ---', [r[0] for r in c.execute('select distinct kind from relations')])\nprint('--- relation_evidence ---')\nfor r in c.execute('select kind,payload_json from relation_evidence'):\n    print(r[0],'|',r[1][:220])\nprint('--- distinct evidence kinds ---',[r[0] for r in c.execute('select distinct kind from evidence')])\n\""
+    },
+    {
+      "seq": 30,
+      "command": "cd \"<path>" && grep -ac \"mutation\\|writes\" state/index-graph/*/LOG state/index-graph/*/OPTIONS-000007 2>/dev/null; echo \"--- session grep ---\"; grep -o \"notes.md\" pi-sessions/*.jsonl | head -3; echo \"--- ops.py in session ---\"; grep -c \"ops.py\" pi-sessions/*.jsonl"
+    },
+    {
+      "seq": 31,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nprint([r[1] for r in c.execute('PRAGMA table_info(relation_evidence)')])\nfor r in c.execute('select * from relation_evidence limit 6'): print(str(r)[:260])\n\"; echo \"--- schema kinds ---\"; grep -ao \"writes[a-z_]*\\|mutation[a-z_]*\" state/state.sqlite3 2>/dev/null | sort | uniq -c | head"
+    },
+    {
+      "seq": 32,
+      "command": "cd \"<path>" && awk '{printf \"%d: %.110s\\n\", NR, $0}' state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson"
+    },
+    {
+      "seq": 33,
+      "command": "cd \"<path>" && wc -l state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson state/codegraph/projects/project-reviewer-gap/index_state.json state/objects/sha256/71/*.json 2>/dev/null; echo \"--- ndjson manifest line numbers of key substrings ---\"; grep -n \"skipped_by_reason\\|notes\" state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson | cut -c1-10"
+    },
+    {
+      "seq": 34,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nfor t in ['runtime_runs','runtime_spans','scenario_runs','runtime_links','behavior_contracts','verification_runs','check_results','verification_runs','apply_journal','drift_reports']:\n    try: print(t, c.execute(f'select count(*) from {t}').fetchone()[0])\n    except Exception as e: print(t,'ERR',e)\nprint('claims',c.execute('select count(*) from claims').fetchone()[0])\n\""
+    },
+    {
+      "seq": 35,
+      "command": "cd \"<path>" && git show HEAD --format=\"\" --name-only && echo \"--- per-file mapping check ---\" && git show HEAD^..HEAD --numstat"
+    },
+    {
+      "seq": 36,
+      "command": "cd \"<path>" && python - <<'EOF'\nimport json\np='state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson'\nfor i,l in enumerate(open(p),1):\n    d=json.loads(l)\n    if d.get('type')=='node' and d.get('properties',{}).get('name') in ('run','ops'):\n        print(i, d['node_type'], d['properties'].get('name'), d['properties'].get('path','')[-40:])\n    if d.get('type')=='edge':\n        print(i, 'EDGE', d['edge_type'], d['source'], '->', d['target'], d.get('properties'))\nEOF"
+    },
+    {
+      "seq": 37,
+      "command": "cd \"<path>" && for f in state/objects/sha256/71/* state/objects/sha256/b0/*; do echo \"$f lines=$(wc -l < \"$f\")\"; python -c \"\nimport json,sys\nd=json.load(open(r'$f'.replace('/','/')))\nprint(sorted(d.keys())[:12] if isinstance(d,dict) else type(d))\n\" 2>/dev/null; done"
+    },
+    {
+      "seq": 38,
+      "command": "cd \"<path>" && python -c \"\nimport json\nd=json.load(open('state/objects/sha256/71/39376e54fc2cb0fb1d49ab0a8b46297ceb403f54a4481dbb678d7b9f62f5bb'))\nprint('git_commit',d['git_commit'])\nprint([f['path']+'|'+f['role'] for f in d['files']])\nprint('coverage',d['coverage']['state'],d['coverage']['observed_count'],d['coverage']['expected_count'])\n\"; echo \"--- export object keys ---\"; python -c \"\nimport json\np='state/objects/sha256/b0/a722e46e4c9c41679f97cd689ea699d649cb4682dcb087e2374796ba2e0299'\nlines=open(p).read().splitlines()\nprint('lines',len(lines))\nfor i,l in enumerate(lines,1):\n    d=json.loads(l)\n    print(i,d.get('type'),d.get('node_type') or d.get('edge_type') or '', str(d.get('properties'))[:60])\n\""
+    },
+    {
+      "seq": 39,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nprint('notes-like entities:', c.execute(\\\"select count(*) from entities where qualified_name like '%notes%' or qualified_name like '%docs%'\\\").fetchone()[0])\nprint('ops entities:', [r[0] for r in c.execute(\\\"select qualified_name from entities where qualified_name like '%ops%'\\\")])\nprint('files with entities (join):')\nfor r in c.execute('select f.path, count(e.entity_id) from files f left join entities e on e.qualified_name=f.path group by f.path'):\n    print(' ',r)\n\""
+    },
+    {
+      "seq": 40,
+      "command": "cd \"<path>" && grep -ria \"unmapped\\|named gap\\|entity mapping\" state/*.sqlite3* pi-sessions/ 2>/dev/null | head -5; echo \"--- none? check report tables ---\"; python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nprint([r[1] for r in c.execute('PRAGMA table_info(review_reports)')])\nprint(c.execute('select count(*) from review_reports').fetchone())\n\""
+    },
+    {
+      "seq": 41,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nprint('entities w/ docs:',c.execute(\\\"select count(*) from entities where qualified_name like 'docs%'\\\").fetchone())\nprint('entity names:',[r[0] for r in c.execute('select qualified_name from entities')])\nprint('files:',[r[0] for r in c.execute('select path from files')])\nprint('relation kinds:',[r[0] for r in c.execute('select distinct kind from relations')])\nprint('evidence kinds:',[r[0] for r in c.execute('select distinct kind from evidence')])\nprint('runtime rows:',c.execute('select count(*) from runtime_runs').fetchone(), c.execute('select count(*) from runtime_links').fetchone())\n\""
+    },
+    {
+      "seq": 42,
+      "command": "cd \"<path>" && wc -l state/codegraph/projects/project-reviewer-gap/index_state.json && python -c \"\nimport json\nd=json.load(open('state/codegraph/projects/project-reviewer-gap/index_state.json'))\nfor k in d: print(k)\n\"; echo \"--- line 1 manifest fields ---\"; python -c \"\nimport json\nl=open('state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson').readline()\nd=json.loads(l)\nprint({k:d['index'][k] for k in ['files_total','files_parsed','skipped_by_reason','by_language']})\nprint('edge_count',d['edge_count'],'node_count',d['node_count'])\n\""
+    },
+    {
+      "seq": 43,
+      "command": "cd \"<path>" && for f in state/objects/sha256/71/39376e54fc2cb0fb1d49ab0a8b46297ceb403f54a4481dbb678d7b9f62f5bb state/codegraph/projects/project-reviewer-gap/index_state.json; do echo \"$f newlines=$(tr -cd '\\n' < \"$f\" | wc -c)\"; done; echo \"--- grep counts in repo ---\"; cd repo && git ls-tree -r HEAD --name-only"
+    },
+    {
+      "seq": 44,
+      "command": "cd \"<path>" && python -c \"\nimport json\np='state/objects/sha256/71/39376e54fc2cb0fb1d49ab0a8b46297ceb403f54a4481dbb678d7b9f62f5bb'\nd=json.load(open(p))\nprint([f['path'] for f in d['files']])\nprint('git_blob ops', [f['git_blob'] for f in d['files'] if f['path']=='src/ops.py'])\nprint('git_blob notes', [f['git_blob'] for f in d['files'] if f['path']=='docs/notes.md'])\n\""
+    },
+    {
+      "seq": 45,
+      "command": "cd \"<path>" && python -c \"\nimport sqlite3\nc=sqlite3.connect('file:state/state.sqlite3?mode=ro',uri=True)\nq=lambda s: c.execute(s).fetchone()[0]\nprint('entities',q('select count(*) from entities'))\nprint('files',q('select count(*) from files'))\nprint('docs entities',q(\\\"select count(*) from entities where qualified_name like 'docs%'\\\"))\nprint('runtime_runs',q('select count(*) from runtime_runs'),'runtime_links',q('select count(*) from runtime_links'),'behavior_contracts',q('select count(*) from behavior_contracts'),'claims',q('select count(*) from claims'),'verification_runs',q('select count(*) from verification_runs'))\n\""
+    },
+    {
+      "seq": 46,
+      "command": "cd \"<path>" && sed -n '1p;4p;6p;11p' state/index-runs/run.project.reviewer.gap.index.1795849384.ndjson | cut -c1-200"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 245115,
+    "output": 30505,
+    "cacheRead": 215808,
+    "cacheWrite": 0,
+    "totalTokens": 491428
+  },
+  "session_id": "0f002c59-e828-491c-b422-b9e83d40e5bd",
+  "session_dir": "<path>",
+  "prompt_sha256": "857cb65cc9cbc956f3b30e8e3a028c206581ce817e4a1d2d5d7da816b38547f0",
+  "score": {
+    "matched": false,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": false,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-2-gap-a\\pi-sessions\\2026-11-28T07-17-33-372Z_0f002c59-e828-491c-b422-b9e83d40e5bd.jsonl",
+      "sha256": "sha256:4e6567646de311759e152d22f3ad1df8783bbaf34a2e3931f91f37d72b04a847",
+      "bytes": 315254
+    }
+  ]
+}

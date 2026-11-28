@@ -444,7 +444,7 @@
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stdout": "{\"capture\": \"<path>", \"estimate\": \"<path>", \"ui\": \"<path>"}\r\n",
-        "stdout_digest": "sha256:be9d41935c32796ff3422ee4b9c3dd56212b230e3ebeae3586fcb4ad0aa7129c",
+        "stdout_digest": "sha256:be9d41935c32796ff<redacted>2ee4b9c3dd56212b230e3ebeae3586fcb4ad0aa7129c",
         "wall_ms": 302
       },
       "verification_id": "verification.a8c4f715007dda808bcef76e40a1d604"

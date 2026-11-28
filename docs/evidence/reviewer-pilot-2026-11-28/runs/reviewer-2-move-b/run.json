@@ -1,0 +1,127 @@
+{
+  "reviewer": "reviewer-2",
+  "model": "omni-responses/deepseek-v4.1-flash",
+  "fixture": "move",
+  "arm": "b",
+  "snapshot_id": "sha256:55120f31b48808a93e5013012b2c0cad07bd442be056e5253a72517685e7d048",
+  "started_at": "2026-11-28T07:11:21Z",
+  "duration_ms": 25608,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "moved_entity": "alpha (src/core/alpha.py::alpha)",
+    "moved_from": "src/core/alpha.py",
+    "moved_to": "src/core/alpha_moved.py",
+    "caller_changed": "false",
+    "citations": [
+      {
+        "path": "src/core/alpha_moved.py",
+        "line": 1
+      },
+      {
+        "path": "src/caller.py",
+        "line": 1
+      },
+      {
+        "path": "src/caller.py",
+        "line": 4
+      }
+    ],
+    "confidence": "high",
+    "notes": "The commit is a 100% similarity rename (content-identical move, same blob digest), so the moved entity is the module's sole symbol `alpha`, now defined at src/core/alpha_moved.py:1 (was src/core/alpha.py:1-2; old path no longer exists on disk). ARCHMELD reports the move with diff_basis 'content_identical_move' and flags the base symbol as context_only with trigger 'file_moved_same_blob', plus an incoming static_call_candidate from src/caller.py::caller and incoming imports from src/caller.py. src/caller.py is byte-identical in both commits (git diff shows only the rename), so the caller did not change and remains stale: it still imports `core.alpha` at src/caller.py:1 and calls `alpha()` at src/caller.py:4, referencing the pre-move module path. The import edge in the index resolves to an external module 'core.alpha' rather than to the new file, which is consistent with that staleness. Import/call relations are syntax candidates, not resolved calls, and no build, test, or runtime command was executed; runtime import failure is not established here — only the static path mismatch."
+  },
+  "calls": [
+    {
+      "seq": 2,
+      "tool": "archmeld_status",
+      "args": {}
+    },
+    {
+      "seq": 4,
+      "tool": "archmeld_brief",
+      "args": {
+        "recipe": "change",
+        "project_id": "project.reviewer.move"
+      }
+    },
+    {
+      "seq": 8,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.move",
+        "kind": "symbols"
+      }
+    },
+    {
+      "seq": 9,
+      "tool": "archmeld_query",
+      "args": {
+        "kind": "neighbors",
+        "project_id": "project.reviewer.move",
+        "entity_ids": [
+          "syn.b39ba27bf4d97fac306d12c7fbd9a5ab3b6b74155f6565c9427aee15aa2ad330",
+          "syn.e5038446d96ada844cff8bf797046f29a622dfaf285da4c0a4f953eae85f6ddb"
+        ],
+        "relation_kinds": [
+          "imports",
+          "references",
+          "contains",
+          "declares"
+        ]
+      }
+    },
+    {
+      "seq": 10,
+      "tool": "archmeld_review",
+      "args": {
+        "base_snapshot_id": "sha256:55120f31b48808a93e5013012b2c0cad07bd442be056e5253a72517685e7d048",
+        "detail": "full"
+      }
+    }
+  ],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd \"<path>" && git log --oneline -3 && echo \"---\" && git show --stat HEAD"
+    },
+    {
+      "seq": 3,
+      "command": "cd \"<path>" && git diff HEAD^ HEAD --stat && echo \"=== FULL DIFF ===\" && git diff HEAD^ HEAD && echo \"=== FILES ===\" && git ls-files && echo \"=== STATUS ===\" && git status --short"
+    },
+    {
+      "seq": 7,
+      "command": "cd \"<path>" && echo \"=== caller.py at HEAD ===\" && git show HEAD:src/caller.py && echo \"=== caller.py at HEAD^ ===\" && git show HEAD^:src/caller.py && echo \"=== DIFF caller across base->working template ===\" && diff <(git show HEAD^:src/caller.py) <(git show HEAD:src/caller.py) && echo \"caller.py IDENTICAL in both commits\""
+    },
+    {
+      "seq": 11,
+      "command": "cd \"<path>" && grep -rn \"alpha\" --include=* -I . --exclude-dir=.git --exclude-dir=.archmeld | cat && echo \"=== .gitignore ===\" && cat -A .gitignore | head -5 && echo \"=== caller line numbers ===\" && cat -n src/caller.py && echo \"=== alpha_moved line numbers ===\" && cat -n src/core/alpha_moved.py && echo \"=== exists old path? ===\" && ls -la src/core/"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 44980,
+    "output": 2238,
+    "cacheRead": 23808,
+    "cacheWrite": 0,
+    "totalTokens": 71026
+  },
+  "session_id": "65cf30e8-01f4-4f75-8bb5-3fcf11cc812d",
+  "session_dir": "<path>",
+  "prompt_sha256": "66d4bf2e730f8344cd292b2232d4695faec34deba76c0f76b28dad92a7581ba7",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-2-move-b\\pi-sessions\\2026-11-28T07-11-22-000Z_65cf30e8-01f4-4f75-8bb5-3fcf11cc812d.jsonl",
+      "sha256": "sha256:633e1ba496186d08d5c5f3ef30aabda09b986740c0c58c8c8cb0400a81698034",
+      "bytes": 68559
+    }
+  ]
+}

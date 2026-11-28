@@ -1,0 +1,2 @@
+{"seq": 1, "command": "cd <path> && git log --oneline -5 && echo \"---\" && git show --stat HEAD"}
+{"seq": 3, "command": "cd <path> && git diff HEAD^ HEAD && echo \"=== files ===\" && ls -R && echo \"=== target.py ===\" && cat -n src/target.py && echo \"=== caller.py ===\" && cat -n src/caller.py"}

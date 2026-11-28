@@ -56,151 +56,157 @@
             "cleanup": [],
             "error": null,
             "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-            "observed": 24,
+            "observed": 25,
             "processes": [
               {
-                "first_seen_ms": 9995,
+                "first_seen_ms": 4799,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 3680
+                "parent_pid": 56116,
+                "pid": 7572
               },
               {
-                "first_seen_ms": 6337,
+                "first_seen_ms": 11147,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 15560
+              },
+              {
+                "first_seen_ms": 12204,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 25660
+              },
+              {
+                "first_seen_ms": 11676,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 26928
+              },
+              {
+                "first_seen_ms": 13791,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 30512
+              },
+              {
+                "first_seen_ms": 8502,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 33712
+              },
+              {
+                "first_seen_ms": 7976,
                 "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 4484
+                "parent_pid": 56116,
+                "pid": 35416
               },
               {
-                "first_seen_ms": 2134,
+                "first_seen_ms": 2680,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 7664
+                "parent_pid": 56116,
+                "pid": 36392
               },
               {
-                "first_seen_ms": 7382,
+                "first_seen_ms": 3205,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 13796
+                "parent_pid": 56116,
+                "pid": 37200
               },
               {
-                "first_seen_ms": 4232,
+                "first_seen_ms": 14851,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 21472
+                "parent_pid": 56116,
+                "pid": 39260
               },
               {
-                "first_seen_ms": 14712,
+                "first_seen_ms": 16970,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 29780
+                "parent_pid": 56116,
+                "pid": 42912
               },
               {
-                "first_seen_ms": 16803,
+                "first_seen_ms": 5331,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 43100
+              },
+              {
+                "first_seen_ms": 7446,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 43608
+              },
+              {
+                "first_seen_ms": 4265,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 44528
+              },
+              {
+                "first_seen_ms": 3735,
                 "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 33040
+                "parent_pid": 56116,
+                "pid": 45300
               },
               {
-                "first_seen_ms": 11042,
+                "first_seen_ms": 10621,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 33156
+                "parent_pid": 56116,
+                "pid": 45508
               },
               {
-                "first_seen_ms": 10519,
+                "first_seen_ms": 1086,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 46672
+              },
+              {
+                "first_seen_ms": 12733,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 47468
+              },
+              {
+                "first_seen_ms": 2145,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 50080
+              },
+              {
+                "first_seen_ms": 6387,
+                "name": "cc1.exe",
+                "parent_pid": 56116,
+                "pid": 50180
+              },
+              {
+                "first_seen_ms": 18559,
                 "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 37812
+                "parent_pid": 56116,
+                "pid": 52868
               },
               {
-                "first_seen_ms": 15235,
+                "first_seen_ms": 14319,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 42244
+                "parent_pid": 56116,
+                "pid": 56140
               },
               {
-                "first_seen_ms": 8948,
+                "first_seen_ms": 16440,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 45076
+                "parent_pid": 56116,
+                "pid": 56172
               },
               {
-                "first_seen_ms": 12091,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 45644
-              },
-              {
-                "first_seen_ms": 4754,
+                "first_seen_ms": 5859,
                 "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 47628
+                "parent_pid": 56116,
+                "pid": 56488
               },
               {
-                "first_seen_ms": 1082,
-                "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 48028
-              },
-              {
-                "first_seen_ms": 5812,
+                "first_seen_ms": 6917,
                 "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 49692
-              },
-              {
-                "first_seen_ms": 9472,
-                "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 49880
-              },
-              {
-                "first_seen_ms": 556,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 49908
-              },
-              {
-                "first_seen_ms": 6857,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 50288
-              },
-              {
-                "first_seen_ms": 5277,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 50532
-              },
-              {
-                "first_seen_ms": 1610,
-                "name": "as.exe",
-                "parent_pid": 52128,
-                "pid": 50592
-              },
-              {
-                "first_seen_ms": 12617,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 53152
-              },
-              {
-                "first_seen_ms": 3708,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 54012
-              },
-              {
-                "first_seen_ms": 13140,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 54496
-              },
-              {
-                "first_seen_ms": 3184,
-                "name": "cc1.exe",
-                "parent_pid": 52128,
-                "pid": 55120
+                "parent_pid": 56116,
+                "pid": 56896
               }
             ],
             "state": "complete",
@@ -212,7 +218,7 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 17175
+          "wall_ms": 18986
         },
         "smoke": {
           "argv": [
@@ -237,7 +243,7 @@
           "stdout": "4\r\n",
           "stdout_digest": "sha256:7c468f5e59f2871b946e051445493bbcace531d597edbbcc9935e7d02d025114",
           "timed_out": false,
-          "wall_ms": 167
+          "wall_ms": 193
         }
       },
       "license": "MIT",
@@ -276,18 +282,55 @@
             "cleanup": [],
             "error": null,
             "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-            "observed": 0,
-            "processes": [],
+            "observed": 6,
+            "processes": [
+              {
+                "first_seen_ms": 4294,
+                "name": "dotnet.exe",
+                "parent_pid": 32400,
+                "pid": 7368
+              },
+              {
+                "first_seen_ms": 4294,
+                "name": "dotnet.exe",
+                "parent_pid": 32400,
+                "pid": 19832
+              },
+              {
+                "first_seen_ms": 4294,
+                "name": "dotnet.exe",
+                "parent_pid": 32400,
+                "pid": 39760
+              },
+              {
+                "first_seen_ms": 4294,
+                "name": "dotnet.exe",
+                "parent_pid": 32400,
+                "pid": 40428
+              },
+              {
+                "first_seen_ms": 4294,
+                "name": "dotnet.exe",
+                "parent_pid": 32400,
+                "pid": 43600
+              },
+              {
+                "first_seen_ms": 4294,
+                "name": "dotnet.exe",
+                "parent_pid": 32400,
+                "pid": 56700
+              }
+            ],
             "state": "complete",
             "survivors": [],
             "tool": "Toolhelp32 CreateToolhelp32Snapshot"
           },
           "stderr": "The command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path> SDKs:\r\n\r\nInstall the [6.0.400] .NET SDK or update [<path> to match an installed SDK.\r\n\r\nLearn about SDK resolution:\r\nhttps://aka.ms/dotnet/sdk-not-found\r\nThe command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path> SDKs:\r\n\r\nInstall the [6.0.400] .NET SDK or update [<path> to match an installed SDK.\r\n\r\nLearn about SDK resolution:\r\nhttps://aka.ms/dotnet/sdk-not-found\r\nThe command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path> SDKs:\r\n\r\nInstall the [6.0.400] .NET SDK or update [<path> to match an installed SDK.\r\n\r\nLearn about SDK resolution:\r\nhttps://aka.ms/dotnet/sdk-not-found\r\nThe command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path> SDKs:\r\n\r\nInstall the [6.0.400] .NET SDK or update [<path> to match an installed SDK.\r\n\r\nLearn about SDK resolution:\r\nhttps://aka.ms/dotnet/sdk-not-found\r\nThe command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path> SDKs:\r\n\r\nInstall the [6.0.400] .NET SDK or update [<path> to match an installed SDK.\r\n\r\nLearn about SDK resolution:\r\nhttps://aka.ms/dotnet/sdk-not-found\r\nThe command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path> SDKs:\r\n\r\nInstall the [6.0.400] .NET SDK or update [<path> to match an installed SDK.\r\n\r\nLearn about SDK resolution:\r\nhttps://aka.ms/dotnet/sdk-not-found\r\nThe command could not be loaded, possibly because:\r\n  * You intended to execute a .NET application:\r\n      The application 'nuget' does not exist.\r\n  * You intended to execute a .NET SDK command:\r\n      A compatible .NET SDK was not found.\r\n\r\nRequested SDK version: 6.0.400\r\nglobal.json file: <path>",
           "stderr_digest": "sha256:21256ebd33b34e6f365ed50a133749bd3b843ccfab82ab13d17bafe77a09655a",
-          "stdout": "<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(24,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(47,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.sourcelink.common\\1.0.0\\build\\Microsoft.SourceLink.Common.targets(52,5): warning : 源代码管理信息不可用 - 生成的源链接为空。 [<path><identity>\\.nuget\\packages\\microsoft.codeanalysis.netanalyzers\\6.0.0\\build\\Microsoft.CodeAnalysis.NetAnalyzers.targets(591,5): warning : The .NET SDK has newer analyzers with version '8.0.0' than what version '6.0.0' of 'Microsoft.CodeAnalysis.NetAnalyzers' package provides. Update or remove this package reference. [<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(24,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(47,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.sourcelink.common\\1.0.0\\build\\Microsoft.SourceLink.Common.targets(52,5): warning : 源代码管理信息不可用 - 生成的源链接为空。 [<path><identity>\\.nuget\\packages\\microsoft.codeanalysis.netanalyzers\\6.0.0\\build\\Microsoft.CodeAnalysis.NetAnalyzers.targets(591,5): warning : The .NET SDK has newer analyzers with version '8.0.0' than what version '6.0.0' of 'Microsoft.CodeAnalysis.NetAnalyzers' package provides. Update or remove this package reference. [<path>    4 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:00.79\r\n",
-          "stdout_digest": "sha256:ceca8149c251e7ca5db388a8061a401d32dd032b9805d8e840238de3c79b0aa0",
+          "stdout": "<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(24,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(47,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.sourcelink.common\\1.0.0\\build\\Microsoft.SourceLink.Common.targets(52,5): warning : 源代码管理信息不可用 - 生成的源链接为空。 [<path><identity>\\.nuget\\packages\\microsoft.codeanalysis.netanalyzers\\6.0.0\\build\\Microsoft.CodeAnalysis.NetAnalyzers.targets(591,5): warning : The .NET SDK has newer analyzers with version '8.0.0' than what version '6.0.0' of 'Microsoft.CodeAnalysis.NetAnalyzers' package provides. Update or remove this package reference. [<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(24,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.build.tasks.git\\1.0.0\\build\\Microsoft.Build.Tasks.Git.targets(47,5): warning : 找不到具有带目录“<path> [<path><identity>\\.nuget\\packages\\microsoft.sourcelink.common\\1.0.0\\build\\Microsoft.SourceLink.Common.targets(52,5): warning : 源代码管理信息不可用 - 生成的源链接为空。 [<path><identity>\\.nuget\\packages\\microsoft.codeanalysis.netanalyzers\\6.0.0\\build\\Microsoft.CodeAnalysis.NetAnalyzers.targets(591,5): warning : The .NET SDK has newer analyzers with version '8.0.0' than what version '6.0.0' of 'Microsoft.CodeAnalysis.NetAnalyzers' package provides. Update or remove this package reference. [<path>    4 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:00.98\r\n",
+          "stdout_digest": "sha256:729a542f71c704244734cc4623d02c7c3f54e9189dc72a8875f1d74b9563803f",
           "timed_out": false,
-          "wall_ms": 6020
+          "wall_ms": 6900
         }
       },
       "license": "MIT",
@@ -334,7 +377,7 @@
           "stdout": "ok  \tnet/http\t(cached) [no tests to run]\n",
           "stdout_digest": "sha256:304716db75ddb80997e7e2700dee5a264eb0083844af51cd4c847dae60003106",
           "timed_out": false,
-          "wall_ms": 4208
+          "wall_ms": 4261
         }
       },
       "license": "BSD-3-Clause",
@@ -383,7 +426,7 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 4475
+          "wall_ms": 4824
         }
       },
       "license": "GPL-2.0-only WITH Classpath-exception-2.0",
@@ -428,7 +471,7 @@
           "stdout": "117\n",
           "stdout_digest": "sha256:a737da4882749cf1706e40662641df964aeb7fb3311242782663c76ad8fb3593",
           "timed_out": false,
-          "wall_ms": 201
+          "wall_ms": 210
         },
         "parsed_scripts": 117
       },
@@ -477,7 +520,7 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 622
+          "wall_ms": 692
         },
         "smoke": {
           "argv": [
@@ -502,7 +545,7 @@
           "stdout": "asyncio\r\n",
           "stdout_digest": "sha256:c7a716e5f2256be3e41f9c07c61202de82232d4c9afbb09936e5d24595a91e50",
           "timed_out": false,
-          "wall_ms": 250
+          "wall_ms": 261
         }
       },
       "license": "PSF-2.0",
@@ -541,355 +584,325 @@
             "cleanup": [],
             "error": null,
             "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-            "observed": 56,
+            "observed": 51,
             "processes": [
               {
-                "first_seen_ms": 8963,
+                "first_seen_ms": 10129,
                 "name": "collect2.exe",
-                "parent_pid": 30112,
-                "pid": 7084
+                "parent_pid": 56596,
+                "pid": 2468
               },
               {
-                "first_seen_ms": 11584,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 7544
+                "parent_pid": 28092,
+                "pid": 7564
               },
               {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 8952
+                "parent_pid": 28092,
+                "pid": 13604
               },
               {
-                "first_seen_ms": 6342,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 9120
-              },
-              {
-                "first_seen_ms": 8963,
+                "first_seen_ms": 10129,
                 "name": "ld.exe",
-                "parent_pid": 7084,
-                "pid": 10220
+                "parent_pid": 2468,
+                "pid": 13764
               },
               {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 4305,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 12976
+                "parent_pid": 28092,
+                "pid": 14856
               },
               {
-                "first_seen_ms": 3201,
-                "name": "build-script-build.exe",
-                "parent_pid": 36916,
-                "pid": 26368
+                "first_seen_ms": 4833,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 16044
               },
               {
-                "first_seen_ms": 1626,
+                "first_seen_ms": 1115,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 17692
+              },
+              {
+                "first_seen_ms": 1115,
                 "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 44764,
-                "pid": 26920
+                "parent_pid": 35936,
+                "pid": 18604
               },
               {
-                "first_seen_ms": 1096,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 38228,
-                "pid": 27452
+                "first_seen_ms": 1653,
+                "name": "collect2.exe",
+                "parent_pid": 32992,
+                "pid": 23736
               },
               {
-                "first_seen_ms": 8963,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 50348,
-                "pid": 30112
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "ld.exe",
-                "parent_pid": 47820,
-                "pid": 33200
-              },
-              {
-                "first_seen_ms": 2674,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 39592,
-                "pid": 34164
+                "parent_pid": 28092,
+                "pid": 25792
               },
               {
-                "first_seen_ms": 1096,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 36364
-              },
-              {
-                "first_seen_ms": 2150,
-                "name": "rustc.exe",
-                "parent_pid": 49860,
-                "pid": 36392
-              },
-              {
-                "first_seen_ms": 560,
+                "first_seen_ms": 564,
                 "name": "cargo.exe",
-                "parent_pid": 50584,
-                "pid": 36916
+                "parent_pid": 1376,
+                "pid": 28092
               },
               {
-                "first_seen_ms": 2674,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 38056
+                "parent_pid": 28092,
+                "pid": 28656
               },
               {
-                "first_seen_ms": 1096,
-                "name": "collect2.exe",
-                "parent_pid": 52244,
-                "pid": 38084
-              },
-              {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 38228
+                "parent_pid": 28092,
+                "pid": 29060
               },
               {
-                "first_seen_ms": 1096,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 43636,
-                "pid": 39316
-              },
-              {
-                "first_seen_ms": 3201,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 39452
-              },
-              {
-                "first_seen_ms": 2674,
+                "first_seen_ms": 3244,
                 "name": "build-script-build.exe",
-                "parent_pid": 36916,
-                "pid": 39592
+                "parent_pid": 28092,
+                "pid": 29180
               },
               {
-                "first_seen_ms": 1096,
-                "name": "collect2.exe",
-                "parent_pid": 39316,
-                "pid": 40368
-              },
-              {
-                "first_seen_ms": 3201,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 41148
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "ld.exe",
-                "parent_pid": 40368,
-                "pid": 41580
-              },
-              {
-                "first_seen_ms": 2674,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 42524
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 42576
-              },
-              {
-                "first_seen_ms": 9486,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 42928
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 43636
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 49732,
-                "pid": 44024
-              },
-              {
-                "first_seen_ms": 11061,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 49396,
-                "pid": 44060
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "collect2.exe",
-                "parent_pid": 52964,
-                "pid": 44240
-              },
-              {
-                "first_seen_ms": 11061,
-                "name": "collect2.exe",
-                "parent_pid": 44060,
-                "pid": 44272
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 44764
-              },
-              {
-                "first_seen_ms": 1626,
-                "name": "ld.exe",
-                "parent_pid": 53824,
-                "pid": 45236
-              },
-              {
-                "first_seen_ms": 560,
-                "name": "conhost.exe",
-                "parent_pid": 51816,
-                "pid": 45596
-              },
-              {
-                "first_seen_ms": 2674,
+                "first_seen_ms": 2716,
                 "name": "build-script-build.exe",
-                "parent_pid": 36916,
-                "pid": 45724
+                "parent_pid": 28092,
+                "pid": 30124
               },
               {
-                "first_seen_ms": 3201,
+                "first_seen_ms": 3244,
                 "name": "rustc.exe",
-                "parent_pid": 26368,
-                "pid": 46224
+                "parent_pid": 28092,
+                "pid": 32280
               },
               {
-                "first_seen_ms": 4246,
+                "first_seen_ms": 2716,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 46432
+                "parent_pid": 5<redacted>8,
+                "pid": 32940
               },
               {
-                "first_seen_ms": 11061,
-                "name": "ld.exe",
-                "parent_pid": 44272,
-                "pid": 46580
-              },
-              {
-                "first_seen_ms": 6342,
-                "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 46680
-              },
-              {
-                "first_seen_ms": 3201,
-                "name": "rustc.exe",
-                "parent_pid": 46224,
-                "pid": 47260
-              },
-              {
-                "first_seen_ms": 1096,
-                "name": "collect2.exe",
-                "parent_pid": 49116,
-                "pid": 47820
-              },
-              {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 1653,
                 "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 12976,
-                "pid": 49116
+                "parent_pid": 46260,
+                "pid": 32992
               },
               {
-                "first_seen_ms": 7917,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 49396
+                "parent_pid": 28092,
+                "pid": 33512
               },
               {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 49732
+                "parent_pid": 28092,
+                "pid": 35936
               },
               {
-                "first_seen_ms": 2150,
+                "first_seen_ms": 13303,
+                "name": "ld.exe",
+                "parent_pid": 53660,
+                "pid": 36588
+              },
+              {
+                "first_seen_ms": 13303,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 55476,
+                "pid": 36824
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "ld.exe",
+                "parent_pid": 47520,
+                "pid": 37360
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 38156
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 13604,
+                "pid": 38216
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "collect2.exe",
+                "parent_pid": 42768,
+                "pid": 38512
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 40276
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 25792,
+                "pid": 42768
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 33512,
+                "pid": 44016
+              },
+              {
+                "first_seen_ms": 7483,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 44296
+              },
+              {
+                "first_seen_ms": 2188,
                 "name": "build-script-build.exe",
-                "parent_pid": 36916,
-                "pid": 49860
+                "parent_pid": 28092,
+                "pid": 45144
               },
               {
-                "first_seen_ms": 7917,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 50348
+                "parent_pid": 28092,
+                "pid": 45416
               },
               {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 1115,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 50420
+                "parent_pid": 28092,
+                "pid": 46260
               },
               {
-                "first_seen_ms": 2674,
+                "first_seen_ms": 1115,
+                "name": "collect2.exe",
+                "parent_pid": 38216,
+                "pid": 47520
+              },
+              {
+                "first_seen_ms": 3244,
                 "name": "rustc.exe",
-                "parent_pid": 45724,
-                "pid": 51540
+                "parent_pid": 29180,
+                "pid": 48152
               },
               {
-                "first_seen_ms": 4246,
+                "first_seen_ms": 13831,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 51636
+                "parent_pid": 28092,
+                "pid": 49060
               },
               {
-                "first_seen_ms": 560,
+                "first_seen_ms": 3244,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 50020
+              },
+              {
+                "first_seen_ms": 2716,
+                "name": "rustc.exe",
+                "parent_pid": 30124,
+                "pid": 50280
+              },
+              {
+                "first_seen_ms": 564,
                 "name": "git.exe",
-                "parent_pid": 36916,
-                "pid": 51816
+                "parent_pid": 28092,
+                "pid": 50288
               },
               {
-                "first_seen_ms": 1096,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 42576,
-                "pid": 52244
-              },
-              {
-                "first_seen_ms": 1096,
+                "first_seen_ms": 3244,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 52296
+                "parent_pid": 28092,
+                "pid": 52700
               },
               {
-                "first_seen_ms": 1096,
-                "name": "x86_64-w64-mingw32-gcc.exe",
-                "parent_pid": 50420,
-                "pid": 52964
-              },
-              {
-                "first_seen_ms": 12630,
+                "first_seen_ms": 9076,
                 "name": "rustc.exe",
-                "parent_pid": 36916,
-                "pid": 52992
+                "parent_pid": 28092,
+                "pid": 52872
               },
               {
-                "first_seen_ms": 1626,
+                "first_seen_ms": 2716,
+                "name": "build-script-build.exe",
+                "parent_pid": 28092,
+                "pid": 5<redacted>8
+              },
+              {
+                "first_seen_ms": 13303,
                 "name": "collect2.exe",
-                "parent_pid": 26920,
-                "pid": 53824
+                "parent_pid": 36824,
+                "pid": 53660
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 54100
+              },
+              {
+                "first_seen_ms": 7483,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 54788
+              },
+              {
+                "first_seen_ms": 14883,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 55232
+              },
+              {
+                "first_seen_ms": 1653,
+                "name": "ld.exe",
+                "parent_pid": 23736,
+                "pid": 55464
+              },
+              {
+                "first_seen_ms": 9076,
+                "name": "rustc.exe",
+                "parent_pid": 28092,
+                "pid": 55476
+              },
+              {
+                "first_seen_ms": 10129,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 52872,
+                "pid": 56596
+              },
+              {
+                "first_seen_ms": 3244,
+                "name": "rustc.exe",
+                "parent_pid": 48152,
+                "pid": 56972
+              },
+              {
+                "first_seen_ms": 1115,
+                "name": "x86_64-w64-mingw32-gcc.exe",
+                "parent_pid": 45416,
+                "pid": 57332
               }
             ],
             "state": "complete",
             "survivors": [],
             "tool": "Toolhelp32 CreateToolhelp32Snapshot"
           },
-          "stderr": "   Compiling proc-macro2 v1.0.106\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.45\n   Compiling serde_core v1.0.228\n   Compiling getrandom v0.4.2\n   Compiling zmij v1.0.21\n   Compiling serde_json v1.0.149\n   Compiling serde v1.0.228\n   Compiling thiserror v1.0.69\n    Checking cfg-if v1.0.4\n   Compiling codegraph v0.2.0 (<path>    Checking itoa v1.0.18\n    Checking memchr v2.8.0\n    Checking log v0.4.29\n   Compiling syn v2.0.117\n    Checking uuid v1.23.0\n   Compiling thiserror-impl v1.0.69\n   Compiling serde_derive v1.0.228\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.87s\n",
-          "stderr_digest": "sha256:7b2f19398b4ac8da780b537c6eb1e6e61fc211116c35343a2f8dfabddda6c998",
+          "stderr": "   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.45\n   Compiling unicode-ident v1.0.24\n   Compiling serde_core v1.0.228\n   Compiling zmij v1.0.21\n   Compiling getrandom v0.4.2\n   Compiling serde_json v1.0.149\n   Compiling thiserror v1.0.69\n    Checking cfg-if v1.0.4\n   Compiling serde v1.0.228\n    Checking memchr v2.8.0\n   Compiling codegraph v0.2.0 (<path>    Checking itoa v1.0.18\n    Checking log v0.4.29\n   Compiling syn v2.0.117\n    Checking uuid v1.23.0\n   Compiling serde_derive v1.0.228\n   Compiling thiserror-impl v1.0.69\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.05s\n",
+          "stderr_digest": "sha256:739de4e9925c42c13b5d02b34510a2176d41ddf3e7cd862e65abc5105169e6f2",
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 13993
+          "wall_ms": 16217
         }
       },
       "license": "Apache-2.0",
@@ -912,7 +925,7 @@
     "arch": "x86_64",
     "os": "windows"
   },
-  "product_head": "7474343d",
-  "recorded_at_unix": 1795778175,
+  "product_head": "392d0ce4",
+  "recorded_at_unix": 1795869497,
   "schema_version": "1.0"
 }

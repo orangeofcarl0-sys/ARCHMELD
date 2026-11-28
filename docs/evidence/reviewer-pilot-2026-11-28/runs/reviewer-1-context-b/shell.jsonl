@@ -1,0 +1,3 @@
+{"seq": 1, "command": "cd <path> && git log --oneline -5 && echo \"---HEAD---\" && git show HEAD --stat"}
+{"seq": 3, "command": "cd <path> && git diff HEAD^ HEAD && echo \"===FILES===\" && ls -la && echo \"===TREE===\" && find . -type f -not -path './.git/*'"}
+{"seq": 10, "command": "cd <path> && echo \"--- target.py (HEAD) ---\" && nl -ba src/target.py && echo \"--- caller.py ---\" && nl -ba src/caller.py && echo \"--- base target.py ---\" && git show HEAD^:src/target.py | nl -ba"}

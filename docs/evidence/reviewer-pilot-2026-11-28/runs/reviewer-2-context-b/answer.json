@@ -1,0 +1,26 @@
+{
+  "changed_owner": "target",
+  "changed_path": "src/target.py",
+  "unchanged_context_entity": "src/caller.py",
+  "incoming_resolution": "candidate",
+  "citations": [
+    {
+      "path": "src/target.py",
+      "line": 2
+    },
+    {
+      "path": "src/caller.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 3
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    }
+  ],
+  "confidence": "medium",
+  "notes": "Changed owner is the symbol with qualified name src/target.py::target; its anchor spans src/target.py:1-2 and the only changed line is line 2 (base `return 1` -> workspace `return 2`), per git diff HEAD^ HEAD and the review finding F1 (entity syn.6bf79d84...). Unchanged context is src/caller.py (brief 'unchanged_context', relation rel.404eb296..., imports, declared); it is not a second change - the review reports files.changed=1 and only src/target.py in the files array. The only incoming edges recorded in the base snapshot toward src/target.py::target are rel.404eb296 (imports from src/caller.py, resolution=declared, producer_resolution=cross_file_resolution) and rel.ca708716 (contains from src/target.py, resolution=declared). No resolved_call relation exists: an archmeld_query(neighbors, relation_kinds=[resolved_call, static_call_candidate, observed_call, references]) on that entity returned 0 relations, and the export evidence limitations state 'call/reference edges are syntax candidates, not resolved semantics' and that declared 'is not a call tier'. The call at src/caller.py:4 (`return target()`) is therefore a candidate hypothesis at source-shape level, not an established resolved call; the incoming relation's own resolution is declared structural import evidence. No build, test or runtime command was executed (verification: not_run), so runtime effect of the changed return value is unavailable."
+}

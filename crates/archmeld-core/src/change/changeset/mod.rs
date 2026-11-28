@@ -384,17 +384,13 @@ pub fn create_changeset(store: &mut Store, raw: &Value) -> Result<Value> {
     )?;
     let result = serde_json::to_string(&payload)
         .map_err(|err| CoreError::Storage(format!("changeset encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'createChangeSet',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "createChangeSet",
+        &request.idempotency_key,
+        &digest,
+        200,
+        &result,
     )?;
     Ok(payload)
 }
@@ -534,17 +530,13 @@ pub fn prepare_changeset(store: &mut Store, raw: &Value) -> Result<Value> {
     )?;
     let result = serde_json::to_string(&final_payload)
         .map_err(|err| CoreError::Storage(format!("changeset encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'prepareChangeSet',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &request_digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "prepareChangeSet",
+        &request.idempotency_key,
+        &request_digest,
+        200,
+        &result,
     )?;
     Ok(final_payload)
 }
@@ -688,17 +680,13 @@ pub fn approve_prepared_change(store: &mut Store, raw: &Value) -> Result<Value> 
     });
     let result_json = serde_json::to_string(&result)
         .map_err(|err| CoreError::Storage(format!("approval encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'approvePreparedChange',?2,?3,200,?4,?5)",
-        (
-            &request.project_id,
-            &request.idempotency_key,
-            &idempotency_digest,
-            &result_json,
-            now,
-        ),
+    store.idempotency_put_raw(
+        &request.project_id,
+        "approvePreparedChange",
+        &request.idempotency_key,
+        &idempotency_digest,
+        200,
+        &result_json,
     )?;
     Ok(result)
 }
@@ -794,16 +782,10 @@ pub fn get_changeset(store: &Store, project_id: &str, changeset_id: &str) -> Res
 
 pub fn list_changesets(store: &Store, project_id: &str, state: Option<&str>) -> Result<Vec<Value>> {
     validate::require_id("project_id", project_id)?;
-    let mut statement = store.conn.prepare(
-        "SELECT changeset_id, MAX(revision) FROM changesets
-         WHERE project_id=?1 GROUP BY changeset_id ORDER BY changeset_id",
-    )?;
-    let rows = statement.query_map((project_id,), |row| {
-        Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
-    })?;
+    let rows = store.latest_revision_ids(project_id, crate::store::RevisionTable::Changesets)?;
     let mut summaries = Vec::new();
     for row in rows {
-        let (changeset_id, _) = row?;
+        let (changeset_id, _) = row;
         let changeset = get_changeset(store, project_id, &changeset_id)?;
         let effective = changeset["effective_state"].as_str().unwrap_or("");
         if let Some(filter) = state {
@@ -1028,31 +1010,20 @@ fn snapshot_files(
     project_id: &str,
     snapshot_id: &str,
 ) -> Result<BTreeMap<String, BaseFile>> {
-    let mut statement = store.conn.prepare(
-        "SELECT path, blob_digest, size_bytes, executable FROM files
-         WHERE project_id=?1 AND snapshot_id=?2 ORDER BY path",
-    )?;
-    let rows = statement.query_map((project_id, snapshot_id), |row| {
-        Ok((
-            row.get::<_, String>(0)?,
-            row.get::<_, String>(1)?,
-            row.get::<_, i64>(2)?,
-            row.get::<_, i64>(3)?,
-        ))
-    })?;
-    let mut files = BTreeMap::new();
-    for row in rows {
-        let (path, digest, size, executable) = row?;
-        files.insert(
-            path,
-            BaseFile {
-                digest,
-                size: size.max(0) as u64,
-                executable: executable == 1,
-            },
-        );
-    }
-    Ok(files)
+    Ok(store
+        .snapshot_file_metadata(project_id, snapshot_id)?
+        .into_iter()
+        .map(|(path, meta)| {
+            (
+                path,
+                BaseFile {
+                    digest: meta.blob_digest,
+                    size: meta.size_bytes,
+                    executable: meta.executable,
+                },
+            )
+        })
+        .collect())
 }
 
 pub fn in_scope(path: &str, allowed_paths: &[String]) -> bool {

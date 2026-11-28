@@ -1,0 +1,125 @@
+{
+  "reviewer": "reviewer-1",
+  "model": "deepseek/deepseek-v4-pro",
+  "fixture": "context",
+  "arm": "b",
+  "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+  "started_at": "2026-11-28T07:11:59Z",
+  "duration_ms": 70220,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "changed_owner": "src/target.py::target",
+    "changed_path": "src/target.py",
+    "unchanged_context_entity": "src/caller.py::caller",
+    "incoming_resolution": "candidate",
+    "citations": [
+      {
+        "path": "src/target.py",
+        "line": 2
+      },
+      {
+        "path": "src/caller.py",
+        "line": 4
+      },
+      {
+        "path": "src/caller.py",
+        "line": 1
+      }
+    ],
+    "confidence": "high",
+    "notes": "The last commit changes only src/target.py line 2 (return 1 -> return 2), owned by symbol src/target.py::target. The unchanged caller is src/caller.py::caller, whose body at src/caller.py:4 calls target(); it is context, not a second change. The call is indexed as relation rel.4a892f85... kind=static_call_candidate with resolution 'candidate' and condition 'syntax-only; not a resolved call', and it targets the external module entity 'target' (ext.6b5b66...). The name is only bound to the changed symbol via the import relation rel.404eb2... (kind=imports, resolution=declared, producer_resolution=cross_file_resolution) from src/caller.py line 1. Therefore the incoming relation is a candidate hypothesis, not a resolved call; no resolved_call edge exists in the snapshot."
+  },
+  "calls": [
+    {
+      "seq": 2,
+      "tool": "archmeld_status",
+      "args": {}
+    },
+    {
+      "seq": 4,
+      "tool": "archmeld_brief",
+      "args": {
+        "recipe": "change",
+        "project_id": "project.reviewer.context"
+      }
+    },
+    {
+      "seq": 7,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.context",
+        "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+        "entity_ids": [
+          "syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"
+        ],
+        "kind": "impact",
+        "max_depth": 2
+      }
+    },
+    {
+      "seq": 8,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.context",
+        "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+        "kind": "neighbors",
+        "entity_ids": [
+          "syn.6c013732b297f8040f2c3d0c24c10b9b6d04bf1be192799a6aca975cca785c7a"
+        ],
+        "max_depth": 2
+      }
+    },
+    {
+      "seq": 9,
+      "tool": "archmeld_query",
+      "args": {
+        "project_id": "project.reviewer.context",
+        "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+        "kind": "symbols",
+        "query": ""
+      }
+    }
+  ],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd <path> && git log --oneline -5 && echo \"---HEAD---\" && git show HEAD --stat"
+    },
+    {
+      "seq": 3,
+      "command": "cd <path> && git diff HEAD^ HEAD && echo \"===FILES===\" && ls -la && echo \"===TREE===\" && find . -type f -not -path './.git/*'"
+    },
+    {
+      "seq": 10,
+      "command": "cd <path> && echo \"--- target.py (HEAD) ---\" && nl -ba src/target.py && echo \"--- caller.py ---\" && nl -ba src/caller.py && echo \"--- base target.py ---\" && git show HEAD^:src/target.py | nl -ba"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 13651,
+    "output": 6376,
+    "cacheRead": 65664,
+    "cacheWrite": 0,
+    "totalTokens": 85691
+  },
+  "session_id": "87b4cc94-bdd0-40d2-a18d-347dc1061e08",
+  "session_dir": "<path>",
+  "prompt_sha256": "4649272fcc1d61358d47efe50bed8b609a653414a7bb781c55c9081e36315d4f",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-1-context-b\\pi-sessions\\2026-11-28T07-12-00-107Z_87b4cc94-bdd0-40d2-a18d-347dc1061e08.jsonl",
+      "sha256": "sha256:511af2bb6be60666b5285cdb4b51a23f0a0ab9ac100cba0e7ff9477aeacf7e98",
+      "bytes": 85979
+    }
+  ]
+}

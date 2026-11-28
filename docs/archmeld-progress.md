@@ -67,10 +67,10 @@
   - B026 规模、可取消与预算：**本切片通过 AT058**。新增 `crates/archmeld-core/tests/benchmark.rs` 与 `benchmarks/ui-latency.js`：T0 为 5 文件确定性 fixture（冷捕获 p95 100 ms）；T1 为固定真实 CodeGraph 导出（335 节点/972 边）导入 `archmeld-core` 源码副本（ledger 310 实体/972 关系，导入 879 ms；symbol 查询 p95 18.9 ms、source read p95 0.66 ms、drift/stale p95 177 ms）；T2 为确定性合成 100,000 实体/99,500 关系（导入 98 s，SQLite 542 MB，工作集约 22 MB，symbol p95 449 ms、text p95 382 ms；仅资源测量，不声称业务正确性）。取消在真实子进程树上实测 0.57 s 返回、survivors 为空；原生 Toolhelp32 进程审计替代 PowerShell 查询，保留 kill 前后 survivor 检查。UI 为同一 model/renderer 的 500 节点/1000 边 HTML 生成 p95 约 5 ms，明确不等于 VS Code host/paint。资源守卫实测 max_nodes=2001、max_depth=9、source max_bytes=0、501 实体批次、4 MiB stdout 截断。所有原始样本、p50/p95/max、环境 digest、数据库大小与限制先写入 `benchmarks/results/B026-latest.json` 和 `docs/evidence/B026-benchmark.json`，再断言预算，失败不删除问题数据。证据 `docs/evidence/B026-benchmark.json`；说明 `benchmarks/README.md`、ADR-031。T3 百万事件与增量风暴已实测（S16 允许合成压力数据用于资源预算）：`t3_stress` 生成 100,000 spans + 900,000 counter samples（共 1,000,000 events，trace 81.7 MB），导入 65.9 s、SQLite 169.1 MB、artifact 81.7 MB，均低于 300 s/2 GB/200 MB 预算；timeline 保持有界（limit=2 时 counters 2 个且 metrics_truncated=true），`runtime_summary` 不展开时间线即可返回计数。增量风暴 200 批 × 100 实体 = 20,000 实体，24.2 s，低于 180 s 预算，integrity ok。原始 trace 在导入前落盘（失败保留）；证据 `docs/release-evidence/B026-t3.json`、`docs/release-evidence/B026-t3-storm.json`，测试 `t3_stress` 2 项，核心+API 全量 133 passed / 0 failed / 0 ignored（59 个结果段），命令 `#b026-t3-trace`、`#b026-t3-storm`、`#b026-full-regression`。VS Code host/paint 级实测已完成：真实扩展宿主（`code --extensionDevelopmentPath --extensionTestsPath --remote-debugging-port`）连续 3 次运行，`archmeld.openGraph` 命令返回 67/76/89 ms（min/median/max），`ARCHMELD Graph` 面板可见 269/279/305 ms；3 张 CDP 截图均在面板打开后捕获，检查确认文件/职责/运行三视图、两个节点、candidate 虚线边、历史快照提示与 coverage 状态可见。首轮登录/自定义引导弹层截图被丢弃，不计入样本；harness 增加引导关闭（Escape/本地化标签/close）与 `--skip-welcome --skip-release-notes`。证据 `docs/release-evidence/B026-ui-host.json`，命令 `#b026-ui-host-1`、`#b026-ui-host-2`、`#b026-ui-host-3`。范围：host 命令与面板就绪时延 + 渲染截图；capture-target 指标是 page 级，不是专门 webview paint trace。内存硬上限已实现并实测：`archmeld trace-import --memory-limit-mb <MB>` 在读 trace 前施加 OS 级上限（Windows job object 的 Process/Job memory limit；Linux/macOS `RLIMIT_AS`；其他平台显式拒绝），结果记录 `memory_limit_mb`；新增 `--format normalized` 直接导入 `archmeld-trace-v1`。远程 WSL2（24 核/24 GB，systemd 255，cgroup v2）真实运行：1,000,000 events（81,728,764 B）在 `MemoryMax=4G` + `MemorySwapMax=0` + `RLIMIT_AS=4096 MB` 下 5.66 s 成功，`memory.peak=1,869,725,696 B`，OOM 事件为 0；同一 trace 在 `RLIMIT_AS=1024 MB` 下 exit 134（allocation failed），cgroup peak 1,054,494,720 B，无 `runtime_runs` 行，SQLite integrity ok。本地 Windows CLI 测试覆盖 1 MB 上限失败与 normalized 导入。证据 `docs/release-evidence/B026-memory-ceiling.json`、ADR-041，命令 `#b026-linux-build`、`#b026-remote-trace-gen`、`#b026-remote-t3-success`、`#b026-remote-t3-low`、`#b026-trace-cli-tests`。专门 webview paint/帧时延已实测（ADR-042）：graph webview 内建 nonce 探针脚本，通过 VS Code 消息通道上报自身 paint 时间线、LCP、render 完成与显式探针；`ARCHMELD_PAINT_PROBE=1` 时才注册 `archmeld.diagnostics.paintReport`/`paintProbe`。扩展宿主 harness 用 CDP 连接到 `vscode-webview://` iframe target，穿过同源嵌套帧读取同一文档的 paint 时间线与双 rAF 间隔，并在仅 webview 文档失效时对工作台页面做 screencast 记录合成器帧。真实 3 次运行：webview FCP 400/512/512 ms（min/median/max），双 rAF 5.5/5.6/5.6 ms，9 次探针往返 8.7-13.4 ms，触发到首个合成器帧 18.3/21.7/22.0 ms（3-7 帧），`archmeld.openGraph` 132-154 ms、面板就绪 337-362 ms；预算（FCP 5000 ms、探针 2000 ms、rAF 1000 ms、首帧 500 ms）全部通过。原始结果先落盘再断言，失败保留。证据 `docs/release-evidence/B026-ui-webview-paint.json`、`docs/evidence/ui-result-b026-paint-1.json`、`docs/evidence/ui-result-b026-paint-2.json`、`docs/evidence/ui-result-b026-paint-3.json`、截图 `docs/evidence/b026-workbench-paint-1.png`、`docs/evidence/b026-workbench-paint-2.png`、`docs/evidence/b026-workbench-paint-3.png`、命令 `#b026-ui-paint-1`、`#b026-ui-paint-2`、`#b026-ui-paint-3`。范围：webview 文档 paint + BeginFrame/合成器帧呈现时延；GPU 执行/着色器耗时与扫描输出未测量，screencast 间隔含采集编码节流因此只记录不设门禁；fixture 为 2 节点/1 边，不构成规模基准。
   - B027 离线报告与模式提升：**本切片通过 AT059/AT060**。新增 `report` exporter：显式指定单一 snapshot，生成 `report.html`/`report.json`/`model.json`/`evidence/index.json` 与含逐文件 sha256、大小、media_type 和 `bundle_digest` 的 `manifest.json`；源字节与原始 Trace 默认排除（`include_source`/`include_raw_traces` 在 R1 返回 unsupported），无 `<script>`、无 CDN/外链，图/关系超限写显式 omissions，claims/未知问题/失败检查/证据索引/coverage/limitations 均在报告中。导出先写 sibling 临时目录、逐文件回读哈希、再 rename；目标已存在拒绝覆盖。真实测试：4 个附件校验通过，篡改 HTML 被 `verify_bundle` 检出；Chrome headless 在 `MAP * ~NOTFOUND` 下打开 `file://<path> 报告并渲染出标题；源码 marker 与绝对工作路径未出现在 HTML/JSON；HTTP `/v1/reports` 200 且输出固定在 `state/exports/`，`../escape` 400、include_source 422。promotion：先校验 SQLite integrity 与全部引用 CAS 对象（本次 9 个，含 prepared ChangeSet artifact），再事务内标记 source session promoted、切换 manager、创建 manager session，并在同一事务比较对象计数；claim/architecture/contract/approved plan/snapshot 全部保真，`records_rewritten=0`、`model_calls=0`。删除 snapshot manifest 对象后 promotion 被 `object_validation_failed` 拒绝，项目仍为 expedition/open，claim 与 snapshot 记录仍可读。证据 `docs/evidence/B027-report-promotion.json`，测试 `offline_report.rs`、`report_http.rs`；ADR-032 + `contracts/archmeld/openapi-b027-report.patch.json` 记录偏差。可选源/原始 Trace 导出、无脚本离线交互 viewer 与跨 ledger 迁移已实现（ADR-052）：`include_source`/`include_raw_traces` 从 CAS 复制快照源码与 `runtime_native`/normalized trace，预算 64MiB/256MiB，manifest 记录 `source_state`/`raw_trace_state`（excluded/none/included/partial）、逐文件 kind/source_path/owners 与 `risk_level=high` 风险标签，`secrets_included` 明确为“未运行 secret scanner”，HTML 只列路径/摘要不嵌入字节；报告内联 SVG viewer（≤240 节点/≤480 边）用锚点链接和 CSS `:target` 交互，无脚本、无 CDN、无 `http(s)://`；`archmeld ledger-migrate` 把完整 ledger 复制到必须不存在的新目录，源库只读 + `VACUUM INTO`，校验 integrity/FK/schema/全表行数、逐对象重哈希与 artifacts 引用，写 `migration.json` 收据，已有目标/重叠路径/空 reason 拒绝，失败删除部分目标，合并到已有 ledger 明确不支持。真实测试：源码字节与 trace 字节随包且校验、篡改检测、viewer 无脚本断言、迁移后 Store 重开可查询、篡改 CAS 失败且无残留；证据 `docs/release-evidence/B027-opt-in-export.json`、`B027-ledger-migration.json`，ADR-052，测试 `offline_report.rs`、`ledger_migration.rs`、`report_http.rs`、`trace_import_cli.rs`；VS Code 新增 `ARCHMELD: Export Offline Report`（安全 output name、双 opt-in、敏感确认，`archmeld.exportReport`），extension 单元 32 passed。
   - B028 统一安全与红队验证：**本切片通过 AT061/AT062/AT063**。HTTP 加 Host/Origin 门禁：仅 127.0.0.1/localhost/[::1] Host，任何 Origin 直接 403；token 只从 Authorization 读取，URL token 不生效，stderr/URL 不含 token，服务仅绑定 127.0.0.1。真实原始 HTTP 测试覆盖 foreign Host/Origin、URL token、错误 bearer（均 403）、正确 bearer（正常 404）、health 回环 200。Webview CSP：graph 回退脚本改用 per-render nonce，不再 `script-src 'unsafe-inline'`；architecture review/changeset 面板 `default-src 'none'` 无远端资源，恶意 `<script>`/URL 文本被转义（node test + `benchmarks/security-csp.js`）。MCP 红队：伪造 README/源码要求外传凭据并创建 sentinel；真实 MCP 进程把上下文/source 标为 `trust:untrusted` + no-execute/no-network/no-write，run/change 工具均 permission_denied；本地监听端口 400ms 内无连接、sentinel 不存在、源码哈希不变。外部写透明性：project 增加 `workspace_security.externally_writable=true/isolation=none/not_a_sandbox=true`；批准 prepared 后外部改写 `src/a.py`，apply 被 stale 拒绝且保留外部字节，drift 列出 changed 与 stale plan/change。威胁模型 `docs/security/THREAT_MODEL_B028.md`，ADR-033 + `contracts/archmeld/openapi-b028-security.patch.json`。证据 `docs/evidence/B028-security.json`、`docs/evidence/B028-security-csp.json`，测试 `security_http.rs`、`security_mcp.rs`、`security_external_write.rs`。Unix socket 与 token ACL 已实现（ADR-047）：`archmeld-serve --unix-socket <path>` 使用同一 axum router + tokio UnixListener，bind 后立即 chmod 0600 并回读校验，已有路径拒绝替换；announcement 返回 `endpoint:null`/`socket_mode:"0600"`，bearer 中间件不变（无 token/错 token 403）。远程 WSL2 真实运行：socket mode 0600，无 token/错 token 403，正确 token 到达 handler，stale socket exit 1；Windows 显式 exit 2 拒绝（不回退 TCP）。证据 `docs/release-evidence/B028-unix-socket.json`、ADR-047，测试 `unix_socket.rs`，命令 `#b028-unix-socket-linux-build`、`#b028-unix-socket-windows-test`、`#b028-unix-socket-remote`；核心+API 全量 152 passed / 0 failed / 0 ignored（64 个结果段），命令 `#b028-socket-full-regression`。Windows named pipe 已实现（ADR-048）：`archmeld-serve --named-pipe \.\pipe\<name>` 使用 tokio named pipe 并实现 axum `Listener`，每个连接后创建下一实例；名称必须以 `\.\pipe\` 开头，否则 exit 2；announcement 记录 `endpoint:null`/pipe 名/默认 DACL 范围。真实 Windows 测试：无 token 与错 token 403、正确 token 到达 handler、非法名称 exit 2。证据 `docs/release-evidence/B028-named-pipe.json`、ADR-048，测试 `named_pipe.rs` 2 项，命令 `#b028-named-pipe-tests`；核心+API 全量 154 passed / 0 failed / 0 ignored（65 个结果段），命令 `#b028-pipe-full-regression`。OS/容器级隔离已为验证 check 实现（ADR-050，见 B022 段）；scenario 执行的容器/快照拷贝隔离已实现（ADR-051）：`ScenarioSpec.sandbox` 支持 `workspace`/`workspace_copy`/`container`，复用 `sandbox.rs` 从 CAS 物化快照；container 使用本地 digest-pinned 镜像、`--network none`、`--read-only`、64MiB `/tmp`、`no-new-privileges`、`--pull never`，超时/取消后 `docker rm -f` 并记录 `removed`；目标环境值以 `-e` 传入但在 manifest 的 `exec_argv` 中脱敏；未固定镜像、network≠none、空 include、绝对/`..` sandbox cwd 在 spawn 前拒绝。真实 Docker（debian@sha256:99c0...）验证：目标读取快照字节而非 live workspace，排除文件不可见，/tmp 与 /workspace 可写、/root 只读、无 eth0；700ms 超时容器仍被删除且副本保留供检查。CLI `--sandbox-mode/--sandbox-include/--sandbox-exclude/--sandbox-image/--sandbox-network/--sandbox-cwd` 与 HTTP `sandbox` 对象（未知字段 400）。证据 `docs/release-evidence/B028-scenario-container.json`、ADR-051，测试 `scenario_sandbox.rs`、`scenario_http.rs`、`trace_import_cli.rs`；命令 `#b028-scenario-container-tests`、`#b028-scenario-container-regression`。Windows named pipe 的自定义 DACL 已实现（ADR-048 更新）：每个实例用 `CreateNamedPipeW` + 受保护 SDDL（仅当前用户/SYSTEM/Administrators，`PIPE_REJECT_REMOTE_CLIENTS`），并从活动 pipe handle 用`GetSecurityInfo` 回读 SDDL，announcement 记录 `custom_dacl`/`protected`/`everyone=false`/`anonymous=false`/`current_user=true`/ACE 数与 digest；测试断言回读而非请求字符串，证据`docs/release-evidence/B028-named-pipe.json`，命令 `#b028-named-pipe-dacl`。剩余：token ACL beyond bearer、SBOM/供应链签名属 B031；持续 watcher 级外部写检测已由 B025 `watch` 覆盖。
-  - B029 科学计算能力配置：**本切片通过 AT064/AT065**。新增 `scientific.numeric.v1` profile、真实一阶 IIR estimator fixture 与冻结 golden contract（单位 V/rad、shape [8,1]/[6,1]、dtype float64、seed、atol/rtol=1e-12、状态更新顺序、±pi 边界）。测试先在独立副本运行 baseline harness，对 8 点完整动态轨迹与 6 点 phase wrap 全部与 golden 比对（max_abs_error=0，非只看最终 RMS），再通过 staging/approval/apply 重构为单一纯 `update` helper（不引入类层级），验证契约含 test_report（8 项边界/确定性检查）、两个 numeric_tolerance 与一个 invariant（units/shape/finite/range）；结果 accepted。profile 与 golden 摘要分别为 `sha256:a9814dd2…`、`sha256:9eb39701…`。AT065 记录三方案比较：不重构仍合法；最小提取为本次受控案例；类抽象未实现且无收益证据，不计完成。100k 样本实测 baseline median 13.5 ms、refactor 16.8 ms，输出相同，明确不宣称性能收益。证据 `docs/evidence/B029-scientific.json`，测试 `scientific_profile.rs`，说明 `adapters/scientific/README.md`、ADR-034。真实数据授权与比较模式已补齐（ADR-053）：`numeric_tolerance` 新增 `mode=ulp`（IEEE-754 位距，`max_ulps`）与 `mode=statistical`（mean/rms/max/p95 误差阈值），默认 `absolute_relative` 保持不变；`unit_mode=dimension` 用固定 SI 表解析乘除、整数幂与十进制 scale，`mm` 与 `1e-3*m` 等价，未知/仿射/对数单位返回 inconclusive 而非猜测；`semantics` 仅接受 `ieee754_elementwise`，`matlab` 明确 unsupported（NaN min/max、隐式扩展、列优先 reshape、colon/linspace、eps 默认）。真实授权数据：用户回复“授权”后，只读处理 `<private-dataset>.json`（342 行，sha256 `2b7cda9a…`，738,737 bytes），不复制原始/派生素材进仓库、不上传；两种独立提取（repr 与 .17g）在 statistical 全 0 阈值与 ULP max_ulps=0 下通过，`mm` vs `1e-3*m` 量纲通过、`m` 负控失败；模型 vs Monte Carlo 误差仅作无门禁观测（mean 0.409/ bias 0.00086 mm），不虚构阈值。新增 CLI `archmeld numeric-check`。证据 `docs/release-evidence/B029-real-data.json`、ADR-053，测试 `predicate` 单元 5 项、`scientific_profile.rs`、`trace_import_cli.rs`。后续又补齐 MATLAB 比较语义与可扩展单位（ADR-053 更新）：`nonfinite_policy=ignore_nan` 跳过 NaN 对并记录 `ignored_nan`（Inf 仍需符号/类型一致）；statistical 增加 `variance_max`/`stddev_max` 与 `normalization=sample|population`（sample 为 N-1，MATLAB 约定，少于 2 对返回 inconclusive）；`tolerance_model=matlab_eps` 使用实际 IEEE-754 间距 `eps(max|a|,|b|)` 乘 `eps_multiplier`；`unit_definitions` 允许契约声明最多 64 个可乘单位（基于内置表或其他声明，检测环、禁止遮蔽内置名），仿射/对数单位仍拒绝。MATLAB 表达式语言语义（colon/linspace、隐式扩展、列优先 reshape）明确划为 producer 责任并 unsupported，比较器不模拟也不宣称。测试新增 4 项（NaN、sample/population、matlab_eps、自定义单位），B029 比较语义闭合。
+  - B029 科学计算能力配置：**本切片通过 AT064/AT065**。新增 `scientific.numeric.v1` profile、真实一阶 IIR estimator fixture 与冻结 golden contract（单位 V/rad、shape [8,1]/[6,1]、dtype float64、seed、atol/rtol=1e-12、状态更新顺序、±pi 边界）。测试先在独立副本运行 baseline harness，对 8 点完整动态轨迹与 6 点 phase wrap 全部与 golden 比对（max_abs_error=0，非只看最终 RMS），再通过 staging/approval/apply 重构为单一纯 `update` helper（不引入类层级），验证契约含 test_report（8 项边界/确定性检查）、两个 numeric_tolerance 与一个 invariant（units/shape/finite/range）；结果 accepted。profile 与 golden 摘要分别为 `sha256:a9814dd2…`、`sha256:9eb39701…`。AT065 记录三方案比较：不重构仍合法；最小提取为本次受控案例；类抽象未实现且无收益证据，不计完成。100k 样本实测 baseline median 13.5 ms、refactor 16.8 ms，输出相同，明确不宣称性能收益。证据 `docs/evidence/B029-scientific.json`，测试 `scientific_profile.rs`，说明 `adapters/scientific/README.md`、ADR-034。真实数据授权与比较模式已补齐（ADR-053）：`numeric_tolerance` 新增 `mode=ulp`（IEEE-754 位距，`max_ulps`）与 `mode=statistical`（mean/rms/max/p95 误差阈值），默认 `absolute_relative` 保持不变；`unit_mode=dimension` 用固定 SI 表解析乘除、整数幂与十进制 scale，`mm` 与 `1e-3*m` 等价，未知/仿射/对数单位返回 inconclusive 而非猜测；`semantics` 仅接受 `ieee754_elementwise`，`matlab` 明确 unsupported（NaN min/max、隐式扩展、列优先 reshape、colon/linspace、eps 默认）。真实授权数据：用户回复“授权”后，只读处理 `<private-recorded-file>`（<redacted> 行，sha256 `2b7cda9a…`，738,737 bytes），不复制原始/派生素材进仓库、不上传；两种独立提取（repr 与 .17g）在 statistical 全 0 阈值与 ULP max_ulps=0 下通过，`mm` vs `1e-3*m` 量纲通过、`m` 负控失败；模型 vs Monte Carlo 误差仅作无门禁观测（mean 0.409/ bias 0.00086 mm），不虚构阈值。新增 CLI `archmeld numeric-check`。证据 `docs/release-evidence/B029-real-data.json`、ADR-053，测试 `predicate` 单元 5 项、`scientific_profile.rs`、`trace_import_cli.rs`。后续又补齐 MATLAB 比较语义与可扩展单位（ADR-053 更新）：`nonfinite_policy=ignore_nan` 跳过 NaN 对并记录 `ignored_nan`（Inf 仍需符号/类型一致）；statistical 增加 `variance_max`/`stddev_max` 与 `normalization=sample|population`（sample 为 N-1，MATLAB 约定，少于 2 对返回 inconclusive）；`tolerance_model=matlab_eps` 使用实际 IEEE-754 间距 `eps(max|a|,|b|)` 乘 `eps_multiplier`；`unit_definitions` 允许契约声明最多 64 个可乘单位（基于内置表或其他声明，检测环、禁止遮蔽内置名），仿射/对数单位仍拒绝。MATLAB 表达式语言语义（colon/linspace、隐式扩展、列优先 reshape）明确划为 producer 责任并 unsupported，比较器不模拟也不宣称。测试新增 4 项（NaN、sample/population、matlab_eps、自定义单位），B029 比较语义闭合。
   - B030 七语言及混合项目完整验收：**AT066 passed；AT067 passed（七语言门禁）**。`examples/case-b/` 真实执行模拟 C++ 采集（明确无硬件）→ Python IIR estimator（真实 capture.csv）→ 静态 UI；真实 trace `case-b-pipeline` 3 spans 映射到 3 个源码 entity、0 unmapped且绑定 base snapshot；冻结契约检查 pipeline test_report、32 点完整数值轨迹（相对 C++ 输入 baseline `max_abs_error=0`）、units/shape/finite/range 与 UI 文档摘要；ChangeSet 仅改 estimator，capture/UI 哈希不变，独立 verification 后单独 accept，并导出校验通过的离线报告。证据 `docs/evidence/B030-e2e-case-b.json`。七语言矩阵新增三层真实证据：`B030-runtime-linkage.json`（VizTracer、V8 CPU profile、clangd 显式探针、JFR、EventPipe/speedscope、Go pprof 摘要、Rust 显式探针，各自真实执行、导入并映射到声明实体；采样工具标 lossy 与 loss notes）、`B030-medium-projects.json`（Lua 5.4.7、CPython asyncio、npm lib、OpenJDK java.util.concurrent、Newtonsoft.Json 13.0.3、Go net/http、CodeGraph crate，锁在 `adapters/languages/fixtures.lock.json`，archive/source digest 与真实 build/smoke 均通过）、`B030-rename-apply.json`（七组真实语义 rename 仅写 staging，经 prepared digest 双重批准与 journaled apply 落盘，前后构建/运行输出一致，同名无关符号与反射字符串未改）。矩阵 `docs/release-evidence/B030-language-matrix.json` 于 2026-11-27 在 0.21.2/HEAD `7474343d` 复跑，现为 AT067 passed、`r1_naming_allowed=true`、`blockers=[]`（UCRT64 GCC 16.1.0；旧 2026-10-31 证据已归档），并保留显式 limitations：C++ 全量 SCIP 仍需 Linux/WSL worker（Windows 仅 clangd）、JavaScript 与 TypeScript 均完成单独 rename apply、Case B 队列饱和/取消/模拟设备断开场景已由 `B030-case-b-scenarios.json` 覆盖（normal 32/32、slow 32/32、饱和 400/400 且 396 次背压、cancel 8 后停止、disconnect 错误显式）。说明 `docs/release-evidence/B030-release.md`；测试 `e2e_case_b.rs`、`language_matrix.rs`、`language_runtime_linkage.rs`、`language_medium_projects.rs`、`language_rename_apply.rs`。
   - B030 新增命令记录：`#b030-runtime-linkage`、`#b030-runtime-linkage-2`、`#b030-medium-projects-2`、`#b030-rename-apply-3`、`#b030-rename-apply-4`、`#b030-case-b-scenarios`、`#b030-language-matrix-2`、`#b030-language-matrix-3`、`#b030-full-regression`、`#b030-full-regression-2`、`#b030-full-regression-3`、`#b030-full-regression-4`、`#b030-full-regression-5`、`#b016-scenario-http`、`#b025-encrypted-backup`、`#b016-cli-scenario`、`#b030-rename-apply-5`、`#b018-declarative-checkers`、`#extension-tests-after-at067`。
-  - B031 双平台发行、更新与审计：**AT068 passed；AT069 passed；AT077 passed（2026-11-24，上游 0.21.2）**。新增 `archmeld` 离线 CLI 与 `archmeld-index` 一次性内存索引 helper（ADR-036）：`archmeld index` 用 pinned CodeGraph parser/indexer 直接生成 `archmeld-export-v1` NDJSON（不打开 RocksDB、不加载模型、不启动 watcher），捕获 snapshot 后经 bridge 导入账本；`archmeld report` 导出静态离线 bundle；`archmeld verify-report` 复核 4 个文件和 bundle digest。Windows GNU 与 Linux `rust:1.94.1-bookworm` release 双平台重新打包（CLI zip 现含 archmeld/archmeld-index/archmeld-serve/archmeld-mcp，VSIX 与 SBOM/checksums 同步更新）。真实 clean-prefix 测试：Windows 11 安装→索引（11 实体/8 关系）→导出→校验→Chrome headless 断网渲染成功；Ubuntu 24.04 容器安装→索引→导出→校验→静态 HTML 检查成功；升级/回滚/卸载、用户工程 marker 保留、VSIX 安装/卸载均通过。AT068 已 passed。剩余：Linux 渲染浏览器/VS Code host 未测（静态 HTML 已验证）；AT077 已于 2026-11-24 通过（合并上游 0.21.2 `ae4b2e54`，core/API 211/0/0、PHP 89/0/0、状态根/parser 13/0/0、端到端导出 3 文件/9 节点/9 边）；macOS 不支持（声明）。证据 `docs/release-evidence/B031-install-tests.json`、`B031-release-notes.md`、`B031-upstream-delta.json`、`UPSTREAM-0.21.2-2026-11-24.json`；ADR-035/ADR-036。发布级验收（Ubuntu GUI/VS Code host、macOS）按当前测试阶段要求延后，不作为项目测试阻塞。
+  - B031 双平台发行、更新与审计：**AT068 passed（Windows/Ubuntu CLI/container、VSIX 安装/卸载均通过）；AT069 passed；AT077 passed（2026-11-24，上游 0.21.2）**。新增 `archmeld` 离线 CLI 与 `archmeld-index` 一次性内存索引 helper（ADR-036）：`archmeld index` 用 pinned CodeGraph parser/indexer 直接生成 `archmeld-export-v1` NDJSON（不打开 RocksDB、不加载模型、不启动 watcher），捕获 snapshot 后经 bridge 导入账本；`archmeld report` 导出静态离线 bundle；`archmeld verify-report` 复核 4 个文件和 bundle digest。Windows GNU 与 Linux `rust:1.94.1-bookworm` release 双平台重新打包（CLI zip 现含 archmeld/archmeld-index/archmeld-serve/archmeld-mcp，VSIX 与 SBOM/checksums 同步更新）。真实 clean-prefix 测试：Windows 11 安装→索引（11 实体/8 关系）→导出→校验→Chrome headless 断网渲染成功；Ubuntu 24.04 容器安装→索引→导出→校验→静态 HTML 检查成功；升级/回滚/卸载、用户工程 marker 保留均通过；VSIX 在 <path> Files\Microsoft VS Code 真实安装/列出/卸载并通过。AT068 passed。剩余：Linux 渲染浏览器/VS Code host 未测（静态 HTML 已验证）；AT077 已于 2026-11-24 通过（合并上游 0.21.2 `ae4b2e54`，core/API 211/0/0、PHP 89/0/0、状态根/parser 13/0/0、端到端导出 3 文件/9 节点/9 边）；macOS 不支持（声明）。证据 `docs/release-evidence/B031-install-tests.json`、`B031-release-notes.md`、`B031-upstream-delta.json`、`UPSTREAM-0.21.2-2026-11-24.json`；ADR-035/ADR-036。发布级验收（Ubuntu GUI/VS Code host、macOS）按当前测试阶段要求延后，不作为项目测试阻塞。
   - B031 新增命令记录：`#b031-release-build-windows`、`#b031-release-build-linux`、`#b031-package-3`、`#b031-release-tests-8`、`#b031-package-4`、`#b031-release-tests-9`、`#extension-tests-validation-ui`。
   - B032 可持续本地 Agent 交接：**verified（AT070 passed）**。新增 `docs/OPERATOR_GUIDE.md`、`docs/HANDOFF_CHECKLIST.md` 与 `tooling/handoff_check.py`；真实接力演练读取 PROGRESS/evidence/命令记录，输出实际 HEAD/branch/工作树、下一任务、缺失证据/命令和 do-not-redo 列表。本次演练在 `archmeld/initial` / `644d535` 上：B030 AT066 passed、AT067 failed、B031 AT068 partial/AT069 passed/AT077 partial 均被正确识别；所有 progress 引用的 evidence 路径存在；历史命令 `#b020-*`、`#b022-*`、`#b023-*`、`#b024-*`、`#b025-*` 已补记录，缺失为 0；未把未完成项标成完成，R1 命名仍被 AT067 阻塞。证据 `docs/release-evidence/B032-handoff.json`（命令 `#b032-handoff-2`）。交接不保存秘密或无依据的“应该可以”，下一任务与 blocker 直接从 PROGRESS 读取。
   - 上游治理 U0/U1（2026-11-25）：**verified（本切片）**。新增根 `upstreams.lock.json`（CodeGraph 薄分叉、CodeBoarding/SCIP/LSP/traces/AOCI/Cytoscape/toolchain 的复用方式、pin、契约与更新策略；所有 `auto_follow/auto_merge/auto_pin_update=false`）与开发侧 `tooling/upstream.py`（`status/verify/check/patches/diff/drill/record`，默认只读，不 fetch/merge/push/改 pin）。导出契约加法升级到 `schema_version 1.1`：manifest 增加 `producer_commit`/`producer_dirty`，`format` 仍为 `archmeld-export-v1`；消费者接受 legacy 1.0 与任何 1.x、拒绝 2.0、校验 40/64 hex commit；commit 保留在 artifact/`BridgeReport`/`archmeld index` 摘要，暂不进入密封的 core `Producer` schema。`patches/codegraph/manifest.json` 对账 18 个上游路径（14 修改 + 4 新增，10 个条目），`patches --check` 为 0 unaccounted；补齐 Python alias、状态根 `crash_phase/index_state`、export helper、README 等此前未登记的补丁。修复过期工具：`upstream_delta_drill.py` 读取 registry pin、写 `ADAPTER-DRILL-*` 而不覆盖 `B031`、不再断言 AT077；`package_release/test_release/handoff_check` 从 registry/最新 `UPSTREAM-*.json` 派生 pin 与 AT077 状态。测试：tooling 20、bridge 9、export 1、probes 3；合成 drill baseline 0/mutated 101/restored 0；`diff --to upstream/main` 0 commits/0 conflicts。未改 pin、未合并、未 push、未编辑 `docs/archmeld/**`。证据 `docs/release-evidence/UPSTREAM-STATUS-2026-11-25.json`、`UPSTREAM-PATCH-MANIFEST-2026-11-25.json`、`ADAPTER-DRILL-2026-11-25.json`、`docs/evidence/upstream-registry-2026-11-25/`；命令 `#u0-upstream-tests`、`#u0-upstream-verify`、`#u0-bridge-tests`、`#u0-export-tests`、`#u0-probe-tests`、`#u0-adapter-drill`、`#u1-patches-check`、`#u1-upstream-diff`。下一可执行项：上游有新提交时跑 `upstream.py check/diff/drill`，drill 通过后再人工 `record`；不自动升级。
@@ -78,7 +78,7 @@
   - 上游契约门与周检 U2–U4a（2026-11-26）：**verified（本切片）**。U2：CodeBoarding 的 `analysis_schema_version` 改为可选（缺失记 `unversioned`；显式未知主版本在幂等 digest 前拒绝；记录 `metadata.tree_spec.version`），SCIP 读取 `Metadata.version` 并拒绝非 0 协议版本（`tool_info` 缺失仅 warning），AOCI 解析 `#Format-Version`/`#AOCI-ROOT-MANIFEST`（未知主版本/缺失头为 warning，entries 仍解析），`upstream.py verify` 新增 `adapters/traces/fixtures.lock.json` 的哈希/大小/producer/limitations/消费测试审计，registry 补充 `version_field`/`version_optional`/`allowed_protocol_versions`/`in_band_version` 并修正 scip/codeboarding/lsp/traces/aoci 的 tests 标签。U3：`LspSession` 保存 `initialize` 的 `serverInfo`，新增 `probe_initialize_result`/`capability_probe`（版本 token 匹配、缺 capability 时证据层 `degraded`，不改密封运行时 profile）；`TraceProcessorExpectation` + `perfetto_trace_via_processor_checked` 在版本/哈希不符时 fail closed，调用方可回退 in-process。U4a：`status --out/--fail-on-update`、`check --out`、remote 名失败后回退 `source.url` + `HEAD`，新增每周只读 `.github/workflows/archmeld-upstream.yml` 与 `docs/upstream/WEEKLY_CHECK.md` 证据模板（不含 `AT077`，避免覆盖真实 merge 证据）。验证：contract 测试 32/0、tooling 32/0、`upstream.py verify --skip-cargo` 为 `passed_with_warnings`（0 fail）、`status --remote` 显示 codegraph 已最新、codeboarding 落后（预期，pin 为固定 commit）、导出 1797 文件/28 省略/0 unclassified、私有扫描仅历史 warning。未改 pin、未合并、未 push、未编辑 `docs/archmeld/**`。证据 `docs/release-evidence/UPSTREAM-U2-U4A-2026-11-26.json`、`docs/evidence/upstream-contracts-2026-11-26/`；命令 `#u2-u3-contract-tests`、`#u4-upstream-tests`、`#u4-upstream-verify`、`#u4-upstream-status`、`#u4-upstream-check`、`#u4-public-export`、`#u4-public-verify`。下一可执行项：U4b（全部上游 release/npm/PyPI probe 与 behind 统计）可延后；按需重新导出公开快照。
   - 上游版本 probe 与回滚演练 U4b/U5（2026-11-26）：**verified（本切片）**。U4b 窄版：`upstreams.lock.json` 增加 16 个组件 probe（SCIP、LSP、traces、Cytoscape、AOCI、toolchain），`pin_from` 复用既有 lock；新增只读 `upstream.py probes`（`git ls-remote --tags --refs`、npm、PyPI、Go proxy；semver 排序；prerelease 默认排除；无法归一化记 `unsupported`；`behind` 固定 null；单 probe 失败为 warning）。实测 8 update、3 ok、5 skipped、0 warning；clangd/rust-analyzer/AOCI/toolchain 显式跳过并给出原因；不依赖 GitHub API/token，不改 pin。tooling 测试 43/0；证据 `docs/release-evidence/UPSTREAM-PROBES-2026-11-26.json`、`docs/evidence/upstream-probes-2026-11-26/`，命令 `#u4b-upstream-tests`、`#u4b-probes`、`#u4b-verify`。U5：新增 `docs/upstream/UPGRADE_PLAYBOOK.md`、`docs/upstream/ROLLBACK.md` 与只读 `upstream.py rollback-drill`（旧树 worktree 构建 + `git revert -m 1` 冲突探测；不写 registry/lock/pin，不调用 `record`）。以 `903bfe0a`（0.21.2 merge 的 first parent）为目标：quick matrix 217/0 passed；full matrix 的 core/API 211/0、bridge 3/0、probes 3/0、export example build 通过。`codegraph-php` 的 `0xC0000139` 与 `archmeld_state_root` 的 `server failed` 已复验为旧 winlibs/Strawberry 测试二进制缺 `__emutls_v` 符号/DLL 搜索顺序问题，不是 RocksDB；2026-11-27 用 UCRT64 重建后 PHP 89/89、state_root 1/1 通过。revert probe 在 `UPSTREAM_PATCHES.md`/`watcher.rs` 冲突并已记录（未解决、未提交）。未改 pin、未创建 tag、未 push。证据 `docs/release-evidence/ROLLBACK-DRILL-2026-11-26.json`、`docs/evidence/upstream-rollback-2026-11-26/`，命令 `#u5-rollback-full-matrix`、`#u5-rollback-quick-matrix`。下一可执行项：PHP/server 的旧失败已归因为旧 winlibs/Strawberry 二进制/DLL 搜索顺序；重建后 PHP 89/89、state_root 1/1 通过，不再需要 Linux worker。U4b/U5 无代码阻塞。
 - 上游 release-only 门禁（2026-11-27）：**verified**。`upstreams.lock.json` 将 codegraph 的 `source.ref` 置空，增加 `release`（0.21.2 无 tag；commit `ae4b2e54` + release notes）与 `update_policy.release_only/accepted_refs/forbidden_refs`；`tooling/upstream.py check/status` 不再比较 `upstream/main`，无 tag release 返回固定 pin 并标记 `release_only=true`，`diff`/`drill` 拒绝分支 ref。`AGENTS.md`、`docs/upstream/UPGRADE_PLAYBOOK.md`、`docs/adr/ADR-060-release-only-upstream-intake.md` 同步。测试 `tooling/test_upstream.py` 44/44；`upstream.py verify --skip-cargo` 0 fail。未改 pin、未合并 upstream/main、未 push。
-- 下一条可直接执行任务及依赖（项目测试阶段）：P01–P25 与 P17 map 已闭合；B030 AT067 已于 2026-11-27 在 0.21.2/HEAD `7474343d` 复跑通过（`blockers=[]`，证据 `docs/release-evidence/B030-language-matrix.json`）；下一步是 B000 Ubuntu 套件复核以及 Ubuntu GUI/VS Code host、macOS 决策。M2.5-B/D 已实现，E1/E2 已实现，E4a 为 no-go，E3/E4b 不提升。Windows GNU/UCRT64 RocksDB 已 59/59 通过；MSVC 未验证但非必需。AT077 已闭（2026-11-24）。
+- 下一条可直接执行任务及依赖（项目测试阶段）：2026-11-28 P0–P2 结构债整改已提交（ADR-071），完整闭合此前已提交（`72512e12`、`d7ca4c7a`、`1b3e45f2`、`810fbc8d`、`fd5c8758`、`bd182c8c`，B032 收尾提交另计）。AT068 已在本机 VS Code 上补齐 VSIX 安装/卸载并 passed；agent reviewer pilot 已用两个 durable pi session 跑完 12 次（B 6/6、A 3/6，非人类研究）。下一步：用户提供两名人类 reviewer 时执行人类 pilot；如需完整 canonical server 证据，在更大页面文件/内存的主机上重跑 full lane。B030 AT067 已于 2026-11-28 在 HEAD `fd5c8758` 复跑通过；B000 Ubuntu 套件沿用 2026-11-27 证据（上游 pin 未变）。M2.5-B/D、E1/E2 已实现，E4a 为 no-go，E3/E4b 不提升。AT077 已闭（2026-11-24）。
 - B016 测试：核心全量 21 个测试二进制共 69 passed / 0 failed / 1 ignored（该次 Java 仍被忽略）。新增 `runtime_causal` 2 项（显式映射与不提升候选、多时钟不全序）、`causal_scenario` 1 项（真实双进程 correlation + 取消进程树）、`scenario_run` 取消测试；LSP shutdown 改为对已退出根的残留后代按 PID 清理并轮询确认（修复并行负载下 rust_pack 的瞬态孤儿误报）。命令记录 `baseline/commands.ndjson#b016-core-tests-4`（含 cwd/argv/退出码/日志哈希）。
 - B016 native trace 测试：`perfetto_native` 5 项（真实 Perfetto 夹具的 slices/counters/states、未闭合状态 loss、映射与无关系、probe/Chrome 校验）、`tracy_native` 3 项（zone/plot、原生 .tracy 保留与 artifact_ref、声明损坏拒绝）、`trace_import_cli` 3 项（CLI Perfetto 导入、Tracy 保留、unbound/config 拒绝）；核心+API 全量 126 passed / 0 failed / 0 ignored（57 个结果段）。证据 `docs/release-evidence/B016-native-traces.json`，fixtures `adapters/traces/fixtures.lock.json`；命令记录 `#b016-perfetto-tests`、`#b016-tracy-tests`、`#b016-trace-import-cli-tests`、`#b016-cli-perfetto-import`、`#b016-cli-tracy-import`、`#b016-perfetto-probe-build`、`#b016-perfetto-capture`、`#b016-tracy-client-build`、`#b016-tracy-capture`、`#b016-full-regression-2`。
 - B013 测试：Java 测试取消 `#[ignore]` 后核心全量 21 个二进制 70 passed / 0 failed / 0 ignored；命令记录 `baseline/commands.ndjson#b013-java-core-tests`。JDK 25 下载/解压命令记录 `#b013-jdk25-download`、`#b013-jdk25-extract`，归档哈希与 Adoptium 固定发布一致。
@@ -409,3 +409,153 @@ is unexercised but not required for this path.
   （state=ok）、`doctor --json`（failed=0）、`upstream.py verify --skip-cargo`、
   `patches --check`、`reseal_pack --check`、公开导出与守卫自测均通过。
 
+- Palimpsest 反馈实现（2026-11-28）：按六条反馈完成一轮证据与输出修正。
+  - change brief：`findings` 只含 changed/added/deleted；新增 `context`、逐文件
+    `gaps`、`budget`/omitted 计数；candidate incoming 不再升为 high；next action
+    绑定 snapshot。证据 `brief.rs` 测试 10 项（含调用者 context、unmapped gap、
+    预算截断）。ADR-062 / `contracts/archmeld/mcp-brief-budget.patch.json`。
+  - review/diff provenance：新增 `provenance.base/candidate`（Git commit、head
+    tree oid、content tree digest、config/environment/exclusions/policy、
+    index-run analyser）、candidate dirty、tree_equivalent、base/candidate side
+    标签；`diff_snapshots` 在 unchanged 路径也保留身份，并修正 relation-only
+    变化仍报 unchanged 的问题。ADR-063 / `review-provenance.patch.json`。
+  - 结构 diff：文件 move 按 blob digest 识别；relation 按稳定端点键 diff；
+    有界路径收敛（depth≤4、expansion cap）标 hypothesis；`owns`/`writes`
+    存在时报告 ownership，否则 coverage=none；entry points 明确 unavailable。
+    `review-diff --candidate-snapshot` 支持 snapshot-to-snapshot。ADR-065 /
+    `review-structural-diff.patch.json`；export 契约补充 Reads/Writes 等外部
+    producer 可用词汇，并注明 CodeGraph 0.21.2 不产生它们。
+  - architecture rules：`ArchitectureRule` 新增可选 `source` 与 `exceptions`；
+    exception 按 violation key 匹配，报告 `excepted`/`unused_exceptions`/
+    `exception_changes`；required rule 不伪装 passed。ADR-064 /
+    `architecture-rule-exceptions.patch.json`；新增 revision 测试。
+  - 成本与保留：`index`/`refresh`/`review-diff` 增加 timings；`diff_snapshots`
+    增加 reuse/invalidation，`index_mode` 由 analyser 是否存在推导；
+    `review-diff --persist` 写 `review_reports` 并 pin snapshots，
+    `--report` 读取；`--freeze --persist` 把 changed/added 候选字节写入 CAS 并
+    pin object，不创建 snapshot、不改 latest。迁移 0020；ADR-066/067。
+  - 基准：`review_benchmark` 200 文件、3 候选、capture/review/diff；
+    证据 `docs/evidence/perf-review-2026-11-28.json`，命令
+    `#perf-review-2026-11-28-c`；明确不测 graph index/parse，且非增量。
+  - 验证：`cargo test -p archmeld-core --lib` 36 passed；brief 14、diff_review 6、
+    blueprint_rules 4、bridge_import 10、drift_policy 3、drift_recovery 3、
+    mcp_stdio 1、scenario_http 4、CLI 9 均通过；`cargo check -p archmeld-core
+    -p archmeld-api --all-targets --locked --offline` 通过；`cargo doc -p
+    archmeld-core --no-deps` 通过；`test_lane.py --lane fast` exit 0（94 s，
+    命令 `#closure-fast-lane-2026-11-28-c`）。未运行完整 `test_lane --lane full`。
+  - 限制：增量索引未实现；freeze 只覆盖 changed/added 文件；真实 read/write
+    证据仍依赖外部/未来 producer；reviewer study 只有协议，未执行。
+
+- 完整闭合（2026-11-28，HEAD `fd5c8758`）：在 Palimpsest 反馈闭合之上完成
+  Tier A + human evidence + I1 增量解析，并重建发布证据。
+  - MCP status：`s2` 游标绑定 project/base snapshot/workspace 内容/页大小，
+    changed/added/deleted 独立分页；辅助 freshness 数组计数 + top-20。
+    `mcp.rs` 单测 6 项（1000 changed 分页可到底、数组独立游标、换 workspace/
+    snapshot 拒绝旧游标）。
+  - brief：四配方统一 `confirmed/candidate/unknown/stale/findings/context/gaps`；
+    `declared` 保留别名；finding 带 `confidence`；map 应用 findings/gaps 预算，
+    invalid map 有 findings、missing 有 gaps；project/change/map 顶层都有
+    coverage/verification/budget。`brief` 测试 15 项。
+  - review report：`review-report list|delete`；8 MiB 上限；报告与 pins 同事务；
+    读取校验 output digest 与 base/candidate/mode/report_id 身份；删除释放
+    snapshot pins 与不再被引用的 freeze pins；GC 把报告内 `blob_digest` 当根。
+    report 单测 3 项 + `diff_review` 生命周期测试。
+  - provenance：非 git `git_state=unavailable/dirty=null`；子目录输出
+    `head_tree_scope=workspace_subtree` 与 subtree oid；快照 diff 无 workspace
+    时 `head_tree_basis=unavailable_no_workspace`；同 digest 多组改名标
+    `ambiguous_move`；同快照 early-return 加 schema 且 paths coverage=not_run。
+  - rules：custom_contract key 含 assertion/limit；exception_changes.changed
+    比较 id/introduced_revision/reason/scope_ids/expires_revision/source；
+    重复 rule id 拒绝；path result cap 与 expansion cap 分开报告；ADR-064 与
+    contract patch 写明 scope_ids 为 audit-only。
+  - human evidence：`archmeld evidence import-human`；只写
+    `kind=human/basis=human/resolution=declared`，attestation 入 CAS，
+    scope/entity/anchor 校验，幂等 relation id；structural diff 显示
+    `basis=human` 的 owns/writes。ADR-069 + contract patch + 3 项测试。
+  - I1：稳定 `<state>/index-work/<project>` 物化 + 项目级 persistent CodeGraph
+    + IndexState 续用；删除扫描；导出 manifest 增加
+    `index_mode/files_reused/files_deleted/storage/state_loaded`；失败回退
+    in-memory 全量并清空 IndexState；退出前 flush 持久化节点/边计数器
+    （首次记录暴露的边计数器覆盖缺陷）。ADR-070。
+  - I1 验证：`tooling/verify_incremental_index.py` 用真实 helper 跑
+    full → 1 文件变更 → 删除 → 改名 → 坏图回退；所有 checks 为 true
+    （节点/边集合与全量一致、删除路径消失、rename 新路径出现）。
+    命令 `#i1-incremental-2026-11-28-b`；首次 `#i1-incremental-2026-11-28`
+    exit 1 保留为缺陷记录。
+  - 验证：targeted core+api 套件 exit 0（`#closure-targeted-tests-2026-11-28`）；
+    fast lane exit 0（`#closure-fast-lane-2026-11-28`）；AT067 evidence lane
+    四组 + verifier 在 HEAD 通过（`b030-*-perf-20261128-012425`）；
+    `doctor --json` failed=0（`#doctor-2026-11-28-e`）；patches/reseal/
+    upstream verify 通过；B031 CLI/container 安装、clean index、report、
+    headless Chrome 通过（`#test-release-2026-11-28-d`，AT068=partial：
+    VSIX 因本机无 VS Code 记 blocked_external）；双平台二进制在
+    `fd5c8758` 重建且 commit_consistency=true（`#package-release-2026-11-28-d`）。
+  - 保留：Ubuntu GUI/VS Code host 与 macOS 为 R1 之外（不支持/未测试）；
+    VSIX 已在本机 D: 的 VS Code 上真实安装/列出/卸载通过（AT068 passed）；
+    agent reviewer pilot 已跑 12 个 pi durable session（B 6/6、A 3/6，
+    A 有 2 个把 candidate 说成 resolved），证据
+    `docs/evidence/reviewer-pilot-2026-11-28/`；这不是人类研究，仍需两名
+    人类 reviewer 才能做人类结论；
+    B000 Ubuntu 套件本轮未重跑（上游 pin 未变），沿用既有证据；
+    full lane 以 --jobs 1 尝试：core+API 共 82 个测试二进制 0 failed，随后
+    codegraph-server --lib 的 canonical source-RocksDB 编译因 16 GB 主机页面
+    文件不足（os error 1455）中止；记 blocked_external，证据
+    docs/evidence/full-lane-2026-11-28/，不声称 full lane 通过。
+
+- 自分析复跑（2026-11-28，HEAD `e3f9ad2b`，快照
+  `sha256:df7eb174e9700e0865843b6f05da7c0d466c20ee69beee8496e0ef0449143f15`）：
+  在干净工作树上用 `fd5c8758` 构建的 release 二进制执行
+  `index --include-dir examples` → `status` → `self_analysis_acceptance`，
+  **24/24 passed，0 failed**。指标：2017 文件、11,286 entities、47,531
+  relations、47 implements（25 deferred resolved，0 ambiguous）、69 个
+  examples 实体、803 个解析文件（rust 576 / python 74 / typescript 53 /
+  kotlin 39 / toml 49 / bash 8 / cpp 4）、0 diagnostics、3 个 Kotlin
+  `jetbrains/` parser error 路径；index_mode=full_parse（首次），64.3 s；
+  acceptance 19.9 s。证据 `docs/evidence/self-analysis-2026-11-28/`，命令
+  `#self-analysis-2026-11-28-clean`。首次手工运行 22/24：examples 被默认
+  exclude_dir 排除、status 看到 run_cmd 自身追加的 commands.ndjson；已由
+  `tooling/self_analysis_run.py` 在干净树内先观察、再追加记录修正。
+
+- 自架构审计（2026-11-28，HEAD `e3f9ad2b`）：结论是**功能无已知失败**
+  （24/24 自分析、fast lane、B031/AT067 通过），但存在结构性债务：
+  `Store` god object（`store/mod.rs` 1,567 行、44 个 pub 方法；store 外
+  19 个文件共 87 处直接 SQL）；`cli.rs` 3,054 行/22 个顶层命令（25 个
+  叶子）、`api/lib.rs` 1,862 行/57 handlers；`CoreError` 物理上曾位于
+  `surface/error.rs`（本轮已移至 `src/error.rs`；42 个文件使用）；8 份
+  `short_hash`、2 份 content-tree
+  digest、三套 diff 摘要；
+  233 个含 `Value` 的函数签名；10 个 300–650 行的核心函数；测试外 67 个
+  `unwrap/expect`（context 10、runtime import 8、claims 8）。Rust
+  `use crate::` 模块图**无环**（无 SCC），`evidence` 是 hub（ops 18、
+  change 17、surface 14、analysis 9）；`static_call_candidate` 图出现的
+  61 文件 SCC 含 `fs::rename → lsp::rename`、`drop` 等误配，不能当作架构
+  环证据。详细证据与分级整改建议见
+  `docs/assessments/SELF-ARCHITECTURE-AUDIT-2026-11-28.md`。
+
+- 结构债整改 P0–P2（2026-11-28，ADR-071）：先修 **SCIP length-delimited
+  整数溢出**（恶意 varint 可让导入进程 panic；现返回 `invalid input`），
+  再把 `CoreError` 移到 `src/error.rs`、统一 `hash::short_*` 与
+  `snapshot::content_tree_digest`、移除 `mem::forget` 无效调用，并加固
+  runtime import / predicate / blueprint / context 的不可信输入 unwrap。
+  `Store` 增加 idempotency、snapshot file、latest-revision 类型化入口，
+  store 外 `INSERT INTO idempotency` 从 18 降到 0，单行 `store.conn` 从
+  87 降到 71，`tx.*` 从 70 降到 61。入口拆分：`cli.rs` 3,054 → 64 行
+  （`src/commands/<domain>.rs`），`api/lib.rs` 1,862 → 350 行
+  （`src/routes/<resource>.rs`）；clap 命令树测试固定 22 个顶层命令与 7 个
+  嵌套叶子。大函数：`check_rule` 626 → 32、`diff_snapshots` 427 → 106、
+  `create_context_pack` 650 → 148、`change_brief` 531 → 228（160 行是
+  警戒线，不作为硬门禁；剩余为输出组装与预算尾部，记入 REMAINING）。新增
+  `tooling/check_architecture_debt.py` 并在 fast lane 做单调 ratchet；
+  基线 `docs/assessments/DEBT-BASELINE-2026-11-28.json`。证据命令
+  `debt-phase1-fast-2026-11-28`、`debt-phase2-fast-2026-11-28`、
+  `debt-phase3-fast-2026-11-28`、`debt-phase4-fast-2026-11-28` 均在
+  `baseline/commands.ndjson`。完整设计见
+  `docs/adr/ADR-071-internal-structure-maintenance.md`。
+  - 复核：evidence lane `debt-phase5-evidence-2026-11-28-b` 通过（B030
+    四份 gate JSON 在新 HEAD 重跑，状态仍为 passed/verified）；clean-tree
+    自分析 `debt-phase5-self-analysis-2026-11-28-f` 为 **24/24**
+    （HEAD `95a83c73`，snapshot `sha256:ffcb025e…1a0a56`，2,078 files /
+    11,405 entities / 47,895 relations，index 60.1 s，acceptance 21.5 s；
+    证据 `docs/evidence/self-analysis-2026-11-28-f/`）。runner 最初在
+    `status` 之前写证据文件、导致其把自身输出算作 added（b–d 为 23/24），
+    已改为在 `status` 之后写并把最终产物放在 workspace 外；失败记录保留。

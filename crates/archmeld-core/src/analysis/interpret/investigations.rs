@@ -83,17 +83,14 @@ pub fn propose_investigation(store: &mut Store, raw: &Value) -> Result<Value> {
         "investigation.proposed",
         json!({"investigation_id": investigation.investigation_id}),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'proposeInvestigation',?2,?3,200,?4,?5)",
-        (
-            &investigation.project_id,
-            &proposal.idempotency_key,
-            &digest,
-            &result.to_string(),
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        &investigation.project_id,
+        "proposeInvestigation",
+        &proposal.idempotency_key,
+        &digest,
+        200,
+        &result.to_string(),
     )?;
     tx.commit()?;
     Ok(result)

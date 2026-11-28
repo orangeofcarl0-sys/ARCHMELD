@@ -102,9 +102,22 @@ pub fn open_project(store: &mut Store, request: OpenRequest<'_>) -> Result<Value
     upsert_project_root(&tx, request.project_id, &workspace_text, now)?;
     let session_id = format!(
         "session.{}",
-        short_hash(&format!("{}:{}:{}:{}", request.project_id, now, std::process::id(), revision))
+        hash::short_bytes(
+            format!(
+                "{}:{}:{}:{}",
+                request.project_id,
+                now,
+                std::process::id(),
+                revision
+            )
+            .as_bytes(),
+            32,
+        )
     );
-    let owner_token = short_hash(&format!("owner:{}:{}:{}", session_id, std::process::id(), now));
+    let owner_token = hash::short_bytes(
+        format!("owner:{}:{}:{}", session_id, std::process::id(), now).as_bytes(),
+        32,
+    );
     tx.execute(
         "INSERT INTO sessions
          (session_id, project_id, mode, state, workspace_root, state_root, owner_pid, owner_token, created_at)
@@ -214,7 +227,10 @@ pub fn open_project_for_handle(
         Some(id) => id,
         None => format!(
             "project.{}",
-            short_hash(&format!("{handle}:{}", crate::store::now_unix()))
+            hash::short_bytes(
+                format!("{handle}:{}", crate::store::now_unix()).as_bytes(),
+                32,
+            )
         ),
     };
     let project = open_project(
@@ -389,7 +405,10 @@ pub fn promote_project(store: &mut Store, project_id: &str) -> Result<Value> {
         "UPDATE projects SET mode='manager', state='open', revision=revision+1 WHERE project_id=?1",
         (project_id,),
     )?;
-    let new_session = format!("session.{}", short_hash(&format!("promote:{}:{now}", project_id)));
+    let new_session = format!(
+        "session.{}",
+        hash::short_bytes(format!("promote:{}:{now}", project_id).as_bytes(), 32)
+    );
     tx.execute(
         "INSERT INTO sessions
          (session_id, project_id, mode, state, workspace_root, state_root, owner_pid, owner_token, created_at)
@@ -400,7 +419,7 @@ pub fn promote_project(store: &mut Store, project_id: &str) -> Result<Value> {
             workspace_root,
             state_root,
             std::process::id() as i64,
-            short_hash(&format!("owner:{new_session}")),
+            hash::short_bytes(format!("owner:{new_session}").as_bytes(), 32),
             now,
         ),
     )?;
@@ -754,11 +773,3 @@ fn inside(child: &Path, parent: &Path) -> bool {
     child == parent || child.starts_with(&format!("{parent}/"))
 }
 
-fn short_hash(text: &str) -> String {
-    let digest = hash::digest_bytes(text.as_bytes());
-    digest
-        .trim_start_matches("sha256:")
-        .chars()
-        .take(32)
-        .collect()
-}

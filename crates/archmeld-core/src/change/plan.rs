@@ -200,17 +200,14 @@ pub fn propose_contract(store: &mut Store, raw: &Value) -> Result<Value> {
         "contract.frozen",
         json!({"contract_id": stored.id, "revision": revision, "digest": computed}),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'proposeContract',?2,?3,200,?4,?5)",
-        (
-            &stored.project_id,
-            &proposal.idempotency_key,
-            &digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        &stored.project_id,
+        "proposeContract",
+        &proposal.idempotency_key,
+        &digest,
+        200,
+        &result,
     )?;
     tx.commit()?;
     Ok(payload)
@@ -417,17 +414,14 @@ pub fn propose_plan(store: &mut Store, raw: &Value) -> Result<Value> {
         "plan.proposed",
         json!({"plan_id": stored.id, "revision": revision, "status": stored.status}),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'proposePlan',?2,?3,200,?4,?5)",
-        (
-            &stored.project_id,
-            &proposal.idempotency_key,
-            &digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        &stored.project_id,
+        "proposePlan",
+        &proposal.idempotency_key,
+        &digest,
+        200,
+        &result,
     )?;
     tx.commit()?;
     Ok(payload)
@@ -541,17 +535,14 @@ pub fn approve_plan(
         "plan.approved",
         json!({"plan_id": plan_id, "revision": new_revision, "contract_digest": contract_digest}),
     )?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,'approvePlan',?2,?3,200,?4,?5)",
-        (
-            project_id,
-            idempotency_key,
-            &digest,
-            &result,
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        project_id,
+        "approvePlan",
+        idempotency_key,
+        &digest,
+        200,
+        &result,
     )?;
     tx.commit()?;
     Ok(payload)

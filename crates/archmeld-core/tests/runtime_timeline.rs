@@ -35,5 +35,8 @@ fn runtime_imports_big_decimal_ns_and_reports_binding_and_loss(){
  assert!(dup.is_err());
  let float=import_trace(&mut st,&RuntimeImport{project_id:P,run_id:"run.trace.5",snapshot_id:Some(&snap.snapshot_id),config_digest:&cfg,allow_unbound:false,scenario_run_id:None},&{let mut t=trace(&cfg,&snap.snapshot_id,false);t["spans"][0]["start_ns"]=json!(9007199254740993u64);t});
  assert!(float.is_err());
+ let origin=import_trace(&mut st,&RuntimeImport{project_id:P,run_id:"run.trace.6",snapshot_id:Some(&snap.snapshot_id),config_digest:&cfg,allow_unbound:false,scenario_run_id:None},&{let mut t=trace(&cfg,&snap.snapshot_id,false);t["clock"]["origin_ns"]=json!(0);t});
+ let origin_error=origin.unwrap_err();
+ assert!(origin_error.to_string().contains("clock.origin_ns must be a decimal integer string"),"{origin_error}");
  assert!(st.integrity_check().unwrap().is_empty());
 }

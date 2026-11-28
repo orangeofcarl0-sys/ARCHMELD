@@ -357,6 +357,25 @@ fn unsupported_scip_protocol_version_is_rejected() {
 }
 
 #[test]
+fn overflowing_length_delimited_field_is_rejected() {
+    let doc = Doc {
+        path: "main.py",
+        language: "python",
+        encoding: 1,
+        occurrences: Vec::new(),
+        symbols: Vec::new(),
+    };
+    let mut bytes = index(&[doc], &[]);
+    bytes.extend(key(2, 2));
+    bytes.extend(varint(u64::MAX));
+    let mut f = fixture(&[("main.py", "print('ok')\n")]);
+    let digest = config_digest(&f);
+    let cfg = config(&f.snapshot_id, &digest);
+    let error = import_scip(&mut f.store, &cfg, &f.files, &bytes).unwrap_err();
+    assert!(error.to_string().contains("overflows"), "{error}");
+}
+
+#[test]
 fn real_rust_analyzer_index_imports_without_promoting_references() {
     let fixture_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../upstream-probes/scip/rustdemo");
     let index_path =

@@ -1,0 +1,26 @@
+{
+  "unmapped_paths": [
+    "docs/notes.md"
+  ],
+  "changed_entities": [
+    "src/ops.py::run"
+  ],
+  "writes_evidence": "unavailable",
+  "coverage": "partial",
+  "citations": [
+    {
+      "path": "docs/notes.md",
+      "line": 3
+    },
+    {
+      "path": "src/ops.py",
+      "line": 3
+    },
+    {
+      "path": "src/ops.py",
+      "line": 4
+    }
+  ],
+  "confidence": "high",
+  "notes": "Commit a140914 changed two files. src/ops.py has full entity mapping (file src/ops.py + symbol src/ops.py::run); the only changed entity is src/ops.py::run, whose line 4 changed from `return settle()` to `return settle() + 1`. docs/notes.md has no base-snapshot entity anchor and is reported by archmeld_review as unmapped_files with confidence 'file_changed_no_entity_mapping' (line 3 changed). No `writes` (or `reads`) relation exists anywhere in the index; the only run->settle relation is a static_call_candidate with resolution 'candidate' and conditions 'syntax-only; not a resolved call'. Because no resolved call or writes relation is present and runtime/build verification is not_run, there is no evidence that run writes to settle; the candidate edge is a call hypothesis, not a write, so writes_evidence is 'unavailable'."
+}

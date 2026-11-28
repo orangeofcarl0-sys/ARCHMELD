@@ -9,7 +9,9 @@
 //! stdout; audit records go to a separate file so protocol output is never
 //! mixed with logs.
 
-use archmeld_core::brief::{build_brief, render_markdown, BriefRecipe, BriefRequest};
+use archmeld_core::brief::{
+    build_brief_with_budget, render_markdown, BriefBudget, BriefRecipe, BriefRequest,
+};
 use archmeld_core::changeset::get_changeset;
 use archmeld_core::context::create_context_pack;
 use archmeld_core::error::CoreError;
@@ -450,6 +452,25 @@ impl Bridge {
     }
 
     fn brief(&self, arguments: &Value) -> Result<Value, CoreError> {
+        if let Some(object) = arguments.as_object() {
+            if object.keys().any(|key| {
+                !matches!(
+                    key.as_str(),
+                    "recipe"
+                        | "project_id"
+                        | "snapshot_id"
+                        | "format"
+                        | "max_findings"
+                        | "max_context"
+                        | "max_gaps"
+                        | "max_relation_items"
+                )
+            }) {
+                return Err(CoreError::invalid(
+                    "archmeld_brief accepts recipe, project_id, snapshot_id, format, max_findings, max_context, max_gaps and max_relation_items",
+                ));
+            }
+        }
         let recipe = BriefRecipe::parse(arguments["recipe"].as_str().unwrap_or("auto"))?;
         let project = match arguments["project_id"].as_str() {
             Some(project) if !project.is_empty() => project.to_string(),
@@ -465,7 +486,25 @@ impl Bridge {
             },
         };
         let root = self.store.active_project_root(&project)?;
-        let mut value = build_brief(
+        let budget = BriefBudget {
+            max_findings: arguments["max_findings"]
+                .as_u64()
+                .unwrap_or(20)
+                .clamp(1, 200) as usize,
+            max_context: arguments["max_context"]
+                .as_u64()
+                .unwrap_or(10)
+                .clamp(1, 200) as usize,
+            max_gaps: arguments["max_gaps"]
+                .as_u64()
+                .unwrap_or(10)
+                .clamp(1, 200) as usize,
+            max_relation_items: arguments["max_relation_items"]
+                .as_u64()
+                .unwrap_or(10)
+                .clamp(0, 100) as usize,
+        };
+        let mut value = build_brief_with_budget(
             &self.store,
             &BriefRequest {
                 project_id: &project,
@@ -473,6 +512,7 @@ impl Bridge {
                 workspace: root.as_deref(),
                 recipe,
             },
+            budget,
         )?;
         if arguments["format"].as_str() == Some("human") {
             value["human_text"] = json!(render_markdown(&value));
@@ -665,12 +705,17 @@ fn choice_brief(projects: &[String], recipe: BriefRecipe) -> Value {
         "summary": "multiple projects are registered; choose one project_id",
         "counts": {
             "confirmed": 0,
+            "declared": 0,
             "candidate": 0,
             "unknown": projects.len() as u64,
             "stale": 0,
-            "findings": 0
+            "findings": 0,
+            "context": 0,
+            "gaps": 0
         },
         "findings": [],
+        "context": [],
+        "gaps": [],
         "unknowns": [{
             "question": "Which project should this brief describe?",
             "why": "the MCP process has no --project and multiple projects are registered",
@@ -764,39 +809,271 @@ fn page_value(
     })
 }
 
+/// Upper bound for auxiliary freshness arrays in `detail=summary` responses.
+/// File lists are paginated; entity/relation/claim/architecture/plan/omitted
+/// lists are compacted to a count plus a bounded first page so a summary can
+/// never grow past the documented budget.
+const STATUS_AUX_LIMIT: usize = 20;
+const STATUS_CURSOR_PREFIX: &str = "s2:";
+
+#[derive(Clone, Copy, Default)]
+struct StatusOffsets {
+    changed: usize,
+    added: usize,
+    deleted: usize,
+}
+
+fn status_cursor_token(
+    project: &str,
+    snapshot: &str,
+    workspace: &str,
+    max_files: usize,
+    offsets: StatusOffsets,
+    only: Option<&str>,
+) -> String {
+    let pick = |key: &str, value: usize| {
+        if only.is_none() || only == Some(key) {
+            value
+        } else {
+            0
+        }
+    };
+    format!(
+        "{STATUS_CURSOR_PREFIX}{}",
+        json!({
+            "project": project,
+            "snapshot": snapshot,
+            "workspace": workspace,
+            "max_files": max_files,
+            "changed": pick("changed", offsets.changed),
+            "added": pick("added", offsets.added),
+            "deleted": pick("deleted", offsets.deleted),
+        })
+    )
+}
+
+fn status_cursor_offsets(
+    cursor: Option<&str>,
+    project: &str,
+    snapshot: &str,
+    workspace: &str,
+    max_files: usize,
+) -> Result<StatusOffsets, CoreError> {
+    let Some(cursor) = cursor else {
+        return Ok(StatusOffsets::default());
+    };
+    let raw = cursor.strip_prefix(STATUS_CURSOR_PREFIX).ok_or_else(|| {
+        CoreError::invalid("cursor belongs to a different tool or an older status page")
+    })?;
+    let value: Value = serde_json::from_str(raw)
+        .map_err(|_| CoreError::invalid("cursor is not a valid status page token"))?;
+    if value["project"].as_str() != Some(project)
+        || value["snapshot"].as_str() != Some(snapshot)
+        || value["workspace"].as_str() != Some(workspace)
+    {
+        return Err(CoreError::invalid(
+            "cursor is stale: project, snapshot or workspace content changed; restart without cursor",
+        ));
+    }
+    let cursor_max = value["max_files"].as_u64().unwrap_or(0) as usize;
+    if cursor_max != max_files {
+        return Err(CoreError::invalid("cursor belongs to a different page size"));
+    }
+    let field = |key: &str| -> Result<usize, CoreError> {
+        value[key]
+            .as_u64()
+            .map(|offset| offset as usize)
+            .ok_or_else(|| CoreError::invalid("cursor has an invalid offset"))
+    };
+    Ok(StatusOffsets {
+        changed: field("changed")?,
+        added: field("added")?,
+        deleted: field("deleted")?,
+    })
+}
+
 fn summarize_status(
     value: &mut Value,
     max_files: usize,
     cursor: Option<&str>,
 ) -> Result<(), CoreError> {
-    let snapshot = value["projects"]
-        .as_array()
-        .and_then(|projects| projects.first())
-        .and_then(|project| project["latest_snapshot_id"].as_str())
+    let Some(projects) = value["projects"].as_array_mut() else {
+        value["page"] = json!({
+            "tool": "s2",
+            "max_files": max_files,
+            "offset": {"changed": 0, "added": 0, "deleted": 0},
+            "total": 0,
+            "returned": 0,
+            "has_more": false,
+            "next_cursor": null,
+            "arrays": {},
+        });
+        return Ok(());
+    };
+    let Some(index) = projects
+        .iter()
+        .position(|project| project["freshness"]["changed"].is_array())
+    else {
+        value["page"] = json!({
+            "tool": "s2",
+            "max_files": max_files,
+            "offset": {"changed": 0, "added": 0, "deleted": 0},
+            "total": 0,
+            "returned": 0,
+            "has_more": false,
+            "next_cursor": null,
+            "arrays": {},
+        });
+        return Ok(());
+    };
+    let project_id = projects[index]["project_id"]
+        .as_str()
+        .unwrap_or("")
+        .to_string();
+    let freshness = &projects[index]["freshness"];
+    let snapshot = freshness["base_snapshot_id"]
+        .as_str()
+        .or_else(|| projects[index]["latest_snapshot_id"].as_str())
         .unwrap_or("none")
         .to_string();
-    let offset = cursor_offset(cursor, "s1", &snapshot, max_files)?;
-    let mut page = None;
-    if let Some(projects) = value["projects"].as_array_mut() {
-        for project in projects {
-            let freshness = &mut project["freshness"];
-            for key in ["changed", "added", "deleted"] {
-                if let Some(items) = freshness[key].as_array_mut() {
-                    let total = items.len();
-                    let start = offset.min(total);
-                    let end = (start + max_files).min(total);
-                    let slice = items[start..end].to_vec();
-                    *items = slice;
-                    freshness[format!("{key}_total")] = json!(total);
-                    if key == "added" {
-                        freshness["added_truncated"] = json!(end < total);
-                        page = Some(page_value("s1", &snapshot, max_files, start, end - start, total));
-                    }
-                }
-            }
+    // Bind the cursor to the workspace content identity observed when the page
+    // was produced. A changed tree (including newly ignored/omitted files) makes
+    // earlier offsets meaningless, so the cursor must be rejected rather than
+    // silently skipping or repeating files.
+    let workspace_key = freshness["coverage"]["content_tree_digest"]
+        .as_str()
+        .map(str::to_string)
+        .or_else(|| {
+            hash::digest_value(&json!({
+                "changed": freshness["changed"],
+                "added": freshness["added"],
+                "deleted": freshness["deleted"],
+                "moved": freshness["moved"],
+            }))
+            .ok()
+        })
+        .unwrap_or_else(|| "none".to_string());
+    let offsets = status_cursor_offsets(
+        cursor,
+        &project_id,
+        &snapshot,
+        &workspace_key,
+        max_files,
+    )?;
+    let freshness = &mut projects[index]["freshness"];
+    let mut arrays = serde_json::Map::new();
+    let mut next_offsets = StatusOffsets::default();
+    let mut any_more = false;
+    let mut total_all = 0usize;
+    let mut returned_all = 0usize;
+    for (key, requested) in [
+        ("changed", offsets.changed),
+        ("added", offsets.added),
+        ("deleted", offsets.deleted),
+    ] {
+        let Some(items) = freshness[key].as_array_mut() else {
+            continue;
+        };
+        let total = items.len();
+        let start = requested.min(total);
+        let end = (start + max_files).min(total);
+        let returned = end - start;
+        let page_items = items[start..end].to_vec();
+        *items = page_items;
+        let has_more = end < total;
+        any_more |= has_more;
+        total_all += total;
+        returned_all += returned;
+        let next_cursor = has_more.then(|| {
+            status_cursor_token(
+                &project_id,
+                &snapshot,
+                &workspace_key,
+                max_files,
+                StatusOffsets {
+                    changed: if key == "changed" { end } else { 0 },
+                    added: if key == "added" { end } else { 0 },
+                    deleted: if key == "deleted" { end } else { 0 },
+                },
+                Some(key),
+            )
+        });
+        arrays.insert(
+            key.to_string(),
+            json!({
+                "offset": start,
+                "returned": returned,
+                "total": total,
+                "has_more": has_more,
+                "next_cursor": next_cursor,
+            }),
+        );
+        freshness[format!("{key}_total")] = json!(total);
+        freshness[format!("{key}_returned")] = json!(returned);
+        freshness[format!("{key}_truncated")] = json!(has_more);
+        freshness[format!("{key}_next_cursor")] = next_cursor
+            .map(Value::String)
+            .unwrap_or(Value::Null);
+        match key {
+            "changed" => next_offsets.changed = end,
+            "added" => next_offsets.added = end,
+            "deleted" => next_offsets.deleted = end,
+            _ => {}
         }
     }
-    value["page"] = page.unwrap_or_else(|| page_value("s1", &snapshot, max_files, 0, 0, 0));
+    // Compact the remaining arrays so `detail=summary` stays bounded even when
+    // a large change touches thousands of entities or relations.
+    for key in [
+        "moved",
+        "omitted",
+        "omitted_base",
+        "affected_entities",
+        "affected_relations",
+        "affected_claims",
+        "affected_architectures",
+        "stale_plans",
+        "stale_changesets",
+    ] {
+        let Some(items) = freshness[key].as_array_mut() else {
+            continue;
+        };
+        let total = items.len();
+        let keep = total.min(STATUS_AUX_LIMIT);
+        let page_items = items[..keep].to_vec();
+        *items = page_items;
+        freshness[format!("{key}_total")] = json!(total);
+        freshness[format!("{key}_returned")] = json!(keep);
+        freshness[format!("{key}_truncated")] = json!(keep < total);
+    }
+    let next_cursor = if any_more {
+        Some(status_cursor_token(
+            &project_id,
+            &snapshot,
+            &workspace_key,
+            max_files,
+            next_offsets,
+            None,
+        ))
+    } else {
+        None
+    };
+    value["page"] = json!({
+        "tool": "s2",
+        "project_id": project_id,
+        "snapshot_id": snapshot,
+        "workspace": workspace_key,
+        "max_files": max_files,
+        "offset": {
+            "changed": offsets.changed,
+            "added": offsets.added,
+            "deleted": offsets.deleted,
+        },
+        "total": total_all,
+        "returned": returned_all,
+        "has_more": any_more,
+        "next_cursor": next_cursor,
+        "arrays": arrays,
+    });
     Ok(())
 }
 
@@ -990,6 +1267,24 @@ fn tools_list() -> Value {
         if *name == "archmeld_inspect" {
             tool["inputSchema"]["properties"]["kind"]["enum"] = json!(IMPLEMENTED_INSPECT_KINDS);
         }
+        if *name == "archmeld_brief" {
+            // The sealed pack predates the one-screen budget. Advertise the
+            // implemented additive fields here until the next pack revision.
+            for (field, maximum, default) in [
+                ("max_findings", 200, 20),
+                ("max_context", 200, 10),
+                ("max_gaps", 200, 10),
+                ("max_relation_items", 100, 10),
+            ] {
+                tool["inputSchema"]["properties"][field] = json!({
+                    "type": "integer",
+                    "minimum": if field == "max_relation_items" { 0 } else { 1 },
+                    "maximum": maximum,
+                    "default": default,
+                    "description": "Bounded brief output budget; omitted items are reported in budget.omitted_*."
+                });
+            }
+        }
         tool["x-implementation"] = json!({
             "status": "implemented",
             "handler": "mcp::read_tool",
@@ -1112,5 +1407,156 @@ mod cursor_tests {
         assert!(cursor_offset(Some(cursor), "r1", "sha256:other", 500).is_err());
         assert!(cursor_offset(Some(cursor), "s1", snapshot, 500).is_err());
         assert!(cursor_offset(Some(cursor), "r1", snapshot, 100).is_err());
+    }
+
+    fn status_value(changed: usize, added: usize, deleted: usize) -> Value {
+        let files = |count: usize, prefix: &str| {
+            (0..count)
+                .map(|index| {
+                    json!({
+                        "path": format!("{prefix}/{index}.rs"),
+                        "current_digest": format!("sha256:{prefix}-{index}"),
+                    })
+                })
+                .collect::<Vec<_>>()
+        };
+        json!({
+            "schema_version": "1.0",
+            "projects": [{
+                "project_id": "project.status",
+                "latest_snapshot_id": "sha256:base",
+                "freshness": {
+                    "state": "changed",
+                    "base_snapshot_id": "sha256:base",
+                    "changed": files(changed, "changed"),
+                    "added": files(added, "added"),
+                    "deleted": files(deleted, "deleted"),
+                    "moved": files(5, "moved"),
+                    "omitted": files(100, "omitted"),
+                    "omitted_base": [],
+                    "affected_entities": files(100, "entity"),
+                    "affected_relations": files(100, "relation"),
+                    "affected_claims": [],
+                    "affected_architectures": [],
+                    "stale_plans": [],
+                    "stale_changesets": [],
+                    "coverage": {"content_tree_digest": "sha256:tree"},
+                }
+            }]
+        })
+    }
+
+    #[test]
+    fn status_pages_each_array_independently() {
+        let mut cursor: Option<String> = None;
+        let mut changed_seen = 0;
+        let mut pages = 0;
+        loop {
+            let mut value = status_value(250, 250, 250);
+            summarize_status(&mut value, 100, cursor.as_deref()).unwrap();
+            let freshness = &value["projects"][0]["freshness"];
+            changed_seen += freshness["changed"].as_array().unwrap().len();
+            assert_eq!(freshness["changed_total"], 250);
+            assert_eq!(freshness["added_total"], 250);
+            assert_eq!(freshness["deleted_total"], 250);
+            assert_eq!(value["page"]["arrays"]["changed"]["offset"], pages * 100);
+            assert_eq!(value["page"]["arrays"]["added"]["offset"], pages * 100);
+            assert_eq!(value["page"]["arrays"]["deleted"]["offset"], pages * 100);
+            pages += 1;
+            cursor = value["page"]["next_cursor"].as_str().map(str::to_string);
+            assert!(pages <= 4, "pagination did not terminate");
+            if cursor.is_none() {
+                break;
+            }
+        }
+        assert_eq!(pages, 3);
+        assert_eq!(changed_seen, 250);
+    }
+
+    #[test]
+    fn status_changed_only_reaches_the_last_file() {
+        // 1000 changed files and no added/deleted files: the old page shape
+        // derived `has_more` from `added` only, so the rest was unreachable.
+        let mut cursor: Option<String> = None;
+        let mut seen = std::collections::BTreeSet::new();
+        let mut pages = 0;
+        loop {
+            let mut value = status_value(1000, 0, 0);
+            summarize_status(&mut value, 100, cursor.as_deref()).unwrap();
+            for item in value["projects"][0]["freshness"]["changed"]
+                .as_array()
+                .unwrap()
+            {
+                seen.insert(item["path"].as_str().unwrap().to_string());
+            }
+            pages += 1;
+            cursor = value["page"]["next_cursor"].as_str().map(str::to_string);
+            assert!(pages <= 11, "pagination did not terminate");
+            if cursor.is_none() {
+                break;
+            }
+        }
+        assert_eq!(pages, 10);
+        assert_eq!(seen.len(), 1000);
+    }
+
+    #[test]
+    fn status_array_cursor_only_advances_that_array() {
+        let mut value = status_value(250, 250, 250);
+        summarize_status(&mut value, 100, None).unwrap();
+        let changed_cursor = value["page"]["arrays"]["changed"]["next_cursor"]
+            .as_str()
+            .expect("changed next cursor")
+            .to_string();
+        let mut value = status_value(250, 250, 250);
+        summarize_status(&mut value, 100, Some(&changed_cursor)).unwrap();
+        assert_eq!(value["page"]["arrays"]["changed"]["offset"], 100);
+        assert_eq!(value["page"]["arrays"]["added"]["offset"], 0);
+        assert_eq!(value["page"]["arrays"]["deleted"]["offset"], 0);
+    }
+
+    #[test]
+    fn status_cursor_is_bound_to_workspace_and_snapshot() {
+        let mut value = status_value(250, 0, 0);
+        summarize_status(&mut value, 100, None).unwrap();
+        let cursor = value["page"]["next_cursor"]
+            .as_str()
+            .expect("next cursor")
+            .to_string();
+
+        let mut same = status_value(250, 0, 0);
+        summarize_status(&mut same, 100, Some(&cursor)).unwrap();
+
+        let mut moved_tree = status_value(250, 0, 0);
+        moved_tree["projects"][0]["freshness"]["coverage"]["content_tree_digest"] =
+            json!("sha256:other-tree");
+        assert!(summarize_status(&mut moved_tree, 100, Some(&cursor)).is_err());
+
+        let mut other_snapshot = status_value(250, 0, 0);
+        other_snapshot["projects"][0]["freshness"]["base_snapshot_id"] = json!("sha256:other");
+        assert!(summarize_status(&mut other_snapshot, 100, Some(&cursor)).is_err());
+
+        let mut other_project = status_value(250, 0, 0);
+        other_project["projects"][0]["project_id"] = json!("project.other");
+        assert!(summarize_status(&mut other_project, 100, Some(&cursor)).is_err());
+
+        let mut other_page = status_value(250, 0, 0);
+        assert!(summarize_status(&mut other_page, 50, Some(&cursor)).is_err());
+    }
+
+    #[test]
+    fn status_summary_bounds_auxiliary_arrays() {
+        let mut value = status_value(1, 0, 0);
+        summarize_status(&mut value, 100, None).unwrap();
+        let freshness = &value["projects"][0]["freshness"];
+        assert_eq!(freshness["affected_entities"].as_array().unwrap().len(), 20);
+        assert_eq!(freshness["affected_entities_total"], 100);
+        assert_eq!(freshness["affected_entities_returned"], 20);
+        assert_eq!(freshness["affected_entities_truncated"], true);
+        assert_eq!(freshness["omitted"].as_array().unwrap().len(), 20);
+        assert_eq!(freshness["omitted_total"], 100);
+        assert_eq!(freshness["omitted_truncated"], true);
+        assert_eq!(freshness["moved"].as_array().unwrap().len(), 5);
+        assert_eq!(freshness["moved_truncated"], false);
     }
 }

@@ -1,0 +1,8 @@
+{"seq": 1, "command": "cd \"<path>" && git log --oneline -5 && echo \"---\" && git show --stat HEAD"}
+{"seq": 2, "command": "cd \"<path>" && ls -la && echo \"---\" && git status --short | head -20"}
+{"seq": 3, "command": "cd \"<path>" && git show HEAD"}
+{"seq": 4, "command": "cd \"<path>" && find src -type f | sort"}
+{"seq": 7, "command": "cd \"<path>" && git diff HEAD^ HEAD --name-status && echo \"--- base snapshot files ---\" && git ls-tree -r --name-only HEAD"}
+{"seq": 8, "command": "cd \"<path>" && cat -n src/target.py && echo \"---\" && cat -n src/caller.py && echo \"--- stable? ---\" && git log --oneline --all | head"}
+{"seq": 9, "command": "cd \"<path>" && git rev-parse HEAD^ && echo \"--- blob hashes ---\" && git ls-tree -r HEAD"}
+{"seq": 10, "command": "cd \"<path>" && git rev-parse HEAD:src/caller.py HEAD^:src/caller.py && echo \"--- target base ---\" && git show HEAD^:src/target.py | cat -n"}

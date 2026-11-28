@@ -1,0 +1,115 @@
+{
+  "reviewer": "reviewer-1",
+  "model": "deepseek/deepseek-v4-pro",
+  "fixture": "gap",
+  "arm": "a",
+  "snapshot_id": "sha256:c0cbafc936f0ec2fdc1a56df12a647ddc5c784fb5b4005fa082d0bb768771670",
+  "started_at": "2026-11-28T07:15:17Z",
+  "duration_ms": 88620,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "unmapped_paths": [
+      "docs/notes.md"
+    ],
+    "changed_entities": [
+      "run"
+    ],
+    "writes_evidence": "unavailable",
+    "coverage": "partial",
+    "citations": [
+      {
+        "path": "src/ops.py",
+        "line": 3
+      },
+      {
+        "path": "src/ops.py",
+        "line": 4
+      },
+      {
+        "path": "src/settle.py",
+        "line": 1
+      },
+      {
+        "path": "src/settle.py",
+        "line": 2
+      },
+      {
+        "path": "docs/notes.md",
+        "line": 1
+      },
+      {
+        "path": "docs/notes.md",
+        "line": 3
+      }
+    ],
+    "confidence": "medium",
+    "notes": "Last commit (a140914) changes only docs/notes.md and src/ops.py. The repo contains no entity-mapping manifest (tracked files: .gitignore, docs/notes.md, src/ops.py, src/settle.py; no .archmeld/.pi content present). The only named code entities are the functions run (src/ops.py:3) and settle (src/settle.py:1). src/ops.py maps to entity run because the diff changes run's body (return settle() + 1, src/ops.py:4). docs/notes.md is documentation (title '# Notes') with no code entity, so it is the named gap. For writes: run calls settle() (src/ops.py:4) and settle() returns the constant 1 with no assignment, I/O, or side effect (src/settle.py:2); the doc text (docs/notes.md:3) only states settlement behavior is documented. There is no evidence that run writes to settle, so writes_evidence is unavailable (not inferred from source shape). Coverage is partial because one of the two changed files lacks an entity mapping."
+  },
+  "calls": [],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "git log --oneline -5 && echo \"---\" && git show HEAD --stat"
+    },
+    {
+      "seq": 2,
+      "command": "git diff HEAD^ HEAD --name-status"
+    },
+    {
+      "seq": 3,
+      "command": "git diff HEAD^ HEAD"
+    },
+    {
+      "seq": 4,
+      "command": "ls -la && echo \"---\" && find . -type f -not -path './.git/*' | head -100"
+    },
+    {
+      "seq": 9,
+      "command": "ls -la .archmeld .pi 2>&1; echo \"---\"; find . -not -path './.git/*' -not -name '.git' | cat; echo \"---git ls-files---\"; git ls-files"
+    },
+    {
+      "seq": 10,
+      "command": "git show HEAD^:src/ops.py; echo \"===\"; git show HEAD^:docs/notes.md; echo \"===\"; git log --all --oneline"
+    },
+    {
+      "seq": 11,
+      "command": "git branch -a; echo \"---tags---\"; git tag; echo \"---reflog---\"; git reflog --all; echo \"---stash---\"; git stash list; echo \"---remotes---\"; git remote -v"
+    },
+    {
+      "seq": 12,
+      "command": "git config --list --show-origin 2>&1; echo \"---\"; cat .git/HEAD; echo \"---\"; ls -la .git"
+    },
+    {
+      "seq": 13,
+      "command": "git diff HEAD^ HEAD --unified=5; echo \"=== current files ===\"; nl -ba src/ops.py; echo \"---\"; nl -ba src/settle.py; echo \"---\"; nl -ba docs/notes.md"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 2443,
+    "output": 7607,
+    "cacheRead": 23808,
+    "cacheWrite": 0,
+    "totalTokens": 33858
+  },
+  "session_id": "7eef7559-cddd-4102-bcaa-07fe93fad3c3",
+  "session_dir": "<path>",
+  "prompt_sha256": "857cb65cc9cbc956f3b30e8e3a028c206581ce817e4a1d2d5d7da816b38547f0",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-1-gap-a\\pi-sessions\\2026-11-28T07-15-17-892Z_7eef7559-cddd-4102-bcaa-07fe93fad3c3.jsonl",
+      "sha256": "sha256:5dc6e27bc433822db174a36234f6865dbbdd50d4e662a2d56f1b2d0b96e9c882",
+      "bytes": 50471
+    }
+  ]
+}

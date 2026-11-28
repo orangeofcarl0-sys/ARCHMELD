@@ -1,0 +1,129 @@
+{
+  "reviewer": "reviewer-2",
+  "model": "omni-responses/deepseek-v4.1-flash",
+  "fixture": "context",
+  "arm": "b",
+  "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+  "started_at": "2026-11-28T07:14:19Z",
+  "duration_ms": 31827,
+  "exit_code": 0,
+  "timed_out": false,
+  "answer": {
+    "changed_owner": "target",
+    "changed_path": "src/target.py",
+    "unchanged_context_entity": "src/caller.py",
+    "incoming_resolution": "candidate",
+    "citations": [
+      {
+        "path": "src/target.py",
+        "line": 2
+      },
+      {
+        "path": "src/caller.py",
+        "line": 1
+      },
+      {
+        "path": "src/caller.py",
+        "line": 3
+      },
+      {
+        "path": "src/caller.py",
+        "line": 4
+      }
+    ],
+    "confidence": "medium",
+    "notes": "Changed owner is the symbol with qualified name src/target.py::target; its anchor spans src/target.py:1-2 and the only changed line is line 2 (base `return 1` -> workspace `return 2`), per git diff HEAD^ HEAD and the review finding F1 (entity syn.6bf79d84...). Unchanged context is src/caller.py (brief 'unchanged_context', relation rel.404eb296..., imports, declared); it is not a second change - the review reports files.changed=1 and only src/target.py in the files array. The only incoming edges recorded in the base snapshot toward src/target.py::target are rel.404eb296 (imports from src/caller.py, resolution=declared, producer_resolution=cross_file_resolution) and rel.ca708716 (contains from src/target.py, resolution=declared). No resolved_call relation exists: an archmeld_query(neighbors, relation_kinds=[resolved_call, static_call_candidate, observed_call, references]) on that entity returned 0 relations, and the export evidence limitations state 'call/reference edges are syntax candidates, not resolved semantics' and that declared 'is not a call tier'. The call at src/caller.py:4 (`return target()`) is therefore a candidate hypothesis at source-shape level, not an established resolved call; the incoming relation's own resolution is declared structural import evidence. No build, test or runtime command was executed (verification: not_run), so runtime effect of the changed return value is unavailable."
+  },
+  "calls": [
+    {
+      "seq": 2,
+      "tool": "archmeld_brief",
+      "args": {
+        "recipe": "change"
+      }
+    },
+    {
+      "seq": 4,
+      "tool": "archmeld_query",
+      "args": {
+        "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+        "entity_ids": [
+          "syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"
+        ],
+        "kind": "impact",
+        "max_depth": 2
+      }
+    },
+    {
+      "seq": 5,
+      "tool": "archmeld_query",
+      "args": {
+        "kind": "neighbors",
+        "relation_kinds": [
+          "resolved_call",
+          "static_call_candidate",
+          "observed_call",
+          "references"
+        ],
+        "snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+        "entity_ids": [
+          "syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"
+        ],
+        "query": "target"
+      }
+    },
+    {
+      "seq": 6,
+      "tool": "archmeld_source",
+      "args": {
+        "entity_id": "syn.6bf79d84d54657f92eb57a2b757006756410fbe870651192e49c0f7f8599b071"
+      }
+    },
+    {
+      "seq": 7,
+      "tool": "archmeld_review",
+      "args": {
+        "base_snapshot_id": "sha256:00ad87a9c693b071328b805540dc9b8b4fa5de0cb46439097793c1a39998b624",
+        "detail": "full",
+        "max_files": 500
+      }
+    }
+  ],
+  "shell": [
+    {
+      "seq": 1,
+      "command": "cd <path> && git log --oneline -5 && echo \"---\" && git show --stat HEAD"
+    },
+    {
+      "seq": 3,
+      "command": "cd <path> && git diff HEAD^ HEAD && echo \"=== files ===\" && ls -R && echo \"=== target.py ===\" && cat -n src/target.py && echo \"=== caller.py ===\" && cat -n src/caller.py"
+    }
+  ],
+  "edits": [],
+  "usage": {
+    "input": 39993,
+    "output": 3412,
+    "cacheRead": 7040,
+    "cacheWrite": 0,
+    "totalTokens": 50445
+  },
+  "session_id": "a77782a3-edaf-47b7-be8c-bff83b61de5a",
+  "session_dir": "<path>",
+  "prompt_sha256": "4649272fcc1d61358d47efe50bed8b609a653414a7bb781c55c9081e36315d4f",
+  "score": {
+    "matched": true,
+    "owner_ok": true,
+    "paths_ok": true,
+    "labels_ok": true,
+    "citations_ok": true,
+    "unsupported": false,
+    "reasons": []
+  },
+  "session_files": [
+    {
+      "path": "runs\\reviewer-2-context-b\\pi-sessions\\2026-11-28T07-14-19-607Z_a77782a3-edaf-47b7-be8c-bff83b61de5a.jsonl",
+      "sha256": "sha256:7e8aeee4753498b4a14d8143a4ee190da129ee92da4962bc365e8bc1f6574c7d",
+      "bytes": 72247
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-065-structural-snapshot-diff.md",
+  "change": "add_snapshot_structural_diff_and_candidate_snapshot_cli",
+  "output": {
+    "files.moved": "same-blob delete+add pairs",
+    "structural.dependencies.added/removed": "stable-key relation diff",
+    "structural.ownership.added/removed": "owns/writes relation edges; coverage none when absent",
+    "structural.entry_points": "basis unavailable; not inferred",
+    "structural.paths.convergence": "bounded convergent-path hypotheses"
+  },
+  "cli": {
+    "archmeld review-diff --candidate-snapshot <snapshot_id>": "snapshot-to-snapshot mode; --workspace is required only for workspace mode"
+  },
+  "invariants": {
+    "source_mutation": "none",
+    "history_mutation": "none",
+    "candidate_promotion": "never; candidate relations stay candidate",
+    "path_claim": "hypothesis, not execution"
+  },
+  "implemented_by": "crates/archmeld-core/src/surface/review.rs and crates/archmeld-api/src/cli.rs",
+  "verified_by": "crates/archmeld-core/tests/diff_review.rs::snapshot_diff_detects_moves_and_convergent_paths"
+}

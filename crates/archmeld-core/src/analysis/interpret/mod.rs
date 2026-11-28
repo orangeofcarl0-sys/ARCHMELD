@@ -160,6 +160,30 @@ struct ArchitectureDependency {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
+struct RuleSource {
+    path: String,
+    line: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    digest: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct ArchitectureException {
+    id: String,
+    violation_key: String,
+    reason: String,
+    introduced_revision: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    expires_revision: Option<i64>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    scope_ids: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source: Option<RuleSource>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 struct ArchitectureRule {
     id: String,
     kind: String,
@@ -172,6 +196,13 @@ struct ArchitectureRule {
     /// documents keep their canonical bytes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     parameters: Option<Value>,
+    /// Optional rule provenance. Omitted rules keep their previous canonical
+    /// bytes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source: Option<RuleSource>,
+    /// Accepted exceptions. Omitted rules keep their previous canonical bytes.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    exceptions: Vec<ArchitectureException>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -247,10 +278,11 @@ mod codeboarding;
 
 pub use claims::{get_claim, propose_claim, review_claim};
 pub use investigations::{get_investigation, propose_investigation};
+pub(crate) use architecture::architecture_at_revision;
 pub use architecture::{
-    architecture_producer, architecture_review, get_architecture,
-    list_architecture_reviews, propose_architecture, review_architecture,
-    validate_architecture_document, ArchitectureReviewRequest,
+    architecture_producer, architecture_review, get_architecture, list_architecture_reviews,
+    propose_architecture, review_architecture, validate_architecture_document,
+    ArchitectureReviewRequest,
 };
 pub use codeboarding::{import_codeboarding, CodeBoardingRequest, ModelProvenance};
 
@@ -352,6 +384,17 @@ fn validate_investigation(store: &Store, investigation: &Investigation) -> Resul
     Ok(())
 }
 
+fn validate_rule_source(label: &str, source: &RuleSource) -> Result<()> {
+    validate::validate_path(label, &source.path)?;
+    if source.line == 0 {
+        return Err(CoreError::invalid(format!("{label}.line must be >= 1")));
+    }
+    if let Some(digest) = &source.digest {
+        validate::require_digest(&format!("{label}.digest"), digest)?;
+    }
+    Ok(())
+}
+
 fn validate_architecture(store: &Store, project_id: &str, architecture: &Architecture) -> Result<()> {
     if architecture.schema_version != "1.0" {
         return Err(CoreError::invalid("architecture schema_version must be 1.0"));
@@ -419,8 +462,15 @@ fn validate_architecture(store: &Store, project_id: &str, architecture: &Archite
             validate::require_id("dependency.evidence_ids[]", evidence_id)?;
         }
     }
+    let mut rule_ids = std::collections::BTreeSet::new();
     for rule in &architecture.rules {
         validate::require_id("rule.id", &rule.id)?;
+        if !rule_ids.insert(rule.id.as_str()) {
+            return Err(CoreError::invalid(format!(
+                "duplicate rule id {}",
+                rule.id
+            )));
+        }
         validate::require_non_empty("rule.description", &rule.description)?;
         if !matches!(
             rule.kind.as_str(),
@@ -466,6 +516,52 @@ fn validate_architecture(store: &Store, project_id: &str, architecture: &Archite
                 return Err(CoreError::invalid(
                     "resource_exhausted: rule.parameters exceeds 64 KiB",
                 ));
+            }
+        }
+        if let Some(source) = &rule.source {
+            validate_rule_source("rule.source", source)?;
+        }
+        if rule.exceptions.len() > 100 {
+            return Err(CoreError::invalid(
+                "resource_exhausted: a rule has more than 100 exceptions",
+            ));
+        }
+        let mut exception_ids = std::collections::BTreeSet::new();
+        let mut exception_keys = std::collections::BTreeSet::new();
+        for exception in &rule.exceptions {
+            validate::require_id("rule.exception.id", &exception.id)?;
+            if !exception_ids.insert(exception.id.as_str()) {
+                return Err(CoreError::invalid(format!(
+                    "duplicate rule exception id {}",
+                    exception.id
+                )));
+            }
+            validate::require_non_empty("rule.exception.violation_key", &exception.violation_key)?;
+            if !exception_keys.insert(exception.violation_key.as_str()) {
+                return Err(CoreError::invalid(format!(
+                    "duplicate rule exception violation_key {}",
+                    exception.violation_key
+                )));
+            }
+            validate::require_non_empty("rule.exception.reason", &exception.reason)?;
+            if exception.introduced_revision < 1 {
+                return Err(CoreError::invalid(
+                    "rule.exception.introduced_revision must be >= 1",
+                ));
+            }
+            if exception
+                .expires_revision
+                .is_some_and(|expires| expires < exception.introduced_revision)
+            {
+                return Err(CoreError::invalid(
+                    "rule.exception.expires_revision must be >= introduced_revision",
+                ));
+            }
+            for scope_id in &exception.scope_ids {
+                validate::require_id("rule.exception.scope_ids[]", scope_id)?;
+            }
+            if let Some(source) = &exception.source {
+                validate_rule_source("rule.exception.source", source)?;
             }
         }
     }

@@ -11,15 +11,15 @@
     "recorded_at": "2026-11-01"
   },
   "source": {
-    "name": "<private-dataset>.json",
-    "sha256": "sha256:2b7cda9a4ab9f7d8672c888c5c803b872a98125dbaec8194d24ce14db8de0201",
-    "bytes": 738737,
-    "rows": 342,
+    "name": "<private-recorded-file>",
+    "sha256": "sha256:<redacted>",
+    "bytes": <redacted>,
+    "rows": <redacted>,
     "<selected-columns>": [
-      "model.conditional_SD_mm",
-      "MC.all_output_SD_mm",
-      "model.bias_mm",
-      "MC.all_output_bias_mm"
+      "<redacted-column>",
+      "<redacted-column>",
+      "<redacted-column>",
+      "<redacted-column>"
     ]
   },
   "extraction": {
@@ -99,7 +99,7 @@
           "columns": [
             "value"
           ],
-          "compared": 342,
+          "compared": <redacted>,
           "custom_units": [],
           "expected_artifact": "sd_a.csv",
           "failed_metrics": [],
@@ -138,7 +138,7 @@
           "normalization": "sample",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "thresholds": [
@@ -212,7 +212,7 @@
           "columns": [
             "value"
           ],
-          "compared": 342,
+          "compared": <redacted>,
           "custom_units": [],
           "expected_artifact": "sd_a.csv",
           "failed_metrics": [],
@@ -251,7 +251,7 @@
           "normalization": "sample",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "thresholds": [
@@ -317,7 +317,7 @@
           "columns": [
             "value"
           ],
-          "compared": 342,
+          "compared": <redacted>,
           "custom_units": [],
           "expected_artifact": "sd_a.csv",
           "ignored_nan": 0,
@@ -332,7 +332,7 @@
           "nonfinite_policy": "reject",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "unit_mode": "exact",
@@ -389,7 +389,7 @@
           "columns": [
             "value"
           ],
-          "compared": 342,
+          "compared": <redacted>,
           "custom_units": [],
           "eps_multiplier": "0",
           "expected_artifact": "sd_a.csv",
@@ -406,7 +406,7 @@
           "rtol": "0",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "tolerance_model": "matlab_eps",
@@ -464,7 +464,7 @@
           "columns": [
             "sd"
           ],
-          "compared": 342,
+          "compared": <redacted>,
           "custom_units": [],
           "eps_multiplier": null,
           "expected_artifact": "units_a.json",
@@ -481,7 +481,7 @@
           "rtol": "0",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "tolerance_model": "atol_rtol",
@@ -539,7 +539,7 @@
           "columns": [
             "sd"
           ],
-          "compared": 342,
+          "compared": <redacted>,
           "custom_units": [
             "mm_rf"
           ],
@@ -558,7 +558,7 @@
           "rtol": "0",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "tolerance_model": "atol_rtol",
@@ -619,7 +619,7 @@
           "reason": "unit dimension or scale mismatch (checked before numeric values)",
           "semantics": "ieee754_elementwise",
           "shape": [
-            342,
+            <redacted>,
             1
           ],
           "unit_mismatches": [
@@ -641,18 +641,18 @@
     "gate": "none",
     "reason": "the model and the Monte Carlo estimator are different estimators; no frozen tolerance exists, so the difference is reported only",
     "sd_mm_model_vs_mc": {
-      "count": 342,
-      "mean_abs_error": "0.40937056371841574",
-      "rms_error": "1.9913509250813881",
-      "p95_abs_error": "4.491015143916547",
-      "max_abs_error": "13.907340398982468"
+      "count": <redacted>,
+      "mean_abs_error": "<redacted>",
+      "rms_error": "<redacted>",
+      "p95_abs_error": "<redacted>",
+      "max_abs_error": "<redacted>"
     },
     "bias_mm_model_vs_mc": {
-      "count": 342,
-      "mean_abs_error": "0.000863412938404859",
-      "rms_error": "0.005015919252837724",
-      "p95_abs_error": "0.002297657186469248",
-      "max_abs_error": "0.04688110172316613"
+      "count": <redacted>,
+      "mean_abs_error": "<redacted>",
+      "rms_error": "<redacted>",
+      "p95_abs_error": "<redacted>",
+      "max_abs_error": "<redacted>"
     }
   },
   "limitations": [

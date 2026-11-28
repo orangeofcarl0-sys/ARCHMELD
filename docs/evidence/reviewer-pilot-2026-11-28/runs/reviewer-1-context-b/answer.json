@@ -1,0 +1,22 @@
+{
+  "changed_owner": "src/target.py::target",
+  "changed_path": "src/target.py",
+  "unchanged_context_entity": "src/caller.py::caller",
+  "incoming_resolution": "candidate",
+  "citations": [
+    {
+      "path": "src/target.py",
+      "line": 2
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    },
+    {
+      "path": "src/caller.py",
+      "line": 1
+    }
+  ],
+  "confidence": "high",
+  "notes": "The last commit changes only src/target.py line 2 (return 1 -> return 2), owned by symbol src/target.py::target. The unchanged caller is src/caller.py::caller, whose body at src/caller.py:4 calls target(); it is context, not a second change. The call is indexed as relation rel.4a892f85... kind=static_call_candidate with resolution 'candidate' and condition 'syntax-only; not a resolved call', and it targets the external module entity 'target' (ext.6b5b66...). The name is only bound to the changed symbol via the import relation rel.404eb2... (kind=imports, resolution=declared, producer_resolution=cross_file_resolution) from src/caller.py line 1. Therefore the incoming relation is a candidate hypothesis, not a resolved call; no resolved_call edge exists in the snapshot."
+}

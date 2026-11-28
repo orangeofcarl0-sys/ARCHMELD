@@ -1,0 +1,30 @@
+{
+  "changed_owner": "target",
+  "changed_path": "src/target.py",
+  "unchanged_context_entity": "caller",
+  "incoming_resolution": "resolved",
+  "citations": [
+    {
+      "path": "src/target.py",
+      "line": 1
+    },
+    {
+      "path": "src/target.py",
+      "line": 2
+    },
+    {
+      "path": "src/caller.py",
+      "line": 1
+    },
+    {
+      "path": "src/caller.py",
+      "line": 3
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    }
+  ],
+  "confidence": "high",
+  "notes": "The commit 9217097 changes only src/target.py line 2 (return 1 -> return 2), inside the function 'target' (src/target.py:1), so the changed owner is 'target'. The only caller is 'caller' in src/caller.py:3, which is unchanged and directly calls target via 'from target import target' (src/caller.py:1) and 'return target()' (src/caller.py:4). That direct import plus direct call is a statically resolvable call edge, so the incoming relation is a resolved call rather than a candidate hypothesis."
+}

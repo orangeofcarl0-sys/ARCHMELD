@@ -35,27 +35,8 @@
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 3,
-          "processes": [
-            {
-              "first_seen_ms": 567,
-              "name": "collect2.exe",
-              "parent_pid": 52964,
-              "pid": 46208
-            },
-            {
-              "first_seen_ms": 567,
-              "name": "ld.exe",
-              "parent_pid": 46208,
-              "pid": 52856
-            },
-            {
-              "first_seen_ms": 41,
-              "name": "cc1plus.exe",
-              "parent_pid": 52964,
-              "pid": 54580
-            }
-          ],
+          "observed": 0,
+          "processes": [],
           "state": "complete",
           "survivors": [],
           "tool": "Toolhelp32 CreateToolhelp32Snapshot"
@@ -65,7 +46,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 790
+        "wall_ms": 554
       },
       "controlled_change": {
         "after_output": "12.57 6",
@@ -111,9 +92,9 @@
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stdout": "12.57 6\r\n",
-        "stdout_digest": "sha256:b3cda623424e6d233cd3ec7d0840474832f1111b12cc3a4e1bebc7d026b224cd",
+        "stdout_digest": "sha256:b3cda62<redacted>4e6d233cd3ec7d0840474832f1111b12cc3a4e1bebc7d026b224cd",
         "timed_out": false,
-        "wall_ms": 163
+        "wall_ms": 157
       },
       "runtime_linkage": {
         "capture_tool": "archmeld-explicit-probe",
@@ -122,7 +103,7 @@
         "lossy": false,
         "mapped_spans": 8001,
         "observed_relations": 4,
-        "raw_artifact_digest": "sha256:7aae9c041ab84b5baae4c20beb33c592cabdbbb8cf82b9372e66d3f31a051eda",
+        "raw_artifact_digest": "sha256:d42714bc7cdee447cad8a2da4eae68f2a9c6113bb35dc4add5c715ab3a3652a5",
         "state": "verified",
         "unmapped_spans": 0
       }
@@ -149,10 +130,10 @@
         },
         "stderr": "",
         "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout": "\r\n已成功生成。\r\n    0 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:02.10\r\n",
-        "stdout_digest": "sha256:28ab581835d62ced8054d0560bc469f0af7b0da26648de4df3d6903a421bad95",
+        "stdout": "\r\n已成功生成。\r\n    0 个警告\r\n    0 个错误\r\n\r\n已用时间 00:00:01.57\r\n",
+        "stdout_digest": "sha256:54b08747521ce1eaf15c403addd9a51d94119835102f9cbbc813d7dd66138b68",
         "timed_out": false,
-        "wall_ms": 3026
+        "wall_ms": 2225
       },
       "controlled_change": {
         "after_output": "12",
@@ -200,18 +181,18 @@
         "stdout": "12\r\n",
         "stdout_digest": "sha256:f2bf6cb915ec521520920f625e9a641f22bae7808a5f5db7867c431c1a79440f",
         "timed_out": false,
-        "wall_ms": 201
+        "wall_ms": 150
       },
       "runtime_linkage": {
         "capture_tool": "dotnet-trace",
         "capture_version": "10.0.750501",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 51,
+        "mapped_spans": 56,
         "observed_relations": 0,
-        "raw_artifact_digest": "sha256:5ba136bc57093e8e02665debfff8e17d91acf4192d3b6a0c1faf7899189b680d",
+        "raw_artifact_digest": "sha256:857afd8dcc5a0bac164d9db96ebe94b92c4b088e2a691ccc5ddd932fb08516e0",
         "state": "verified",
-        "unmapped_spans": 642
+        "unmapped_spans": 680
       }
     },
     "go": {
@@ -227,15 +208,8 @@
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 1,
-          "processes": [
-            {
-              "first_seen_ms": 555,
-              "name": "link.exe",
-              "parent_pid": 53380,
-              "pid": 48176
-            }
-          ],
+          "observed": 0,
+          "processes": [],
           "state": "complete",
           "survivors": [],
           "tool": "Toolhelp32 CreateToolhelp32Snapshot"
@@ -245,7 +219,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 978
+        "wall_ms": 843
       },
       "controlled_change": {
         "after_output": "2 4 6",
@@ -294,7 +268,7 @@
         "stdout": "2 4 6\n",
         "stdout_digest": "sha256:0e60e83c810f5a61560d0f86c2e250db87bb98d0adb500dac7fb1f58cfd842d5",
         "timed_out": false,
-        "wall_ms": 1398
+        "wall_ms": 1253
       },
       "runtime_linkage": {
         "capture_tool": "go-pprof",
@@ -303,9 +277,9 @@
         "lossy": true,
         "mapped_spans": 2,
         "observed_relations": 1,
-        "raw_artifact_digest": "sha256:6e169428e187883c02be9dadd84449fb44f55b19bf802766756d356505d7a8e9",
+        "raw_artifact_digest": "sha256:88d21b1905363dda36194515ec66cffaecb1d191119e62761c7c85fc8c4ba159",
         "state": "verified",
-        "unmapped_spans": 9
+        "unmapped_spans": 31
       },
       "test": {
         "argv": [
@@ -319,21 +293,8 @@
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 2,
-          "processes": [
-            {
-              "first_seen_ms": 1080,
-              "name": "vet.exe",
-              "parent_pid": 33628,
-              "pid": 23600
-            },
-            {
-              "first_seen_ms": 1080,
-              "name": "vet.exe",
-              "parent_pid": 33628,
-              "pid": 36376
-            }
-          ],
+          "observed": 0,
+          "processes": [],
           "state": "complete",
           "survivors": [],
           "tool": "Toolhelp32 CreateToolhelp32Snapshot"
@@ -343,7 +304,7 @@
         "stdout": "?   \texample.com/langpack\t[no test files]\n?   \texample.com/langpack/other\t[no test files]\n?   \texample.com/langpack/util\t[no test files]\n",
         "stdout_digest": "sha256:fa2be54549ed07d8be84eccad87a7907a6c3b1b445214252c4a53b2c5ec5ded8",
         "timed_out": false,
-        "wall_ms": 1251
+        "wall_ms": 404
       }
     },
     "java": {
@@ -377,7 +338,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 976
+        "wall_ms": 877
       },
       "controlled_change": {
         "after_output": "compiled",
@@ -427,18 +388,18 @@
         "stdout": "24\r\n",
         "stdout_digest": "sha256:f6bca0e7f46a94bd3349fdb86511cbec4a9091e409b62dd2d6b8c1fdb9a3ce00",
         "timed_out": false,
-        "wall_ms": 248
+        "wall_ms": 201
       },
       "runtime_linkage": {
         "capture_tool": "jfr",
         "capture_version": "25.0.5",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 5,
+        "mapped_spans": 6,
         "observed_relations": 0,
-        "raw_artifact_digest": "sha256:740062b72ca6563fe267a7464da00004cf4c307c4af673a4ed24bfc0c4dda81f",
+        "raw_artifact_digest": "sha256:518ec4c10ab601efd235ad197636c24e03152432fe12b67036df56fca529f134",
         "state": "verified",
-        "unmapped_spans": 119
+        "unmapped_spans": 114
       }
     },
     "javascript_typescript": {
@@ -493,7 +454,7 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 159
+          "wall_ms": 105
         },
         "runtime": {
           "argv": [
@@ -518,7 +479,7 @@
           "stdout": "4\n",
           "stdout_digest": "sha256:7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
           "timed_out": false,
-          "wall_ms": 156
+          "wall_ms": 153
         }
       },
       "medium_project": {
@@ -541,11 +502,11 @@
           "capture_version": "node 24.14.1",
           "evidence": "docs/release-evidence/B030-runtime-linkage.json",
           "lossy": true,
-          "mapped_spans": 16,
+          "mapped_spans": 15,
           "observed_relations": 1,
-          "raw_artifact_digest": "sha256:9347c72d78878e3b04b68fba7a0c2acff723bb562eb59b87c81c5e5a98ca72ea",
+          "raw_artifact_digest": "sha256:a5b612ef622fc2a7b00b10c855c1bb68b018a4d237c9a1bac78b8b856c6b53ba",
           "state": "verified",
-          "unmapped_spans": 813
+          "unmapped_spans": 709
         },
         "state": "verified",
         "typescript": {
@@ -553,11 +514,11 @@
           "capture_version": "node 24.14.1",
           "evidence": "docs/release-evidence/B030-runtime-linkage.json",
           "lossy": true,
-          "mapped_spans": 14,
+          "mapped_spans": 13,
           "observed_relations": 1,
-          "raw_artifact_digest": "sha256:dcaf02a496ba91a9b2874cdf8bf94ef0b7a48a3090f0bd30e38ed628f59458a6",
+          "raw_artifact_digest": "sha256:ff15b6b0b2abdb99b563048b260e73050e599b6af5d969cb3acec711b27e9988",
           "state": "verified",
-          "unmapped_spans": 1845
+          "unmapped_spans": 1912
         }
       },
       "runtime_linkage_javascript": {
@@ -565,22 +526,22 @@
         "capture_version": "node 24.14.1",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 16,
+        "mapped_spans": 15,
         "observed_relations": 1,
-        "raw_artifact_digest": "sha256:9347c72d78878e3b04b68fba7a0c2acff723bb562eb59b87c81c5e5a98ca72ea",
+        "raw_artifact_digest": "sha256:a5b612ef622fc2a7b00b10c855c1bb68b018a4d237c9a1bac78b8b856c6b53ba",
         "state": "verified",
-        "unmapped_spans": 813
+        "unmapped_spans": 709
       },
       "runtime_linkage_typescript": {
         "capture_tool": "v8-cpu-profiler",
         "capture_version": "node 24.14.1",
         "evidence": "docs/release-evidence/B030-runtime-linkage.json",
         "lossy": true,
-        "mapped_spans": 14,
+        "mapped_spans": 13,
         "observed_relations": 1,
-        "raw_artifact_digest": "sha256:dcaf02a496ba91a9b2874cdf8bf94ef0b7a48a3090f0bd30e38ed628f59458a6",
+        "raw_artifact_digest": "sha256:ff15b6b0b2abdb99b563048b260e73050e599b6af5d969cb3acec711b27e9988",
         "state": "verified",
-        "unmapped_spans": 1845
+        "unmapped_spans": 1912
       },
       "typescript": {
         "build": {
@@ -608,7 +569,7 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 1501
+          "wall_ms": 1238
         },
         "emit": {
           "argv": [
@@ -636,7 +597,7 @@
           "stdout": "",
           "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "timed_out": false,
-          "wall_ms": 1398
+          "wall_ms": 1294
         },
         "runtime": {
           "argv": [
@@ -661,7 +622,7 @@
           "stdout": "4\n",
           "stdout_digest": "sha256:7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
           "timed_out": false,
-          "wall_ms": 159
+          "wall_ms": 146
         }
       }
     },
@@ -691,7 +652,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 205
+        "wall_ms": 198
       },
       "controlled_change": {
         "after_output": "6",
@@ -740,7 +701,7 @@
         "stdout": "6\r\n",
         "stdout_digest": "sha256:92961e9752250efa971147344b22295db32d7b75e940e0971e5fb34f21d0bc67",
         "timed_out": false,
-        "wall_ms": 100
+        "wall_ms": 91
       },
       "runtime_linkage": {
         "capture_tool": "viztracer",
@@ -749,7 +710,7 @@
         "lossy": false,
         "mapped_spans": 4002,
         "observed_relations": 0,
-        "raw_artifact_digest": "sha256:fd85635850adc1e0a56d201ccad4c9d7186681aa8e1392398c6b93f6c710c0a6",
+        "raw_artifact_digest": "sha256:398cb92be6eefd0727bca7f54d86d61a5871c6bc041aaaa059f1363105a4734d",
         "state": "verified",
         "unmapped_spans": 943
       }
@@ -779,7 +740,7 @@
         "stdout": "",
         "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "timed_out": false,
-        "wall_ms": 455
+        "wall_ms": 398
       },
       "controlled_change": {
         "after_output": "2",
@@ -831,7 +792,7 @@
         "stdout": "2\n",
         "stdout_digest": "sha256:53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
         "timed_out": false,
-        "wall_ms": 297
+        "wall_ms": 254
       },
       "runtime_linkage": {
         "capture_tool": "archmeld-explicit-probe",
@@ -840,7 +801,7 @@
         "lossy": false,
         "mapped_spans": 4001,
         "observed_relations": 2,
-        "raw_artifact_digest": "sha256:1640f85d60f1d61f5cbfba34a4b4b395aa6a27706cab74ac88bdcc5f826143af",
+        "raw_artifact_digest": "sha256:6def880a6f8139ed32556c1bab7cedfc440fae4a1b390876fab782450c0c843d",
         "state": "verified",
         "unmapped_spans": 0
       },
@@ -857,55 +818,37 @@
           "cleanup": [],
           "error": null,
           "method": "taskkill /PID <root> /T /F plus live process-tree audit",
-          "observed": 8,
+          "observed": 5,
           "processes": [
             {
-              "first_seen_ms": 552,
-              "name": "collect2.exe",
-              "parent_pid": 46732,
-              "pid": 23424
-            },
-            {
-              "first_seen_ms": 552,
-              "name": "cargo.exe",
-              "parent_pid": 49680,
-              "pid": 31008
-            },
-            {
-              "first_seen_ms": 552,
-              "name": "rustc.exe",
-              "parent_pid": 31008,
-              "pid": 33164
-            },
-            {
-              "first_seen_ms": 552,
-              "name": "rustc.exe",
-              "parent_pid": 31008,
-              "pid": 33632
-            },
-            {
-              "first_seen_ms": 552,
-              "name": "collect2.exe",
-              "parent_pid": 51808,
-              "pid": 42924
-            },
-            {
-              "first_seen_ms": 552,
+              "first_seen_ms": 560,
               "name": "x86_64-w64-mingw32-gcc.exe",
-              "parent_pid": 33632,
-              "pid": 46732
+              "parent_pid": 32156,
+              "pid": 29072
             },
             {
-              "first_seen_ms": 552,
+              "first_seen_ms": 560,
+              "name": "rustc.exe",
+              "parent_pid": 52188,
+              "pid": 32156
+            },
+            {
+              "first_seen_ms": 560,
               "name": "ld.exe",
-              "parent_pid": 23424,
-              "pid": 47304
+              "parent_pid": 49472,
+              "pid": 48088
             },
             {
-              "first_seen_ms": 552,
-              "name": "x86_64-w64-mingw32-gcc.exe",
-              "parent_pid": 33164,
-              "pid": 51808
+              "first_seen_ms": 560,
+              "name": "collect2.exe",
+              "parent_pid": 29072,
+              "pid": 49472
+            },
+            {
+              "first_seen_ms": 33,
+              "name": "cargo.exe",
+              "parent_pid": 5868,
+              "pid": 52188
             }
           ],
           "state": "complete",
@@ -917,7 +860,7 @@
         "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
         "stdout_digest": "sha256:d38e6ea6d69ddb377e4a4380b22926f3864806998a850d5e28c8459dfc09f014",
         "timed_out": false,
-        "wall_ms": 1352
+        "wall_ms": 1989
       }
     }
   },
@@ -932,8 +875,8 @@
     "arch": "x86_64",
     "os": "windows"
   },
-  "product_head": "7474343d",
-  "recorded_at_unix": 1795778383,
+  "product_head": "392d0ce4",
+  "recorded_at_unix": 1795869690,
   "rename_evidence": {
     "loaded": true,
     "path": "docs/release-evidence/B030-rename-apply.json"

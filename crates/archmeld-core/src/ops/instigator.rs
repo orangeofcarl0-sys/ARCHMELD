@@ -166,14 +166,18 @@ pub fn propose_nudge(store: &mut Store, raw: &Value) -> Result<Value> {
     }
     let message_id = format!(
         "nudge.{}",
-        short_hash(&format!(
-            "{}:{}:{}:{}:{}",
-            request.project_id,
-            request.task_id,
-            request.task_revision,
-            request.reason,
-            request.idempotency_key
-        ))
+        hash::short_bytes(
+            format!(
+                "{}:{}:{}:{}:{}",
+                request.project_id,
+                request.task_id,
+                request.task_revision,
+                request.reason,
+                request.idempotency_key
+            )
+            .as_bytes(),
+            32,
+        )
     );
     store.conn.execute(
         "INSERT INTO instigator_messages
@@ -437,19 +441,7 @@ fn store_idempotency(
 ) -> Result<()> {
     let result_json = serde_json::to_string(result)
         .map_err(|err| CoreError::Storage(format!("nudge encode: {err}")))?;
-    store.conn.execute(
-        "INSERT INTO idempotency
-         (project_id,operation,idempotency_key,request_digest,status_code,result_json,created_at)
-         VALUES (?1,?2,?3,?4,200,?5,?6)",
-        (
-            project_id,
-            "proposeNudge",
-            key,
-            digest,
-            result_json,
-            crate::store::now_unix(),
-        ),
-    )?;
+    store.idempotency_put_raw(project_id, "proposeNudge", key, digest, 200, &result_json)?;
     Ok(())
 }
 
@@ -462,8 +454,3 @@ fn discard(store: &mut Store, project_id: &str, message_id: &str, reason: &str) 
     Ok(())
 }
 
-fn short_hash(identity: &str) -> String {
-    let digest = hash::digest_bytes(identity.as_bytes());
-    let hex = digest.strip_prefix("sha256:").unwrap_or(&digest);
-    hex[..32].to_string()
-}

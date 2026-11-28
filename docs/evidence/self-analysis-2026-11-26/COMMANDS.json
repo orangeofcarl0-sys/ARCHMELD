@@ -81,7 +81,7 @@
    "exit_code": 0,
    "duration_s": 157.601,
    "artifact": "review-diff.raw.json.gz",
-   "artifact_sha256": "1f39bc5a778b75ea15004fc65e0a6b1bf5915d342ac32d0ff82021e0375f506a",
+   "artifact_sha256": "1f39bc5a778b75ea15004fc65e0a6b1bf5915d<redacted>ac32d0ff82021e0375f506a",
    "derived": "review-diff.summary.json"
   },
   {

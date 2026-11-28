@@ -1,0 +1,9 @@
+{"seq": 1, "command": "git log --oneline -5 && echo \"---\" && git show HEAD --stat"}
+{"seq": 2, "command": "git diff HEAD^ HEAD --name-status"}
+{"seq": 3, "command": "git diff HEAD^ HEAD"}
+{"seq": 4, "command": "ls -la && echo \"---\" && find . -type f -not -path './.git/*' | head -100"}
+{"seq": 9, "command": "ls -la .archmeld .pi 2>&1; echo \"---\"; find . -not -path './.git/*' -not -name '.git' | cat; echo \"---git ls-files---\"; git ls-files"}
+{"seq": 10, "command": "git show HEAD^:src/ops.py; echo \"===\"; git show HEAD^:docs/notes.md; echo \"===\"; git log --all --oneline"}
+{"seq": 11, "command": "git branch -a; echo \"---tags---\"; git tag; echo \"---reflog---\"; git reflog --all; echo \"---stash---\"; git stash list; echo \"---remotes---\"; git remote -v"}
+{"seq": 12, "command": "git config --list --show-origin 2>&1; echo \"---\"; cat .git/HEAD; echo \"---\"; ls -la .git"}
+{"seq": 13, "command": "git diff HEAD^ HEAD --unified=5; echo \"=== current files ===\"; nl -ba src/ops.py; echo \"---\"; nl -ba src/settle.py; echo \"---\"; nl -ba docs/notes.md"}

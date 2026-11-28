@@ -1,0 +1,30 @@
+{
+  "changed_owner": "target",
+  "changed_path": "src/target.py",
+  "unchanged_context_entity": "caller",
+  "incoming_resolution": "resolved",
+  "citations": [
+    {
+      "path": "src/target.py",
+      "line": 1
+    },
+    {
+      "path": "src/target.py",
+      "line": 2
+    },
+    {
+      "path": "src/caller.py",
+      "line": 3
+    },
+    {
+      "path": "src/caller.py",
+      "line": 4
+    },
+    {
+      "path": "src/caller.py",
+      "line": 1
+    }
+  ],
+  "confidence": "high",
+  "notes": "git show HEAD reports exactly one modified file, src/target.py, with a single-line body change (return 1 -> return 2) at src/target.py:2 inside def target at src/target.py:1; no other path is touched. src/caller.py is unchanged between snapshots: HEAD^:src/caller.py and HEAD:src/caller.py both hash to blob 48a510257e3abd4741ba08145448f708aa6c3fff, so caller (defined at src/caller.py:3) is pre-existing context, not a second change. The incoming relation is a direct, statically explicit dependency: caller does 'from target import target' (src/caller.py:1) and invokes it as 'return target()' (src/caller.py:4), binding to the module-local function name in src/target.py:1, so it is classified as resolved rather than a candidate hypothesis. No test execution was performed and no runtime behavior (e.g. the actual value returned by caller()) is asserted from source shape; only the committed text of the diff is cited."
+}

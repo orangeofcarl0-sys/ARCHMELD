@@ -12,7 +12,7 @@ the lower-authority document instead of adding a third statement.
 | Upstream base | CodeGraph `ae4b2e54fc8ce1c074523943fc750b20f68bf8aa` (0.21.2), thin fork |
 | Current phase | Project testing; release-level items are tracked but do not block test work |
 | Current status | [`HANDOFF_CHECKLIST.md`](HANDOFF_CHECKLIST.md) (operational truth), [`archmeld-progress.md`](archmeld-progress.md) (chronological record), [`REMAINING_BLOCKERS.md`](REMAINING_BLOCKERS.md) (open/closed blockers) |
-| Decisions | [`docs/adr/README.md`](adr/README.md) (ADR-017…061) plus ADR-001…016 in the frozen pack |
+| Decisions | [`docs/adr/README.md`](adr/README.md) (ADR-017…067) plus ADR-001…016 in the frozen pack |
 | Build and test | [`OPERATOR_GUIDE.md`](OPERATOR_GUIDE.md) and [`tooling/README.md`](../tooling/README.md) |
 | Evidence | [`docs/evidence/README.md`](evidence/README.md) and [`docs/release-evidence/README.md`](release-evidence/README.md) |
 
@@ -62,6 +62,8 @@ describes the package at delivery time, not the current repository. Use
 | Reproduce an earlier task run | [`docs/evidence/README.md`](evidence/README.md) |
 | Update the pinned upstream | [`upstreams.lock.json`](../upstreams.lock.json), [`docs/upstream/UPGRADE_PLAYBOOK.md`](upstream/UPGRADE_PLAYBOOK.md) |
 | Understand repository structure and complexity | [`assessments/SELF-ANALYSIS-COMPLEXITY-2026-11-27.md`](assessments/SELF-ANALYSIS-COMPLEXITY-2026-11-27.md) |
+| Evaluate the Palimpsest review feedback | [`assessments/PALIMPSEST-FEEDBACK-2026-11-28.md`](assessments/PALIMPSEST-FEEDBACK-2026-11-28.md) |
+| Plan a reviewer study (not yet run) | [`assessments/REVIEWER-STUDY-PROTOCOL-2026-11-28.md`](assessments/REVIEWER-STUDY-PROTOCOL-2026-11-28.md) |
 | Publish a public snapshot | [`tooling/public_snapshot.py`](../tooling/public_snapshot.py), [`docs/OPERATOR_GUIDE.md`](OPERATOR_GUIDE.md) |
 
 ## Repository layout

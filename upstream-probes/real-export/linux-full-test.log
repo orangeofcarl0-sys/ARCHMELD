@@ -17,7 +17,7 @@
   Downloaded plotters v0.3.7
    Compiling codegraph v0.2.0 (/work/crates/codegraph)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 23s
-     Running unittests src/lib.rs (/target/debug/deps/codegraph-c96815511c8cb342)
+     Running unittests src/lib.rs (/target/debug/deps/codegraph-c96815511c8cb<redacted>)
 
 running 58 tests
 test error::tests::test_invalid_operation_error ... ok

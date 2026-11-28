@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-28T12:25:07Z",
+  "head": "bb9117685092da0c9cd306a8e3d455288691acbe",
+  "source": "tooling/check_architecture_debt.py --update",
+  "note": "Monotonic metrics may only stay level or decrease. Update deliberately after a refactor slice lands.",
+  "metrics": {
+    "sql_store_conn_oneline": 71,
+    "sql_store_conn_multiline": 79,
+    "sql_tx_calls": 61,
+    "sql_idempotency_inserts": 0,
+    "production_unwrap_expect": 49,
+    "short_hash_defs": 1,
+    "content_tree_digest_defs": 1,
+    "files_over_800": 24,
+    "cli_lines": 64,
+    "api_lib_lines": 350,
+    "core_api_files": 92,
+    "core_api_lines": 52095,
+    "largest_files": [
+      [
+        "crates/archmeld-core/src/evidence/store/mod.rs",
+        1775
+      ],
+      [
+        "crates/archmeld-core/src/surface/review.rs",
+        1765
+      ],
+      [
+        "crates/archmeld-core/src/change/apply.rs",
+        1738
+      ],
+      [
+        "crates/archmeld-core/src/change/verification.rs",
+        1701
+      ],
+      [
+        "crates/archmeld-core/src/surface/brief.rs",
+        1658
+      ],
+      [
+        "crates/archmeld-api/src/mcp.rs",
+        1562
+      ],
+      [
+        "crates/archmeld-core/src/analysis/blueprint.rs",
+        1532
+      ],
+      [
+        "crates/archmeld-core/src/evidence/query.rs",
+        1521
+      ],
+      [
+        "crates/archmeld-core/src/analysis/cognition_map.rs",
+        1485
+      ],
+      [
+        "crates/archmeld-core/src/analysis/context.rs",
+        1355
+      ],
+      [
+        "crates/archmeld-core/src/trace/trace_adapters.rs",
+        1349
+      ],
+      [
+        "crates/archmeld-core/src/change/changeset/mod.rs",
+        1285
+      ]
+    ]
+  }
+}

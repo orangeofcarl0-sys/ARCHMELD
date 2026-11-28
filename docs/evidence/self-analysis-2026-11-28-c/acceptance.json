@@ -1,0 +1,557 @@
+{
+  "state": "<path>",
+  "project": "archmeld-self",
+  "metrics": {
+    "snapshot_id": "sha256:34315e4cbedbbc4f18bfd173c2b8f42d4e3efda82b25e0b6f23690fb125f3de0",
+    "implements_relations": 47,
+    "examples_entities": 69,
+    "cli_commit": "392d0ce4",
+    "helper_commit": "392d0ce4caa6c297057709d82b238c57d90c5bbc",
+    "export_schema": "1.2",
+    "parse": {
+      "by_language": {
+        "bash": 8,
+        "cpp": 4,
+        "kotlin": 39,
+        "python": 75,
+        "rust": 599,
+        "toml": 49,
+        "typescript": 53
+      },
+      "cross_file_implements": {
+        "ambiguous": 0,
+        "resolved": 25
+      },
+      "files_parsed": 827,
+      "files_skipped": 0,
+      "files_total": 827,
+      "max_depth_reached": false,
+      "max_files_reached": false,
+      "parser_errors": [
+        {
+          "language": "kotlin",
+          "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+          "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/CodeGraphServerResolver.kt"
+        },
+        {
+          "language": "kotlin",
+          "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+          "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/EngineLifecycle.kt"
+        },
+        {
+          "language": "kotlin",
+          "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+          "path": "jetbrains/src/test/kotlin/ai/codegraph/jetbrains/mcp/McpRegistrationTest.kt"
+        }
+      ],
+      "skipped_by_reason": {
+        "exclude_pattern": 10,
+        "excluded_dir": 49,
+        "hidden": 9,
+        "too_large": 3,
+        "unsupported_extension": 798
+      }
+    },
+    "coverage": {
+      "expected_count": 14843,
+      "limitations": [
+        "line-only anchors; upstream exposes no byte ranges",
+        "call/reference edges are syntax candidates, not resolved semantics",
+        "3438 upstream node(s) merged by content identity",
+        "5157 duplicate edge(s) collapsed into occurrence counts",
+        "47152 relation(s) have no call-site line; evidence_scope=artifact"
+      ],
+      "observed_count": 14843,
+      "omitted_count": 0,
+      "scope": "codegraph structural export over the declared snapshot",
+      "state": "complete",
+      "unresolved_count": 0
+    }
+  },
+  "checks": [
+    {
+      "name": "export_schema_1_2",
+      "ok": true,
+      "detail": "1.2"
+    },
+    {
+      "name": "parser_errors_have_paths",
+      "ok": true,
+      "detail": [
+        {
+          "language": "kotlin",
+          "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+          "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/CodeGraphServerResolver.kt"
+        },
+        {
+          "language": "kotlin",
+          "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+          "path": "jetbrains/src/main/kotlin/ai/codegraph/jetbrains/server/EngineLifecycle.kt"
+        },
+        {
+          "language": "kotlin",
+          "message": "SyntaxError(\"\\\\\\\\?\\\\<path>", 0, 0, \"Syntax error\")",
+          "path": "jetbrains/src/test/kotlin/ai/codegraph/jetbrains/mcp/McpRegistrationTest.kt"
+        }
+      ]
+    },
+    {
+      "name": "implements_at_least_40",
+      "ok": true,
+      "detail": 47
+    },
+    {
+      "name": "examples_entities_positive",
+      "ok": true,
+      "detail": 69
+    },
+    {
+      "name": "helper_schema_1_2",
+      "ok": true,
+      "detail": {
+        "exit": 0,
+        "stdout": "1.2"
+      }
+    },
+    {
+      "name": "helper_version_launches",
+      "ok": true,
+      "detail": {
+        "exit": 0,
+        "stdout": "archmeld-export-v1 helper 0.21.2 schema 1.2 commit 392d0ce4-dirty"
+      }
+    },
+    {
+      "name": "status_summary_under_256kb",
+      "ok": true,
+      "detail": 13163
+    },
+    {
+      "name": "status_clean",
+      "ok": false,
+      "detail": {
+        "added": [
+          {
+            "ambiguous_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "ambiguous_move": true,
+            "current_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "path": "docs/evidence/self-analysis-2026-11-28-c/index.stderr.log",
+            "state": "added"
+          },
+          {
+            "current_digest": "sha256:bdc1279170ef9b8d386f54e36790af402b20710a3efc5f30ffaf31be754ed8d9",
+            "path": "docs/evidence/self-analysis-2026-11-28-c/index.stdout.json",
+            "state": "added"
+          },
+          {
+            "current_digest": "sha256:58c4771acd800ae95636ddbe496f5e1ba0097d9df101a72896996d4628232c2b",
+            "path": "docs/evidence/self-analysis-2026-11-28-c/status.json",
+            "state": "added"
+          },
+          {
+            "ambiguous_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "ambiguous_move": true,
+            "current_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "path": "docs/evidence/self-analysis-2026-11-28-c/status.stderr.log",
+            "state": "added"
+          }
+        ],
+        "added_next_cursor": null,
+        "added_returned": 4,
+        "added_total": 4,
+        "added_truncated": false,
+        "affected_architectures": [],
+        "affected_architectures_returned": 0,
+        "affected_architectures_total": 0,
+        "affected_architectures_truncated": false,
+        "affected_claims": [],
+        "affected_claims_returned": 0,
+        "affected_claims_total": 0,
+        "affected_claims_truncated": false,
+        "affected_entities": [],
+        "affected_entities_returned": 0,
+        "affected_entities_total": 0,
+        "affected_entities_truncated": false,
+        "affected_relations": [],
+        "affected_relations_returned": 0,
+        "affected_relations_total": 0,
+        "affected_relations_truncated": false,
+        "base_snapshot_id": "sha256:34315e4cbedbbc4f18bfd173c2b8f42d4e3efda82b25e0b6f23690fb125f3de0",
+        "changed": [],
+        "changed_next_cursor": null,
+        "changed_returned": 0,
+        "changed_total": 0,
+        "changed_truncated": false,
+        "coverage": {
+          "content_tree_digest": "sha256:adcf0eae2f40bfb1c727fb9cce8349327abcdb32260e985d37bac98af3a1455c",
+          "expected_count": 2094,
+          "limitations": [
+            "binary: 29 file(s)",
+            "excluded_dir: 1 file(s)",
+            "too_large: 3 file(s)"
+          ],
+          "observed_count": 2061,
+          "omitted_base_count": 0,
+          "omitted_count": 33,
+          "policy_source": "snapshot",
+          "scope": "eligible workspace files under the snapshot workspace_policy",
+          "state": "partial",
+          "unresolved_count": 0
+        },
+        "deleted": [],
+        "deleted_next_cursor": null,
+        "deleted_returned": 0,
+        "deleted_total": 0,
+        "deleted_truncated": false,
+        "history_mutation": "none",
+        "moved": null,
+        "needs_review": true,
+        "omitted": [
+          {
+            "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.dll",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.exe",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/bin/Debug/net8.0/LangPack.pdb",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.assets.cache",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.dll",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/LangPack.pdb",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/apphost.exe",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/ref/LangPack.dll",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/languages/fixtures/csharp/obj/Debug/net8.0/refint/LangPack.dll",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/traces/fixtures/perfetto-counter-state.pftrace",
+            "reason": "binary"
+          },
+          {
+            "path": "adapters/traces/fixtures/tracy-zones-plots.tracy",
+            "reason": "binary"
+          },
+          {
+            "path": "crates/codegraph-cobol/tree-sitter-cobol-src/parser.c",
+            "reason": "too_large"
+          },
+          {
+            "path": "crates/codegraph-dart/tree-sitter-dart-src/parser.c",
+            "reason": "too_large"
+          },
+          {
+            "path": "crates/codegraph-perl/tree-sitter-perl-src/parser.c",
+            "reason": "too_large"
+          },
+          {
+            "path": "crates/codegraph-python/tests/fixtures/test_project/__pycache__/ignored.py",
+            "reason": "excluded_dir"
+          },
+          {
+            "path": "docs/evidence/b007-workbench.png",
+            "reason": "binary"
+          },
+          {
+            "path": "docs/evidence/b016-trace-source-jump.png",
+            "reason": "binary"
+          },
+          {
+            "path": "docs/evidence/b026-workbench-clean-2.png",
+            "reason": "binary"
+          },
+          {
+            "path": "docs/evidence/b026-workbench-clean-3.png",
+            "reason": "binary"
+          },
+          {
+            "path": "docs/evidence/b026-workbench-clean.png",
+            "reason": "binary"
+          }
+        ],
+        "omitted_base": null,
+        "omitted_returned": 20,
+        "omitted_total": 33,
+        "omitted_truncated": true,
+        "policy": {
+          "excluded_dirs": [
+            ".git",
+            ".hg",
+            ".svn",
+            ".archmeld",
+            "node_modules",
+            "target",
+            "target-linux",
+            "dist",
+            "build",
+            "out",
+            "coverage",
+            ".venv",
+            "__pycache__",
+            ".mypy_cache",
+            ".pytest_cache",
+            ".tox",
+            ".gradle",
+            ".dart_tool"
+          ],
+          "gitignored": 97159,
+          "include_untracked": true,
+          "max_depth": 64,
+          "max_file_bytes": 8388608,
+          "source": "snapshot",
+          "untracked_not_included": 0
+        },
+        "source_mutation": "none",
+        "stale_changesets": [],
+        "stale_changesets_returned": 0,
+        "stale_changesets_total": 0,
+        "stale_changesets_truncated": false,
+        "stale_plans": [],
+        "stale_plans_returned": 0,
+        "stale_plans_total": 0,
+        "stale_plans_truncated": false,
+        "state": "changed"
+      }
+    },
+    {
+      "name": "language_kotlin",
+      "ok": true,
+      "detail": {
+        "bash": 14,
+        "cpp": 8,
+        "javascript": 180,
+        "kotlin": 318,
+        "python": 599,
+        "rust": 8510,
+        "toml": 88,
+        "typescript": 434,
+        "unknown": 1254
+      }
+    },
+    {
+      "name": "language_toml",
+      "ok": true,
+      "detail": {
+        "bash": 14,
+        "cpp": 8,
+        "javascript": 180,
+        "kotlin": 318,
+        "python": 599,
+        "rust": 8510,
+        "toml": 88,
+        "typescript": 434,
+        "unknown": 1254
+      }
+    },
+    {
+      "name": "language_bash",
+      "ok": true,
+      "detail": {
+        "bash": 14,
+        "cpp": 8,
+        "javascript": 180,
+        "kotlin": 318,
+        "python": 599,
+        "rust": 8510,
+        "toml": 88,
+        "typescript": 434,
+        "unknown": 1254
+      }
+    },
+    {
+      "name": "status_files_origin_visible",
+      "ok": true,
+      "detail": {
+        "files_origin": {
+          "tracked": 2050,
+          "untracked": 7
+        },
+        "file_count": 2057
+      }
+    },
+    {
+      "name": "review_summary_under_1mb",
+      "ok": true,
+      "detail": 6077
+    },
+    {
+      "name": "review_agrees_with_status",
+      "ok": true,
+      "detail": {
+        "state": "changed",
+        "needs_review": true
+      }
+    },
+    {
+      "name": "store_symbol_found",
+      "ok": true,
+      "detail": [
+        {
+          "anchors": [
+            {
+              "blob_digest": "sha256:c84c2539e2f861df0827a1c0664f8bd712c0a3d6b97ac352de03bbad637755e1",
+              "byte_end": null,
+              "byte_start": null,
+              "encoding": "utf-8",
+              "line_end": 172,
+              "line_start": 168,
+              "path": "crates/archmeld-core/src/evidence/store/mod.rs",
+              "precision": "line_only"
+            }
+          ],
+          "backend_refs": [
+            {
+              "adapter_id": "codegraph",
+              "backend_id": "1926",
+              "run_id": "run.archmeld-self.index.1795872046"
+            }
+          ],
+          "config_digest": "sha256:b09daeef86d03417206d4067a0ff4c9207cf82cb952cbb052cdfbd2a07d04d54",
+          "external": false,
+          "id": "syn.97d<redacted>67bd16fa711f51db3f4bdcf86d4307c2aa38774d1b345f38a91235a5b4",
+          "kind": "type",
+          "language": "rust",
+          "project_id": "archmeld-self",
+          "qualified_name": "crates/archmeld-core/src/evidence/store/mod.rs::Store",
+          "role": "source",
+          "snapshot_id": "sha256:34315e4cbedbbc4f18bfd173c2b8f42d4e3efda82b25e0b6f23690fb125f3de0"
+        }
+      ]
+    },
+    {
+      "name": "context_4000_non_empty",
+      "ok": true,
+      "detail": {
+        "selected_entities": 10,
+        "source_snippets": 7,
+        "budget": {
+          "bytes": 16000,
+          "estimated_tokens": 3837,
+          "tokenizer": "deterministic bytes/4 estimate; not a model tokenizer",
+          "tokens": 4000,
+          "truncated": true
+        }
+      }
+    },
+    {
+      "name": "p04_producer_and_site_filter",
+      "ok": true,
+      "detail": {
+        "seed": {
+          "entity_id": "syn.e31a0465836dcd97a8d9bf35ed4085dea0e76aa9ed02f5bce44884eec06fe8b2",
+          "producer_resolution": "direct",
+          "call_site_line": 235
+        },
+        "returned": 4,
+        "resolutions": [
+          "direct"
+        ]
+      }
+    },
+    {
+      "name": "p04_rejects_relation_filter_on_symbols",
+      "ok": true,
+      "detail": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "{\"code\":\"invalid_request\",\"message\":\"invalid input: relation_kinds, min_producer_resolution and require_call_site are only valid for neighbors, path and impact queries\",\"next_action\":\"call archmeld_capabilities for the implemented surface\",\"status\":\"implemented\"}",
+              "type": "text"
+            }
+          ],
+          "isError": true
+        }
+      }
+    },
+    {
+      "name": "p11_exclude_test_from_impact",
+      "ok": true,
+      "detail": {
+        "default_relations": 369,
+        "excluded_relations": 452,
+        "default_has_test": true,
+        "excluded_has_test": false
+      }
+    },
+    {
+      "name": "p16_vendored_excluded_by_default",
+      "ok": true,
+      "detail": {
+        "default": 0
+      }
+    },
+    {
+      "name": "p16_exclude_config",
+      "ok": true,
+      "detail": {
+        "default": 20,
+        "excluded": 0
+      }
+    },
+    {
+      "name": "p12_kind_separation_and_order",
+      "ok": true,
+      "detail": {
+        "kinds": [
+          "type",
+          "symbol",
+          "symbol",
+          "symbol",
+          "symbol",
+          "module",
+          "module",
+          "module",
+          "module",
+          "module",
+          "module",
+          "module",
+          "module",
+          "module",
+          "external",
+          "external",
+          "external"
+        ],
+        "module_count": 9
+      }
+    },
+    {
+      "name": "p23_single_review",
+      "ok": true,
+      "detail": {
+        "review_calls": 1,
+        "review_ms": 5172
+      }
+    },
+    {
+      "name": "review_cursor_covers_full",
+      "ok": true,
+      "detail": {
+        "paged": 4,
+        "full": 4
+      }
+    }
+  ],
+  "passed": 23,
+  "failed": 1
+}

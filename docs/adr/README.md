@@ -5,7 +5,7 @@ The project has two ADR ranges:
 - **ADR-001 … ADR-016** are part of the frozen design pack and live in
   [`../archmeld/docs/03_ARCHITECTURE_DECISIONS.md`](../archmeld/docs/03_ARCHITECTURE_DECISIONS.md).
   They record the foundation choices made when the package was written.
-- **ADR-017 … ADR-061** live in this directory. They record implementation-time
+- **ADR-017 … ADR-071** live in this directory. They record implementation-time
   decisions, contract revisions and the accepted boundaries of each slice.
 
 Both ranges have the same authority. Read the frozen range first for the
@@ -61,10 +61,20 @@ the details.
 | [`ADR-059`](ADR-059-evidence-model-1.1.md) | Evidence model 1.1 and pack re-seal | Accepted for implementation (2026-11-26) |
 | [`ADR-060`](ADR-060-release-only-upstream-intake.md) | Release-only CodeGraph intake | Accepted 2026-11-27 |
 | [`ADR-061`](ADR-061-module-groups-and-re-exports.md) | Core module groups, root re-exports and in-place file splits | Accepted for implementation (2026-11-27) |
+| [`ADR-062`](ADR-062-brief-findings-context-and-budget.md) | Change brief findings, context and output budget | Accepted for implementation (2026-11-28) |
+| [`ADR-063`](ADR-063-review-provenance-and-tree-equivalence.md) | Review provenance and tree equivalence | Accepted for implementation (2026-11-28) |
+| [`ADR-064`](ADR-064-architecture-rule-exceptions-and-source.md) | Architecture rule exceptions, rule source and revision diff | Accepted for implementation (2026-11-28) |
+| [`ADR-065`](ADR-065-structural-snapshot-diff.md) | Structural snapshot diff, moves and convergent paths | Accepted for implementation (2026-11-28) |
+| [`ADR-066`](ADR-066-review-cost-invalidation-and-report-retention.md) | Review cost, invalidation and report retention | Accepted for implementation (2026-11-28) |
+| [`ADR-067`](ADR-067-review-candidate-freeze.md) | Review candidate byte freeze | Accepted for implementation (2026-11-28) |
+| [`ADR-068`](ADR-068-mcp-brief-report-closure.md) | MCP status paging, brief counts and review-report lifecycle | Accepted for implementation (2026-11-28) |
+| [`ADR-069`](ADR-069-human-attested-reads-writes.md) | Human-attested reads/writes evidence | Accepted for implementation (2026-11-28) |
+| [`ADR-070`](ADR-070-persistent-graph-incremental-parse.md) | Project-level persistent graph and stable materialization (I1) | Accepted for implementation (2026-11-28) |
+| [`ADR-071`](ADR-071-internal-structure-maintenance.md) | Internal structure maintenance and the debt ratchet | Accepted for implementation (2026-11-28) |
 
 ## How to add a decision
 
-1. Use the next free number (`ADR-062` after ADR-061). Never renumber.
+1. Use the next free number (`ADR-072` after ADR-071). Never renumber.
 2. Record `Status`, `Context`, `Decision`, `Consequences`, and the acceptance or
    evidence that will prove the decision was implemented.
 3. If it changes a sealed contract, update the pack and run

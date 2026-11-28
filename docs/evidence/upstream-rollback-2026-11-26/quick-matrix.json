@@ -158,7 +158,7 @@
       "exit_code": 0,
       "timed_out": false,
       "started_at": "2026-11-26T00:09:51.215536+00:00",
-      "finished_at": "2026-11-26T00:09:51.342386+00:00",
+      "finished_at": "2026-11-26T00:09:51.<redacted>386+00:00",
       "duration_s": 0.127,
       "stdout": "",
       "stderr": "",

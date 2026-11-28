@@ -1,0 +1,24 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-066-review-cost-invalidation-and-report-retention.md",
+  "change": "add_optional_review_report_persistence",
+  "cli": {
+    "archmeld review-diff --persist": "store the result in review_reports and pin cited snapshots",
+    "archmeld review-diff --report <report_id>": "read a persisted report"
+  },
+  "storage": {
+    "table": "review_reports",
+    "keys": ["project_id", "report_id"],
+    "fields": ["base_snapshot_id", "candidate_snapshot_id", "mode", "output_digest", "output_json", "created_at"]
+  },
+  "retention": "a snapshot referenced by review_reports is retained with reason review_report",
+  "invariants": {
+    "default_read_only": true,
+    "source_mutation": "none",
+    "history_mutation": "none unless --persist is explicit",
+    "index_mode": "full_parse; this is not an incremental index claim"
+  },
+  "implemented_by": "crates/archmeld-core/src/surface/review.rs, store/mod.rs and crates/archmeld-api/src/cli.rs",
+  "verified_by": "crates/archmeld-core/tests/diff_review.rs::persisted_review_report_pins_its_base_snapshot"
+}

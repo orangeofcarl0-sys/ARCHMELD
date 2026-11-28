@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0",
+  "schema": "archmeld-review-perf/1",
+  "status": "passed",
+  "head": "88dff1229f584653db39dfed3abae487dc831cc4",
+  "recorded_at": "2026-11-28",
+  "command_id": "perf-review-2026-11-28-c",
+  "command_log": "baseline\\logs\\perf-review-2026-11-28-c.stdout.log",
+  "command_log_sha256": "ed6735cb5c22977c23c7cbf57325d317b43119f54fb6c7fa3dff9517e210314e",
+  "command_log_ignored": true,
+  "duration_s": 53.013,
+  "scope": {
+    "measured": [
+      "snapshot capture",
+      "workspace review",
+      "snapshot diff"
+    ],
+    "not_measured": [
+      "graph index/parse via helper",
+      "incremental indexing",
+      "full test lane"
+    ]
+  },
+  "measurement": {
+    "baseline": {
+      "capture_ms": 1496,
+      "snapshot_bytes": 3145529,
+      "snapshot_id": "sha256:55868e99e9c9c85308b6dcc09be482f2314f31c95c34f232ba3b02fe97a2a931"
+    },
+    "candidates": [
+      {
+        "candidate": 1,
+        "candidate_capture_ms": 228,
+        "changed_files": 5,
+        "diff_invalidation": [
+          {
+            "base": "sha256:357e2a8ae8a369386ff1e2e5b075551d0aa0477ff6630cfa08c792c7a3dd88b9",
+            "candidate": "sha256:bddb061c12cc17d53db87a77fb2fd3241563ad4c5ca74876048873e77a051352",
+            "field": "content_tree_digest",
+            "reason": "tree_changed"
+          }
+        ],
+        "diff_ms": 18,
+        "diff_reuse": {
+          "blobs_new": 5,
+          "blobs_reused": 195,
+          "files_added": 0,
+          "files_changed": 5,
+          "files_deleted": 0,
+          "files_moved": 0,
+          "files_unchanged": 195,
+          "index_mode": "not_indexed"
+        },
+        "diff_state": "changed",
+        "review_coverage": "partial",
+        "review_ms": 72,
+        "review_state": "changed",
+        "snapshot_bytes_after": 3389672
+      },
+      {
+        "candidate": 2,
+        "candidate_capture_ms": 219,
+        "changed_files": 5,
+        "diff_invalidation": [
+          {
+            "base": "sha256:357e2a8ae8a369386ff1e2e5b075551d0aa0477ff6630cfa08c792c7a3dd88b9",
+            "candidate": "sha256:48936ce4765a60e63e084c86288a547195f6801902f3c70c775a188bb4d9b012",
+            "field": "content_tree_digest",
+            "reason": "tree_changed"
+          }
+        ],
+        "diff_ms": 17,
+        "diff_reuse": {
+          "blobs_new": 5,
+          "blobs_reused": 195,
+          "files_added": 0,
+          "files_changed": 5,
+          "files_deleted": 0,
+          "files_moved": 0,
+          "files_unchanged": 195,
+          "index_mode": "not_indexed"
+        },
+        "diff_state": "changed",
+        "review_coverage": "partial",
+        "review_ms": 68,
+        "review_state": "changed",
+        "snapshot_bytes_after": 3658535
+      },
+      {
+        "candidate": 3,
+        "candidate_capture_ms": 217,
+        "changed_files": 5,
+        "diff_invalidation": [
+          {
+            "base": "sha256:357e2a8ae8a369386ff1e2e5b075551d0aa0477ff6630cfa08c792c7a3dd88b9",
+            "candidate": "sha256:b40f39575dd8fc67764bc8988407cb138c78d6d460fc853e90a05d300aa16905",
+            "field": "content_tree_digest",
+            "reason": "tree_changed"
+          }
+        ],
+        "diff_ms": 18,
+        "diff_reuse": {
+          "blobs_new": 5,
+          "blobs_reused": 195,
+          "files_added": 0,
+          "files_changed": 5,
+          "files_deleted": 0,
+          "files_moved": 0,
+          "files_unchanged": 195,
+          "index_mode": "not_indexed"
+        },
+        "diff_state": "changed",
+        "review_coverage": "partial",
+        "review_ms": 68,
+        "review_state": "changed",
+        "snapshot_bytes_after": 3902683
+      }
+    ],
+    "fixture": {
+      "changed_files_per_candidate": 5,
+      "files": 200,
+      "functions_per_file": 10,
+      "project": "project.review.bench"
+    },
+    "host": {
+      "arch": "x86_64",
+      "platform": "windows"
+    },
+    "index_mode": "capture_only_no_graph_index",
+    "limitations": [
+      "graph indexing/parsing is not measured; no helper was run",
+      "capture is a full re-capture; incremental indexing is not implemented",
+      "one host and one fixture; numbers are descriptive, not a guarantee",
+      "review has no base entities in this fixture, so graph impact is empty"
+    ],
+    "recorded_at": 1795811318,
+    "schema": "archmeld-review-bench/1"
+  }
+}

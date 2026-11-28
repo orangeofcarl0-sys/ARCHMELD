@@ -1,24 +1,24 @@
 {
   "generated_by": "tooling/handoff_check.py",
-  "head": "9af7c1f85487a70bf445c960c09a54ab1ec0c3dd",
+  "head": "0ca99b46bd3d967d85d8979e899fa9ba027c63ad",
   "branch": "archmeld/initial",
   "working_tree": "clean",
   "status_porcelain": [],
   "recent_commits": [
-    "9af7c1f8 docs: record T2-T4 verification and the canonical full-lane limit",
-    "582ab9e7 chore: refresh handoff evidence after T2-T4",
-    "69cecaac docs: archive e4a smoke payload and retire the stale vs-extension",
-    "a25e9b66 core: update live paths for the grouped core and refresh the map",
-    "3f16654f core: order module groups and document the re-export contract",
-    "866790ee core: move evidence modules into the evidence group",
-    "7a6a4478 core: move operational modules into the ops group",
-    "ff12459a core: move surface modules into the surface group",
-    "5de5e053 core: move change and predicate modules into the change group",
-    "2e8f1b15 core: move analysis modules into the analysis group",
-    "58f0aadc core: move trace modules into the trace group",
-    "f38d48a4 core: resolve query store references through the crate root"
+    "0ca99b46 docs(adr): treat line and SQL caps as warning lines",
+    "aed55ea7 chore(handoff): regenerate B032 after the structure-debt slice",
+    "a6485105 chore(evidence): record the post-refactor doctor run",
+    "ee9e7efb chore(evidence): record the post-refactor self-analysis command",
+    "4f045e93 test(self-analysis): pass 24/24 after the structure-debt slice",
+    "95a83c73 test(self-analysis): observe the tree before writing run artifacts",
+    "9fd5af16 test(evidence): rerun the B030 lane after the structure split",
+    "780d3a45 refactor(core): remove warnings from the structure split",
+    "392d0ce4 docs(adr): record the P0-P2 structure-debt slice",
+    "7ac8aabc chore(debt): record phase-4 ratchet and fast lane",
+    "bb911768 refactor(context): split context pack into stages",
+    "f371c354 refactor(review): extract the snapshot diff result builder"
   ],
-  "next_task": "P01–P25 与 P17 map 已闭合；B030 AT067 已于 2026-11-27 在 0.21.2/HEAD `7474343d` 复跑通过（`blockers=[]`，证据 `docs/release-evidence/B030-language-matrix.json`）；下一步是 B000 Ubuntu 套件复核以及 Ubuntu GUI/VS Code host、macOS 决策。M2.5-B/D 已实现，E1/E2 已实现，E4a 为 no-go，E3/E4b 不提升。Windows GNU/UCRT64 RocksDB 已 59/59 通过；MSVC 未验证但非必需。AT077 已闭（2026-11-24）。",
+  "next_task": "2026-11-28 P0–P2 结构债整改已提交（ADR-071），完整闭合此前已提交（`72512e12`、`d7ca4c7a`、`1b3e45f2`、`810fbc8d`、`fd5c8758`、`bd182c8c`，B032 收尾提交另计）。AT068 已在本机 VS Code 上补齐 VSIX 安装/卸载并 passed；agent reviewer pilot 已用两个 durable pi session 跑完 12 次（B 6/6、A 3/6，非人类研究）。下一步：用户提供两名人类 reviewer 时执行人类 pilot；如需完整 canonical server 证据，在更大页面文件/内存的主机上重跑 full lane。B030 AT067 已于 2026-11-28 在 HEAD `fd5c8758` 复跑通过；B000 Ubuntu 套件沿用 2026-11-27 证据（上游 pin 未变）。M2.5-B/D、E1/E2 已实现，E4a 为 no-go，E3/E4b 不提升。AT077 已闭（2026-11-24）。",
   "upstream_state": {
     "status": "passed",
     "path": "docs\\release-evidence\\UPSTREAM-0.21.2-2026-11-24.json"
@@ -41,6 +41,7 @@
     "docs/adr/ADR-057-session-start-adherence-and-aoci-interop.md": true,
     "docs/adr/ADR-060-release-only-upstream-intake.md": true,
     "docs/adr/ADR-061-module-groups-and-re-exports.md": true,
+    "docs/adr/ADR-071-internal-structure-maintenance.md": true,
     "docs/adr/README.md": true,
     "docs/evidence/B016-causal-async.json": true,
     "docs/evidence/B017-interpretation.json": true,
@@ -70,6 +71,7 @@
     "docs/evidence/e4a-2026-11-25/RESULT.md": true,
     "docs/evidence/m2.5a-adherence-2026-11-24/archmeld-api.log": true,
     "docs/evidence/m2.5b-session-card-2026-11-24/final-core-api.log": true,
+    "docs/evidence/perf-review-2026-11-28.json": true,
     "docs/evidence/ui-result-b026-paint-1.json": true,
     "docs/evidence/ui-result-b026-paint-2.json": true,
     "docs/evidence/ui-result-b026-paint-3.json": true,
@@ -126,7 +128,7 @@
     "docs/security/THREAT_MODEL_B028.md": true
   },
   "missing_evidence": [],
-  "command_ids_checked": 144,
+  "command_ids_checked": 154,
   "missing_commands": [],
   "do_not_redo": [
     "do not rebuild a general indexer or replace the pinned CodeGraph fork",

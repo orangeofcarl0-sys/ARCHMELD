@@ -428,6 +428,18 @@ def build_cli(platform: str) -> tuple[Path, dict]:
     (staging / "bin").mkdir(parents=True)
     for name, binary in info["binaries"].items():
         shutil.copy2(binary, staging / "bin" / f"{name}{binary.suffix}")
+    if platform == "windows-x64":
+        # The helper statically links C++ archives that still need the MinGW
+        # runtime DLLs. Ship them next to the executables so a clean PATH (no
+        # MSYS2 on PATH) can start both binaries.
+        mingw = os.environ.get("ARCHMELD_MINGW_BIN") or os.environ.get(
+            "ARCHMELD_STRAWBERRY_BIN"
+        )
+        if mingw:
+            for dll in ("libstdc++-6.dll", "libgcc_s_seh-1.dll", "libwinpthread-1.dll"):
+                source = Path(mingw) / dll
+                if source.is_file():
+                    shutil.copy2(source, staging / "bin" / dll)
     for source, target in [
         (ROOT / "LICENSE", "LICENSE"),
         (ROOT / "NOTICE", "NOTICE"),
@@ -464,9 +476,13 @@ def build_cli(platform: str) -> tuple[Path, dict]:
         for path in staging.rglob("*")
         if path.is_file() and path.name not in {"checksums.sha256", "bundle.json", "sbom.cdx.json"}
     )
+    # Binaries report a short commit; the packaging commit is the full hash.
+    # Compare by prefix so a clean rebuild from the packaging commit is not
+    # reported as inconsistent just because of hash length.
     commit_consistent = (
         product["build_git_commit"] == helper["build_git_commit"]
-        and product["build_git_commit"] == PRODUCT_COMMIT
+        and product["build_git_commit"] != "unknown"
+        and PRODUCT_COMMIT.startswith(product["build_git_commit"])
     )
     if commit_consistent:
         consistency_reason = "all build commits equal the packaging commit"

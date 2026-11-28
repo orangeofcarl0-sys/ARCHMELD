@@ -43,6 +43,34 @@ and `properties.resolved_by`; the consumer preserves them on the relation
 to a resolved call. An edge without a call-site line is imported with
 `evidence_scope: artifact`; one with a line is `evidence_scope: site`.
 
+### Edge vocabulary
+
+The consumer maps these `edge_type` strings to evidence relation kinds:
+
+| Upstream `edge_type` | Relation kind | Resolution |
+|---|---|---|
+| `Calls`, `Invokes`, `Instantiates`, `Uses` | `static_call_candidate` | `candidate` |
+| `Imports`, `ImportsFrom` | `imports` | `declared` |
+| `Contains` | `contains` | `declared` |
+| `Defines` | `declares` | `declared` |
+| `Extends`, `Implements` | `implements` | `declared` |
+| `References` | `references` | `candidate` |
+| `Reads`, `Read` | `reads` | `declared` |
+| `Writes`, `Write` | `writes` | `declared` |
+| `Owns`, `OwnsState` | `owns` | `declared` |
+| `Publishes` | `publishes` | `declared` |
+| `Consumes` | `consumes` | `declared` |
+| `Awaits` | `awaits` | `declared` |
+| `Schedules` | `schedules` | `declared` |
+| `GuardedBy` | `guarded_by` | `declared` |
+
+The pinned CodeGraph 0.21.2 exporter emits only the first six groups in observed
+probes; it does not emit `Reads`/`Writes`/`Owns`/`Publishes`/`Consumes`/`Awaits`/
+`Schedules`/`GuardedBy`. The extra mappings let an external or future producer
+supply structural state evidence without changing the format. Such relations
+remain `declared` syntax evidence, not runtime observations, and a consumer must
+not present them as proof of execution.
+
 ## Compatibility policy
 
 - The `format` tag is exact. A different tag fails closed with an `unsupported`

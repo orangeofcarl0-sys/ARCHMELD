@@ -187,17 +187,14 @@ pub fn cancel_job_idempotent(
     )?;
     let job = get_job_in_tx(&tx, project_id, job_id)?
         .ok_or_else(|| CoreError::Storage("cancelled job cannot be read back".to_string()))?;
-    tx.execute(
-        "INSERT INTO idempotency
-         (project_id, operation, idempotency_key, request_digest, status_code, result_json, created_at)
-         VALUES (?1,'cancelJob',?2,?3,202,?4,?5)",
-        (
-            project_id,
-            idempotency_key,
-            request_digest,
-            job.to_string(),
-            crate::store::now_unix(),
-        ),
+    Store::idempotency_put_tx(
+        &tx,
+        project_id,
+        "cancelJob",
+        idempotency_key,
+        request_digest,
+        202,
+        &job.to_string(),
     )?;
     tx.commit()?;
     Ok((202, job))

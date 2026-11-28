@@ -5,6 +5,16 @@ captures a snapshot of a repository, indexes the graph into a local ledger, and
 exposes bounded evidence over MCP: status, one-screen briefs, static change
 review, call-graph queries and exact source reads.
 
+## R1 platforms
+
+S15/AT068 defines R1 as the **Windows 11 x64** and **Ubuntu 24.04 x64**
+CLI/container path. macOS and the Ubuntu GUI/VS Code host are explicitly
+unsupported and not tested in R1; they are not release gates.
+
+Indexing resumes a project-level persistent graph and parses only changed files
+(ADR-070). The exported snapshot and published evidence stay complete; this is
+incremental parsing, not a delta ledger.
+
 ## Quick start
 
 Download the release bundle for your platform, then from the unpacked directory:
@@ -49,11 +59,12 @@ and marks repository content as untrusted. Static review is not a test run;
 | Command | Purpose |
 |---|---|
 | `archmeld init` | Index a workspace, register its root, render MCP config and rules |
-| `archmeld brief` | One-screen project or change brief with findings, unknowns and next actions |
+| `archmeld brief` | Bounded brief with changed findings, unchanged context, gaps and next actions |
 | `archmeld status` | Projects, latest snapshots, counts, languages and read-only freshness |
-| `archmeld review-diff` | Static workspace-vs-snapshot review; no command execution |
+| `archmeld review-diff` | Static review or snapshot-to-snapshot structural diff; optional persisted/frozen evidence |
 | `archmeld refresh` | Explicit new snapshot + exact diff; the old snapshot is retained |
 | `archmeld index` | Low-level snapshot capture and indexing |
+| `archmeld evidence import-human` | Declared (human) reads/writes/owns evidence for one snapshot |
 | `archmeld mcp install` | Render or install one client's MCP server entry |
 | `archmeld-mcp` | Read-only MCP stdio server used by agents |
 | `archmeld-serve` | Loopback HTTP API for the extension and advanced flows |
@@ -507,6 +518,10 @@ A single Rust binary serves both MCP and LSP protocols.
 ---
 
 ## Supported platforms
+
+> The table below describes the **upstream CodeGraph engine**. The ARCHMELD R1
+> distribution and its acceptance gates are only Windows 11 x64 and Ubuntu
+> 24.04 x64 (see “R1 platforms” above).
 
 The engine is a native binary, downloaded for your platform on first run.
 

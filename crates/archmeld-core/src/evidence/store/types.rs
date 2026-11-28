@@ -136,6 +136,16 @@ impl FileOrigin {
     }
 }
 
+/// Stored metadata for one path in a persisted snapshot. This is the typed
+/// projection returned by `Store::snapshot_file_metadata`; callers should not
+/// re-issue the `files` query themselves.
+#[derive(Debug, Clone)]
+pub struct SnapshotFileMeta {
+    pub blob_digest: String,
+    pub size_bytes: u64,
+    pub executable: bool,
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FileEntry {

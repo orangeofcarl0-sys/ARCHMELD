@@ -45,10 +45,10 @@ result. The report remains the existing static, script-free, checksummed bundle.
 
 - Clean-machine indexing no longer depends on the crashing server wrapper.
 - The bundle grows by the helper binary and its parser dependencies.
-- Indexing is a full structural parse per invocation; incremental state is
-  written but not resumed by the one-shot helper.
 - The helper does not replace CodeGraph; it is a thin invocation of the pinned
-  parser/indexer and export API.
+  parser/indexer and export API. As of ADR-070 it can resume a project-level
+  persistent graph and parse only changed files; the snapshot and published
+  export remain complete.
 - Linux and Windows bundles must both carry the four binaries; install,
   rollback and uninstall enumerate them.
 - The offline report path is now exercised from the installed prefix, not only

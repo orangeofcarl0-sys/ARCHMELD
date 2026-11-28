@@ -3659,7 +3659,7 @@
         "agents/constants.py|agents.constants.ModelCapabilities"
       ],
       "content_hash": "1401f311ae2ff7d7",
-      "module_hash": "d4fe96f64fc53421"
+      "module_hash": "d4fe96f64fc5<redacted>1"
     },
     "agents/content_hash.py": {
       "method_keys": [
@@ -4413,7 +4413,7 @@
         "diagram_analysis/reference_resolver.py|diagram_analysis.reference_resolver.StaticReferenceResolver._try_qualified_name_as_path"
       ],
       "content_hash": "1430ea58e1b5eae9",
-      "module_hash": "4b631834228f864a"
+      "module_hash": "4b6318<redacted>28f864a"
     },
     "diagram_analysis/run_context.py": {
       "method_keys": [
@@ -4640,7 +4640,7 @@
       "start_line": 144,
       "end_line": 264,
       "type": "FUNCTION",
-      "content_hash": "ed6f0e64a2873428"
+      "content_hash": "ed6f0e64a287<redacted>8"
     },
     "static_analyzer/__init__.py|static_analyzer.__init__._lang_to_adapter_name": {
       "file_path": "static_analyzer/__init__.py",
@@ -7592,7 +7592,7 @@
       "start_line": 233,
       "end_line": 245,
       "type": "METHOD",
-      "content_hash": "34be5c8934238231"
+      "content_hash": "34be5c89<redacted>38231"
     },
     "static_analyzer/engine/adapters/java_adapter.py|static_analyzer.engine.adapters.java_adapter.JavaAdapter.expands_constructors": {
       "file_path": "static_analyzer/engine/adapters/java_adapter.py",
@@ -8360,7 +8360,7 @@
       "start_line": 135,
       "end_line": 148,
       "type": "METHOD",
-      "content_hash": "735c8e3342f81a9d"
+      "content_hash": "735c8e3<redacted>f81a9d"
     },
     "static_analyzer/engine/call_graph_builder.py|static_analyzer.engine.call_graph_builder.CallGraphBuilder._discover_symbols": {
       "file_path": "static_analyzer/engine/call_graph_builder.py",
@@ -15016,7 +15016,7 @@
       "start_line": 515,
       "end_line": 521,
       "type": "FUNCTION",
-      "content_hash": "26a3423b70fff963"
+      "content_hash": "26a<redacted>3b70fff963"
     },
     "agents/llm_config.py|agents.llm_config.supports_json_mode": {
       "file_path": "agents/llm_config.py",
@@ -16496,7 +16496,7 @@
       "start_line": 125,
       "end_line": 145,
       "type": "FUNCTION",
-      "content_hash": "61f3c4243423d45a"
+      "content_hash": "61f3c424<redacted>3d45a"
     },
     "output_generators/html_template.py|output_generators.html_template._get_dagre_registration": {
       "file_path": "output_generators/html_template.py",
@@ -18493,7 +18493,7 @@
     "diagram_analysis/scope_assembly.py|diagram_analysis.scope_assembly.ScopeAssembler.qualify_source_cluster_ids": {
       "file_path": "diagram_analysis/scope_assembly.py",
       "qualified_name": "diagram_analysis.scope_assembly.ScopeAssembler.qualify_source_cluster_ids",
-      "start_line": 342,
+      "start_line": <redacted>,
       "end_line": 348,
       "type": "METHOD",
       "content_hash": "4afb933d1d8fa627"
@@ -39517,7 +39517,7 @@
           "target": "static_analyzer/internal_references.py|static_analyzer.internal_references.qualified_symbol_parts",
           "call_sites": [
             {
-              "line": 342,
+              "line": <redacted>,
               "column": 24
             },
             {

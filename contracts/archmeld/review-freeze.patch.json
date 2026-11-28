@@ -1,0 +1,23 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-067-review-candidate-freeze.md",
+  "change": "add_optional_workspace_candidate_freeze",
+  "cli": {
+    "archmeld review-diff --freeze --persist": "copy changed/added candidate bytes into the CAS, pin objects, and persist the report",
+    "constraints": "workspace mode only; requires --persist; bounded to 500 files / 64 MiB"
+  },
+  "output": {
+    "provenance.candidate.durable": "true only when every changed/added file was frozen, digest-matched, and not truncated",
+    "provenance.candidate.frozen": "state, files[{path,blob_digest,size_bytes,state}], bytes, truncated, limitations"
+  },
+  "invariants": {
+    "snapshot_created": false,
+    "latest_snapshot_changed": false,
+    "source_mutation": "none",
+    "history_mutation": "review report and object pins only, explicit opt-in",
+    "mcp_surface": "read-only; no freeze operation"
+  },
+  "implemented_by": "crates/archmeld-core/src/surface/review.rs and crates/archmeld-api/src/cli.rs",
+  "verified_by": "crates/archmeld-core/tests/diff_review.rs::persisted_review_report_pins_its_base_snapshot"
+}

@@ -1,0 +1,22 @@
+{
+  "contract_version": "1.0",
+  "status": "pending_pack_revision",
+  "authority": "docs/adr/ADR-063-review-provenance-and-tree-equivalence.md",
+  "change": "add_output_only_review_provenance",
+  "target": "contracts/openapi.json#/paths/~1v1~1reviews~1workspace-diff and contracts/mcp-tools.json#/tools/archmeld_review",
+  "fields": {
+    "provenance.base": "snapshot_id, git_commit, head_tree_oid, git_tree_digest, content_tree_digest, config_digest, environment_digest, exclusions_digest, workspace_policy, analyser",
+    "provenance.candidate": "kind=workspace, git_commit, head_tree_oid, commit_tree_oid, dirty, dirty_paths, content_tree_digest, durable=false",
+    "provenance.tree_equivalent": "content_tree_digest equality; never a Git tree claim for dirty or untracked bytes",
+    "files[].base_side/current_side": "citation side labels",
+    "entities[].side": "base"
+  },
+  "invariants": {
+    "output_only": true,
+    "source_mutation": "none",
+    "history_mutation": "none",
+    "candidate_durability": "false until an explicit freeze slice"
+  },
+  "implemented_by": "crates/archmeld-core/src/surface/review.rs",
+  "verified_by": "crates/archmeld-core/tests/diff_review.rs::review_and_diff_expose_git_provenance_and_tree_equivalence"
+}

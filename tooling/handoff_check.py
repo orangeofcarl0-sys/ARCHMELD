@@ -73,7 +73,7 @@ def main() -> int:
         "B030_gate_passed": "AT066 passed；AT067 passed" in text,
         "AT066_passed": "AT066 passed" in text,
         "AT067_passed": "AT067 passed" in text,
-        "B031_delivery": "AT068 passed；AT069 passed" in text and f"AT077 {at077}" in text,
+        "B031_delivery": "AT068 passed" in text and f"AT077 {at077}" in text,
         "AT068_passed": "AT068 passed" in text,
         "AT069_passed": "AT069 passed" in text,
         f"AT077_{at077}": f"AT077 {at077}" in text,

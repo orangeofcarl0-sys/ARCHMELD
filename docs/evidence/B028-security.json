@@ -3,7 +3,7 @@
     "AT061": {
       "audit": [
         {
-          "arguments_digest": "sha256:ad88afbca98cdd53420b7a964daa4f9474c17b0a40848f222c6e0bd962c80cc6",
+          "arguments_digest": "sha256:ad88afbca98cdd5<redacted>0b7a964daa4f9474c17b0a40848f222c6e0bd962c80cc6",
           "at": 1793410693,
           "code": null,
           "outcome": "ok",
